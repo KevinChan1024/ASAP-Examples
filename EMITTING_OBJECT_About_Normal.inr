@@ -1,0 +1,89 @@
+!!++
+!! EMITTING_OBJECT_ABOUT_NORMAL.INR
+!! Title: Defining Cone Angle of Emitting Object About Normal
+!! Category: Simple Problem
+!! Keywords: Sources, EMITTING OBJECT, direction, cone-angle, emission
+!! Description: How to define a conical emission of emitting object about
+!! the surface Normal. The cone is defined by a scattering cone about the
+!! surface normal, which works for a non-planar object. A low-density
+!! sampling of the surface is used here to show the individual ray cones,
+!! but increasing the number of source rays can quickly make it dense. 
+!! Increasing scattered rays makes the rays in the individual cones more dense.
+!! It may be easier to see if you try it with the plane source by changing the
+!! object command to reference .3 rather than .2. You should see a well-defined
+!! conical output. 
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 04/08/2008 - cp - modified keyword
+!! 03/26/2007 - cp - added header
+!! 03/23/2007 - jh - creation
+!!--
+
+SYSTEM NEW
+RESET  
+
+PI=4*ATAN(1)
+
+CONE_SEMIANGLE=20 
+SRC_RAYS=31          !! determines density of coverage of surface
+SCAT_RAYS=111111     !! determines sampling density of scatter at each surface point
+
+!! LEVEL  1   1E-33
+!! HALT   10  1E-33
+!! CUTOFF 10  1E-33
+!! SPLIT  1   1E-33
+
+MODELS
+  LAMBERTIAN 1.0
+RETURN
+
+SURFACES
+  PLANE Z 0 RECT 3 3
+  TUBE Y -2 3 3 2 3 3 0 0
+  TUBE Z  0 2 2 3 2 2 1 1
+OBJECT 
+  .2 'SRC_OBJECT'
+      BOUNDS -.1  !! reduces the number of emitted rays
+      INTERFACE 1E-35 0 AIR AIR 
+      
+      SCATTER MODEL 1
+        TOWARDS SPEC (SCAT_RAYS) (CONE_SEMIANGLE*PI/180) 0
+RETURN
+
+EMITTING OBJECT -SRC_OBJECT (SRC_RAYS) -0.2 NORM
+
+STATS
+$GRAB 'TOTAL' 0 1 NRAYSI TFLUXI
+&REG NRAYSI TFLUXI
+
+$IF (NRAYSI) LT 1 
+  $GO rayexit
+
+MISSED ARROW 3 
+WINDOW Y Z; WINDOW 1.4
+PLOT FACETS 5 5 0 OVERLAY
+TRACE PLOT 1>[INT(SRC_RAYS*SCAT_RAYS/517)] COLOR 2
+
+$VIEW
+
+CONSIDER ONLY SRC_OBJECT 
+
+STATS
+$GRAB 'TOTAL' 0 1 NRAYS TFLUX
+&REG NRAYS TFLUX
+
+
+FLUX 1/NRAYS 0 
+
+SPOTS DIRECTION ATTRIBUTE 0 YX -4@1<[1.2*SIN[CONE_SEMIANGLE]] PIXELS 101 
+
+!! WINDOW Y X
+!! PIXELS 51
+!! SPOTS DIRECTION EVERY 211
+DISPLAY
+  AVERAGE 1 1
+  ANGLES
+  PICTURE
+RETURN
+
+rayexit       

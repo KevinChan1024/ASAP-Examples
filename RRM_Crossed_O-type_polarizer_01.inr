@@ -1,0 +1,144 @@
+!!++
+!! RRM_CROSSED_O-TYPE_POLARIZER_01.INR
+!! Title: Crossed O-Type Polarizer with Thick C-Plate 
+!! Category: Isolated Command
+!! Keywords: RRM, POLARIZ, RPM, crossed, polarizer, Polarization, retarder, waveplate, XMEMORY NORM, Liquid Crystal
+!! Description: Demonstration of using RRM to create a Realistic
+!! Retarder Model.  A crossed O-type polarizer with thick C-plate. 
+!! A C-plate has the extraordinary axis aligned with the optical axis
+!! so there is no retardance on axis, and increasing retardance with
+!! angle of incidence. It works as a negative birefringence phase
+!! compensator having isotropic refractive indices in the x-y plane.
+!! This compensates for the positive birefringence in the Liquid Crystal
+!! and thereby improves off-axis performance. Since this C-plate is "thick"
+!! it exhibits multiple waves of retardance at high angles of incidence. 
+!! Initial polarization state of rays is random - default Gaussian
+!! distribution. No pre-polarizers are used.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/27/2009 - cp - added header
+!! 02/03/2009 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+BEAMS INCOHERENT GEOMETRIC
+
+FRESNEL BOTH
+
+XMEMORY NORM 6E5
+
+UNITS MM
+WAVELENGTH (WL=0.55) UM 
+
+CUTOFF 1.E-58  
+HALT 1E-58
+
+$FCN DIVIT (_1/_2) 
+ 
+!! Define ray number variable
+NUMRAY=701
+ZDET=0.2
+ZSOURCE=-0.1
+
+!! RADIANT  parameters   
+POL_0=0      !! polar angle first
+POL_1=80     !! polar angle second
+POL_N=51    !! polar angle number of bins
+AZI_0=90     !! azimuth angle first           
+AZI_1=0      !! azimuth angle second          
+AZI_N=180    !! azimuth angle number of bins  
+
+!! Define Media
+MEDIA  
+  1.5 'GLASS'
+
+
+!! Define coatings
+COATINGS PROPERTIES
+  0 1 'TRANSMIT'
+  1 0 'REFLECT' 
+  0.6 0.4 'PART'
+  0 0 'ABSORB'
+  0.98 0.00 'C1'  
+  
+!! Polarization devices 
+
+RPM 1E16 1.0 0.0 0.0 90 1.5 'RPM1'
+RPM 1E16 1.0 0.0 0.0 90 1.5 'RPM2'
+
+!! Retarder parameters
+NO_RET=1.543                            !! ordinary index
+NE_RET=1.552                            !! extraordinary index
+THICK_RET_UM=2.5/ABS(NO_RET-NE_RET)     !! 2.5 um retardance
+THICK_RET_WAVE=THICK_RET_UM/WL          !! retardance in waves
+&REG NO_RET NE_RET THICK_RET_UM THICK_RET_WAVE 'Retarder parameter verification'
+
+RRM (THICK_RET_WAVE) (WL) (THICK_RET_UM) 1.0 (NO_RET) (NE_RET) 'THICKC' 
+      
+!! Define objects
+
+!! First RPM (H-polarizer)      
+SURFACES
+  OPTICAL Z 0.00 0 0 ELLIPSE 2@1000
+  OBJECT 'RPMH' 
+  INTERFACE POLARIZATION POL RPM1 0 0 AIR AIR 
+
+!! Thick C-plate      
+SURFACES
+  OPTICAL Z 0.05 0 0 ELLIPSE 2@1000
+  OBJECT 'CPLATE' 
+  INTERFACE POLARIZATION RET THICKC 90 0 AIR AIR 
+   
+
+!! Second RPM (V-polarizer)      
+SURFACES
+  OPTICAL Z 0.10 0 0 ELLIPSE 2@1000
+  OBJECT 'RPMV' 
+INTERFACE POLARIZATION POL RPM2 0 90 AIR AIR  
+  
+!! Set up detector
+SURFACES
+  OPTICAL Z (ZDET) 0 0 RECT 2@1000
+  OBJECT 'DETECTOR' 
+  INTERFACE COAT ABSORB AIR AIR 
+
+!! Set up reference ray
+POLARIZ K Z
+POLARIZ C A
+!!POLARIZ R   !! 1. Default uniform distribution
+POLARIZ R G  !! 2. Default Gaussian distribution
+     
+!! Source definition begins here
+EMITTING DISK Z (ZSOURCE) 0 0 (NUMRAY^2) 2@(POL_1) ISO
+
+SPOTS DIRECTION ATTRIBUTE 0 YX -4@SIN[POL_1] PIXELS 201
+
+DISPLAY
+  AVERAGE 
+!!  ANGLES
+  PICTURE 'Initial'
+  THRESHOLD 1E-5 1E-5
+  PICTURE 'Initial THRESHOLDed'
+  WRITE INITIALT DIS
+RETURN
+
+WINDOW Y Z
+PLOT FACETS 5 5 0 OVERLAY
+
+TRACE PLOT 1>INT(NUMRAY^2/117)
+
+!! Analysis block begins here
+CONSIDER ONLY DETECTOR  
+
+SPOTS DIRECTION ATTRIBUTE 0 YX -4@SIN[POL_1] PIXELS 201
+
+DISPLAY
+  AVERAGE
+!!  ANGLES
+  PICTURE 'Final'
+  COMBINE INITIALT DIVIT 
+  PICTURE 'Ratio' 
+  WRITE POLRATIOC DIS
+RETURN

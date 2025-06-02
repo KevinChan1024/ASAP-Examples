@@ -1,0 +1,37 @@
+!!++
+!! MACRO_$ARGS01.INR
+!! Title: Macro Argument Passing
+!! Category: Isolated Command
+!! Keywords: $ARGS, macro, Macros_pre
+!! Description: Two examples of using $ARGS
+!! with a user-defined macro.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/18/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+BEAM { 1 'macro for setting up a source'
+  $IF #0 EQ 0; F=0
+  $IF #0 NE 0; F=#1 
+  GRID RECT Z 0 -4@1 2@9 RANDOM (F)
+    SOURCE DIRECTION 0 0 1
+}
+Enter randomization factor>
+
+!! ASAP will prompt for the randomization factor since
+!! no argument given on command line
+$ARGS ALL  
+$BEAM 
+
+!! ASAP will not prompt for the randomization factor,
+!! but no error is generated because the macro traps
+!! the missing data with a default (F=0).
+$ARGS NONE
+$BEAM
+
+RETURN
+

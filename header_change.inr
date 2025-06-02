@@ -1,0 +1,57 @@
+!!++
+!! HEADER_CHANGE.INR
+!! Title: Changing a Dump File Wavelength
+!! Category: Simple Problem
+!! Keywords: Tracing, HEADER, WAVELENGTH, EMITTING, DUMP, GET, WRITE
+!! Description: Shows how to modify a display file header
+!! to change the wavelength setting. This method is no longer required
+!! in recent versions, but was left in to demonstrate header
+!! manipulation. 
+!! A ray file created with a DUMP command has the wavelength of the source
+!! saved in the header of the file.  If these rays are
+!! used again for further ray tracing, they will remain
+!! at that wavelength, unless a new WAVELENGTH command is given 
+!! before the EMITTING DATA.  This example shows an older method
+!! to change the wavelength by placing a 0 in the first wavelength
+!! number.  This allowed the wavelength to be changed by 
+!! the next WAVELENGTHS command.  Of course, the wavelength
+!! could be specified directly, but the former method
+!! allowed the option of automating the process with a macro. 
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 11/24/2010 - cp - updated for newer versions
+!! 06/28/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 500 NM
+
+EMITTING RECT Z 0 2@10 100 2@20
+GET 
+&REG WAVELEN  !! Print current wavelength of source
+
+DUMP TESTRAYS !! Make a ray file 
+
+!! The portion below may now be left out with same results
+******* 
+DISPLAY TESTRAYS        !! Bring up ray file info - see output console
+HEADER _ _ _ _ _ _ _ 0  !! Set minimum wavelength range to 0
+WRITE  !! Updates header information only 
+******* 
+
+RAYS 0  !! Clear old rays
+
+WAVELENGTH 450 NM  !! Set new wavelength
+EMITTING DATA TESTRAYS  !! Bring up old set of rays
+
+!! The following verifies that the wavelength is at
+!! the new setting.
+GET 
+&REG WAVELEN  !! Print new wavelength
+DUMP TESTRAYS2
+DISPLAY TESTRAYS2  !! To verify header change
+RETURN
+

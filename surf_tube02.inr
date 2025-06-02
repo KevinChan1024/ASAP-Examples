@@ -1,0 +1,29 @@
+!!++
+!! SURF_TUBE02.INR
+!! Title: TUBE Surface #2
+!! Category: Isolated Command
+!! Keywords: TUBE, SURFACE, PROFILES
+!! Description: Defines a tube extending from
+!! z = 1 to z = -5.  At z = 1, the face of the
+!! tube is elliptical with semi-major lengths
+!! of .5 and 1.  At z = -5, the face of the tube
+!! is rectangular with semi-major lengths of 2 and 3.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 10/17/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  TUBE Z location 1 radii .5 1 location -5 radii 2 3 q parameters 0 1
+OBJECT
+  
+WINDOW Y X  !! To view object
+WINDOW 1.2
+OBLIQUE
+  PROFILES 0 0 -21 'SURF:TUBE Y-X PROFILES' COLORS 11
+RETURN

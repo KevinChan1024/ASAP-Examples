@@ -1,0 +1,61 @@
+!!++
+!! DEFORM_ARRAY.INR
+!! Title: Deforming To An Arrayed Sampled Surface
+!! Category: Simple Problem
+!! Keywords: Geometry, DEFORM, SAMPLED, ARRAY, MAP
+!! Description: Deforming to an arrayed sampled
+!! surface.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+SURFACES  !! Create unit cell out of many objects
+  PLANE Z 0 RECTANGLE 10
+  OPTICAL Z 5 -7 
+  OPTICAL Z 6 -3
+
+OBJECT
+  0.3 'BASE'
+  BOUNDS 0.2
+OBJECT
+  0.2 'FIRST'
+  BOUNDS 0.1 0.3
+OBJECT 'SECOND'
+  BOUNDS 0.2
+
+WINDOW Z Y
+PROFILES 'ORIGINAL OBJECTS'
+WINDOW Y -2@10 X -2@10
+PIXELS 100
+MAP UCELL DEPTH -0.1 6.2 SLOPES  !! Map unit cell into distribution file
+DISPLAY UCELL
+  PLOT3D 0.5 'MAPPED OUTPUT OF THE OBJECTS'
+
+SYSTEM NEW
+RESET  !! Get rid of previous objects since they are not needed
+
+SURFACES
+  SAMPLED UCELL
+    SHIFT -40 -40 0  !! Call sampled file
+    ARRAY 5 20 0 0 5 0 20 0  !! Replicate the unit cell
+  OPTICAL Z 0 -200 RECTANGLE 50   !! This is the base surface
+  OBJECT
+    0.1 'SAMPLED_ARRAY_OBJECT'
+    DEFORM 0.2  !! Deform the arrayed surface to the base
+
+WINDOW Y -2@49 X -2@1  !! Verify the resulting object
+PIXELS 301
+MAP DEPTH -15 15
+DISPLAY
+  GRAPH 0.5 'SLICE OF SAMPLED, DEFORMED OBJECT' 
+  'DISTANCE IN MM'
+  'DEFORMED SEGMENTS CREATED WITH THE MAP COMMAND AND'
+  'MODELED WITH AN ARRAYED SAMPLED COMMAND'
+RETURN

@@ -1,0 +1,36 @@
+!! SOURCE_DIR02.INR
+!! Title: SOURCE DIRECTION GRID command
+!! Category: Isolated Command
+!! Keywords: SOURCE, Sources, direction, grid 
+!! Description: Example of creating a SOURCE
+!! DIRECTION GRID. The first grid defines the size
+!! and the number of grids.  In this case 4x4 grid
+!! in a square xy plane of -1.5 to 1.5. Since it is 
+!! elliptical, we end up with only 12 grids total.
+!! The second grid defines the direction and spread
+!! of the rays in each grid. The first number: 1, is
+!! relative to the first GRID Z position of 0, which
+!! says the direction is +Z. The next four numbers
+!! (-4@0.1736) give the limits of the spread in
+!! x and y (about Z) in direction cosines.
+!! The last two numbers (2@3) determine the number of
+!! rays in each grid.
+!! Edit History: (latest first)
+!! 07/12/2002 - cp - added comment on ONE option
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC Z 0 -4@1.5 2@4  !! Spatial coordinates
+GRID ELLIPTIC Z primary dir 1 -4@0.1736 2@3  !! Source points and spread
+  SOURCE DIRECTION GRID  !! use the ONE option to make it all one source
+
+!! Display picture  
+WINDOW Y Z
+OBLIQUE 
+PLOT RAYS 1
+RETURN

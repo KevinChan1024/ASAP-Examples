@@ -1,0 +1,40 @@
+!!++
+!! MACRO_$GRAB02.INR
+!! Title: Grabbing Console Output 
+!! Category: Isolated Command
+!! Keywords: $GRAB, macro, Macros_pre
+!! Description: Using $GRAB to grab console output
+!! data and assign to variables, for saving, printing
+!! or using in calculations. The example below grabs
+!! data from a STATS POS output (looks for the 1st 
+!! three numbers after the string "Centroid") to set
+!! up a WINDOW command.
+!! Note: This is not a runable inr file.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 12/21/2001 - cp - modified description
+!! 10/24/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+ --- EMITTING DISK Z 0 2@10 5000
+ ---   SHIFT x 1 y 2 z 0
+ Total flux in rays created by this emitter is   0.999941
+ --- STATS POSITION
+ 
+ Current Statistics for Object   0 -
+  Total Flux = 1.00000     from   5000 rays (100.00%)
+                      X            Y            Z
+        Centroid:  1.00162      2.01403     0.000000
+   RMS Deviation:  5.00649      4.99789     0.000000
+  Maximum Spread: -9.99857     -9.99611     0.000000
+ 
+               to  9.96790      9.98341     0.000000
+ 
+ --- $GRAB 'Centroid:' XCENT YCENT ZCENT
+ --- WINDOW Y YCENT-10 YCENT+10 X XCENT-10 XCENT+10
+ --- $REG
+ X/: ZCENT            0
+ Y/: YCENT            2.01403
+ Z/: XCENT            1.00162
+ 

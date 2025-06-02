@@ -1,0 +1,146 @@
+!!++
+!! COATING_MODELS02.INR
+!! Title: COATING MODELS Polarized
+!! Category: Simple Problem
+!! Keywords: Interfaces, COATINGS, MODELS, BSDFDATA, POLARIZ, ACCURACY, XMEMORY FULL
+!! Description: BSDFDATA ANGLES is used to provide R and T
+!! values at different incident angles.  In this case the two models
+!! are reversed for R and T to account for s and p polarization. Results
+!! are printed for the various input angles.  ASAP will linearly
+!! interpolate in log amplitude space to get coefficients between
+!! the given angle data in the BSDFDATA ANGLES.
+!!
+!! The first number in the BSDFDATA ANGLES list is the angle in
+!! degrees from the surface normal.  The second is the azimuth angle.
+!! These are all 0. COATING MODELS assumes the coating behavior is
+!! independent of azimuth angle. The third number determines the flux
+!! scaling. Here, the numbers are scaled relative to normal incidence.
+!! This is not really necessary as ASAP will rescale the values
+!! to the 0 0 value for you.  This means the R and T values in
+!! the COATING MODELS statement ("0.5 0.5") are multiplied by the
+!! "0 0" value given as a starting point in the list. Other angle
+!! values will increase or decrease based by the specified relative
+!! amount to this normalized value. In this example, for reflected
+!! values, Normal incidence gives 0.5, and then at 25° it will be 
+!! 60% higher in reflection (1.6).  The BK7 and IMMERSE may be used
+!! as an option.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 02/27/2009 - cp - modified keyword
+!! 08/22/2001 - cp - corrected ACCURACY comment
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+XMEMORY FULL  !! To track polarization - makes largest virtual.pgs
+ACCURACY HIGH  !! For best accuaracy in interpolating ANGLES data
+
+MEDIA
+  1.5187 'BK7'
+
+MODELS
+  BSDFDATA ANGLES !! R(s-pol) and T(p-pol)
+   0   0   1     !! Whatever number is put on this line, ASAP normalizes it to 1
+  25   0   1.6   !! If a 0 is desired, use 1E-8 instead. Otherwise it will fall
+  30   0   1.7   !! below the cutoff of 1E-9 and become 0. Since it is in log space, 
+  35   0   1.8   !! log(0) = infinity, and therefore will be ignored.
+  40   0   1.9    
+  45   0   2.0
+  50   0   1.9
+  55   0   1.8
+  60   0   1.7
+  65   0   1.6
+  90   0   1
+
+  BSDFDATA ANGLES !! R(p-pol) and T(s-pol)
+   0   0   1
+  25   0   0.4
+  30   0   0.3
+  35   0   0.2
+  40   0   0.1
+  45   0   1E-8
+  50   0   0.1
+  55   0   0.2
+  60   0   0.3
+  65   0   0.4
+  90   0   1
+
+COATINGS MODELS 1 2 2 1
+  .5 .5  'RT_DATA'  !! The behavior at normal incidence
+
+SURFACES
+  PLANE Z 0 RECTANGLE 5 5
+  OBJECT 'PLANE'
+    INTERFACE COAT RT_DATA AIR AIR  !! BK7 optional
+
+SURFACES 
+  PLANE Z 10 RECTANGLE 5 5
+  OBJECT 'TRANS_DETECTOR'
+    INTERFACE 0 0 AIR AIR  !! BK7 optional 
+
+SURFACES
+  PLANE Y 5 RECTANGLE 10 10
+OBJECT 'REFL_DETECTOR'
+  INTERFACE 0 0 AIR AIR  !! BK7 optional 
+
+FRESNEL BOTH
+ARROWS 1
+MISSED ARROWS 4
+!!IMMERSE BK7 optional
+
+$DO 0 8
+  {
+  ANG=(5*?)+25
+  OBJECT 1  !! Call up object 1
+    ROTATE X (ANG)
+  RETURN
+  RAYS 0  !! Clear previous rays
+  POLARIZ Y
+  GRID ELLIPTIC Z -10 -4@0.1 1 1
+    SOURCE DIRECTION 0 0 1
+    FLUX TOTAL 1
+  TRACE PLOT OVERLAY
+  CONSIDER ONLY TRANS_DETECTOR
+    STATS
+  $GRAB 'TOTAL' 0 2 TRANP?
+  CONSIDER ONLY REFL_DETECTOR
+    STATS
+  $GRAB 'TOTAL' 0 2 REFLP?
+  CONSIDER ALL
+  RAYS 0  !! Clear previous rays
+  POLARIZ X
+  GRID ELLIPTIC Z -10 -4@0.1 1 1
+    SOURCE DIRECTION 0 0 1
+    FLUX TOTAL 1
+  TRACE PLOT OVERLAY
+  CONSIDER ONLY TRANS_DETECTOR
+    STATS
+  $GRAB 'TOTAL' 0 2 TRANS?
+  CONSIDER ONLY REFL_DETECTOR
+    STATS
+  $GRAB 'TOTAL' 0 2 REFLS?
+  CONSIDER ALL
+  $REG ANG REFLS? TRANS? REFLP? TRANP?
+  OBJECT 1  !! Call up object 1
+    ROTATE X -(ANG)
+  RETURN
+ }
+
+$ECHO NONE
+PLOT FACETS
+$SCR 10
+ ANGLE        Rs           Rp           Ts           Tp
+    25 \REFLS0.3  \ \REFLP0.3  \ \TRANS0.3  \ \TRANP0.3  \
+    30 \REFLS1.3  \ \REFLP1.3  \ \TRANS1.3  \ \TRANP1.3  \ 
+    35 \REFLS2.3  \ \REFLP2.3  \ \TRANS2.3  \ \TRANP2.3  \
+    40 \REFLS3.3  \ \REFLP3.3  \ \TRANS3.3  \ \TRANP3.3  \ 
+    45 \REFLS4.3  \ \REFLP4.3  \ \TRANS4.3  \ \TRANP4.3  \ 
+    50 \REFLS5.3  \ \REFLP5.3  \ \TRANS5.3  \ \TRANP5.3  \ 
+    55 \REFLS6.3  \ \REFLP6.3  \ \TRANS6.3  \ \TRANP6.3  \ 
+    60 \REFLS7.3  \ \REFLP7.3  \ \TRANS7.3  \ \TRANP7.3  \ 
+    65 \REFLS8.3  \ \REFLP8.3  \ \TRANS8.3  \ \TRANP8.3  \
+
+$ECHO ALL 
+RETURN

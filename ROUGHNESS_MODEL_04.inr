@@ -1,0 +1,74 @@
+!!++
+!! ROUGHNESS_MODEL_04.INR
+!! Title: Modeling White Etched Plastic
+!! Category: Simple Problem
+!! Keywords: Scatter, ROUGHNESS, HARVEY, plastic, etched
+!! Description: White partially transmissive etched plastic cube
+!! with light incident at an angle.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/05/2009 - cp - added header
+!! 02/04/2009 - wjd - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Define system units and wavelengths
+
+UNITS MILLIMETERS 'Watts'
+WAVELENGTH 550 NM
+
+!! Define coatings
+
+COATINGS PROPERTIES
+  0 1 'TRANSMIT'
+  0.2 0.8 'WHITE'
+  0 0 'ABSORB'
+
+!! Define Media
+
+MEDIA  
+  1.49 'PLASTIC'
+**********************  
+!! The Harvey model that is used here is for transmissive diffusers.  
+!! The BTDF of diffusers varies widely from one diffuser to another, 
+!! so this model should only be used for rough calculations in the 
+!! early stages of a design. The width of the scatter distribution is 
+!! about 8 degrees (half width), and the total integrated scatter is 90%.
+                                                                     
+MODEL
+  HARVEY 20 -4.7 0.14 'Etched plastic' PLOT
+RETURN
+
+!! GEOMETRY DEFINITIONS BEGIN HERE
+SIDE=1
+
+SURFACES
+  PLANE Z 0 RECT 2@SIDE/2
+  PLANE Z (SIDE) RECT 2@SIDE/2
+  TUBE  Z 0 2@SIDE/2 (SIDE) 2@SIDE/2 2@1
+OBJECT
+  .1 0 .2 0 .3 0 'CUBE'
+  INTERFACE COAT WHITE AIR PLASTIC
+  ROUGHNESS MODEL 1
+  SHIFT Y 2
+  RETURN       
+
+!! SOURCE DEFINITIONS BEGIN HERE
+
+GRID ELLIPTIC Z -3 -4@.5 2@21
+SOURCE DIRECTION 0 SIN[30] COS[30]
+
+!! TRACE RAYS WITH OPTIONAL PLOT
+
+!!OBLIQUE
+MISSED 3
+WINDOW Y Z
+PLOT FACETS 5 5 0 OVERLAY
+!!PLOT RAYS 15
+TRACE PLOT 
+$VIEW
+
+
+

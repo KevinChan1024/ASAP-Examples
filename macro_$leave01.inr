@@ -1,0 +1,29 @@
+!!++
+!! MACRO_$LEAVE01.INR
+!! Title: Example of $LEAVE 
+!! Category: Isolated Command
+!! Keywords: $LEAVE, macro, Macros_pre, $DO
+!! Description: Example of where to use $LEAVE.
+!! In this case, if $IF is true, it will leave
+!! the $DO loop.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/23/2001 - cp - created working example
+!! 10/24/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+ARG=5
+$DO 1 10
+   { $IF (ARG) EQ ?; $LEAVE
+     SURFACES
+	     PLANE Z 0 RECTANGLE 10
+	     OBJECT 'SURF.?'
+	   RETURN
+   }
+!! Only objects 1 through ARG-1 get created
+NUMBER NAMES
+RETURN 

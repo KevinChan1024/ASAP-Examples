@@ -1,0 +1,47 @@
+!!++
+!! USERCURV03.INR
+!! Title: Swept Hyperbolic Curve
+!! Category: Isolated Command
+!! Keywords: USERCURVE, $FCN, hyperbolic, curve, SWEEP 
+!! Description: Create a hyperbolic curve with $FCN and USERCURVE.
+!! Hyperbola centered on Y axis.
+!! Transverse and conjugate axes specified.
+!! Equation for hyperbola:
+!! (Y-K)^2/A^2 - (X-H)^2/B^2 = 1
+!! Put the equation in the binomial form solving for Y, specifying X
+!! The _ sign is the placeholder for the X coordinate
+!! Y^2 - [2K]Y + [K^2 - (A^2/B^2)X^2 - A^2] = 0 , OR WITH THE PLACEHOLDER
+!! Y^2 - [2K]Y + [K^2 - (A^2/B^2)_^2 - A^2] = 0     
+!! Sweep the curve about an axis offset from the Y-axis.
+!! Edit History: (latest first) 
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 07/25/2008 - cp - corrected command name
+!! 12/22/2005 - bf - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+A=10  !! Semi transverse axis
+B=20  !! Semi conjugate axis
+K=30  !! X-value of center of hyperbola
+E=2   !! Eccentricity
+
+$FCN HYPERBOLA,
+  CFA=1,
+  CFB=-2*K,
+  CFC=(K^2)-(A^2/B^2*(_)^2)-(A^2),
+  (_) (-(CFB)-SQRT((CFB*CFB)-4*CFA*CFC))/(2*CFA)  0
+!! The last 3 values in this form represent the coordinates (X,Y,Z)                
+
+EDGES
+  USERCURVE HYPERBOLA  0 100 100
+  SWEEP AXIS 270  0 1 0  -20 0 0
+OBJECT 'PSEUDOHYPERBOLICSURFACE'
+
+WINDOW Y X
+PLOT FACETS 9 9 0  OVERLAY
+PLOT EDGE COLOR 2
+$VIEW
+
+RETURN

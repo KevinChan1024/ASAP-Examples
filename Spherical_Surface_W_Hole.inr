@@ -1,0 +1,37 @@
+!!++
+!! SPHERICAL_SURFACE_W_HOLE.INR
+!! Title: Spherical Mirror by Swept Edge
+!! Category: Simple Problem
+!! Keywords: Edges, POINTS, spherical, SWEEP, AXIS
+!! Description: A simple way to create a spherical surface
+!! with a central hole.  A spherical edge is made
+!! from the outer edge of the central hole to the
+!! edge of the surface. A SWEEP AXIS of 360° around
+!! the optical axis makes the surface.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/11/2002 - cp - reformatted
+!! 02/14/2000 - cp - creation; modified from rh
+!!--
+
+SYSTEM NEW
+RESET
+
+F=1
+A=1
+R=F*2
+W=SQRT(1-(A*A)/(R*R))
+SAG=R-SQRT(R*R-A*A)
+D=-SAG/W
+
+EDGES
+  POINTS Z 0 -(A) (SAG) 2,   !! 1st point and flag
+               0  (D)  (W),  !! Control point and weight
+              (A) (SAG) 0    !! 2nd point, no connect
+  SWEEP AXIS 360 0 1 0  0 0 0  !! Makes the surface
+OBJECT 'SPHERE_MIRROR'
+  INTERFACE 0 1 AIR AIR
+    
+WINDOW Y X 
+PLOT FACETS 11 11
+RETURN

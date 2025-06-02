@@ -1,0 +1,25 @@
+!!++
+!! LENS_IDEAL02.INR
+!! Title: Ideal Telescope Lens
+!! Category: Isolated Command
+!! Keywords: IDEAL, LENSES, telescope
+!! Description: Defines an ideal afocal
+!! telescope whose first surface is located
+!! at y = -4. The diameters of the two
+!! elements are 1 and .6 and they are separated
+!! by 2. The afocal magnification of the system is 2.
+!! Edit History: (latest first)
+!! 12/21/2001 - cp - modified file structure
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES
+  IDEAL Y -4 .5 2 .3 
+    1/2 0 0 2 
+
+RETURN
+

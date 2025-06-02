@@ -1,0 +1,30 @@
+!!++
+!! OVERLAY02.INR
+!! Title: OVERLAY for Quadrant Views
+!! Category: Isolated Command
+!! Keywords: OVERLAY, plot
+!! Description: Using OVERLAY for Quadrant views. 
+!! Edit History: (latest first)
+!! 10/10/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+EDGES
+  ELLIPSE Y 4 1 .5
+  ELLIPSE Y 12 3 1.5
+  OBJECT
+    1 2 'FACETED_TUBE'
+ 
+WINDOW X Y
+PIXELS 127
+PROFILES OVERLAY 1 'FACETED TUBE (X-Y VIEW)'
+WINDOW Z Y
+PROFILES OVERLAY 2 'FACETED TUBE (Z-Y VIEW)'
+WINDOW X Z
+OBLIQUE
+PROFILES OVERLAY 3 'OBLIQUE VIEW OF FACETED TUBE WITH PROFILE'
+PLOT FACETS 2 4 OVERLAY 4 'OBLIQUE VIEW OF FACETED TUBE WITH PLOT FACETS'
+RETURN

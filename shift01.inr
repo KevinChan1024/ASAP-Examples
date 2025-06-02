@@ -1,0 +1,30 @@
+!!++
+!! SHIFT01.INR
+!! Title: Shifting Objects or Entities
+!! Category: Isolated Command
+!! Keywords: SHIFT 
+!! Description: SHIFT command is used in same
+!! way for an Object or an Entity.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/11/2002 - cp - reformatted and added commands
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Both accomplish the same results:
+SURFACES
+  OPTICAL Z 0 -20 -1 ELLIPSE 5
+OBJECT 'PRIMARY_MIRROR'
+  SHIFT Y 2  !! On object
+
+SURFACES
+  OPTICAL Z 0 -20 -1 ELLIPSE 5
+    SHIFT Y 2  !! On entity
+OBJECT 'PRIMARY_MIRROR2'
+ 
+PRINT OBJECTS
+RETURN

@@ -1,0 +1,26 @@
+!!++
+!! GROUP01.INR
+!! Title: Grouping Objects
+!! Category: Isolated Command
+!! Keywords: GROUP, Manipulating
+!! Description: Various ways of GROUPing objects.
+!! Note: These are examples only - not a runable inr file.
+!! Edit History: (latest first)
+!! 12/20/2001 - cp - modified description
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+!! ASAP commands used in creating a triplet system
+
+:
+GROUP 1:3 7:9 
+  SHIFT Z 30
+  ROTATE X 45 0 30
+:
+GROUP 1:9 
+  ROTATE X 30 0 0
+  SHIFT Y -2
+:
+GROUP 1:3 7:9 
+  SHIFT Z 4

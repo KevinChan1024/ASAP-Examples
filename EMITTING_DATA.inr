@@ -1,0 +1,80 @@
+!!++
+!! EMITTING_DATA.INR
+!! Title: Using the EMITTING DATA Command
+!! Category: Simple Problem
+!! Keywords: Sources, EMITTING DATA, Tracing, DUMP, PLOT RAYS
+!! Description: An emitting spheroid surrounded by an
+!! absorbing sphere at which the rayset is saved and then 
+!! in a separate action, the rayset is re-emitted using the
+!! EMITTING DATA command
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 07/22/2005 - gg - creation 
+!!--
+
+SYSTEM NEW
+RESET
+
+!! For the purposes of this example, 
+!! only store minimal ray information
+XMEMORY MIN
+
+!! Define some surface that will collect our rays
+SURFACES
+  ELLIPSOID 5 5 5 0 0 0
+OBJECT 'COLLECTOR'
+  INTERFACE 0 0 AIR AIR
+
+!! Define our emitter
+EMITTING SPHEROID 0 0 0 3@0.001 1001
+
+!! Verify geometry
+WINDOW Y Z
+PLOT FACETS OVERLAY
+
+!! Trace our rays and see where they go
+TRACE PLOT 10
+
+!! Dump the current rayset into a file 
+!! called COLLECTED_LIGHT.DIS
+DUMP COLLECTED_LIGHT 
+
+!! This rayset can be used in another program so 
+!! you don't have to continue tracing large numbers 
+!! of rays over and over again
+
+!! The file containing the rayset just created is called
+!! COLLECTED_LIGHT.DIS.  It can be loaded in other inr files
+
+!! To simulate this for the purpose of the example
+!! reinitialize the file. 
+!! In real applications, this would be an 
+!! entirely new and separate file.
+
+SYSTEM NEW
+RESET
+
+!! Define some geometry so we can see where our rayset 
+!! is currently located.
+!! This object is placed in the same location as our 
+!! collector from the first part
+
+SURFACES
+  ELLIPSOID 5 5 5 0 0 0
+OBJECT 'EMITTER'
+                                                                                   
+!! The following command will load the rayset information 
+!! stored in COLLECTED_LIGHT.DIS
+EMITTING DATA COLLECTED_LIGHT                                                          
+
+!! Plot the geometry
+WINDOW Y Z
+PLOT FACETS OVERLAY
+                    
+!! Plot the ray locations on top of the geometry
+PLOT RAYS
+
+!! **NOTE** No trace was performed - what the viewer sees is 
+!! the current ray locations and directions 
+
+RETURN  

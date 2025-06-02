@@ -1,0 +1,70 @@
+!!++
+!! EMITTING_IES.INR
+!! Title: Emitting IES File
+!! Category: Isolated Command
+!! Keywords: EMITTING, IES, BILATERAL, Sources
+!! Description: Demonstration of making an emitter from
+!! an IES distribution file.
+!! IES. 
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 08/22/2007 - cp - modified format; added description
+!! 04/06/2007 - bf - creation
+!!--
+
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+MEDIA
+  1.613  'SK4'
+BILATERAL OFF
+
+SURFACES
+  OPTICAL Z 0 44.55 ELLIPSE 16.9 16.9
+OBJECT 'L1.FRONT'    
+  INTERFACE 0 1 AIR SK4
+  
+SURFACE
+  OPTICAL Z 5 -436.6 ELLIPSE 16.9 16.9
+OBJECT 'L1.BACK'    
+  INTERFACE 0 1 AIR SK4
+
+SURFACES
+  TUBE Z 0 16.9 16.9   5 16.9 16.9
+OBJECT 'L1.EDGE'
+  BOUNDS  +.3  -.2
+
+SURFACES
+  PLANE Z 30 RECT 20
+OBJECT 'DETECTOR'  
+
+GRID ELLIPTIC Z -1 -4@16 101 101  RANDOM 1
+SOURCE DIRECTION 0 0 1
+
+PLOT FACETS 5 5 0 OVERLAY
+TRACE PLOT 111  
+
+CONSIDER ONLY DETECTOR
+WINDOW X Y
+PIXELS 99
+
+RADIANT Z 0 180 36 0 360 72 
+DISPLAY
+IESFILE TESTING  ELLIP 2 4  5
+RETURN
+
+RESET
+CONSIDER ALL
+EMITTING IES TESTING Z 0 0 -5 100000
+MOVE TO Z -5
+
+$IO VECTOR REWIND
+PLOT FACETS 7 7 0 OVERLAY
+TRACE PLOT  111
+CONSIDER ONLY DETECTOR
+WINDOW X Y
+SPOTS POSITION  
+RETURN

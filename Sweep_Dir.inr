@@ -1,0 +1,26 @@
+!!++
+!! SWEEP_DIR.INR
+!! Title: Arc Swept in Direction
+!! Category: Simple Problem
+!! Keywords: Edges, EDGES, ARC, SWEEP, DIR
+!! Description: An ARC swept in direction to make a
+!! half tube with ends sliced at an angle. 
+!! Edit History: (latest first) 
+!! 02/28/2002 - cp - corrected style
+!! 02/28/2000 - cp - Modified syntax; added description
+!! 01/18/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  ARC Z 0 2 0 1 1 180
+    SWEEP DIRECTION 10 0 SIN[45] COS[45]
+OBJECT 'SWEPT_ARC'
+
+WINDOW Y X 
+OBLIQUE
+PLOT FACETS 11 11 'A SWEEP DIR ARC EDGE'
+$VIEW  
+RETURN

@@ -1,0 +1,32 @@
+!!++
+!! OUTPUT_SCI_NOT.INR
+!! Title: Writing Data to File in Scientific Notation
+!! Category: Simple Problem
+!! Keywords: Analysis, DISPLAY, output, TEXTFILE, scientific, formatting, file, data 
+!! Description: This example shows how to output numbers in scientific
+!! notation to a formatted data file using DISPLAY and TEXTFILE.
+!! A FIELD file created with variables in any format can be outputted
+!! in the same format using TEXTFILE.  A $GRAB could have been used
+!! to assign these variables.
+!! Edit History: (latest first)
+!! 04/26/2004 - cp - added key words 
+!! 10/23/2003 - cp - changed keyword
+!! 10/07/2003 - cp - added category keyword
+!! 08/29/2003 - cp - added header
+!! 08/29/2003 - sm - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+A0=1   B0=1.2345E-2   C0=5.4321E-6  D0=2.3456E-12  E0=3.4567E-15
+
+DISPLAY -49  !! Use any number here except the reserved ones listed under $IO in Help
+Z 0 FIELD X -1 1 1 Y -1 1 5
+(A0) (B0) (C0) (D0) (E0)
+TEXTFILE VALS 
+DATA 5 'G15.3'
+EOF
+RETURN

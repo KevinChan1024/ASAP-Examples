@@ -1,0 +1,27 @@
+!!++
+!! MACRO_$SCR03.INR
+!! Title: Output Formatting with $SCR 
+!! Category: Isolated Command
+!! Keywords: $SCR, macro, Macros_pre, output, formatting
+!! Description: Using $SCR to generate output of text 
+!! and values in a desired format. While the $REG command
+!! is useful for printing out variable information, it is
+!! crude because it doesn't allow formatting. The $SCR
+!! command is a convenient way to output data in a more
+!! aesthetic manner. Consider the following simplistic
+!! comparison of printing the contents of two variables.
+!! Edit History: (latest first)
+!! 10/24/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+PI=3.14159 E=2.71828
+&REG PI E 'The values of pi and e are'
+
+$SCR 1
+  The value of pi is \PI.  \ and the value of e is \E.  \
+
+RETURN

@@ -1,0 +1,55 @@
+!!++
+!! SPLIT01.INR
+!! Title: SPLIT 3 using Fractional Energy Cutoff
+!! Category: Isolated Command
+!! Keywords: SPLIT, Tracing, child, parent, rays, splitting, EMITTING
+!! Description: Ray trace plot showing effects of
+!! SPLIT set to 3. First and second generation child rays
+!! are allowed to split but third generation cannot split.
+!! Only the most energetic great-grand-child ray continues.
+!! Cutoff option controls how much energy a split ray needs
+!! to continue.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 11/01/2006 -wjd - modified; option for split energy cutoff
+!! 02/29/2000 - cp - modified; added description
+!! 01/18/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM 'mW'
+WAVELENGTH 550 NM
+
+SURFACES
+  PLANE Z 0 RECTANGLE 5 5
+  OBJECT 'SLAB.FRONT'
+    INTERFACE COAT BARE AIR SCHOTT_BK7   
+  
+SURFACES
+  PLANE Z 2 RECTANGLE 5 5
+  OBJECT 'SLAB.BACK'
+    INTERFACE COAT BARE AIR SCHOTT_BK7 
+  
+WINDOW Z Y  
+PROFILES 0 0 -1 'CUTOFF RAYS THAT DO NOT HAVE ENERGY ABOVE 0.05 mW' OVERLAY
+ 
+SPLIT 3 .05
+
+EMITTING RAYS
+  0 -3  -2,  0 SIN[30] COS[30]   
+  
+TRACE PLOT
+RETURN         
+
+WINDOW Z Y 
+PROFILES 0 0 -1 'PLOT ALL PARENT AND CHILDREN RAYS SPLIT 3X' OVERLAY
+
+SPLIT 3 .04
+
+EMITTING RAYS
+  0 -3  -2,  0 SIN[30] COS[30]   
+  
+TRACE LIST PLOT
+RETURN

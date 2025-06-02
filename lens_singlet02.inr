@@ -1,0 +1,23 @@
+!!++
+!! LENS_SINGLET02.INR
+!! Title: Singlet Lens by Focal Length
+!! Category: Isolated Command
+!! Keywords: SINGLET, LENSES
+!! Description: A Singlet lens using the
+!! focal length 'FL' parameters f and b.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 10/07/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+LENSES
+  SINGLET Z 0 .4 1 BK7 FL 5 0
+  
+WINDOW Y Z
+WINDOW 1.5
+PLOT LENSES 'LENS:SINGLET fl' COLORS 11
+RETURN

@@ -1,0 +1,78 @@
+!!++
+!! ARC_LOFTED_01.INR
+!! Title: Arc Edges Lofted along USERCURVE in Z
+!! Category: Simple Problem
+!! Keywords: Geometry, ARC, USERCURVE, ALTER, PRINT EDGE, ALIGN, PLACE, $FCN
+!! Description: Construct a cylindrical surface with a warped cylinder axis by
+!! lofting a simple ARC-based, closed semi-circle along a user curve with a
+!! Y-deflection that is quadratic in Z.
+!! Edit History: (latest first)
+!! 09/21/2015 - cp - added header
+!! 09/21/2015 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+!! Parameters
+Z_MAX=25        !! the semi-length of the (Z-centered) guide curve
+DY_MAX=-7       !! maximum-magnitude deflection of end points of the guide curve relative to the center
+
+N_PTS_GUIDE=20  !! needs to be even to make the object mesh connection factors work properly
+FUZZ=1E-6       !! a small number greater than 0 to reach numerically close to the end of the last guide curve segment
+
+!! Edge to be used as extrusion guide curve ("backbone")
+
+!! a quadratic (in Z) Y-deflection curve  
+$FCN QUAD_DEFL 0 DY_MAX*(_/Z_MAX)^2 (_)
+
+EDGE 
+  USERCURVE QUAD_DEFL -2@(Z_MAX) (N_PTS_GUIDE) !! number of segments is number of points minus 1
+RETURN 
+
+PRINT EDGE 1
+
+!! Edge to be extruded: a simple semi-circular arc
+EDGE 
+  ARC Z -(Z_MAX), 5 0, 0 0, 180
+    !! get point summary for the edge to be extruded (so we can join last point to first)
+    $CLEAR
+    PRINT EDGE .1    
+    $GRAB 'Pts=' 0 1 N_PTS1
+    &REG N_PTS1 'Number of points in edge to be extruded = '
+EDGE .1
+  ALTER (N_PTS1) Q 1 !! make the semi-circle a closed curve by connecting last point to first  
+RETURN 
+
+!! Place copies of extruded edge along the guide curve.      
+!! Note that the original is retained for copying and is 
+!! not used directly in constructing the final object.
+$DO 1 (N_PTS_GUIDE)
+ {
+ EDGES
+   REPEAT 2
+     ALIGN 0 0 1 TAN 1 ?  !! EDGE .1, Align given vector to tangent of the curve at ?
+     PLACE CURVE 1 ?
+ RETURN 
+ }
+
+!! One last copy at the far end of the last segment (N+1 almost!)
+EDGES
+  REPEAT 2
+    ALIGN 0 0 1 TAN 1 N_PTS_GUIDE+1-FUZZ  !! EDGE .1, Align given vector to tangent of the curve at ?
+    PLACE CURVE 1 N_PTS_GUIDE+1-FUZZ
+RETURN
+
+!! String all the extruded edges together
+OBJECT
+ -(N_PTS_GUIDE+1) 2 0.7 0 'WARPED_SEMICYL' !! Extrude all closed semicircles to make warped cylidrical lens
+  FACETS -8 -6  !! default faceting is more dense; this is easier for quick examination
+RETURN
+
+!! Plot the faceted mesh and the constituent construction edges/curves to illustrate
+WINDOW Y Z
+PLOT FACETS 1 1 0 OVERLAY 'Faceted view with edges/curves to illustrate construction'
+PLOT EDGES COLORS 2 11
+
+$VIEW
+RETURN

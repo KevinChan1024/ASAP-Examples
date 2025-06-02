@@ -1,0 +1,62 @@
+!!++
+!! EXTENDED_SOURCE_FROM_DATA.INR
+!! Title: Source from User Data
+!! Category: Simple Problem
+!! Keywords: Sources, hand, user data, DISPLAY, SPOTS, WRITE, data, input
+!! Description: How to create an extended source with user data 
+!! The "DISPLAY -9" tells ASAP to rewind the BRO009.DAT
+!! file and begin writing with the following format and data.
+!! In the example, since Z is given first, the display data
+!! will be in the Window of Y-X. Z will be starting position of 
+!! extended source.
+!! The data that follows may be replaced with a $READ command
+!! followed by the file name containing much larger amounts of data 
+!! data for much smoother results. 
+!! The small data set here produces very low resolution results,
+!! but shows clearly how data is converted and distributed.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 04/14/2008 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+YMIN=-2
+YMAX=2
+XMIN=-2
+XMAX=2
+
+SURFACES
+  PLANE Z 6 RECT 2 2
+OBJECT 'TARGET'
+
+!! Display file made with user data (may be external file)
+
+DISPLAY -9  !! Create your own distribution file - gets saved in BRO009.DAT
+Z 3 SPOTS Y (YMIN) (YMAX) 6 X (XMIN) (XMAX) 6  !! Z = position of extended source.
+0.7 0.8 0.6 0.5 0.4 0.3  !! SPOTS POS is assumed due to XYZ letters used
+0.9 1.0 0.9 0.8 0.5 0.2  !! as opposed to ABC for SPOTS DIR. Y rows, X columns.
+0.6 0.6 0.5 0.4 0.2 0.5  !! Data can be brought in with $READ. See DIN_Recover.inr.
+0.5 0.4 0.3 0.5 0.7 0.8  !! Use $FAST in first line of external file
+0.3 0.2 0.1 0.3 0.5 0.6  !! to exceed 344 char limit, if necessary.
+0.5 0.6 0.8 0.6 0.4 0.3
+
+WRITE MYSOURCE DIS
+EMITTING DATA MYSOURCE 100000 0 0 !! Angular cone of 0 forces parallel rays
+FLUX TOTAL 100 
+MISSED ARROWS 4
+PLOT FACETS OVERLAY
+TRACE PLOT 100
+CONSIDER ONLY TARGET
+STATS  
+WINDOW Y X
+SPOTS POSITION !! Shows the ray-density flux distribution 
+
+DISPLAY  !! Brings up new BRO009.DAT 
+  AVERAGE
+  PICTURE    'User-data Source file'
+  ISOMETRIC  'User-data Source file' 
+RETURN
+ 

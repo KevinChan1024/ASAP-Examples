@@ -1,0 +1,42 @@
+!!++
+!! ENCLOSED01.INR
+!! Title: Plotting Enclosed Energy
+!! Category: Isolated Command
+!! Keywords: ENCLOSED, DISPLAY
+!! Description: Plot a Display file with the
+!! ENCLOSED command. The plot is of encircled energy vs.
+!! the radius of enclosing circle. In this example, a
+!! small emitting spheroid is inside an absorbing ellipsoid.
+!! Two plots compare ENCLOSED centered on the centroid
+!! and at the edge of the ellipsoid.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/18/2000 - cp - modified format and header
+!! 04/06/2000 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  ELLIPSOID 2 2 2 0 0 0 
+  OBJECT 'DETECTOR'
+    INTERFACE COAT 0 0 AIR AIR
+
+EMITTING SPHEROID 0 0 0 .1 .1 .1 10000 
+
+TRACE 
+PIXELS 201 
+SPOTS POSITION ATTRIBUTE 0
+ 
+DISPLAY
+  ENCLOSED 'ENCLOSED ABOUT THE CENTROID'
+!! All the energy is inside the absorbing ellipsoid
+
+  ENCLOSED MAX 'ENCLOSED ABOUT THE MAX' 
+!! MAX is at the edge of the absorbing ellipsoid (h=2)
+!! The far edge of the absorbing ellipsoid is
+!! 4 units away.
+
+RETURN
+

@@ -1,0 +1,42 @@
+!!++
+!! RANDOM_NUMBER03.INR
+!! Title: Random Number and Seed Generator
+!! Category: Simple Problem
+!! Keywords: Scripts, math, random, RAN, $RAN, HISTOGRAM 
+!! Description: Example of various probability distributions
+!! using a random seed sequence. The RAN operator generates a  
+!! new random number within a distribution determined by the 
+!! value in TYPE, below. The $RAN function generates a new 
+!! random seed sequence for each run. Use the HISTOGRAM plot 
+!! to observe changes with different values. The actual probability
+!! distribution output is a random floating point number.
+!! Edit History: (latest first)
+!! 11/25/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+TYPE=15  !! Type of distribution. Try -15 (Two Deltas) through 15 (Gaussian).
+         !! See Help for details (-1=ramp, 0=uniform, 1=cosine, 2=triangle).
+POP=10000  !! Population size 
+$ECHO NONE  
+
+!! The following function generates a starting seed for the RAN operation below.
+
+$RAN BEST  !! BEST generates a new seed sequence for each run, based on 
+           !! DEC generator option. If a starting seed value is given
+           !! instead, the distribution below will not change from run to run. 
+
+!! The following $ITER is used to iterate over enough steps (POP)
+!! to generate a smooth probability distribution (in ITER.DIS).
+!! The range is not important in this case. A lower POP value
+!! will show more noise in the plot below.
+
+$ITER NSTEP 0 1 (POP) PROB 
+    PROB=RAN(TYPE)  !! Generates new random number based on TYPE
+                    !! for each iteration.
+                  
+DISPLAY ITER !! Show probability distribution
+  HISTOGRAM  !! Number of values per interval
+RETURN

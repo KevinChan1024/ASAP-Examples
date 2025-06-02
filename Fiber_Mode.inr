@@ -1,0 +1,59 @@
+!!++
+!! FIBER_MODE.INR
+!! Title: Setting Fiber Mode with FIBR 
+!! Category: Simple Problem
+!! Keywords: Wave, fiber, mode, shape, FIBR, RAYSET
+!! Description: How to set a fiber mode using
+!! a single beam with a shape determined by the
+!! k and s parameters of the RAYSET command. Here,
+!! the FIBR shape option is used for a circular fiber
+!! and the normalized frequency (vn) is calculated from
+!! fiber's indices and the wavelength. The complex file
+!! created by the FIELD command may be used for laser
+!! coupling applications.
+!! Edit History: (latest first)
+!! 08/15/2001 - cp - corrected header
+!! 05/18/2001 - cp - added header & description
+!! 05/15/2001 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS UM  !! Set system units to microns
+
+PI=ACOS(-1)
+
+WAVEL=1.3       !! Wavelength (in microns)
+NCORE=1.456427  !! Core index of refraction
+NCLAD=1.449679  !! Cladding index of refraction
+RCORE=5.9/2     !! Core radius
+
+!! Calculate the numerical aperture and V number 
+!! of the fiber...
+NA=SQRT(NCORE*NCORE-NCLAD*NCLAD)
+VN=2*PI*RCORE*NA/WAVEL
+
+!! Make a single beam with the "FIBR" shape
+!! Refer to SHAPE command in Help for details
+!! on the RAYSET k and s arguments.
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTH (WAVEL) UM
+WIDTHS 1.6
+
+RAYS 0
+RAYSET Z 0; 0 0 1 2@(RCORE) -FIBR (VN)
+  SOURCE DIRECTION Z
+
+!! Show the mode shape
+PIXELS 101
+WINDOW Y X
+FIELD ENERGY 0
+
+DISPLAY
+  ISOMETRIC 'Fiber mode'
+  GRAPH 0.5 'Fiber mode, linear plot'
+  FORM -4
+  GRAPH 0.5 'Fiber mode, log plot'
+RETURN

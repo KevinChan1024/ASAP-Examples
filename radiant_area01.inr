@@ -1,0 +1,48 @@
+!!++
+!! RADIANT_AREA01.INR
+!! Title: Radiance of Multiple Emitting Spheroids
+!! Category: Isolated Command
+!! Keywords: RADIANT, AREA, Radiometry, SPHEROID, radiance
+!! Description: Plotting RADIANT AREA on multiple emitting
+!! spheroids of varying sizes. This is radiance per unit
+!! area in the plane of the selected window.
+!! Edit History: (latest first)
+!! 02/15/2000 - cp - modified format; added description
+!! 03/30/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+NRAYS=5000
+SEED 1 QUASI
+XMEMORY MIN
+
+!! A shortcut to make a multiple source. Each spheroid is expanded
+!! and shifted from the previous one using the loop counter.
+
+$DO 1 10; EMITTING; !! Executes first line once and iterates on the next
+  1 SPHEROID 3@0 ?*0.007 2@(?*0.006) (NRAYS); SHIFT X (?*0.006)
+
+PIXELS 21
+WINDOW Y X
+WINDOW 1.5  !! Enlarge by 50%
+SPOTS POSITION 'PLASMA EMISSION MODELED AS ELLIPTICAL RAY VOLUMES'
+
+PIXELS 21
+RADIANT X 0 180 1 0 360 1 AREA
+TITLE 'ISO LUMINANCE CURVE VIA RADIANT COMMAND'
+
+DISPLAY
+  AVERAGE
+  AVERAGE
+  NORMALIZE MAX  !! Normalize to maximum value of data
+  NORMALIZE 0.01 !! Re-normalize by .01 
+  ISOMETRIC 
+  CONTOUR 10 TICS 0.02 0.02
+
+  WRITE RADIANCE1     !! Write display data to file
+  TEXTFILE RADIANCE2  !! Write formatted data to file
+    DATA
+  EOF
+RETURN

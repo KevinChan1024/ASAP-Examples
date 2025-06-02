@@ -1,0 +1,34 @@
+!!++
+!! LENS_MIRROR.INR
+!! Title: A Lens Mirror
+!! Category: Simple Problem
+!! Keywords: Lenses, LENSES, MIRROR, parabolic
+!! Description: An example of the LENS MIRROR command.
+!! A simple parabolic concave mirror pointed towards -Z.
+!! Under the universal design law that light travels only
+!! from left to right, the focal length of a concave
+!! mirror is positive while the focal length of a convex
+!! mirror is negative. From the Lenses chapter.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 02/10/2000 - cp - modified format; added description
+!! 02/19/1999 - mc - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES 
+  MIRROR Z 0 10 20 -1
+  OBJECT 'PARABOLIC MIRROR' 
+
+GRID RECT Z 0 -4@10 1 5
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -60
+
+ARROWS OFF 
+WINDOW Y Z
+WINDOW 1.5  !! Enlarge window by 50%
+PROFILES OVERLAY
+TRACE PLOT
+RETURN

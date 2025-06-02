@@ -1,0 +1,38 @@
+!!++
+!! DO_TRICK04.INR
+!! Title: Array of Sources using $DO
+!! Category: Simple Problem
+!! Keywords: Scripts, $DO, EMITTING, Sources 
+!! Description: Making multiple EMITTING DATA sources
+!! in an array format but reducing the source count. 
+!! NOTE: Rayfile name used below is a representative example.
+!! Before running file, please substitute with one created
+!! through the Light Source Library and saved to the working
+!! directory.
+!! Edit History: (latest first)
+!! 08/09/2012 - cp - correcting header
+!! 06/27/2007 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+XMEMORY MIN
+
+!! A shortcut to make a multiple composite source. Each EMITTER
+!! is shifted from the previous one using the loop counter.
+ROW {
+$DO 1 3; EMITTING; !! Executes first line once and iterates on the next
+  1 DATA b3057_major_10k.dis; SHIFT X (?*30); SHIFT Y #1
+}
+
+$DO 1 3 { !! Makes multiple rows of emitters - each row counts as 1 source
+  $ROW  (?*30)
+}
+PIXELS 21
+WINDOW Y X
+WINDOW 1.5  !! Enlarge by 50%
+SPOTS POSITION 'PLASMA EMISSION MODELED AS ELLIPTICAL RAY VOLUMES'
+$VIEW
+STATS SOURCES !! Only 3 sources listed
+RETURN

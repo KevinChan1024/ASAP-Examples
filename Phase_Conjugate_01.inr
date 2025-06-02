@@ -1,0 +1,173 @@
+!!++
+!! PHASE_CONJUGATE_01.INR
+!! Title: Creating a Phase Conjugate or Mask
+!! Category: Simple Problem
+!! Keywords: Wave, Gaussian, phase, complex, conjugate, mask
+!! Description: Make a source of specified Hermite-Gaussian wavefront.
+!! Capture the complex field of the wavefront. 
+!! Extract the real and imaginary parts of the field.
+!! Composite these together into a file that can be read in to create 
+!! a mask that represents the complex-conjugate condition.
+!! Create a new unit reference field.
+!! Impose the conjugate mask on the unit field to obtain the 
+!! conjugate field.
+!! 
+!! THIS SCRIPT WAS CREATED IN RESPONSE TO SEVERAL ISSUES.
+!! It illustrates that we can create a complex field file from its
+!! real and imaginary parts individually, which facilitates common
+!! operations such as conjugation, phase mask construction, etc.
+!! Other uses are left as an exercise for the reader.
+!! Edit History: (latest first) 
+!! 01/14/2009 - cp - added header
+!! 01/09/2009 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MILLIMETERS
+WAVELENGTH 632.8 NANOMETERS
+
+WL=632.8E-6   !! wavelength in system units
+
+!! Measurement window parameters
+WIDTH=2.0     !! Vertical width of WINDOW
+NPIX=101      !! Number of vertical pixels in window
+
+********************************************************
+!! Define source
+********************************************************
+WAVELENGTH 632.8 NM
+
+BEAMS COHERENT DIFFRACT
+PARABASAL 4
+WIDTHS 1.6
+
+!! create a Hermite-Gaussian 2,3 mode of
+!!  mode "width" 0.2,0.3 in x,y
+GAUSSIAN Z -100 -100 0 31 51 2 3 0.2 0.3
+
+WINDOW Y -2@(WIDTH/2) X -2@(WIDTH/3)
+PIXELS (NPIX)
+
+FIELD ENERGY 0 
+
+!! Show source irradiance
+DISPLAY
+  PICTURE 'Source'
+
+!! Get field window parameters for future use
+$CLEAR
+  DISPLAY
+  $GRAB 'Scalar Diffracted FIELD' 2 1 X_MIN X_MAX X_PIX
+  $GRAB 'Scalar Diffracted FIELD' 3 1 Y_MIN Y_MAX Y_PIX
+  &REG Y_MIN Y_MAX Y_PIX X_MIN X_MAX X_PIX 'Window parameters'
+
+!! Verify Real and Imaginary parts; 
+!!  store each separately for convenience
+DISPLAY 29 REAL
+  WRITE REALPART DIS
+  PICTURE 'Source Real'
+DISPLAY 29 IMAGINARY
+  WRITE IMAGPART DIS
+  PICTURE 'Source Imaginary'
+RETURN
+
+!!
+!! Output a text file of successive Real, Imaginary pairs as 
+!!  required by $FAST COMPLEX for dummy DISPLAY 29 input
+!!
+
+!! process first record of complex pair data 
+  DISPLAY REALPART.DIS
+  REDUCE 1 (Y_PIX) 1, 1 1 1   !! make a column vector of real
+  REPLICATE                  !! make a second column
+  MODIFY 1 (Y_PIX) 2 2 0 0    !! null second column
+  WRITE RTEMP DIS
+  
+  DISPLAY 29 IMAGPART.DIS
+  REDUCE 1 (Y_PIX) 1, 1 1 1   !! make a column vector of imaginary
+  REPLICATE                  !! make a second column        
+  MODIFY 1 (Y_PIX) 1 1 0 0    !! null first column          
+  MODIFY 1 (Y_PIX) 2 2 0 -1 'Conjugate' 
+  WRITE ITEMP DIS
+   
+  COMBINE RTEMP 1            !! add to make a two-column "complex vector"
+  
+  TRANSPOSE
+  TEXTFILE COMPLEX_FILE.TXT
+  "$FAST" (Y_PIX) (X_PIX) "COMPLEX" 
+  DATA (2*Y_PIX)              !! save complex column as real-imaginary pairs
+  !! no EOF; leave textfile open
+RETURN
+
+!! repeat this process by looping through all successive  
+!!  complex pairs and continue output to the text file
+$DO 2 (X_PIX)
+  {
+  !! process  line 
+  DISPLAY REALPART.DIS
+  REDUCE 1 (Y_PIX) 1, ? ? 1   !! make a column vector of real
+  REPLICATE                  !! make a second column        
+  MODIFY 1 (Y_PIX) 2 2 0 0    !! null second column          
+  WRITE RTEMP DIS
+  
+  DISPLAY IMAGPART.DIS
+  REDUCE 1 (Y_PIX) 1, ? ? 1   !! make a column vector of imaginary 
+  REPLICATE                  !! make a second column              
+  MODIFY 1 (Y_PIX) 1 1 0 0    !! null first column                 
+  MODIFY 1 (Y_PIX) 2 2 0 -1 'Conjugate' 
+  WRITE ITEMP DIS 
+
+  COMBINE RTEMP 1            !! add to make a two-column "complex vector"
+
+  TRANSPOSE
+  TEXTFILE                   !! re-address open textfile
+  DATA (2*Y_PIX)              !! save complex column as real-imaginary pairs
+  RETURN
+  !! no EOF; leave textfile open
+  &REG X_PIX 'Complex distribution operation completed column ? of '  
+  }
+
+!! close the TEXTFILE with an EOF
+DISPLAY 
+  TEXTFILE 
+  EOF
+RETURN
+
+********************************************************
+!!   phase mask distribution file complete
+********************************************************
+
+!! load in the field file to use as a phase mask to produce
+!!  the complex conjugate of the original field.
+
+DISPLAY -29
+Z 0 CONJFIELD X (X_MIN) (X_MAX) (X_PIX) Y (Y_MIN) (Y_MAX) (Y_PIX)  
+$READ COMPLEX_FILE.TXT
+RETURN 
+
+!! conjugate mask is now in BRO029.DAT
+
+********************************************************
+!! Apply phase mask to a plane wave to verify its effect
+********************************************************
+
+!! remove original source and create unit-amplitude reference source
+RAYS 0  
+
+GRID RECT Z 0 -4@(WIDTH/2) 2@51
+  SOURCE DIRECTION Z
+
+!! multiply source by phase mask (still in BRO029.DAT)
+FIELD REAL 0 MULTIPLY 
+
+!! Show mask effect on source
+DISPLAY
+  PICTURE 'Masked Real' 
+DISPLAY 29 IMAGINARY
+  PICTURE 'Masked Imaginary'  !! conjugate Imaginary component
+RETURN
+
+
+  

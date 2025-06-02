@@ -1,0 +1,32 @@
+!!++
+!! PLANE03.INR
+!! Title: PLANE NORMAL Surface
+!! Category: Isolated Command
+!! Keywords: PLANE, SURFACE
+!! Description: A plane surface using the
+!! NORMAL option. This example shows a plane
+!! that contains the point 0,0,0 and whose
+!! Normal vector is 0,1,1.  The LOCAL modifier
+!! is needed to define the boundaries of the 
+!! surface. Note that ASAP will calculate the 
+!! vector 0,1,1 as 45° from Z or Y.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/09/2004 - cp - added slices to PROFILES to see plane
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  PLANE NORMAL  0 1 1  0 0 0
+  LOCAL -2@1 -4@1.4 Z
+  OBJECT
+  
+WINDOW Y Z  !! To view object
+WINDOW 1.5 
+OBLIQUE
+PROFILES 0 0 -51 'SURF:PLANE NORMAL' COLORS 11
+RETURN

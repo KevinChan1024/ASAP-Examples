@@ -1,0 +1,22 @@
+!!++
+!! MACRO_$EVAL01.INR
+!! Title: Graphing a Function with $EVAL
+!! Category: Isolated Command
+!! Keywords: $EVAL, Macros_pre, $FCN
+!! Description: Evaluating a simple sine-wave function 
+!! in X using $EVAL. Uses the first form, where a range 
+!! and steps are given for the variable. Produces the
+!! display file eval.dis which can be graphed.
+!! Edit History: (latest first)
+!! 07/19/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+$FCN WAVE SIN(XV)
+$EVAL XV -10 10 -101 WAVE  !! -N steps includes the end points
+
+DISPLAY EVAL.DIS 
+GRAPH
+RETURN

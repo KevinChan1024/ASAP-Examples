@@ -1,0 +1,30 @@
+!!++
+!! STRING_PASSING01.INR
+!! Title: Numeric String Passing
+!! Category: Simple Problem
+!! Keywords: Scripts, literal, macro, string, register, expression
+!! Description: An example of passing numeric values as literal
+!! strings to a macro for performing a calculation, without
+!! using the LIT operator.
+!! Edit History: (latest first)
+!! 07/28/2008 - cp - reformatted
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+CALC {
+  A=5*#1
+}
+
+$ECHO ALL
+$DO 5 5
+  &CALC ?+5   !! A is not equal to 50, actually 30
+$REG A
+
+$DO 5 5 
+  &CALC (?+5) !! A is equal to 50 as expected
+$REG A
+
+RETURN

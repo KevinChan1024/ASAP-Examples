@@ -1,0 +1,92 @@
+!!++
+!! FIBER_CONE.INR
+!! Title: Tapered Fiber Cone
+!! Category: Simple Problem
+!! Keywords: Bounds, fiber, cone, TUBE, Interfaces, BOUNDS
+!! Description: This file shows how to create a tapered fiber cone using
+!! the TUBE command.  One cone makes the inner core and the other adds
+!! the cladding thickness.  End caps are made to cover the core and the
+!! cladding using surfaces bounded by the ends of tubes themselves.
+!! A grid of rays was added inside the big end of the core, to see the
+!! effects on the rays for different indices.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+ 
+UNITS MM
+
+MEDIA
+  1.52 'CORE' 
+  1.34 'CLADDING'
+ 
+FRESNEL AVERAGE
+SPLIT 1
+
+CONE_START=0
+CONE_END=10
+DIA_INNER_SMALL=.3  !! Inner cone small end diameter
+DIA_INNER_BIG=2     !! Inner cone large end diameter
+CLAD_THICK=.6       !! Cladding thickness
+
+!! Outer cone
+SURFACES
+  TUBE  Z  (CONE_START)  (DIA_INNER_BIG+CLAD_THICK)/2 (DIA_INNER_BIG+CLAD_THICK)/2,
+           (CONE_END),
+           (DIA_INNER_SMALL+CLAD_THICK)/2  (DIA_INNER_SMALL+CLAD_THICK)/2 
+  OBJECT  'CONE_OUTER'
+    INTERFACE COAT  BARE  CLADDING  AIR
+    REDEFINE COLOR 14 
+
+!! Inner cone  
+SURFACES
+  TUBE  Z  (CONE_START)  (DIA_INNER_BIG)/2 (DIA_INNER_BIG)/2,
+           (CONE_END),
+           (DIA_INNER_SMALL)/2  (DIA_INNER_SMALL)/2 
+  OBJECT  'CONE_INNER'
+    INTERFACE COAT  BARE  CLADDING  CORE
+    REDEFINE COLOR 8
+                      
+!! Endcaps for cone:
+
+!! Big end - end caps
+SURFACES
+  PLANE  Z  (CONE_START) ELLIPSE 2@(DIA_INNER_BIG+CLAD_THICK)/2
+  OBJECT 'BIG_END_CORE_CAP'
+    INTERFACE COAT  BARE CORE AIR
+    BOUNDS -.2
+    REDEFINE COLOR 8
+SURFACES
+  PLANE  Z  (CONE_START) ELLIPSE 2@(DIA_INNER_BIG+CLAD_THICK)/2
+  OBJECT 'BIG_END_CLADDING_CAP'
+    INTERFACE COAT  BARE CLADDING AIR
+    BOUNDS .3
+    REDEFINE COLOR 14
+
+!! Small end - end caps
+SURFACES
+  PLANE  Z  (CONE_END) ELLIPSE 2@(DIA_INNER_SMALL+CLAD_THICK)/2
+  OBJECT 'SMALL_END_CORE_CAP'
+    INTERFACE COAT  +BARE CORE AIR  !! Rays won't get reflected
+    BOUNDS -.4 
+    REDEFINE COLOR 8
+
+SURFACES
+  PLANE  Z  (CONE_END) ELLIPSE 2@(DIA_INNER_SMALL+CLAD_THICK)/2
+  OBJECT 'SMALL_END_CLADDING_CAP'
+    INTERFACE COAT +BARE CLADDING AIR
+    BOUNDS .5 
+    REDEFINE COLOR 14 
+ 
+IMMERSE CORE  !! Start rays inside core
+GRID ELLIPTIC Z .1 -4@(DIA_INNER_BIG/2-.1) 2@21
+  SOURCE DIRECTION 0 0 1
+
+MISSED ARROWS 3  !! To see rays exiting fiber in 3-D plot 
+PLOT FACETS 5 5 OVERLAY
+TRACE PLOT 
+RETURN
+

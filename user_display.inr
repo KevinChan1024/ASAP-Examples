@@ -1,0 +1,77 @@
+!!++
+!! USER_DISPLAY.INR
+!! Title: User-defined Display File 
+!! Category: Simple Problem
+!! Keywords: Radiometry, DISPLAY, distribution, FIELD, ENERGY
+!! Description: Creating a user-defined complex
+!! distribution file to be stored in BRO029.DAT.
+!! File is not complete and may not be run as shown.
+!! Edit History: (latest first)
+!! 09/01/2006 - cp - corrected complex tick symbol
+!! 02/28/2002 - cp - added to description
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Note - this is an incomplete DATA SET.
+DISPLAY -29
+  Z 0 FIELD Y -29.5 29.5 59 X -19.5 19.5 39 'TEST'
+0'0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ...out to 39
+0 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 
+0 1 1 1 0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 
+0 1 1 1 0 0 0 0 0 0 0 1 1 1 0 0 0 0 0 0 0 0 0 0 0 
+0 1 1 1 0 0 0 0 0 0 0 1 1 1 0 0 0 0 0 0 0 0 0 0 0 
+0 1 1 1 0 0 0 0 0 0 0 1 1 1 0 0 0 0 0 0 0 0 0 0 0 
+
+0 1 1 1 0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 
+0 1 1 1 0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 
+0 1 1 1 0 0 0 0 0 0 0 1 1 1 0 0 0 0 0 0 0 0 0 0 0 
+0 1 1 1 0 0 0 0 0 0 0 1 1 1 0 0 0 0 0 0 0 0 0 0 0 
+0 1 1 1 0 0 0 0 0 0 0 1 1 1 0 0 0 0 0 0 0 0 0 0 0 
+0 1 1 1 0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 
+
+0 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 
+:
+: ... down to 59 
+
+RANGE 0 2
+ISOMETRIC 'ORIGINAL DISTRIBUTION DATA MASK'
+RETURN
+
+BEAMS COHERENT DIFFRACT
+WAVELENGTHS 0.5
+  WIDTHS 1.5
+  DECOMPOSE POSITION
+  STATS DIRECTION
+WINDOW X -19.5 19.5 Y -29.5 29.5
+PIXELS 3*39
+
+FIELD ENERGY  0
+DISPLAY
+  RANGE 0 2
+  ISOMETRIC 2 'Z=0 (WAVELENGTH=0.5)'
+
+FIELD ENERGY 15
+DISPLAY
+  RANGE 0 2
+  ISOMETRIC 2 'Z=30 WAVES AWAY'
+  
+FIELD ENERGY 50
+DISPLAY
+  RANGE 0 2
+  ISOMETRIC 2 'Z=100 WAVES AWAY'
+
+RETURN

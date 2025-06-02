@@ -1,0 +1,43 @@
+!!++
+!! WAVEFRONT_DECOMPOSE.INR
+!! Title: Aberrated Wavefront Decomposition
+!! Category: Simple Problem
+!! Keywords: Radiometry, ZERNIKE, COMBINE, OPDMAP, SOURCE WAVEFUNC, aberrated, AVERAGE
+!! Description: A perturbed wavefront decomposed by the COMBINE
+!! command. A grid source is perturbed by a Zernike surface
+!! function. A display file of the wavefront map is created
+!! which is then radially averaged. The COMBINE command
+!! produces a differential plot of the two.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 09/24/2003 - cp - changed category name
+!! 10/02/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+W=0.514E-4
+FUNCTION
+  ZERNIKE Z 1 0, x tilt -4*W, 0 focus 2*W, 2@0, x coma 2*W, 0, sph -4*W 
+   
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH (W)
+GRID RECT Z 1 -4@1 2@15
+  SOURCE WAVEFUNC 0.1 Z  !! Ray positions moved to Zernike surface along Z
+  MOVE TO Z 2
+
+WINDOW Y X
+PIXELS 41
+OPDMAP 
+DISPLAY 
+  ISOMETRIC 0.5 'ORIGINAL WAVEFRONT WITH TILT, FOCUS, COMA, AND SPHERICAL'
+  RADIAL 21 21
+  ISOMETRIC .5 'RADIALLY AVERAGED WAVEFRONT SHOWING SYMMETRIC ABERRATIONS'
+  COMBINE -1 -1 
+  AVERAGE  !! Smooth out interpolation noise
+  TRANSPOSE !! Make X the vertical axis
+  ISOMETRIC 0.5 'DIFFERENCED WAVEFRONT SHOWING ASYMMETRIC ABERRATIONS' 
+RETURN
+

@@ -1,0 +1,26 @@
+!!++
+!! LENS_SEQUENCE02.INR
+!! Title: Lens Sequence with Media
+!! Category: Isolated Command
+!! Keywords: SEQUENCE, LENSES
+!! Description: A lens sequence using the 
+!! media 'm' parameter. 
+!! Edit History: (latest first)
+!! 12/21/2001 - cp - modified file structure
+!! 10/07/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  4.03  'GLASS'
+  
+LENSES
+  SEQUENCE RADI
+    0 -5 0, 0 1 0, .5 0 0 0 1
+    0 -4.7 0, 0 1 0, .5 -1 -16.241 0 0
+  OBJECT 'LENS'
+
+RETURN

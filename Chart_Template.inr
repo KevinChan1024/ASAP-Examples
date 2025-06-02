@@ -1,0 +1,92 @@
+!!++
+!! CHART_TEMPLATE.INR
+!! Title: Chart Template Control
+!! Category: Isolated Command
+!! Keywords: $GUI, APPLYCHARTTEMPLATE, SETCHARTTEMPLATE, GRAPH, ISOMETRIC
+!! Description: Demonstrates the ability to control chart templates from
+!! an inr script. Note that templates can not be saved from an inr script.
+!! This must be done through the "Load/Save Config" button in the Chart Viewer
+!! toolbar.  Use the "Edit Chart Properties" button to make changes to the 
+!! current chart, including the title desired (Titles tab) before saving to
+!! an existing chart template or making a new one.  Note: The title defined
+!! here will replace any 'title' given on the command line or by a TITLE
+!! command as long as templates remain active, and there is a template applied
+!! to that type of chart. Templates saved, only apply to the chart type
+!! currently being edited (e.g. ISOMETRIC, GRAPH, CONTOUR, ENCLOSED, etc.).
+!! Chart templates may be deleted under the "Manage Templates" button.
+!! Only those templates for the currently selected type will be listed.
+!! Edit History: (latest first)
+!! 11/19/2004 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+UNITS MM
+
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 1 UM
+WIDTHS 1.6
+
+GRID RECTANGLE Z 0 -4@0.5 11 11
+SOURCE DIRECTION 0 0 1
+
+WINDOW Y X
+PIXELS 101
+SPREAD NORMAL    
+
+DISPLAY
+
+*************************************************************
+!! Here nothing will happen since the template is not turned on
+*************************************************************
+!! Set template named 'foo' for an ISOMETRIC plot. It will not
+!! be applied until an APPLYCHARTTEMPLATE command is issued.
+ 
+$GUI SETCHARTTEMPLATE ISOMETRIC foo
+  GRAPH 'DEFAULT STYLE' !! These titles will show in plots
+  ISO 'DEFAULT STYLE'
+
+*************************************************************
+!! Templates will now be turned on. Any template applied to a chart
+!! will be applied. This will result in:
+!! A) GRAPH with title "Default Style" if no previous templates were 
+!! ever applied to GRAPH during the current ASAP session. 
+!! Otherwise, the last template that was used for GRAPH will apply
+!! and those features and title will be used instead.
+!! B) ISO will have whatever features & title are saved in the template 'foo'
+*************************************************************
+!! Turn on templates: 
+
+$GUI APPLYCHARTTEMPLATE !! Makes applying chart template names active. Any previous
+                        !! templates applied will now be active.
+  GRAPH 'DEFAULT STYLE' !! Title may be defeated by a previous template applied
+  ISO 'FOO CHART STYLE' !! This title will be overwritten by template title above.
+!! Since APPLYCHARTTEMPLATE is active, we can apply another template to
+!! another type of chart. 
+!! Templates are persistent until replaced or turned off.
+
+*************************************************************
+!! Templates are still turned on. Now apply 'foobar' template to future
+!! GRAPH plots.
+!! This will result in:
+!! A) GRAPH will have features & title specified in template 'foobar'
+!! B) ISO will continue to use the features defined in the template 'foo'
+*************************************************************
+!! Apply template 'foobar' to a GRAPH plot:
+
+$GUI SETCHARTTEMPLATE GRAPH foobar
+  GRAPH 'FOOBAR CHART STYLE' !! These titles will be overwritten
+  ISO 'FOO CHART STYLE'
+  
+*************************************************************
+!! Here, you should end up with titles as specified below
+*************************************************************
+!! Turn off templates:
+
+$GUI APPLYCHARTTEMPLATE Default 
+  GRAPH 'BACK TO DEFAULT AGAIN'
+  ISO 'BACK TO DEFAULT AGAIN'
+!! Note: Any previously applied templates may be turned ON or OFF at
+!! any time using the above command by specifying 'Default' or no 'Default'.
+RETURN

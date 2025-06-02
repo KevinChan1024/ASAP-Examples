@@ -1,0 +1,25 @@
+!!++
+!! EMITTING_ENTITY.INR
+!! Title: Emitting ENTITY
+!! Category: Isolated Command
+!! Keywords: EMITTING, ENTITY, Sources
+!! Description: Demonstration of an EMITTING
+!! ENTITY. A surface emitter.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 08/22/2007 - cp - modified format; added description
+!! 04/06/2007 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  PLANE Z 0  ELLIPSE 1 1
+
+EMITTING ENTITY .1 100
+
+WINDOW Y Z
+PLOT RAYS .2
+$VIEW
+RETURN

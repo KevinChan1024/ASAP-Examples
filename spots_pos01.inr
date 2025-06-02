@@ -1,0 +1,69 @@
+!!++
+!! SPOTS_POS01.INR
+!! Title: Spots Diagram in Position
+!! Category: Isolated Command
+!! Keywords: SPOTS, POSITION, Analysis, TEXT, SOURCE WAVEFUNC
+!! Description: Creating a positional spots
+!! diagram. Note that in all cases here, the 
+!! attribute modifier does not allow a display
+!! file to be created. When a display file is
+!! needed, the ATTRIBUTE modifier is left off
+!! or ATTRIBUTE 0 is used to suppress the spots.
+!! In this case, two methods for plotting the
+!! spots are shown. One plots all 3 sources at
+!! once using plus signs. The other selects a
+!! different symbol for each and includes text
+!! in the plot. The spots shown are actual ray
+!! positions on the source.
+!! Edit History: (latest first)
+!! 06/30/2014 - gb - added to keywords: SOURCE WAVEFUNC
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+FUNCTION
+  OPTICAL Z 10.02 -10 -1
+    ROTATE X 5 0 10.02
+  OPTICAL Z 10 -10 -1
+    ROTATE X 5 0 10
+  OPTICAL Z 9.99 -10 -1
+    ROTATE X 5 0 9.99
+
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTHS 656 NM
+GRID ELLIPTIC Z 9 -4@2 2@11 
+  SOURCE WAVEFUNC 0.3 Z
+  MOVE TO Z 0
+
+WAVELENGTHS 587 NM
+GRID ELLIPTIC Z 9 -4@2 2@11
+  SOURCE WAVEFUNC 0.2 Z
+  MOVE TO Z 0
+
+WAVELENGTHS 486 NM
+GRID ELLIPTIC Z 9 -4@2 2@11
+  SOURCE WAVEFUNC 0.1 Z
+  MOVE TO Z 0
+
+CONSIDER ONLY 0
+WINDOW Y X
+WINDOW 1.5
+
+SPOTS POSITION ATTRIBUTE 1 'POLYCHROMATIC SPOT DIAGRAM'
+
+TITLE 'COMPOSITE POLYCHROMATIC SPOT DIAGRAM'
+SELECT ONLY SOURCE 1
+  SPOTS POSITION ATTRIBUTE 1 OVERLAY 
+SELECT ONLY SOURCE 2
+SPOTS POSITION ATTRIBUTE 2 OVERLAY
+SELECT ONLY SOURCE 3
+  SPOTS POSITION ATTRIBUTE 3 TEXT 
+    6.5 1.7, 0.15 0, 0 0.15 'PLUS SIGN   =  656nm'
+    6.5 1.4, 0.15 0, 0 0.15 'X CROSS     =  587nm'
+    6.5 1.1, 0.15 0, 0 0.15 'UP TRIANGLE =  486nm'
+RETURN

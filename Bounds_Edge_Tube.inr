@@ -1,0 +1,41 @@
+!!++
+!! BOUNDS_EDGE_TUBE.INR
+!! Title: Bounding Extruded Edge with Tube
+!! Category: Simple Problem
+!! Keywords: Bounds, EDGES, POINTS, OBJECT, TUBE
+!! Description: Extrude (or loft) two edges
+!! together to make a surface and then bound this
+!! with a tube. The edges are lofted together using
+!! the second form of the OBJECT command.  The surface
+!! is intersected with a large tube on one side and 
+!! only the inside portion is kept ("-" bounds).
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 04/21/2008 - cp - removed keyword
+!! 02/15/2000 - cp - modified format; added description
+!! 03/30/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+X=1 Y=0 Z=1
+SURFACES
+  TUBE Z -5 2@3 5 2@3
+!! OBJECT !! To see how bounds works in 3D viewer
+
+EDGES
+  POINTS 0 0 0 1,
+    (X) (Y) (Z) 1,
+    2 0 -1 1,
+    3 0 1 1,
+    4 0 -1 0
+    SHIFT Y -5
+  REPEAT 0.1
+    SHIFT Y 5
+  OBJECT; 0.1 0.2 'TEST' !! Loft the two edges together
+    BOUNDS -0.3  !! Keep what's inside the tube
+PLOT FACETS 5 5
+!! PLOT EDGES !! To see where edges were created
+$VIEW
+RETURN

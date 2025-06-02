@@ -1,0 +1,97 @@
+!!++
+!! RPM_MALUS_LAW_02.INR
+!! Title: Rotating Polarizer - Compared to Theoretical 
+!! Category: Isolated Command
+!! Keywords: RPM, POLARIZ, polarizer, Polarization, $ITER, Malus
+!! Description: Illustrate Malus' Law. Polarization effect with rotation of a polarizer.
+!! This version iterates the angle and stores a table of transmitted flux values and
+!! Malus' Law theoretical values as a function of the initial polarization angle to compare.
+!! Edit History: (latest first)
+!! 09/21/2015 - cp - added header
+!! 08/31/2015 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+BEAMS INCOHERENT GEOMETRIC
+
+FRESNEL BOTH
+
+XMEMORY NORM 6E5
+
+UNITS MM
+WAVELENGTH (WL=0.55) UM 
+
+!! Define parameters
+ZDET=0.2              !! detector Z location
+ZSOURCE=-0.1          !! source Z location
+SRC_POL_ANGLE=45      !! source polarization angle [degrees, from X axis in X-Y plane]
+FLUX_INIT=100         !! initial flux
+
+!! Define coatings
+COATINGS PROPERTIES
+  0 1 'TRANSMIT'
+  1 0 'REFLECT' 
+  0 0 'ABSORB'
+
+!! Polarization devices 
+RPM 1E16 1.0 0.0 0.0 90 1.5 'RPM1'
+
+!! First RPM (H-polarizer)      
+SURFACES
+  OPTICAL Z 0.00 0 0 ELLIPSE 2@1000
+  OBJECT 'RPMH' 
+  INTERFACE POLARIZATION POL RPM1 0 0 AIR AIR 
+
+
+!! Set up detector
+SURFACES
+  OPTICAL Z (ZDET) 0 0 RECT 2@1000
+  OBJECT 'DETECTOR' 
+  INTERFACE COAT ABSORB AIR AIR 
+
+!! Set up reference ray
+POLARIZ K Z
+POLARIZ TREF X
+
+$ECHO NONE
+$IO OUTPUT MALUS.TXT -FILE(10)
+        $SCR 2 
+             Angle     Malus       actual
+             _______________________________
+$IO OUTPUT CLOSE                  
+$ECHO ALL
+
+$ITER SRC_POL_ANGLE 0 360 -121 PFLUX
+  {
+  RAYS 0
+  CONSIDER ALL
+  F_MALUS=FLUX_INIT*COS[SRC_POL_ANGLE]^2
+
+  !! Create source
+  POLARIZ COS[SRC_POL_ANGLE] SIN[SRC_POL_ANGLE] 
+       
+  !! Source definition begins here
+  RAYSET Z (ZSOURCE) 
+  0 0 (FLUX_INIT)
+  SOURCE DIRECTION Z 0 90
+  
+  !! Trace and measure       
+  TRACE
+  CONSIDER ONLY DET
+  STATS 
+  $GRAB 'TOTAL' 0 2 PFLUX
+  &REG F_MALUS PFLUX 'Transmitted polarized flux ' 
+  
+  $ECHO NONE
+  $IO OUTPUT MALUS.TXT +FILE(10)
+  $SCR 1
+  \SRC_POL_ANGLE.2\ \F_MALUS.5\ \PFLUX.5  \  
+   
+  $IO OUTPUT CLOSE
+  }
+  
+DISPLAY ITER.DIS
+  GRAPH 'Illustrating Malus Law'
+RETURN

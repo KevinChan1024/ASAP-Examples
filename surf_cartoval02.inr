@@ -1,0 +1,34 @@
+!!++
+!! SURF_CARTOVAL02.INR
+!! Title: CARTOVAL Surface with Hole
+!! Category: Isolated Command
+!! Keywords: CARTOVAL, SURFACE
+!! Description: A cartesian oval surface with central
+!! hole. The distance from the surface to first focus
+!! point=-5 and the refractive index of the first
+!! medium=1.0. The distance from the surface to the
+!! second focus point=2 and the refractive index of
+!! the second medium=2.5. It has an elliptical aperture
+!! of X=0.8 and Y=1.2 with a central hole 0.2 of the
+!! aperture in both dimensions. Hole is at 0,0 offset
+!! from center (default).
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/11/2002 - cp - reformatted
+!! 10/18/2000 - cp - modified format and header
+!! 03/31/2000 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  CARTOVAL Z 0 -5 1.0 2 2.5 ELLIPSE 0.8 1.2 .2 0 0
+OBJECT 'OVAL SURFACE'
+
+WINDOW Y X  
+PLOT FACETS 11 11 'SURF:CARTOVAL WITH HOLE'
+$VIEW  
+
+RETURN
+

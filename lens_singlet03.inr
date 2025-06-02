@@ -1,0 +1,29 @@
+!!++
+!! LENS_SINGLET03.INR
+!! Title: Singlet Lens by RD
+!! Category: Isolated Command
+!! Keywords: SINGLET, LENSES
+!! Description: A Singlet lens using radius
+!! of curvature 'RD' parameters r and r'. 
+!! Defines a singlet whose front conicoid
+!! vertex is located at x = -4. The thickness
+!! is .75 and the aperture semi-diameter is 2.5.
+!! The power of the element is specified by the
+!! lens radii, which are 10 and -20 respectively.
+!! The lens is composed of medium 1.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 10/07/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+LENSES
+ SINGLET X -4 .75 2.5 BK7 RD 10 -20
+  
+WINDOW Y X
+WINDOW 1.5  !! Enlarge 50%
+PLOT LENSES 'LENS:SINGLET rd' COLORS 11
+RETURN

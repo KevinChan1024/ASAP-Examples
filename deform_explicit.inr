@@ -1,0 +1,36 @@
+!!++
+!! DEFORM_EXPLICIT.INR
+!! Title: Deforming To An Explicit Surface
+!! Category: Simple Problem
+!! Keywords: Geometry, DEFORM, GENERAL, EXPLICIT, ALIGN
+!! Description: Deforming to a general explicit
+!! surface.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  GENERAL EXPLICIT 0 0 0
+    C -1
+    X2 1
+    LOCAL -2@1 -2@4 -2@1 
+    ALIGN 0 0 1 1 0 0
+  OPTICAL X 0 10 ELLIPSE 4
+  OBJECT 'FLUTED_SURFACE'
+    DEFORM 1
+
+WINDOW -X Z
+OBLIQUE
+PIXELS 71
+
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC X -1 -4@4 21 101
+  SOURCE DIRECTION X 0 0
+TRACE
+SPOTS POSITION ATTRIBUTE 1 'SPOTS DIAGRAM OF FLUTED SURFACE'
+RETURN

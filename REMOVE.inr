@@ -1,0 +1,32 @@
+!!++
+!! REMOVE.INR
+!! Title: REMOVE Command
+!! Category: Isolated Command
+!! Keywords: REMOVE, SURFACE, OPTICAL, polynomial
+!! Description: A short example of how the REMOVE command subtracts
+!! out a 1D polynomial of order k from the data in a display file.
+!! It could also be used in the other dimension after a TRANSPOSE
+!! but will not honor any cross terms, i.e., surface function terms
+!! involving products of x & y. This command does not apply to tilt
+!! or focus.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/08/2006 - sm - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WINDOW Y X
+
+SURFACES
+  OPTICAL Z 0 10 -1 2E-3 4E-5 RECT 2
+  FMAP 0
+
+DISPLAY
+  PICTURE 'ORIGINAL SURFACE'
+  REMOVE 3   !! Remove an order 3 polynomial in one dimension
+  PICTURE 'WITH POLYNOMIAL REMOVED'
+RETURN
+

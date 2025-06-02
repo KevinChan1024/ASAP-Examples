@@ -1,0 +1,30 @@
+!!++
+!! APOD_POS_FCN.INR
+!! Title: Apodizing in Position using $FCN
+!! Category: Simple Problem
+!! Keywords: Sources, APODIZE, USERAPOD, POSITION, apodizing, function, $FCN
+!! Description: Apodizing a source with a user defined function.
+!! Uses USERAPOD POSITION with a $FCN that describes a linear gradiant.
+!! Since USERAPOD is used in Cartesian space, the function variable
+!! _1 represents X. Y is rotationally symmetric by default.
+!! Edit History: (latest first)
+!! 11/11/2013 - gb - added APODIZE to keywords
+!! 02/28/2000 - cp - modified format; added description
+!! 01/18/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$FCN GRAD 1-ABS(_1)
+
+USERAPOD POSITION GRAD
+EMITTING RECT Z 0 1 1 1000000 ISO
+
+WINDOW Y -1 1 X -1 1
+PIXELS 51
+SPOTS POSITION ATTRIBUTE 0
+DISPLAY
+  AVERAGE
+  PICTURE
+RETURN

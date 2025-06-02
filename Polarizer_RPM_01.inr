@@ -1,0 +1,134 @@
+!!++
+!! POLARIZER_RPM_01.INR
+!! Title: Hybrid Polarizer using an RPM Element
+!! Category: Simple Problem
+!! Keywords: Polarization, RPM, POLARIZ K, POLARIZ TREF, PLOT POLAR
+!! Description: Test transmissive-reflective element using
+!! RPM element. Send a linearly-polarized source to a hybrid
+!! polarizer that separates polarizations by transmission
+!! and reflection. The transmitted signal is predominantly
+!! horizontal or X polarization, while the reflected signal
+!! is elliptical polarization due to the rejected state
+!! mixing with a small partial reflection of the 
+!! transmitted state. 
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/04/2011 - cp - added header
+!! 07/01/2011 - jh - adapted from ASAP 2009 test case
+
+SYSTEM NEW
+RESET
+
+BEAMS INCOHERENT GEOMETRIC
+
+FRESNEL BOTH 
+SPLIT 1
+
+UNITS MM
+WAVELENGTH (WL_UM=0.55) UM 
+
+CUTOFF 1.E-23  
+HALT 1E-18
+
+!! Define ray number variable
+NUMRAY=7
+
+!! detector locations
+ZDETR=-500    !! Z-location of reflected signal detector
+ZDETT=+500    !! Z-location of transmitted signal detector
+
+!! polarization element location
+ZPOL=0.0      !! Z-location of hybrid polarizer (reflective/transmissive)
+RPOL=250      !! Aperture radius of polarizer
+
+!! source location
+ZSOURCE=-300  !! Z-location of source 
+RSOURCE=200   !! Aperture radius of source
+
+!! Define Media
+MEDIA  
+  1.5 'GLASS'
+
+
+!! DEFINE COATINGS
+COATINGS PROPERTIES
+  0 1 'TRANSMIT'
+  1 0 'REFLECT' 
+  0.6 0.4 'PART'
+  0 0 'ABSORB'
+  0.98 0.00 'C1'
+
+!! Test both reflection and transmission Jones matrix element
+!!      T LIN H, R RCP
+JONES   1 0 0 0, 0.5 0`0.5 0`-0.5 0.5  'JONES_RT0'
+
+!! define a hybrid polarizer with high transmitted extinction, and inferior reflected extinction (5% crosstalk)
+RPM 1E5 0.95 0.05 1.00 'HYBRIDPOL'
+      
+!! DEFINE OBJECTS  
+
+!! hybrid polarizer by JONES (H-transmissive, Right-circular-reflective polarizer)      
+SURFACES
+  OPTICAL Z (ZPOL) 0 0 ELLIPSE 2@(RPOL)
+OBJECT 'RPMTHRV' 
+!!  INTERFACE POLARIZATION JONES JONES_RT0 0 0 AIR AIR 
+  INTERFACE POLARIZATION POL HYBRIDPOL 0 0 AIR AIR 
+  REDEFINE COLOR 2
+RETURN
+
+!! Set up detectors 
+
+!! reflected polarization path
+SURFACES
+  OPTICAL Z (ZDETR) 0 0 ELLIPSE 2@(4*RPOL)
+OBJECT 'RDETECTOR' 
+  INTERFACE COAT ABSORB AIR AIR 
+  REDEFINE COLOR 3
+RETURN
+
+!! transmitted polarization path
+SURFACES
+  OPTICAL Z (ZDETT) 0 0 ELLIPSE 2@(4*RPOL)
+OBJECT 'TDETECTOR' 
+  INTERFACE COAT ABSORB AIR AIR 
+  REDEFINE COLOR 20
+RETURN
+
+!! Source setup
+
+!! set up reference ray parameters
+POLARIZ K Z
+POLARIZ TREF X 
+POLARIZ 1 0`1     !! circular polarization
+
+GRID ELLIPTIC Z (ZPOL) -4@(RSOURCE) 2@(NUMRAY)
+!! SOURCE DIRECTION 0 0 1
+SOURCE POSITION 0 0 (ZSOURCE)
+MOVE TO Z (ZSOURCE)
+FLUX TOTAL 1.0
+
+!! WINDOW Y X
+!! PLOT POLARIZATION 'Source polarization'
+
+WINDOW Y Z
+PLOT FACETS 5 5 0 OVERLAY 'Tracing a hybrid reflective-transmissive RPM element'
+TRACE PLOT  
+
+STATS
+
+PATHS
+
+!! ANALYSIS BLOCK BEGINS HERE 
+
+!! examine reflected rays
+CONSIDER ONLY RDETECTOR
+
+MOVE BY 30   !! move off the detector surface for visibility
+PLOT POLARIZATION YX COLOR 2 'RPM reflected ray polarization' 
+
+CONSIDER ONLY TDETECTOR 
+
+MOVE BY 30   !! move off the detector surface for visibility
+PLOT POLARIZATION YX COLOR 11 'RPM transmitted ray polarization' 
+ 
+$VIEW

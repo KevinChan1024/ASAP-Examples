@@ -1,0 +1,475 @@
+!!++
+!! FRESNEL_LENS03.INR
+!! Title: Create Your Own Fresnel Lens
+!! Category: Simple Problem
+!! Keywords: Edges, Fresnel, POINTS, EDGES, lens, Macros_user, $SCR, $IF
+!! Description: This file will ask the user for inputs
+!! about a fresnel lens.  A fresnel lens with zones of 
+!! equal frequency or zones of equal depth can be created.
+!! The created geometry will be exported to a file called:
+!! my_fresnel_lens.inr
+!! my_fresnel_lens.inr will automaticaly be run at the end
+!! of this file. It can also be run separately.
+!! Edit History: (latest first) 
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 08/10/2006 - cp - added units, and Cancel capability
+!! 03/20/2006 - cp - formatted, added header
+!! 08/10/2005 - gg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM 
+!! Establish some default parameters
+!! Radius of surface that will turn into fresnel surface
+RADIUS=-100                         
+!! Diameter of lens
+DIAM=50  
+!! Conic constant
+K=0          
+!! Thickness of parallel plate
+THICKNESS=2
+!! Pitch angle
+THETA=0
+SCR_CANCEL=1
+!! Ask user for inputs
+$SCR 5
+     Create your own Fresnel Lens
+          Radius of Curvature \RADIUS.   ? MM 
+          Diameter of Lens    \DIAM.     ? MM
+          Conic Constant      \K.        ?
+          Pitch Angle         \THETA     ? DEGREES
+          
+$IF (SCR_CANCEL) EQ 1; $GO usercancel         
+!! Just in case the user enters in a negative diameter,       
+!! take the absolute value
+DIAM=ABS(DIAM)
+
+!! Calculate necessary variables
+SEMI_DIAM=DIAM/2 !!Semi-diameter 
+C=1/RADIUS !!Curvature
+
+!! Ask user if they want just the fresnel surface 
+!! or if they also want the plane parallel plate
+!! Default is to have the plane parallel plate
+PPP=1
+$SCR 2 
+     Would you like to create the plane parallel plate
+     and the Fresnel surface?  \PPP:?
+                                          
+$IF (PPP) EQ 1 THEN
+{
+  $SCR 3
+       Fresnel surface with plane parallel plate
+       
+       Thickness of Plane Parallel Plate  \THICKNESS.? 
+       
+  !! Just in case user enters in a negative thickness
+  !! take the absolute value
+  THICKNESS=ABS(THICKNESS)
+     
+}
+$ENDIF          
+
+*********************************************************
+!! CREATE A WARNING THAT CONIC CANNOT BY GREATER THAN 0
+
+POS_CONIC {
+  !! RESET VALUES SO CONIC IS NEGATIVE
+  !! TAKE THE VALUE THE USER ENTERED AND MAKE IT NEGATIVE
+  K=-ABS(K)
+  
+  $SCR 3
+       Cannot have a positive conic:
+       
+       Please re-enter the conic constant  \K.     ?
+}
+ 
+!! Repeatedly ask user to have a negative conic constant
+!! this $DO loop will exit when only conic is 0 or negative
+$DO 1 1000
+  {
+  $IF (K) LE 0
+       $LEAVE
+  !! RUN THE MACRO THAT WILL ASK USER THE CONIC CONSTANT
+  $POS_CONIC
+  }
+*******************************************************************
+ 
+!! Create a macro that calculates the sag at any point
+FIND_SAG { 1
+     SAG=(C*(#1)^2)/(1+SQRT(1-(1+K)*(C*#1)^2))
+} 
+>RADIAL POINT WHERE YOU WANT TO CALCULATE SAG
+
+!! Ask user whether they want a fresnel lens
+!! of equal width or equal frequency
+
+EQ_DEPTH=0 !! Equal depth flag
+EQ_FREQ=1 !! Equal width flag
+!! Default is to have equal depth
+
+!! Ask user
+$SCR 5 
+    Would you like your Fresnel lens to have:
+    
+    Zones of equal frequency  \EQ_FREQ:?
+          or
+    Zones of equal depth    \EQ_DEPTH:?
+     
+!! Check to make sure both boxes were not checked
+
+!! Create a macro that will repeatedly ask user to only check 1 box
+TWO_CHECKED_BOXES {
+  !! Reset values so both boxes are not checked
+  EQ_DEPTH=1
+  EQ_FREQ=0
+  
+  $SCR 8
+       Cannot have both boxes checked
+       please choose 1
+       
+       Would you your Fresnel lens to have:
+
+       Zones of equal frequency  \EQ_FREQ:?
+            or
+       Zones of equal depth    \EQ_DEPTH:?
+
+}
+
+!! Repeatedly ask user to check only 1 box 
+!! This $do loop will exit when only 1 box is checked by the user
+$DO 1 1000
+  {
+  $IF (EQ_FREQ) NE (EQ_DEPTH) 
+       $LEAVE
+  !! Run the macro that will ask user to re-enter 
+  !! whether they want a fresnel lens with zones of
+  !! equal frequency or equal depth
+  $TWO_CHECKED_BOXES
+  }
+          
+******************************************************************
+********************** ZONES OF EQUAL FREQUENCY ******************
+******************************************************************
+!! If the user wants zones of equal frequency do the following:
+$IF (EQ_FREQ) EQ 1 THEN  
+{    
+  !! Specify a default frequency of the zones (zones/mm)
+  FREQ_ZONES=0.2
+  
+  !! Ask user for frequency of zones
+  $SCR 4
+       Fresnel lens - zones of equal frequency
+       
+       Please specify frequency of zones:
+            \FREQ_ZONES.? zones/mm 
+       
+  
+  !! Just in case they enter in a negative frequency,
+  !! take the absolute value
+  FREQ_ZONES=ABS(FREQ_ZONES)
+       
+  !! total number of zones = diameter*freq_zones
+  NUM_ZONES=DIAM*FREQ_ZONES
+  !! Calculate the size of each zone
+  SIZE_ZONE=DIAM/(NUM_ZONES*2-1)  
+  
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !! Define geometry
+       
+  !! Define center of fresnel lens / inner most zone
+  POINT0=0                 
+  !! find sag at that point
+  $FIND_SAG (POINT0)
+  SAG0=SAG !! Reassign the output of the $FIND_SAG macro to SAG#
+            !! # is the point number
+  
+  !!Define point 1 (1/2 a zone away from center)
+  POINT1=SIZE_ZONE/2
+  $FIND_SAG (POINT1) !!FIND SAG AT POINT 1
+  SAG1=SAG  
+  !! The variable P_LAST is used to keep track of current location
+  P_LAST=POINT1 
+  
+
+  !! Define all points that will make up the fresnel lens and 
+  !! calculate the sag at each point
+  $DO 2 (NUM_ZONES)
+  {    
+    !! DEFINE THE NEXT POINT
+    POINT?=SIZE_ZONE+P_LAST
+    $FIND_SAG (POINT?)
+    SAG?=SAG
+    P_LAST=POINT? 
+  }     
+
+  !! Now all the points are defined for the fresnel lens
+  
+  !! Create a new file that will contain all necessary code
+  !! to create the geometry of the fresnel lens
+  
+  !! Create general introduction
+  $ECHO NONE
+  $IO OUTPUT MY_FRESNEL_LENS.INR FILE(81)
+  $SCR 4
+  !! This is the output from your personalized fresnel lens
+  !! run this file to create geometry 
+  SYSTEM NEW
+  RESET
+  $IO OUTPUT CLOSE
+  $ECHO ALL 
+  
+  
+  $IF (PPP) EQ 1 THEN
+  {
+    $ECHO NONE
+    $IO OUTPUT MY_FRESNEL_LENS.INR +FILE(81)
+    $SCR 12
+    
+    !! Create a plane
+    SURFACES
+         PLANE Z -\THICKNESS.\ ELLIPSE 2@\SEMI_DIAM.\ 
+    OBJECT 'FRESNEL.FRONT'
+    !! Create a tube for the lens
+    SURFACES
+         TUBE Z -\THICKNESS.\ 2@\SEMI_DIAM.\ 0 2@\SEMI_DIAM.\
+    OBJECT 'FRESNEL.TUBE'
+     
+    EDGES
+         POINTS X 0 \SEMI_DIAM.\ 0 1, 
+    $IO OUTPUT CLOSE
+    $ECHO ALL
+  } 
+  $ELSE
+  { 
+    $ECHO NONE
+    $IO OUTPUT MY_FRESNEL_LENS.INR +FILE(81)
+    $SCR 2
+    EDGES
+         POINTS X 0 \SEMI_DIAM.\ 0 1, 
+    $IO OUTPUT CLOSE
+    $ECHO ALL
+  }
+  $ENDIF          
+
+
+  $FIND_SAG (SEMI_DIAM)
+  SAG_CURRENT=SAG
+
+  !! Calculate the location of each point and store it to the new inr file             
+  $DO (NUM_ZONES)-1 1 -1
+  {
+    DEPTH=SAG?-SAG_CURRENT
+    SHIFT_PITCH=DEPTH*TAN[THETA]
+    POINT_SHIFT=POINT?-SHIFT_PITCH
+
+    $ECHO NONE
+    $IO OUTPUT MY_FRESNEL_LENS.INR +FILE(81)
+    $SCR 2
+                \POINT?.\ \DEPTH.\ 1,
+                \POINT_SHIFT.\ 0 1,
+    $IO OUTPUT CLOSE
+    $ECHO ALL                 
+    
+    
+    SAG_CURRENT=SAG?
+  }
+  
+  !! Specify last point separately
+  !! update the variables                                
+  DEPTH=SAG0-SAG1
+  NUM_POINTS=NUM_ZONES+1
+  $ECHO NONE
+  $IO OUTPUT MY_FRESNEL_LENS.INR +FILE(81)
+  $SCR 14    
+                   \POINT0.\ \DEPTH.\ 0
+  !! Rotate the edges to make a circular fresnel lens
+     SWEEP AXIS 360 0 0 1 0 0 0
+  OBJECT 'FRESNEL.BACK'
+  !! Show the profile of the fresnel lens
+  WINDOW Y Z
+  PROFILES 0 0 1
+  !! Rewind the vector file
+  $IO VECTOR REWIND
+  !! Show the fresnel lens
+  WINDOW X Y
+  PLOT FACETS 11 11 0
+  !! 3-D View
+  !!$VIEW
+  $IO OUTPUT CLOSE
+  $ECHO ALL 
+  
+  !! Run the file just created
+  $READ MY_FRESNEL_LENS.INR            
+  
+
+  !!!! End of code used to make fresnel lens of equal frequency !!!!!!!
+}
+
+$ELSE   !!IF (EQ_DEPTH) EQ 1 THEN
+{       !! If user wants fresnel lens of equal depth then...
+
+******************************************************************
+********************** ZONES OF EQUAL DEPTH **********************
+******************************************************************
+
+  DEPTH=.4 !! Default value of depth (MM)
+  
+  $SCR 3
+       Fresnel Lens of equal depth
+       
+       Depth: \DEPTH.? MM 
+
+
+  !! Create a macro that will find the point at which the depth difference is 2
+ITERATE {
+  $ECHO NONE
+  $FIND_SAG (#1)
+  SAG_P1=SAG
+  BEST_PT=SEMI_DIAM/2
+  POINT_LAST=SEMI_DIAM
+  
+  $ITER BEST_PT (#1) (POINT_LAST) 1000 MERIT
+  {
+    $FIND_SAG (BEST_PT)
+    SAG_CURRENT=SAG !! Current sag of the point BEST_PT
+    
+    !! Define the current depth
+    CUR_DEPTH=ABS(ABS(SAG_P1)-ABS(SAG_CURRENT))
+    
+    !!Want to minimize the difference between our current depth
+    !! and the depth required from the user
+    MERIT=ABS(CUR_DEPTH-DEPTH)
+  }
+  $ECHO ALL
+} 
+  
+  
+  !! Initialize variables used in the loop below
+  POINT_NEXT=0
+  
+  !! This loop is used to create all the points necessary to create the 
+  !! fresnel lens
+  $DO 0 1000
+    {
+    POINT?=POINT_NEXT
+    $ITERATE (POINT?)
+    POINT_NEXT=BEST_PT
+    $REG POINT_NEXT
+    COUNT=?
+    STEP=SEMI_DIAM-POINT_NEXT
+    $IF (STEP) LE .1
+         $LEAVE
+    }
+  
+  !! Calculate the sag at each point defined in the above loop
+  $DO 0 (COUNT)
+    {    
+    $FIND_SAG (POINT?)
+    SAG?=SAG
+    }     
+  
+  !! Write the geometry to a file
+  !! Create general introduction
+  $ECHO NONE
+  $IO OUTPUT MY_FRESNEL_LENS.INR FILE(81)
+  $SCR 4
+  !! This is the output from your personalized fresnel lens
+  !! run this file to create geometry
+  SYSTEM NEW
+  RESET
+  $IO OUTPUT CLOSE
+  $ECHO ALL 
+
+
+  $IF (PPP) EQ 1 THEN
+  {
+    $ECHO NONE
+    $IO OUTPUT MY_FRESNEL_LENS.INR +FILE(81)
+    $SCR 12
+    
+    !! Create a plane
+    SURFACES
+         PLANE Z -\THICKNESS.\ ELLIPSE 2@\SEMI_DIAM.\ 
+    OBJECT 'FRESNEL.FRONT'
+    !! Create a tube for the lens
+    SURFACES
+         TUBE Z -\THICKNESS.\ 2@\SEMI_DIAM.\ 0 2@\SEMI_DIAM.\
+    OBJECT 'FRESNEL.TUBE'
+     
+    EDGES
+         POINTS X 0 \SEMI_DIAM.\ 0 1, 
+    $IO OUTPUT CLOSE
+    $ECHO ALL
+  } 
+  $ELSE
+  { 
+    $ECHO NONE
+    $IO OUTPUT MY_FRESNEL_LENS.INR +FILE(81)
+    $SCR 2
+    EDGES
+         POINTS X 0 \SEMI_DIAM.\ 0 1, 
+    $IO OUTPUT CLOSE
+    $ECHO ALL
+  }
+
+  $ENDIF    
+  
+  $FIND_SAG (SEMI_DIAM)
+  SAG_CURRENT=SAG
+               
+  !! Write each point to the file
+  $DO (COUNT) 1 -1
+  {
+    SAG_DIFF=SAG?-SAG_CURRENT
+    SHIFT_PITCH=SAG_DIFF*TAN[THETA]
+    POINT_SHIFT=POINT?-SHIFT_PITCH
+    $ECHO NONE
+    $IO OUTPUT MY_FRESNEL_LENS.INR +FILE(81)
+    $SCR 2
+                \POINT?.\ \SAG_DIFF.\ 1,
+                \POINT_SHIFT.\ 0 1,
+    $IO OUTPUT CLOSE
+    $ECHO ALL
+    
+    SAG_CURRENT=SAG?
+  }
+  
+  SAG_DIFF=SAG0-SAG1
+  
+  !! Define the last point separately and 
+  !! add code to plot the geometry
+  
+  $ECHO NONE
+  $IO OUTPUT MY_FRESNEL_LENS.INR +FILE(81)
+  $SCR 14    
+                   \POINT0.\ \SAG_DIFF.\ 0
+  !! Rotate the edges to make a circular fresnel lens
+       SWEEP AXIS 360 0 0 1 0 0 0
+  OBJECT 'FRESNEL.BACK'
+  !! Show the profile of the fresnel lens
+  WINDOW Y Z
+  PROFILES 0 0 1
+  !! Rewind the vector file
+  $IO VECTOR REWIND
+  !! Show the fresnel lens
+  WINDOW X Y
+  PLOT FACETS 11 11 0
+  !! 3-D View
+  !!$VIEW
+  $IO OUTPUT CLOSE
+  $ECHO ALL
+
+  !! Run the file that contains the geometry to create
+  !! a fresnel lens with zones of equal depth
+  $READ MY_FRESNEL_LENS.INR             
+  
+  !! End of section
+}
+
+$ENDIF
+
+usercancel
+!! End of file

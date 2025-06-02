@@ -1,0 +1,44 @@
+!!++
+!! CLIP_VOLUME_EMITTER_02.INR
+!! Title: Complex Clipping and Bounding of a Volume Emitter
+!! Category: Simple Problem
+!! Keywords: Sources, clipping, EMITTING, CLIP, volume
+!! Description: A model demonstrating more complex positional clipping
+!! of a volume emitter using the BOUNDS option with CLIP.
+!! Edit History: (latest first) 
+!! 12/19/2006 - cp - modified header
+!! 12/14/2006 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+EDGE
+  POINTS Y 0,  -2 1 1,  2 1 1, 0 3 1      !! triangle
+  POINTS Y 0, -1.7 -0.5 -2,  0 -1.5 120,  
+               0   -3.5 -2,  0 -1.5 120,  
+               1.7 -0.5  1                !! 2/3 circle, closed
+
+SURFACE 
+  TUBE X -4 3 5 4 3 5 0 0
+    SHIFT Z -6
+  TUBE X -4 3 5 4 3 5 0 0
+    SHIFT Z +6
+RETURN
+
+!! Can BOUND the source as object 0
+!! OBJECT 0
+!!   BOUNDS +.1 +.2 +.3 +.4
+!! RETURN
+
+!! or use BOUNDS on CLIP POS
+CLIP POS -4 4 -8 8 -12 12 Z   !! Bonus -- elliptical cylinder clipping
+  BOUNDS +.1 +.2 +.3 +.4
+
+EMITTING BOX 0 0 0 4 8 12 111111  
+
+SPOTS POSITION YZ   
+SPOTS POSITION XZ   
+
+$VIEW 
+RETURN

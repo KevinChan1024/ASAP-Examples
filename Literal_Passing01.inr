@@ -1,0 +1,39 @@
+!!++
+!! LITERAL_PASSING01.INR
+!! Title: Passing Literals to a Macro
+!! Category: Simple Problem
+!! Keywords: Scripts, literal, macro, string, register, expression
+!! Description: The do's and don't's of passing numerical values
+!! as a literal to a macro, 
+!! Edit History: (latest first)
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$DO 1 2
+  A?=SQRT(?)  !! Define A1 thru A3
+
+FRED {        !! Three placeholders are used for literal inputs to the macro.
+  B#1=A#1/A#2 !! They are only one part of the variable names that represent
+              !! numerical values. Therefore, they must be passed as numerical
+              !! strings, not the numbers themselves.
+  $REG B#1 
+}
+
+$ECHO ALL
+$DO 2 2
+  {
+  C=?
+  D=?-1
+  $REG C D
+
+!! Pass numerical values as literal strings in C and D using LIT
+  $FRED LIT[C] LIT[D]
+  $FRED ? LIT[?-1] !! This produces the same results
+
+!! $FRED (C) (D) would result in a flawed expression B(C)=A(C)/A(D)
+  }
+  
+RETURN 

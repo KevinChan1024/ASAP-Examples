@@ -1,0 +1,29 @@
+!!++
+!! LENSES01.INR
+!! Title: Multiple Lens Methods
+!! Category: Isolated Command
+!! Keywords: LENSES, AFOCAL, SINGLET, SEQUENCE
+!! Description: Three different ways to enter
+!! the same afocal telescope with an afocal
+!! magnification of 5 1/3.
+!! Note: This is not a complete inr file.
+!! Edit History: (latest first)
+!! 12/20/2001 - cp - modified description
+!! 10/10/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+LENSES
+  AFOCAL Z 0 5 .75 4 BK7 BK7
+  
+LENSES
+  SINGLET Z -.471652 .471652 .75  BK7 CV 0 1.67699 
+    ALTER 2 K -2.301
+  SINGLET Z 5 2.51548 4 BK7 CV .314435 0; ALTER 1 K -2.301 
+
+LENSES
+  SEQUENCE CURV
+    0 0 -.471652, 0 0 1, .75 0 0 0 BK7
+    0 0 0       , 0 0 1, .75 1.67699 -2.301 0 0
+    0 0 5       , 0 0 1, 4   .314435 -2.301 0 BK7
+    0 0 7.51548 , 0 0 1, 4   0 0 0 0

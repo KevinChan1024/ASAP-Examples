@@ -1,0 +1,28 @@
+!!++
+!! RANDOM_NUMBER02.INR
+!! Title: Random Emitting Disks
+!! Category: Simple Problem
+!! Keywords: Scripts, math, random, $DO, EMITTING 
+!! Description: The following generates a random set
+!! of emitting disks using the the random number generator
+!! within the SHIFT command. This is the tilde (~)
+!! operator. The X position is random between -1 and 1.
+!! Edit History: (latest first)
+!! 02/16/2000 - cp - modified format; added description
+!! 03/13/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+XMEMORY MIN
+SEED 1 QUASI
+
+$DO 1 10; EMITTING; !! Performs EMITTING once and loops on next line
+  1 DISK Z 0 2@0.25 500; SHIFT -1.0~1.0 1*? 0
+
+WINDOW Y X
+SPOTS POSITION 
+RETURN

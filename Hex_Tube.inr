@@ -1,0 +1,32 @@
+!!++
+!! HEX_TUBE.INR
+!! Title: Hexagonal Tube with Surfaces
+!! Category: Simple Problem
+!! Keywords: Geometry, hex, tube, SURFACE, $DO, ROTATE, REPEAT
+!! Description: A method to make a hexagonal tube 
+!! using a $DO loop.  A simple formula is used to
+!! calculate the side dimensions so that bounding
+!! is unnecessary. A GROUP command may be used to 
+!! apply further transformations from the origin.
+!! Edit History: (latest first)
+!! 02/25/2009 - cp - corrected keyword
+!! 04/30/2003 - cp - fixed file name
+!! 03/22/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+HTZ=10
+LOCY=6
+WIDX=LOCY*TAN[30]
+
+$DO 1 5 ;SURFACE; PLANE Y (LOCY) RECTANGLE (HTZ) (WIDX)
+  REPEAT ; ROTATE 60 ABOUT 0 0 1 0 0 0
+
+$DO 1 6
+  OBJECT; ? 'HEX_EDGE_?'
+ 
+VUFACETS 5 5
+RETURN
+

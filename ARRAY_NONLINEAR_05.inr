@@ -1,0 +1,44 @@
+!!++
+!! ARRAY_NONLINEAR_05.INR
+!! Title: Nonlinear Array using WIDTH and BOUNDS Options
+!! Category: Isolated Command
+!! Keywords: ARRAY NONLINEAR, Arrays, $FCN, backlight, bumps, BOUNDS
+!! Description: A non-linear array of dimples or peens on a plane
+!! using WIDTH and BOUNDS options. This example adds 3rd dimension
+!! vector to change thicknesses of the peens.
+!! Edit History: (latest first) 
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 03/27/2012 - cp - reformatted 
+!! 02/27/2012 - cp - added header
+!! 02/27/2012 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$FCN DIR1FCN 2+0.0*_  !! CONSTANT SPACING
+$FCN DIR2FCN 4+0.0*_  !! CONSTANT SPACING
+
+$FCN DIR3FCN 10.0*_  
+$FCN DIR4FCN 15.0*_  
+
+SURFACES
+ ELLIPSOID 3@4 0 0 0
+  ARRAY NONLINEAR X DIR3FCN 150 0.707 0.707 + DIR4FCN 200 WIDTH BOUNDS 
+ PLANE Z 2.5 RECTANGLE 175 100
+  SHIFT 150 80 0
+OBJECT
+ 0.1 'PLANE'
+ BOUNDS 0.2  !! HOLES CUT BY ELLIPSOIDS 
+ FACETS 101 101  
+OBJECT
+ 0.2 'PEENS'
+ BOUNDS 0.1  !! ELLIPSOIDS CUT BY PLANE
+
+TITLE 'PLANE WITH HOLES AND PEENS'
+WINDOW Y X
+PIXELS 201
+!!PROFILES 0 0 -21
+PLOT FACETS
+$VIEW 
+RETURN

@@ -1,0 +1,45 @@
+!!++
+!! ROTATE_RAYS01.INR
+!! Title: Rotating Rays to Window Plane
+!! Category: Simple Problem
+!! Keywords: Manipulating, rays, ROTATE, SHIFT, RAYS
+!! Description: This file shows effects of rayset rotation
+!! depending on considered objects.
+!! Useful to demonstrate how to view rays looking normal
+!! to a surface that has been rotated so that it is not
+!! parallel to the window plane.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+SURFACES
+  PLANE Z 30 RECTANGLE 15 15
+  OBJECT 'TARGET1' 
+    SHIFT  X 15  !! To block half of ray grid going to target2
+    ROTATE X 45  !! Initially rotate at 45 degrees 
+SURFACES
+  PLANE Z 50 RECTANGLE 20  20
+  OBJECT 'TARGET2'  !! To catch the rest of the rays
+
+GRID ELLIPTIC Z 0 -5 5 -5 5 101 101  
+  SOURCE DIRECTION 0 0 1 
+WINDOW Y Z
+PLOT FACETS 5 5 OVERLAY
+TRACE PLOT 100 
+SPOTS POSITION  !! Initial spots of all rays in system
+
+CONSIDER ONLY TARGET1  !! If commented out - all rays will be rotated
+                       !! about the centroid of all rays
+RAYS            !! Brings up rays on currently considered objects
+  ROTATE X -45  !! Rotate only the rays of all considered objects
+
+!! If you need to view the geometry rotated as well, then
+!! use OBJECT n (or GROUP -2); ROTATE X -45 with another PLOT FACETS etc.
+WINDOW Y -X
+SPOTS POSITION
+$VIEW  !! Shows original spots and newly rotated ray positions
+RETURN

@@ -1,0 +1,33 @@
+!!++
+!! BOUNDED_LENS.INR
+!! Title: Lens by Bounded Surfaces
+!! Category: Simple Problem
+!! Keywords: Bounds, BOUNDS, lens
+!! Description: Making a lens with only 
+!! three surfaces bounded together.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 11/01/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  OPTICAL Z 1 70 ELLIPSE 25 25
+  OPTICAL Z 10 -70 ELLIPSE 25 25
+  TUBE Z 0 20 20 10 20 20 
+OBJECT
+  .3 'LENS_FRONT'
+    BOUNDS -.1  !! Trim it with TUBE
+OBJECT
+  .2 'LENS_BACK'
+    BOUNDS -.1  !! Trim it with TUBE
+OBJECT
+  .1 'LENS_EDGE'
+    BOUNDS .3 -.2  !! Trim ends with OPTICALs
+    
+WINDOW Y Z
+PLOT FACETS 5 5
+$VIEW
+RETURN

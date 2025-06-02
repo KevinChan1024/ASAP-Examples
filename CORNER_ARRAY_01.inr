@@ -1,0 +1,80 @@
+!!++
+!! CORNER_ARRAY_01.INR
+!! Title: ARRAY of Corner Triangles
+!! Category: Simple Problem
+!! Keywords: Geometry, ARRAY, triangle, corner, backlight, lightguide, CORNER
+!! Description: This demonstrates an area-filling array of CORNER
+!! surfaces. Two corner triangles are paired so they can
+!! be arrayed to fill an area, then they are arrayed.
+!! The corner cubes are packed so the neighboring corners
+!! just touch, with no space between them.
+!! The ARRAY ... SEARCH parameter is set to 1, so 
+!! attempts to raytrace these objects will be done
+!! more efficiently by avoiding intersections to other
+!! locations in the array. This can be important in very large
+!! arrays, especially in light pipes and guides. It must be
+!! used with due attention to the view factor of surrounding
+!! array rows, but it is very useful.
+!! This example builds only a small array for demonstration
+!! purposes, but the technique may be extended to millions of
+!! elements. Note that the model has only two (2) objects, 
+!! regardless of the number of repetitions of the elements. 
+!! Edit History: (latest first) 
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 06/04/2013 - cp - changed keyword
+!! 09/29/2009 - cp - corrected file name
+!! 11/14/2006 - cp - added header
+!! 11/13/2006 - jah - creation
+!!--
+
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  0.98 0.00 'PREFL'
+
+!! repeat parameters
+NX=11                           !! Number of repeats in X (pairs)
+NY=7                            !! Number of repeats in Y
+
+!! length of corner
+L_CORN=3                        !! Axial length
+
+!! calculated parameters
+SIDE=L_CORN*SQRT[6]             !! Length of base sides
+ANGLE_PLANE=ASIN[SQRT[1/3]]     !! Angle of planes to axis
+ANGLE_RIDGE=ACOS[SQRT[1/3]]     !! Angle of ridges to axis
+
+ROUT=L_CORN*TAN[ANGLE_RIDGE]    !! Radius of outer (superscribed) circle
+RIN=L_CORN*TAN[ANGLE_PLANE]     !! Radius of inner (inscribed) circle
+
+DX=ROUT+RIN                     !! Array spacing in X for each pair of corners
+DY=(SIDE)                       !! Array spacing in Y for rows of corners 
+
+&REG L_CORN SIDE ANGLE_PLANE ANGLE_RIDGE RIN ROUT DX DY
+
+TX=(NX*DX)+DX                   !! Total size in X
+TY=(NY*DY)+DY                   !! Total size in Y
+
+SURFACES
+  CORNER Z 0 LENGTH (L_CORN)
+    SHIFT X -(ROUT-RIN)/2
+    ARRAY (NX-1) (DX) 0 0  (NY-1) 0 (DY) 0 SEARCH 1
+  CORNER Z 0 LENGTH (L_CORN)
+    SHIFT X -(ROUT-RIN)/2
+    ROTATE Z 180 0 0
+    SHIFT 0 (DY/2) 0
+    ARRAY (NX-1) (DX) 0 0  (NY-1) 0 (DY) 0 SEARCH 1
+OBJECT 
+  .2 'CORN.D' 
+      INTERFACE COAT PREFL AIR AIR 
+  .1 'CORN.U'
+      INTERFACE COAT PREFL AIR AIR 
+RETURN
+
+!! Plot geometry 
+
+PLOT FACETS 2 2 0 YX 
+$VIEW
+RETURN

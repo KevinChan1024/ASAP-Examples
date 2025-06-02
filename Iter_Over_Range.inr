@@ -1,0 +1,51 @@
+!!++
+!! ITER_OVER_RANGE.INR
+!! Title: Media Index based on Temperature & Pressure
+!! Category: Simple Problem
+!! Keywords: Scripts, $ITER, iterate, range, index, pressure, temperature
+!! Description: The following uses the first form of $ITER to create
+!! a two-dimensional display file that relates temperature and pressure
+!! to reflectivity of a surface with a complicated index of refraction.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 02/07/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIALP {  2
+  SYSTEM NEW
+  RAYS 0  !! Clear old rays
+
+  P=#1 T=#2
+
+!! Some complicated expression for the Index goes here
+  INDEX=1.9-(.2*(P-15)/5)-.4*((T-50)/50)^2
+  MEDIA
+    (INDEX) 'LAMPSHADE'
+
+!! Create Lampshade surface to calculate to normal Fresnel reflection
+  SURFACES
+    PLANE Z 0 RECTANGLE 5 5
+    OBJECT 'LAMPSHADE'
+      INTERFACE COAT -BARE AIR LAMPSHADE  !! Reflect rays only
+
+!! Create ray and trace
+  GRID RECT Z -1E-6 -4@1 1 1
+    SOURCE DIRECTION 0 0 1
+    FLUX 1 0  !! Set ray flux to 0
+  TRACE
+  GET         !! Flux is in F0
+  REFLECTIVITY=F0
+}
+Enter Pressure>
+Enter Temp>
+
+$ITER PRESSURE 10 20 -11 TEMPERATURE 50 100 -11 REFLECTIVITY
+  &MEDIALP (PRESSURE) (TEMPERATURE)
+
+DISPLAY $ITER  !! Read in distribution created by $ITER
+  ISOMETRIC  'Reflectivity as function of Pressure and Temperature'
+  CONTOUR 10 'Reflectivity as function of Pressure and Temperature'
+RETURN

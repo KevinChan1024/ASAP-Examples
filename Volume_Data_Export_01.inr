@@ -1,0 +1,155 @@
+!!++
+!! VOLUME_DATA_EXPORT_01.INR
+!! Title: Exporting VOXELS Volume Data to File
+!! Category: Simple Problem
+!! Keywords: Analysis, TEXTFILE, VOXELS ABSORBED, volume, data, output, text, file, export
+!! Description:  How to output VOXEL absorption data to
+!! a single text file.  This will work for any volume distribution
+!! or 3D distribution that contains multiple 2D slices.
+!! This example takes the standard example, VOXELS_ABSORBED01.INR,
+!! as a starting point, and outputs the VOXELS ABSORBED data to a
+!! text file for further use by an external program. The data are
+!! output using a continued TEXTFILE command in DISPLAY mode,
+!! toggling out of TEXTFILE mode to load each VOXEL plane in turn,
+!! then resuming TEXTFILE output. 
+!! Header lines are provided to identify the coordinates and
+!! their respective ranges, but these might be omitted or
+!! converted to appropriate comment lines to allow them to be 
+!! read by another application or environment.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/29/2012 - cp - corrected keywords 
+!! 11/11/2008 - cp - added header
+!! 11/10/2008 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$GUI ClearAll
+
+UNITS MM
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 550 NM
+
+MEDIA
+  1.5`.5E-4 'TEST' !! Absorption
+
+SURFACES
+  PLANE X -1 RECTANGLE 1 1.5
+  SHIFT Z 2.5
+OBJECT 'SIDE1'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 2  
+
+SURFACES
+  PLANE X 1 RECTANGLE 1 1.5
+  SHIFT Z 2.5
+OBJECT 'SIDE2'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 2    
+
+SURFACES
+  PLANE Y 1 RECTANGLE 1.5 1
+  SHIFT Z 2.5
+OBJECT 'SIDE3'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 2    
+
+SURFACES
+  PLANE Y -1 RECTANGLE 1.5 1
+  SHIFT Z 2.5
+OBJECT 'SIDE4'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 2      
+
+SURFACES
+  PLANE Z 1 RECTANGLE 1 1
+OBJECT 'FRONT'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 2
+    
+SURFACES
+  PLANE Z 4 RECTANGLE 1 1
+OBJECT 'BACK'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 2 
+    
+GRID ELLIPTIC Z 0 -4@1 2@101 
+  SOURCE FOCUS 0 0 7
+  FLUX TOTAL 100.0
+ 
+!! Select the exact volume for VOXELS distribution.
+!! Otherwise, can use PIXELS, WINDOW and Local Box of objects.
+!! Note that absorption may be over-estimated due to small number
+!! of voxels and rays used here. For a converging GRID source
+!! it may be better to use the axial modifier (Z in this caase)
+!! and calculate absorption manually, to avoid clumping in the
+!! distribution.  See Procedural Note "Using VOXELS in ASAP"
+VOXELS ABSORBED -4@1.0 1 4 (NX=7) (NY=9) (NZ=11)
+
+WINDOW Y -2@1.2 Z -.5 6
+PLOT FACETS  OVERLAY
+TRACE 0 FRONT PLOT 10 OVERLAY !! To show ray entry and direction
+SPOTS POSITION 
+TRACE
+$COPY 9 ABS_FLUX.DIS !! Copies default bro009.dat to named file
+STATS
+$VIEW 
+&VIEW ABS_FLUX.DIS  !! Adds the volume distribution to 3D viewer
+!! Hide (H) sides of box in viewer to see VOXELS data.
+!! Use 8 and 9 keys to move selected planes or Shift-Drag.
+RETURN
+
+!! Save absorption data in a text file, plane-by-plane
+$ECHO NONE
+
+!! Collect information about voxels, then
+!!  write header and first data plane, leaving the TEXTFILE open.
+  $CLEAR
+  DISPLAY  ABS_FLUX.DIS 1
+  $GRAB 'File header:' -1 1 Z_VOX_MIN Z_VOX_MAX Z_VOX_N
+  $GRAB 'File header:' 2 1 Z_VOX
+  &REG Z_VOX_MIN Z_VOX_MAX Z_VOX_N 'Voxel range: '
+  &REG Z_VOX 'Voxel plane coordinate: '
+    !! open the text file and write the header data
+    TEXTFILE VOXL.TXT
+    F" ON Z" IN (Z_VOX_N) STEPS FROM (Z_VOX_MIN) TO (Z_VOX_MAX)
+    L1" (NUMX) SAMPLES FROM (XMIN) TO (XMAX)
+    L2" (NUMY) SAMPLES FROM (YMIN) TO (YMAX)
+    _PLANE 1 Z (Z_VOX)
+    DATA (NX)
+    RETURN    !! leave text file open, but return to DISPLAY mode
+
+!! Open voxel distribution file for each interior data plane, and 
+!! write intermediate data planes to the open TEXTFILE.
+$DO 2 (NZ-1)
+  {
+  $CLEAR
+  DISPLAY  ABS_FLUX.DIS ?
+  $GRAB 'File header:' 2 1 Z_VOX
+  &REG Z_VOX 'Voxel plane coordinate: '
+    !! continue writing to the same text file
+    TEXTFILE  
+    _PLANE ? Z (Z_VOX)
+    DATA (NX)
+    RETURN    !! leave text file open, but return to DISPLAY mode
+  } 
+
+!! Open and write the last data plane to the TEXTFILE, then
+!! close the TEXTFILE. 
+  $CLEAR
+  DISPLAY  ABS_FLUX.DIS (NZ)
+  $GRAB 'File header:' 2 1 Z_VOX
+  &REG Z_VOX 'Voxel plane coordinate: '
+    !! continue writing to the same text file
+    TEXTFILE  
+    _PLANE (NZ) Z (Z_VOX)
+    DATA (NX)
+    EOF       !! close the text file 
+  
+RETURN 
+
+$ECHO ALL
+
+RETURN

@@ -1,0 +1,60 @@
+!!++
+!! CONDUIT.INR
+!! Title: Creating a conduit (sweeping a circle along a planar cubic) 
+!! Category: Simple Problem 
+!! Keywords: Geometry, CONDUIT 
+!! Description: Creates conduit objects on axis and displaced from 
+!! the axis. 
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 08/10/2005 - cp - modified format
+!! 07/11/2005 - gg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  CONDUIT Z 0 5 10      
+!! axis Z, z1 at 0, z2 at 5, radius of 10
+OBJECT 'CONDUIT.1' 
+    
+WINDOW Y Z
+PLOT FACETS 'CONDUIT OBJECT - SIDE VIEW'
+
+WINDOW X Y
+PLOT FACETS 'CONDUIT OBJECT - FRONT VIEW'                 
+     
+$IO VECTOR REWIND
+                                            
+SURFACES 
+   PLANE Z 0 ELLIPSE 2@10
+OBJECT 'PLANE.1'
+
+SURFACES
+   PLANE Z 30 ELLIPSE 2@10 
+   SHIFT X 15
+OBJECT 'PLANE.2'
+  
+SURFACES
+   CONDUIT Z 0 30 -10 15
+OBJECT 'CONDUIT.2' 
+   !! axis Z, z1 at 0, z2 at 30, radius of 10, displaced from 
+   !! z axis by 15; a negative radius implies the circle is perpendicular
+   !! to the specified axis (z in this case) 
+    
+                                        
+CONSIDER ONLY 2 3 4 
+!! Only consider the 2 planes and the long conduit
+
+!! PLOT THE OBJECTS  
+WINDOW Y X   
+PLOT FACETS 'CONDUIT AROUND 2 PLANES - FRONT VIEW' 
+  
+$IO VECTOR REWIND
+WINDOW Y Z
+PLOT FACETS 15 15 0 'CONDUIT AROUND 2 PLANES - SIDE VIEW'                     
+      
+!! Plot in 3D viewer
+$VIEW        
+RETURN

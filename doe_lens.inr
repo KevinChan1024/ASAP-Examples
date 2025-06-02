@@ -1,0 +1,79 @@
+!!++
+!! DOE_LENS.INR
+!! Title: DOE Lens
+!! Category: Simple Problem
+!! Keywords: Lenses, doe, GENERAL, MULTIPLE, SPREAD
+!! Description: A DOE lens example.  Multiple
+!! Surfaces are created with the MULTIPLE command
+!! whose intersection with the base surface
+!! defines the gratings lines. These lines are
+!! in 2PI phase steps. An F/5 DOE lens is created
+!! with on and off-axis irradiance distribution
+!! analyzed.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 11/05/2003 - cp - fixed keyword
+!! 03/19/2002 - cp - added units, reformatted
+!! 10/04/2000 - cp - modified format;
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+L=0.6328E-4  F=20
+COATINGS PROPERTIES
+  0 1 'TRANS'
+
+SURFACES
+  GENERAL 0 0 0
+    X2 1/(2*L*F); Y2 1/(2*L*F)  !! f(x,y,z)
+    MULTIPLE  n 1, f prime 1
+  PLANE Z 0 ELLIPSE 2
+OBJECT 'DOE'
+  INTERFACE COAT TRANS AIR AIR DIFFRACT surface 1, -1st order
+
+SURFACES
+  PLANE Z 20 ELLIPSE 1
+OBJECT 'DETECTOR'
+ 
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH (L)
+GRID ELLIPTIC Z -1 -4@2 1 9
+  SOURCE DIRECTION 0 0 1
+WINDOW Y Z
+WINDOW 1.3
+PIXELS 127
+TITLE 'F/5 DOE LENS WITH SIMPLE QUADRATIC PHASE'
+PROFILES OVERLAY
+TRACE PLOT
+ 
+RAYS 0
+PARABASALS 8
+BEAMS COHERENT DIFFRACT
+WAVELENGTH (L)
+WIDTHS 1.6
+GRID ELLIPTIC Z -1 -4@2 20 20
+  SOURCE DIRECTION 0 0 1, 0 SIN[1] COS[1]
+TRACE
+CONSIDER ONLY DETECTOR 
+SELECT ONLY SOURCE 1
+  FOCUS MOVE
+WINDOW Y X
+WINDOW 1.3
+SPOTS POSITION ATTRIBUTE 1 'SPOT DIAGRAM FROM DOE AT BEST FOCUS (ON-AXIS)'
+
+SPREAD NORMAL 
+DISPLAY
+  ISOMETRIC 2 'IRRADIANCE DISTRIBUTION (ON-AXIS)'
+
+SELECT ONLY SOURCE 2
+  FOCUS MOVE
+WINDOW Y X
+WINDOW 1.3
+SPOTS POSITION ATTRIBUTE 1 'SPOT DIAGRAM FROM DOE AT BEST FOCUS (OFF-AXIS)'
+SPREAD NORMAL 
+DISPLAY
+  ISOMETRIC 2 'IRRADIANCE DISTRIBUTION (OFF-AXIS)'  
+RETURN

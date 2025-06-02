@@ -1,0 +1,71 @@
+!!++
+!! APOD_DIR03.INR
+!! Title: Apodizing in Direction after Source Creation
+!! Category: Simple Problem
+!! Keywords: Sources, APODIZE, ANGLES, RADIAL, GRID
+!! Description: Demonstrates applying an apodization in direction
+!! after a source is created using the APODIZE command.
+!! Edit History: (latest first)
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+PIXELS 101
+
+CONE_ANG=60
+H=TAN[CONE_ANG]
+
+!! The following source creates rays of 100% flux out to 60 degrees
+GRID ELLIPTIC Z 1 -4@(H) 2@301
+  SOURCE POSITION 0 0 0
+
+WINDOW Y X
+SPOTS DIRECTION ATTRIBUTE 0
+
+!! Show initial distribution
+DISPLAY 
+  RADIAL !! Radially average distribution data about Z axis
+  ANGLES !! Convert to angle space
+  AVERAGE 1 1 !! Average adjacent pixels
+  ISOMETRIC !! Show isometric plot
+  GRAPH .5  !! Graph centerline of distribution data
+RETURN
+
+APODIZE DIRECTION 1 1 !! Now apodize the previous source
+  0   -COS(0]  0
+  0   -COS(10] 0
+  0   -COS(20] 0
+  5   -COS(30] 5
+  8   -COS(40] 8
+  10  -COS(50] 10
+  40  -COS(60] 40
+  70  -COS(70] 70
+  93  -COS(80] 93
+  100 -COS(89] 100
+  100  COS(89] 100
+  93   COS(80] 93
+  70   COS(70] 70
+  40   COS(60] 40
+  10   COS(50] 10
+  8    COS(40] 8
+  5    COS(30] 5
+  0    COS(20] 0
+  0    COS(10] 0
+  0    COS(0]  0
+RETURN
+
+WINDOW Y X
+SPOTS DIRECTION ATTRIBUTE 0 
+
+!! Show apodized source
+DISPLAY 
+  RADIAL !! Radially average distribution data about Z axis
+  ANGLES !! Convert to angle space
+  AVERAGE 1 1 !! Average adjacent pixels
+  ISOMETRIC !! Show isometric plot
+  GRAPH .5  !! Graph centerline of distribution data
+RETURN
+
+

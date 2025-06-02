@@ -1,0 +1,64 @@
+!!++
+!! OPTIMIZE01.INR
+!! Title: Optimizing a Cassegrain Telescope
+!! Category: Simple Problem
+!! Keywords: Lenses, Optimization, ABERRATIONS, VARIABLES, MINIMIZE, STORE
+!! Description:  Optimization of a telescope mirror system.
+!! Within the specified constraints, finds the minimum
+!! rms spot size on axis.  The results are stored and the 
+!! optimized system is traced. 
+!! Edit History: (latest first)
+!! 08/21/2001 - cp - capitalized  name
+!! 05/14/2001 - rh - Optimize on axis only, and vary both
+!! 05/14/2001 - rh - conic constants, added comments
+!! 03/14/2001 - cp - Modified format; added header
+!! 01/14/2001 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Establish the starting point for the design of a
+!! two-mirror telescope. Begin by guessing that both
+!! conic constants are 0 (spherical).  The conic
+!! constants will be varied during optimization.
+
+LENSES
+  MIRROR Z     0 5.0  20.00   0 2.5/10 !! Primary mirror
+  MIRROR Z   -15 1.6   6.25   0        !! Secondary mirror
+COMPOSITE
+
+!! ABERRATIONS lists and plots aberations, and establishes
+!! the first order properties of the optical system 
+
+ABERRATIONS LIST PLOT,
+  FB 0 ,          !! Fractional field points
+  UB0 TAN[1],     !! Half field of view
+  H0 5,           !! Marginal Ray height at Conic 1
+  UF -1/(2*10),   !! f-number (f/10) expressed as slope
+  KTH0 1          !! Conic number of aperture stop
+  
+!! VARIABLES establishes the free parameters
+                  
+VARIABLES   CC 1 2 !! Vary both conic constants
+            
+!! MINIMIZE starts minimization, with constrains listed 
+
+MINIMIZE MULT 100,    !! Max trys 
+         TARG 1E-12   !! Minimum spot size
+
+!! Save the result to a macro, and run it to see results
+
+STORE TELESCOPE.MAC
+$TELESCOPE
+
+!! Print results to output window
+
+$ECHO NONE
+$GRAB ' -2-    OPTIC Z' 0 3 CCSEC
+$GRAB ' -2-  ENT OBJECTS' 1 4 CCPRIM
+
+&REG  CCPRIM '  Primary Conic constant: '
+&REG  CCSEC 'Secondary Conic constant: '
+
+$ECHO

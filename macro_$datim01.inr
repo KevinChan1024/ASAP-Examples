@@ -1,0 +1,28 @@
+!!++
+!! MACRO_$DATIM01.INR
+!! Title: Turn off Plotting Date and Time
+!! Category: Isolated Command
+!! Keywords: $DATIM, Macros_pre, plot
+!! Description: How to turn off Date and Time
+!! stamps from showing up in plots. This may be 
+!! desired when wanting to copy plots for 
+!! publication purposes. A handy command to 
+!! store into a User-defined button.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/31/2000 - cp - creation
+!!--   
+
+SYSTEM NEW
+RESET
+
+$DATIM OFF OFF  !! Turn off Date and Time on future plots
+
+SURFACES 
+  PLANE Z 0 RECTANGLE 10 10
+  OBJECT
+WINDOW Y X
+OBLIQUE
+PLOT FACETS 
+RETURN
+

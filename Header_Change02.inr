@@ -1,0 +1,40 @@
+!!++
+!! HEADER_CHANGE02.INR
+!! Title: Changing Title of Field Plot or Picture
+!! Category: Simple Problem
+!! Keywords: Wave, HEADER, FIELD, title, plot
+!! Description: How to write a new sub-title to the current
+!! display file for subsequent plotting or for the PICTURE
+!! command. For example, when using the command:
+!! "DISPLAY 29 PHASE" ASAP will use a default title of:
+!! "PHAS Complex FIE" abbreviated to mean "PHASE Complex FIELD."
+!! This is found just under the main title. There are only
+!! 16 maximum characters allowed. It may be replaced by using
+!! the HEADER command as illustrated below. There may be also
+!! added, a title for the PICTURE plot. This has the same
+!! effect as putting it on the PICTURE command line. 
+!! Note that the main title for 2D plots is given on the plotting
+!! command line directly, or by using the TITLE command.
+!! Edit History: (latest first)
+!! 07/30/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM 
+
+PARABASAL 4   
+BEAMS COHERENT DIFFRACT 
+WAVELENGTH .55 UM
+WIDTHS 1.6 
+GAUSSIAN Z 100 0 1 .05 !! One sub-beam created for illustrative purposes
+WINDOW Y X 
+PIXELS 101
+
+FIELD ENERGY 
+DISPLAY 29 PHASE
+HEADER _ _, "WRAPPED PHASE" 'PHASE MAP'  
+  GRAPH  'PHASE MAP' !! For main line of title 
+  PICTURE  !! Could have put 'PHASE MAP' here, instead
+RETURN

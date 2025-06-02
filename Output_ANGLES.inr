@@ -1,0 +1,61 @@
+!!++
+!! OUTPUT_ANGLES.INR
+!! Title: Using VALUES to Output Exact Angle Data
+!! Category: Simple Problem
+!! Keywords: Radiometry, VALUES, $SCR, ANGLES, $IO
+!! Description: Shows how to output an exact angular range of -90 to 90
+!! to a text file.  The idea is to get a slice along the X and Y with
+!! increments every 2 degrees. Normally, a distribution file has a
+!! range of -89.x to 89.x, where x is determined by the number of
+!! PIXELS. The outermost pixels can't go beyond the window edge.  Using 
+!! VALUES, actual data coordinates are given which extracts an interpolated
+!! value from the distribution.  This allows one to produce a file that 
+!! begins exactly at the ends of the window, such as -90 to 90 (or -1 to 1
+!! in dir-cosine space).  The end values would be extrapolated from the
+!! closest nearby pixel.  Accuracy should improve with more rays and higher
+!! PIXELS. 
+!! Edit History: (latest first)
+!! 10/06/2008 - cp - corrected comments
+!! 07/22/2005 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM 'W'
+
+EMITTING RECT Z 0 2@.1 1000000
+
+WINDOW X -2@1 Y -2@1
+PIXELS 301
+SPOTS DIRECTION ATTRIBUTE 0    
+DISPLAY
+AVERAGE
+NORMALIZE 
+ANGLES
+$ECHO NONE
+$IO OUTPUT RADIANT.TXT FILE(11) !! Starts a new file
+$SCR 2
+A Direction
+
+$IO OUTPUT CLOSE
+$DO -90 90 2
+{ANG=(?);VALUES (ANG) 0 FLX
+$IO OUTPUT RADIANT.TXT +FILE(11) !! Appends to file
+$SCR 1
+\ANG.    \    \FLX.\
+$IO OUTPUT CLOSE }
+
+$IO OUTPUT RADIANT.TXT +FILE(11) !! Appends to file
+$SCR 2
+B Direction
+
+$IO OUTPUT CLOSE
+$DO -90 90 2
+{ANG=(?);VALUES 0 (ANG) FLX
+$IO OUTPUT RADIANT.TXT +FILE(11) !! Appends to file
+$SCR 1
+\ANG.    \    \FLX.\
+$IO OUTPUT CLOSE }
+$ECHO
+RETURN

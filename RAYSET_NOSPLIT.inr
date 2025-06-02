@@ -1,0 +1,39 @@
+!!++
+!! RAYSET_NOSPLIT.INR
+!! Title: A RAYSET Source with Splitting Control
+!! Category: Isolated Command
+!! Keywords: RAYSET, Sources, Tracing, RAYSET, NOSPLIT, splitting
+!! Description: How to make a simple source with a few
+!! listed rays and control the splitting.  Must use
+!! NOSPLIT on any rays not intended to split.  A SPLIT 0
+!! will have no affect on RAYSET.  Also, NOSPLIT can only
+!! be entered after the appropriate number of parameters
+!! for each ray, even if they are only default.
+!! Note: RAYSET requires a direction for the rays or they
+!! won't get created (e.g SOURCE DIRECTION).  An alternative,
+!! is to use EMITTING RAYS which include direction in each
+!! ray designation (and SPLIT 0 will work too).
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/13/2001 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SPLIT 1 
+SURFACES
+  PLANE Z 0 RECTANGLE 10 10 
+  SHIFT Y 5 
+  OBJECT 
+  INTERFACE .5 .5 AIR AIR
+RAYSET Z -10 
+ -1 0 1 0 0 0 NOSPLIT
+  1 0 1 0 0 0 NOSPLIT 
+  SOURCE DIRECTION 0 SIN[30] COS[30]
+MISSED ARROWS 5
+WINDOW Y Z
+PLOT FACETS OVERLAY
+TRACE PLOT
+!! $VIEW  !! To see both rays
+RETURN

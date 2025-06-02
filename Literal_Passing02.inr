@@ -1,0 +1,43 @@
+!!++
+!! LITERAL_PASSING02.INR
+!! Title: Passing Variables to Plot Titles
+!! Category: Simple Problem
+!! Keywords: Scripts, literal, string, variable, macro, plot, title
+!! Description: Passing variables to plot titles using the LIT
+!! operator and a macro. 
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! The following is only for creating a display file for the graph
+RFNSS=0.1
+
+GRID RECT Z 5 -4@2 2@100
+  SOURCE DIRECTION 0 0 1
+SURFACES
+  OPTICAL Z 10.001 -10.001 ELLIPSE 10
+  OBJECT 'REFLECTOR'
+    INTERFACE 1 0
+    ROUGHNESS RANDOM 0 (RFNSS) 2
+SURFACES
+  PLANE Z -5 RECTANGLE 15
+  OBJECT 'TARGET'
+ 
+TRACE
+CONSIDER ONLY TARGET
+WINDOW Y X
+SPOTS POSITION ATTRIBUTE 0
+
+!! The following demonstrates passing a literal to a graph title
+GRAPHIT {
+  DISPLAY !! Put in display mode here for GRAPH to work.
+    AVERAGE 0 39
+    GRAPH 'DISTRIBUTION OF LIGHT ON TARGET WITH #1 ROUGHNESS'
+  RETURN
+}
+GRAPHIT LIT(RFNSS)
+RETURN

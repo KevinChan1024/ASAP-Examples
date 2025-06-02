@@ -1,0 +1,129 @@
+!!++
+!! BPMPROPALONGFIBER.INR
+!! Title: Propagation along a fiber using BPM
+!! Category: Simple Problem
+!! Keywords: Wave, bpm, FIELD, COUPLE, fiber, radial-symmetry
+!! Description:  This file demonstrates the use of
+!! ASAP's Beam Propagation Method (BPM) to propagate
+!! an input field along a stretch of single mode fiber.
+!! The result of propagation is compared against
+!! the expected fiber mode.
+!! Note: Requires ASAP Optical module to run.
+!! Edit History: (latest first)
+!! 11/03/2010 - cp - added category
+!! 11/10/2004 - cp - added note
+!! 11/05/2003 - cp - reformatted
+!! 12/22/2000 - DCS - creation
+!!--
+
+!! Initialization commands...
+
+SYSTEM NEW; RESET  !! clear out system geometry and sources
+$UNVAR ERROR       !! stop if undefined variables are encountered
+
+UNITS UM    !! Set system units to microns
+
+PI=ACOS(-1)
+
+RES=600              !! Pixel resolution for BPM calculation
+WAVEL=1.3            !! Wavelength (in microns)
+NCORE=1.456427       !! Core index of refraction
+NCLAD=1.449679       !! Cladding index of refraction
+RCORE=5.9/2          !! Core radius
+RCLAD=125/2          !! Cladding radius
+ROUT=250/2           !! Outer (absorbing) layer radius
+OUTAB=0.1            !! Absorption constant for outer layer
+PLOT_LIM=4*RCORE     !! Max radius to plot results for
+INP_WID=0.8*RCORE    !! Width of input beam
+PROP_DIST=10000      !! Distance to propagate along the fiber
+NPLANES=100          !! Number of planes at which to store the field 
+WINDO=ROUT           !! Window limits for BPM calculation
+EPS=0.01             !! = epsilon (a small distance)
+
+
+!! Set the wavelength...
+
+WAVELENGTH (WAVEL) UM
+
+
+!! Define functions used for step index fiber media...
+
+$FCN FIBER    NCORE+(NCLAD-NCORE)*STEP(SQRT(_1*_1+_2*_2)-RCORE)
+$FCN OUT_CLAD STEP(SQRT(_1*_1+_2*_2)-RCLAD)
+
+FUNCTION
+  USERFUNC 0 0 0 FIBER
+  USERFUNC 0 0 0 OUT_CLAD
+
+MEDIA
+  1 GRIN 1 2 ABSORB (OUTAB) 2 1 'FIBER'
+
+
+!! Calculate (and display) the numerical aperture and V number 
+!! of the fiber...
+
+NA=SQRT(NCORE*NCORE-NCLAD*NCLAD)
+VN=2*PI*RCORE*NA/WAVEL
+$SCR 3 !! 
+Fiber characteristics:
+  Numerical Aperture = \NA.3\
+  V Number = \VN.3\
+
+
+!! Set window and resolution.  A thin slice along X is chosen 
+!! because we're doing a radially-symmetric calculation.
+
+PIXELS (RES)
+WINDOW Y -.5*WINDO/RES (WINDO) X -2@(EPS) !! has bin at the origin
+
+
+BEAMS COHERENT DIFFRACT
+IMMERSE FIBER      !! Any beams we create will already be in the fiber
+
+
+!! Create input field...
+
+RAYS 0
+RAYSET Z 0; 0 0 1 2@(INP_WID) -SOMB 0
+ SOURCE DIRECTION Z
+FIELD ENERGY 0
+$COPY 29 FIBER_INPUT_29.DIS
+$COPY 9  FIBER_INPUT.DIS
+
+
+!! Create the expected fiber mode...
+
+RAYS 0
+RAYSET Z 0; 0 0 1 2@(RCORE) -FIBR (VN)
+ SOURCE DIRECTION Z
+FIELD ENERGY 0
+
+
+!! Couple the input field with the expected mode.  We'll now have 
+!! a properly scaled fiber mode to compare with.
+
+FIELD FIBER_INPUT_29.DIS ENERGY COUPLE
+$COPY 29 FIBER_MODE_29.DIS
+$COPY 9 FIBER_MODE.DIS
+DISPLAY 
+  REDUCE 1 INT(RES*PLOT_LIM/WINDO) 1 1 1 1  !! reduce range of data for plotting
+  FORM -4    !! take log of data keeping 4 orders of magnitude
+  GRAPH      !! plot expected mode
+RETURN
+
+
+!! Propagate the input field along the fiber using BPM...
+
+AXIS Z        !! We're doing a radially-symmetric propagation along Z
+ACCURACY LOW  !! Lowest-order BPM propagation
+FIELD FIBER_INPUT_29.DIS ENERGY 0 (PROP_DIST) (NPLANES) BC 1 !! reflective BCs
+$COPY 29 FIBER_PROP_29.DIS
+$COPY 9 FIBER_PROP_9.DIS
+DISPLAY 
+  REDUCE 1 INT(RES*PLOT_LIM/WINDO) 1 1 (NPLANES+1) 1   !! reduce range of data for plotting
+  FORM -4    !! Take log of data keeping 4 orders of magnitude
+  PICTURE    !! Display raster picture of propagation results
+  GRAPH 1 INT(NPLANES/10) INT(2*NPLANES/10) (NPLANES+1) APPEND
+RETURN
+
+

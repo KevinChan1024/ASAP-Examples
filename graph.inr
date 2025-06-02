@@ -1,0 +1,20 @@
+!!++
+!! GRAPH.INR
+!! Title: GRAPH Display Command
+!! Category: Isolated Command
+!! Keywords: GRAPH, DISPLAY
+!! Description: The GRAPH command for plotting
+!! a 2-dimensional slice of the distribution. 
+!! Performed in DISPLAY mode.  It does not modify
+!! display data.
+!! Note: This is not a runable inr file.
+!! Edit History: (latest first)
+!! 12/20/2001 - cp - modified description
+!! 10/04/2000 - cp - modified format;
+!! 01/01/1996 - bro - creation
+!!-- 
+
+GRAPH 1 10 20 23 26 'PSF OF ZERNIKE 3rd ORDER SPHERICAL ABERRATION'
+'Y POSITION (millimeters)
+'The PSF was created by reflecting a beam off of an aberrated
+'surface and then focusing the beam with a parabola

@@ -1,0 +1,37 @@
+!!++
+!! ARRAY_RANDOM01.INR
+!! Title: Random Array of Ellipsoids Bounded to Plane
+!! Category: Simple Problem
+!! Keywords: Geometry, ARRAY, BOUNDS, RAN, random, blu, backlight, diffuser, dots, bumps
+!! Description: An array of dimples in a surface
+!! created by bounding an array of ellipsoids with
+!! a plane and vice-versa. This version uses the RAN
+!! option on ARRAY to vary the placement of each element
+!! combined with varying the 2-dimensional row spacing
+!! using EXPonent. Also shows boolean OR bounding with
+!! an array using the BOUNDS option. 
+!! Edit History: (latest first) 
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 11/03/2008 - cp - added keywords
+!! 11/05/2003 - cp - fixed keyword
+!! 10/01/2003 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  ELLIPSOID 5 5 5 0 0 0
+    ARRAY 5 11 0 0 5 0 11 0 EXP 1.1 1.2 RAN 4.3 BOUNDS  
+  PLANE Z 2.5 RECTANGLE 42 47
+    SHIFT 33 38 0
+OBJECT 'PLANE_FULL_OF_HOLES'
+  BOUNDS 0.2    !! Holes cut by ellipsoids 
+  FACETS 71 71  
+OBJECT; .2  'PEENS'
+  BOUNDS .1     !! Ellipsoids cut by plane
+     
+WINDOW Y X
+PLOT FACETS
+$VIEW 
+RETURN

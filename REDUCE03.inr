@@ -1,0 +1,39 @@
+!!++
+!! REDUCE03.INR
+!! Title: Removing Low Energy Pixels
+!! Category: Isolated Command
+!! Keywords: REDUCE, OFFSET, DISPLAY
+!! Description: Using REDUCE to modify a
+!! display file. REDUCE without additional parameters
+!! removes pixel zones from the edge if all pixels in that
+!! zone have the minimum energy value. Useful to remove outer
+!! "zero energy" bands from analysis.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/01/2013 - mt - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+UNITS MM  'Watts'
+WAVELENGTHS 550 NM
+
+!! Make a distribution file
+EMITTING DISK Z 0 1 1 10000
+  FLUX TOTAL 1 SOURCE 1
+
+
+WINDOW Y -2@1.3 X -2@1.3  !! Larger than source dimensions
+PIXELS 21                 !! Need a few pixels outside source edge 
+SPOTS POSITION ATTRIBUTE 0
+
+!! Compare original source data with OFFSET and REDUCEd data
+DISPLAY 
+  PICTURE         'Original data: 21x21 pixels 
+  OFFSET  0 0 0.1  !! Add 0.1 energy units to each pixel
+  PICTURE         'Offset: Note value in border pixels'
+  REDUCE  
+  PICTURE         'Edge data removed: 17x17 pixels' 
+RETURN
+

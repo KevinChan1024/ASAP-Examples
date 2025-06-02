@@ -1,0 +1,64 @@
+!!++
+!! REDUCE01.INR
+!! Title: REDUCE Command
+!! Category: Isolated Command
+!! Keywords: REDUCE, DISPLAY
+!! Description: Using REDUCE to modify a
+!! display file.
+!! Edit History: (latest first)   
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 05/11/2010 - cp - corrected 's' parameter usage
+!! 03/08/2001 - cp - modified format; added description
+!! 02/27/2001 - arg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Make a distribution file
+EMITTING RECT Z 0 1 1 10000
+
+EMITTING RECT Z 0 0.5 0.5 10000
+
+FLUX TOTAL 4 SOURCE 1
+FLUX TOTAL 1 SOURCE 2
+
+PIXELS 8 !! Or try other values
+WINDOW Y X
+SPOTS POSITION ATTRIBUTE 0
+
+DISPLAY
+  PICTURE 'ORIGINAL SPOTS DISTRIB.'
+!! This is an 8x8 distribution
+RETURN
+
+!! Now reduce to just center half (roughly)
+DISPLAY
+  REDUCE 0.5 
+  PICTURE '~CENTRAL HALF'
+!! This is a 5x5 distribution
+RETURN
+
+!! Now reduce to upper 3x3 pixels, approx. centered
+DISPLAY
+  REDUCE +1/3
+  PICTURE 'UPPER 3x3 PIXELS'
+!! This is a 3x3 distribution
+RETURN  
+
+!! Now reduce to lower 3x3 pixels, approx. centered
+DISPLAY
+  REDUCE -1/3
+  PICTURE 'LOWER 3x3 PIXELS'
+!! This is a 3x3 distribution
+RETURN
+
+!! Now  reduce to a specific 4x3 pixel area
+DISPLAY
+  REDUCE 3 6 1 5 7 1
+  PICTURE 'PIXELS 3-6x5-7'
+!! Notice this is a 4x3 distribution, and that PIXELS
+!! have been counted starting in lower left corner of
+!! the PICTURE.  PIXELS 3 through 6 in the vertical,
+!! and 5 through 7 in the horiz. direction are shown.
+RETURN

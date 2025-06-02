@@ -1,0 +1,29 @@
+!!++
+!! ARRAY_BOUNDING02.INR
+!! Title: Bounding Arrays with Arrays
+!! Category: Simple Problem
+!! Keywords: Geometry, ARRAY, BOUNDS, TUBE
+!! Description: Making an array of planes, each
+!! with a hole in the center.  An array of planes
+!! is bounded to an array of tubes.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 11/02/2001 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  TUBE Z -1 5 5 1 5 5   
+  ARRAY 4 35 0 0 4 0 35 0 BOUNDS  !! Use BOUNDS to treat elements
+  PLANE Z 0 RECTANGLE 3*5 3*5          !! individually when bounding
+  ARRAY 4 35 0 0 4 0 35 0 
+  OBJECT 'PLANE_ARRAY'
+    BOUNDS 0.2    !! Cut holes with tubes
+    FACETS 11 11  !! To view holes better
+    
+WINDOW Y X
+PLOT FACETS
+$VIEW 
+RETURN

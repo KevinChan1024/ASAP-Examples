@@ -1,0 +1,40 @@
+!!++
+!! LENS_EXPLODE_PLUS.INR
+!! Title: Cooke Triplet with SEQUENCE and EXPLODE+
+!! Category: Simple Problem
+!! Keywords: Lenses, LENSES, SEQUENCE, Cooke, triplet, EXPLODE
+!! Description: Making a 50 MM Cooke Triplet using the
+!! short form of the SEQUENCE command, combined with
+!! EXPLODE +. EXPLODE breaks up the sequence into separate
+!! surface objects.  From the Lenses chapter.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 02/08/2000 - cp - modified format; added description
+!! 02/22/1999 - mc - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES 
+  SEQUENCE RADI
+    0 0 0,   0 0 1,  10 22.01    0 0 SK16
+    3.26,            10 -435.76  0 0 AIR
+    6.00,            8 -22.21    0 0 SCHOTTNEW_F2
+    1.00,            8 20.29     0 0 AIR
+    4.75,            9  79.68    0 0 SK16
+    2.95,            9 -18.40    0 0 AIR
+  EXPLODE +1 'COOKE TRIPLET' !! "+" adds right-angled cylinder walls
+RETURN
+
+GRID RECT Z 0 -4@10 1 5
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -5
+
+ARROWS OFF
+PIXELS 101 
+WINDOW Y Z
+WINDOW 2.5  !! Enlarge window by 2.5 times
+PROFILES OVERLAY
+TRACE PLOT 
+RETURN

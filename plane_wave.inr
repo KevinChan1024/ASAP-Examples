@@ -1,0 +1,30 @@
+!!++
+!! PLANE_WAVE.INR
+!! Title: Simple Truncated Plane Wave
+!! Category: Simple Problem
+!! Keywords: Wave, beams, Sources
+!! Description: A simple truncated plane wave
+!! made with GRID.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM
+PARABASALS 4              !! Define parabasal rays
+BEAMS COHERENT DIFFRACT   !! Set coherence and diffraction
+WAVELENGTHS 0.5 UM        !! Define wavelength             
+WIDTHS 1.6                !! Modify fundamental beam overlap
+GRID RECT Z 0 -4@5 2@20
+  SOURCE DIRECTION 0 0 1
+
+WINDOW Y -2@6 X -2@6
+PIXELS 71
+SPREAD NORMAL
+DISPLAY
+  ISOMETRIC 'A SIMPLE TRUNCATED PLANE WAVE'
+RETURN

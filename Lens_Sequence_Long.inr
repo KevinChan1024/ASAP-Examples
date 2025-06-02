@@ -1,0 +1,43 @@
+!!++
+!! LENS_SEQUENCE_LONG.INR
+!! Title: Long Form of SEQUENCE
+!! Category: Simple Problem
+!! Keywords: Lenses, LENSES, SEQUENCE, RADI, Cooke, triplet
+!! Description: A 50 MM Cooke triplet with a folding mirror
+!! that uses the long form of the SEQUENCE command.
+!! This command creates a sequence of conicoids. It can be used
+!! in its short or long form. The long form specifies the global
+!! coordinates and the normal vector of the vertex of each conicoid. 
+!! In any case, the first conicoid of a SEQUENCE must be entered
+!! in the long format. From the Lenses chapter.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 05/10/2006 - cp - removed keyword
+!! 02/10/2000 - cp - modified format; added description
+!! 02/19/1999 - mc - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES 
+  SEQUENCE RADI
+    0 0 0,     0 0 1,   10 22.01   0 0 SK16
+    0 0 3.26,  0 0 1,   10 -435.76 0 0 AIR
+    0 0 9.26,  0 0 1,   8 -22.21   0 0 SCHOTTNEW_F2
+    0 0 10.26, 0 0 1,   8 20.29    0 0 AIR
+    0 0 15.01, 0 0 1,   9  79.68   0 0 SK16
+    0 0 17.96, 0 0 1,   9 -18.40   0 0 AIR
+    0 0 30,    0 -1 -1, 10 0       0 0 REFL
+  OBJECT 'COOKE TRIPLET WITH FOLD'
+
+GRID RECT Z 0 -4@10 1 5
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -5
+
+ARROWS OFF 
+WINDOW Y Z
+WINDOW 2.2  !! Enlarge window by 2.2 times
+PROFILES OVERLAY
+TRACE PLOT
+RETURN

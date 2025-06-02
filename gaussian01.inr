@@ -1,0 +1,37 @@
+!!++
+!! GAUSSIAN01.INR
+!! Title: The GAUSSIAN Command
+!! Category: Isolated Command
+!! Keywords: GAUSSIAN, Wave, BEAMS, FIELD
+!! Description: A simple look at the GAUSSIAN command
+!! output.
+!! Edit History: (latest first)
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+CF=0.8862269  !! Conversion factor 1/e^2 to ASAP's Gaussian definition 
+UNITS MM
+RAYS 0
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTHS 0.6328 UM
+WIDTHS 1.6
+GAUSSIAN Z 0 0 0 21 21 0 0 0.4*CF 0.6*CF   
+
+WINDOW Z Y
+WINDOW 1.2  !! Enlarge 20%
+PIXELS 51
+OBLIQUE 
+PLOT BEAMS 'PLOT BEAMS AND RAYS OF THE GAUSSIAN' OVERLAY 
+PLOT RAYS 1.5  !! Show beam intensity by length, normalized to 1.5
+
+OBLIQUE OFF
+WINDOW Y -2@1.3 X -2@1.3
+FIELD ENERGY 0
+DISPLAY
+  PLOT3D 'A GAUSSIAN BEAM SUPERPOSED FROM FUNDAMENTAL GAUSSIANS'
+RETURN

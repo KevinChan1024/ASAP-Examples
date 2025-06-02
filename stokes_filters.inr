@@ -1,0 +1,195 @@
+!!++
+!! STOKES_FILTERS.INR
+!! Title: Stokes Filters
+!! Category: Simple Problem
+!! Keywords: Polarization, Stokes, POLARIZ, POLAR, IDEAL, filter
+!! Description: Calculates polarization state of a ray
+!! that passes through each of four Stokes filters. The
+!! Stokes results are printed along with the polarization
+!! states of each filter. Try different polarizations of
+!! the initial ray below.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 05/06/2009 - jh - conformed filters and sources to convention
+!! 03/11/2002 - cp - reformatted
+!! 11/30/2001 - cl - Additional comments added for clarity
+!! 03/01/2000 - cp - Modified syntax; added description
+!! 05/20/1999 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Macro to set up the source and system for a specific polarization  
+SETUPRAY {
+ SYSTEM NEW
+ RESET
+ BEAMS INCOHERENT GEOMETRIC
+ FRESNEL BOTH 
+POLARIZ X 1 0     !! This command creates a horizontally polarized source
+                     !! You can try other types of polarization, for example:
+!! POLARIZ X 0 1     !! This command creates a vertically polarized source
+!! POLARIZ X 1 1     !! +45 degree polarization source
+!! POLARIZ X 1 -1    !! -45 degree polarization source
+!! POLARIZ X 1 0`-1  !! right circularly polarized source
+!! POLARIZ X 1 0`1   !! left circularly polarized source (no PLOT POLARIZATION FOR RCP)
+ GRID RECT Z -0.1 -4@1 2 2  
+   SOURCE DIRECTION 0 0 1
+   FLUX TOTAL 1
+ OBLIQUE  !! Toggles future graphical output between 
+          !! normal (orthogonal) projection and oblique (nonorthogonal) projection. 
+}
+
+****************************************************
+!! Calculate unpolarized component of polarization 
+!! by passing rays through Isotropic Filter
+
+&SETUPRAY  !! Set up all geometry, create source
+
+LENSES  !! Create filter that will quantify unpolarized Stokes parameter
+  IDEAL Z 0 5
+    1 0 0 1
+OBJECT 'POLAR0'
+  INTERFACE 0 .5
+
+GET  !! Retrieves initial ray data, and copies data into variables.
+SFLUX=F0
+TRACE
+
+$CLEAR
+STATS ALL
+$GRAB 'POLAR0' 0 -2 ORAYS OFLUX
+&REG ORAYS OFLUX 'Result for object POLAR0'
+
+!! avoid plotting and GETting if no rays remain
+$IF (ORAYS) GT 0.5 THEN
+PLOT POLAR OVERLAY 'Isotropic Filter'
+PLOT RAYS 1
+GET  !! Retrieves ray data after trace, and copies data into variables.
+$ELSE
+F0=0
+$ENDIF
+
+UNPOLARIZED=F0/SFLUX  !! Calculate unpolarized component of polarization
+
+****************************************************
+!! Calculate horizontal component of polarization 
+!! by passing rays through Horizontal Linear Polarizer
+
+&SETUPRAY  !! Set up all geometry, create source
+
+LENSES  !! Create filter that will quantify horizontal Stokes parameter
+  IDEAL Z 0 5
+    1 0 0 1
+    1 0 0 0
+OBJECT 'POLAR1'
+  INTERFACE 0 1
+                     
+GET  !! Retrieves initial ray data, and copies it into variables.
+SFLUX=F0
+TRACE
+
+$CLEAR
+STATS ALL
+$GRAB 'POLAR1' 0 -2 ORAYS OFLUX
+&REG ORAYS OFLUX 'Result for object POLAR1'
+
+!! avoid plotting and GETting if no rays remain
+$IF (ORAYS) GT 0.5 THEN
+PLOT POLAR OVERLAY 'Horizontal Linear Filter'
+PLOT RAYS 1
+GET  !! Retrieves ray data after trace, and copies data into variables.
+$ELSE
+F0=0
+$ENDIF
+
+HPOLARIZED=F0/SFLUX  !! Calculate horizontal component of polarization
+
+****************************************************
+!! Calculate 45 deg linear component of polarization 
+!! by passing rays through 45° Linear Polarizer
+
+&SETUPRAY  !! Set up all geometry, create source
+
+LENSES  !! Create filter that will quantify 45 deg linear Stokes parameter
+  IDEAL Z 0 5
+    1 0 0 1
+    0.5 0.5 0.5 0.5
+OBJECT 'POLAR2'
+  INTERFACE 0 1
+
+GET  !! Retrieves initial ray data, and copies it into variables.
+SFLUX=F0
+TRACE
+
+$CLEAR
+STATS ALL
+$GRAB 'POLAR2' 0 -2 ORAYS OFLUX
+&REG ORAYS OFLUX 'Result for object POLAR2'
+
+!! avoid plotting and GETting if no rays remain
+$IF (ORAYS) GT 0.5 THEN
+PLOT POLAR OVERLAY '45 Degree Linear Filter'
+PLOT RAYS 1
+GET  !! Retrieves ray data after trace, and copies data into variables.
+$ELSE
+F0=0
+$ENDIF
+
+POLARIZED45=F0/SFLUX  !! Caculate 45 degree component of polarization
+
+****************************************************
+!! Calculate right circular component of polarization 
+!! by passing rays through Right Circular Polarizer
+
+&SETUPRAY  !! Set up all geometry, create source
+
+LENSES  !! Create filter that will quantify right circular Stokes parameter
+  IDEAL Z 0 5
+    1 0 0 1
+    0.5 0`0.5 0`-0.5 0.5  !! moved sign to imaginary part
+OBJECT 'POLAR3'
+  INTERFACE 0 1
+
+GET  !! Retrieves initial ray data, and copies it into variables.
+SFLUX=F0
+TRACE
+
+$CLEAR
+STATS ALL
+$GRAB 'POLAR3' 0 -2 ORAYS OFLUX
+&REG ORAYS OFLUX 'Result for object POLAR3'
+
+!! avoid plotting and GETting if no rays remain
+$IF (ORAYS) GT 0.5 THEN
+PLOT POLAR OVERLAY 'Right Circular Filter'
+PLOT RAYS 1
+GET  !! Retrieves ray data after trace, and copies data into variables.
+$ELSE
+F0=0
+$ENDIF
+
+RCIRCULAR=F0/SFLUX  !! Calculate right circular component of polarization
+
+****************************************************
+!! Display various polarization components and calculate Stokes parameters
+
+$ECHO NONE
+$REG UNPOLARIZED 'Unpolarized component'
+$REG POLARIZED45 '45 Deg component'
+$REG HPOLARIZED  'Horizontal component'
+$REG RCIRCULAR   'Right hand component'
+
+STOKES_S0=2*UNPOLARIZED
+STOKES_S1=2*HPOLARIZED-STOKES_S0
+STOKES_S2=2*POLARIZED45-STOKES_S0
+STOKES_S3=2*RCIRCULAR-STOKES_S0
+
+$REG STOKES_S0 'Stokes Parameter S0'
+$REG STOKES_S1 'Stokes Parameter S1'
+$REG STOKES_S2 'Stokes Parameter S2'
+$REG STOKES_S3 'Stokes Parameter S3'
+
+V=SQRT(STOKES_S1^2+STOKES_S2^2+STOKES_S3^2)
+$REG V 'Degree of Polarization'
+RETURN

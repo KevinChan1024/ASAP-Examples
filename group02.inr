@@ -1,0 +1,42 @@
+!!++
+!! GROUP02.INR
+!! Title: Grouping Objects for Shifting/Rotating
+!! Category: Isolated Command
+!! Keywords: GROUP, Manipulating
+!! Description: Select groups of objects to
+!! shift and/or rotate. Nine elliptical surfaces
+!! are created. The first 3 are shifted and rotated.
+!! The second 3 are shifted and rotated. The last 3
+!! are shifted. The plot shows the before and after.
+!! Edit History: (latest first)
+!! 10/18/2000 - cp - modified format and header
+!! 04/25/2000 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$DO 1 9
+  {SURFACE
+  PLANE Z -1+? ELLIPSE ? ?
+  OBJECT 'ELLIPSE ?'
+  }  
+  
+WINDOW Y -10 20 Z -5 35
+PLOT FACETS 9 9 OVERLAY
+
+GROUP 1:3 
+  SHIFT Z 30
+  ROTATE X 45 0 30
+
+GROUP 4:6
+  SHIFT Y 20
+  ROTATE X 30 0 0
+
+GROUP 7:9 
+  SHIFT Z 10
+
+WINDOW Y Z
+PLOT FACETS 9 9
+RETURN
+

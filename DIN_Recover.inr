@@ -1,0 +1,60 @@
+!!++
+!! DIN_RECOVER.INR
+!! Title: Making a New Display File from a Saved DIN File 
+!! Category: Simple Problem
+!! Keywords: Radiometry, din, DISPLAY, distribution, SPOTS, WRITE, $READ
+!! Description: How to recover a display file from a saved DIN file.
+!! A DIN (name.din) file is a text version of the binary dis file.  It is
+!! created using the WRITE command. WRITE is used to save a SPOTS or other
+!! distribution file to another name using the dis or din extension (See Help),
+!! If a dis file is accidentally deleted, but the din equivelent remains, then this
+!! method may be used to recover the original dis file to be used again with
+!! the various DISPLAY commands, or saved again to a dis file.
+!! Edit History: (latest first) 
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 06/02/2011 - cp - moved $IO 
+!! 04/10/2008 - cp - corrected instructions
+!! 06/20/2006 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+!! Create the din file to be used later
+NPIXELS=141 
+
+$FCN GDIS GAUS[SQRT(_1^2+_2^2)]
+USERAPOD DIR GDIS  
+
+EMITTING RECT Z 0 2@10 100000  !! Make some arbitrary source
+WINDOW Y -1 1 X -1 1
+PIXELS (NPIXELS)
+SPOTS DIRECTION ATT 0  !! Analyze in direction space
+DISPLAY
+  ISO
+  PICTURE
+
+WRITE ATEST DIN
+RETURN 
+  
+!! Now delete the 1st four lines of atest.din file and save
+!! Type $IO and run the command to continue
+$IO
+SYSTEM NEW  
+RESET 
+
+NPIXELS=141
+DISPLAY -9  !! Create new display file with data from din
+  C 0 SPOTS A -1 1 (NPIXELS) B -1 1 (NPIXELS) 
+  $READ ATEST.DIN  !! It has 141 records of 141 data points.
+
+RETURN
+PIXELS (NPIXELS)
+WINDOW Y X
+
+DISPLAY  !! Compare data to previous
+  PICTURE 
+  ISO
+  WRITE ATEST DIS  !! For safe keeping to be used again
+RETURN
+

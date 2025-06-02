@@ -1,0 +1,78 @@
+!!++
+!! POLAR_SAPPHIRE_DOME.INR
+!! Title: Polarization of a Sapphire Dome
+!! Category: Simple Problem
+!! Keywords: Polarization, CRYSTAL, sapphire, birefringence, POLARIZ, FIELD, REAL, DELTA
+!! Description: An example of birefringence.  How polarized light
+!! changes after propagating through a sapphire dome.  By specifying
+!! a CRYSTAL media with SPLIT set to 1, two independent rays are
+!! created from one input ray - the ordinary and extraordinary rays. 
+!! PLOT POLARIZATION plots the two orthogonal linear polarization
+!! components.  The FIELD commands allows study of the combined
+!! effects of the two rays.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 09/29/2012 - cp - corrected spelling
+!! 03/01/2000 - cp - Modified syntax; added description
+!! 05/20/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+ 
+UNITS MM
+FRESNEL BOTH
+
+WAVELENGTH 4250 UNITS 1E-6
+
+MEDIA
+  1.664 'ORDSAP'  !! Ordinary indices for following extraordinary
+  1.656 CRYSTAL 0 0 1 ORDSAP 'SAPPHIRE'
+  
+SURFACES
+  OPTICAL Z 0 37.5 ELLIPSE 37.5
+  OBJECT 'DOME_OUTER'
+    INTERFACE COAT +BARE AIR SAPPHIRE
+  
+SURFACES
+  OPTICAL Z 0 35.214 ELLIPSE 35.214
+  OBJECT 'DOME_INNER'
+    INTERFACE COAT +BARE AIR SAPPHIRE
+    SHIFT Z 2.286
+    
+SURFACES
+  PLANE Z 0 ELLIPSE 40
+  OBJECT 'IMAGE'
+    SHIFT Z 45
+  
+
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC Z -1 -1 1 -30 30 1 5
+  SOURCE DIRECTION 0 0 1
+  
+SEARCH ALL
+SPLIT 1 !! Create ordinary and extraordinary rays
+PROFILES OVERLAY 'SAPPHIRE DOME & RAY TRACE'
+TRACE PLOT
+RAYS 0  !! Clear old rays
+
+PARABASAL 8  !! Necessary in this case
+BEAMS COHERENT DIFFRACT
+POLARIZ X 1 1'90
+WIDTHS 1.6
+GRID ELLIPTIC Z -5 -4@30 2@15 
+  SOURCE DIRECTION 0 0 1
+
+WINDOW Y X
+ARROWS 1
+SEGMENTS 2
+PLOT POLARIZATION 'INPUT POLARIZATION'
+TRACE
+PLOT POLARIZATION 'OUPUT POLARIZATION VIA PLOT POLAR'
+TITLE 'ACTUAL ELECTRIC FIELD BEHAVIOR'
+PIXELS 15  !! Set pixels for field points
+FIELD REAL 45 DELTA
+$DO 1 4
+  FIELD REAL 45 DELTA +?/8 OVERLAY
+RETURN
+

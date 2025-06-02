@@ -1,0 +1,165 @@
+!!++
+!! MEDIA_ABSORB_LINEAR_VARIABLE_Block.INR
+!! Title: Linear Variable Bulk Absorber Transmission Blocked 
+!! Category: Simple Problem
+!! Keywords: Interfaces, MEDIA ABSORB, absorption, filter, USERFUNC, $FCN, VOLUME, Scatter
+!! Description: A linear variable bulk absorber. 
+!! The bulk medium is defined using a variable absorption function and
+!! a weak null bulk scattering function to trigger the spatial 
+!! variation calculation as the medium is traced.
+!! A finite minimum transmittance is enforced to avoid possible
+!! trace issues with attempting to model physically a perfect
+!! transmittance or absorbance. The user supplies the size of
+!! the absorbing slab's clear aperture, slab thickness, and the 
+!! minimum and maximum transmittance. We assume that the minimum
+!! transmittance is at the slab's minimum Y coordinate, and that
+!! the maximum transmittance is at the slab's maximum Y coordinate.
+!! The function can easily be altered for other effects.
+!! The transmittance function clear aperture is inscribed within the 
+!! slab's full aperture. The transmittance is coerced to a finite 
+!! minimum transmittance threshold for rays outside the 
+!! variable-transmittance function limits.
+!! Edit History: (latest first)
+!! 01/23/2018 - cp - added header
+!! 01/10/2018 - jah - creation
+!!--  
+
+SYSTEM NEW
+RESET
+
+XMEMORY MIN 
+
+!! Absorbing slab parameters
+SLAB_HW=22                 !! slab full Y semi-width
+SLAB_CA=20                 !! slab variable absorption function Y semi-width
+Z0_SLAB=0                  !! slab front plane Z location
+TH_SLAB=2                  !! slab thickness
+Z1_SLAB=Z0_SLAB+TH_SLAB    !! slab back plane Z location
+
+T_MIN=0.000001             !! minimum transmittance
+T_MAX=0.999999             !! maximum transmittance
+
+
+UNITS MILLIMETERS 'Microwatts'
+ACCURACY HIGH
+MISSED LINE 11
+CUTOFF 1E-32 1000
+HALT 1E-18
+SPLIT 1 !! MONTECARLO
+
+!! Define Media
+      MODEL (VOL_SCA=1)
+        VOLUME 0 1E-6 1E-3  !! VERY WEAK Homogeneous scattering model
+      $FCN SCATTER_DENS 1
+      SURFACES (SCATTERMOD=1)                               
+        USERFUNC 0 0 0 SCATTER_DENS                        
+
+!! Define a  function for absorption variation that
+!! varies between two absorbance limits. 
+!! Thresholds are applied to user-specified limits
+!! to ensure good behavior, since there can be no
+!! perfect transmitter or absorber, once we model physically. 
+!! The user-supplied Transmittance limits are assumed to run from
+!! minimum to maximum T as we move from minimum to maximum Y. 
+!!
+!! Note: the absorption function here screens out-of-bounds points
+!!        and coerces the transmittance to the limiting minimum.
+!!
+!! User inputs:
+!!    _4  : filter clear semi-aperture 
+!!    _5  : slab thickness 
+!!    _6  : transmittance at lower Y 
+!!    _7  : transmittance at upper Y 
+  
+$FCN VARY T_LIMITING=1E-8,
+          DRANGE=_4,
+          THICK=_5,
+          T_L=_6,
+          T_U=_7,
+          T_L=T_L>T_LIMITING,
+          T_U=T_U<(1-T_LIMITING), 
+          TRANSMITTANCE=(T_LIMITING>[(T_L+(T_U-T_L)*[(_2+DRANGE)/(2*DRANGE)])*INT[RECT[_2/(2*DRANGE)]]]<1),
+          ABS_COEFF=-LOG(TRANSMITTANCE)/THICK, 
+          (ABS_COEFF)
+RETURN
+ 
+FUNCTION (ABSORBMOD=SCATTERMOD+1)
+USERFUNC 0 0 0 VARY (SLAB_CA) (TH_SLAB) (T_MIN) (T_MAX)
+RETURN 
+
+!! Definition using long form of MEDIA ABSORB
+WAVELENGTH 0.555 MICRONS
+MEDIA 
+1.578 ABSORB 1 (ABSORBMOD) SCATTER  (VOL_SCA) (SCATTERMOD) 1 0.1 10000 'ABS_GLASS'
+                                                    !! dummy zero for absorption coefficient calculated from index, 
+                                                    !! surface designation for dummy constant "inhomogeneity", 
+                                                    !! function exponent (constant, but use 1 to be safe),
+                                                    !! step length in system units,
+                                                    !! maximum number of steps.
+RETURN
+
+!! Geometry
+SURFACES
+  PLANE Z (Z0_SLAB) RECT (SLAB_HW/5) (SLAB_HW)
+  PLANE Z (Z1_SLAB) RECT (SLAB_HW/5) (SLAB_HW) 
+  TUBE  Z (Z0_SLAB) (SLAB_HW/5) (SLAB_HW), (Z1_SLAB) (SLAB_HW/5) (SLAB_HW), 2@1
+OBJECT
+  .3 'SLAB.FRONT'
+      INTERFACE 0 1 AIR ABS_GLASS
+  .2 'SLAB.BACK'
+      INTERFACE 0 1 AIR ABS_GLASS
+  .1 'SLAB.EDGE'
+      INTERFACE 0 0 AIR ABS_GLASS  
+RETURN
+
+GROUP SLAB.?
+  COLOR 17
+RETURN
+
+SURFACE
+  PLANE Z (Z1_SLAB+5) RECT (SLAB_HW/5) (SLAB_HW)  
+OBJECT
+  .1 'DET' 
+      REDEFINE COLOR 20
+RETURN
+
+!! Source
+RAYS 0
+WAVELENGTH 0.555 MICRON      
+
+GRID RECTANGLE Z (Z0_SLAB) -2@(SLAB_HW/5) -2@(SLAB_HW) 1 51 !! 1D ray fan over full slab width
+!! GRID RECTANGLE Z (Z0_SLAB) -4@(SLAB_CA*21/20) 1 21 !! 1D ray fan over variable transmittance region
+SOURCE DIRECTION 0 0 1
+MOVE TO Z (Z0_SLAB-5) 
+FLUX 1      !! set the initial flux of each source ray to 1
+$CLEAR
+RAYSET   
+$GRAB 'rays defined' 0 -1 NRAYS
+&REG NRAYS 'Total number of rays: '
+
+!! Trace with geometry and annotate the plot with text
+Y_ANNOT1=-(SLAB_CA/4)
+Z_ANNOT1=Z1_SLAB+5+SLAB_CA-(1*SLAB_CA/2)
+Y_ANNOT2=-(9*SLAB_HW/10)
+Z_ANNOT2=Z1_SLAB+5+SLAB_CA-(3*SLAB_CA/4)
+
+WINDOW Y -2@(SLAB_HW) Z (Z0_SLAB-5) (Z1_SLAB+5+SLAB_CA); WINDOW 1.1
+PLOT FACETS 3 3 0 OVERLAY 'Trace through variable absorbing slab ' TEXT
+0 (Y_ANNOT1)      (Z_ANNOT1), 0 0 0.8, 0 1.0 0,  'Final rays show'  
+0 (Y_ANNOT1-1.6)  (Z_ANNOT1), 0 0 0.8, 0 1.0 0,  'flux variation' 
+0 (Y_ANNOT2+1.2)  (Z_ANNOT2), 0 0 0.6, 0 0.8 0,  'Media function blocks rays outside ' 
+0 (Y_ANNOT2)      (Z_ANNOT2), 0 0 0.6, 0 0.8 0,  'the variable absorption aperture' 
+TRACE PLOT 1>INT(NRAYS/117) COLOR 7 OVERLAY 
+!! Add final rays plotted with length proportional to flux
+PLOT RAYS (SLAB_CA) COLOR 2 
+
+!! Open plots in the 3D Viewer 
+$VIEW
+
+!! Since we have a small number of rays, we can examine ray data, including flux, directly
+LIST  RAYS 
+RETURN
+
+
+
+

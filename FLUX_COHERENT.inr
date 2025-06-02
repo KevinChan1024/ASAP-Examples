@@ -1,0 +1,46 @@
+!!++
+!! FLUX_COHERENT.INR
+!! Title: Setting Coherent Source Flux
+!! Category: Isolated Command
+!! Keywords: FLUX, Sources, COHERENT, FIELD  
+!! Description: Setting the flux of coherent sources
+!! based on the initial total "integral" of the FIELD.
+!! Flux is set on a per-ray basis.  It may be checked
+!! by performing another FIELD, as illustrated.
+!! Note: STATS or F0 is for incoherent sources only,
+!! and may not be used here.
+!! Edit History: (latest first)
+!! 03/02/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM 'mW'
+NEWFLUX=200  !! Desired flux in mW
+ 
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6
+WAVELENGTH 0.6328 UM
+ 
+!! Create a plane-wave source 
+GRID RECTANGLE Z 0 -4@5 2@11
+  SOURCE DIRECTION 0 0 1
+
+!! Perform a field calculation to get the integral  
+WINDOW Y X
+PIXELS 201
+FIELD ENERGY
+DISPLAY 
+
+!! Correct the flux/ray to obtain the desired total flux
+$GRAB 'Integral' OLDFLUX
+FLUX 0  NEWFLUX/OLDFLUX
+
+!! Check integral - for illustration purposes only
+FIELD ENERGY
+DISPLAY  !! Integral now equals NEWFLUX
+
+!! Continue with trace...
+RETURN

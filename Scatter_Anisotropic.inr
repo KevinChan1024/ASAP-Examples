@@ -1,0 +1,73 @@
+!!++
+!! SCATTER_ANISOTROPIC.INR
+!! Title: Anisotropic Scatter on Optical Surface
+!! Category: Simple Problem
+!! Keywords: Scatter, anisotropic, HARVEY, RENDER, MODELS, hubcap, $PLOT, $IO, VIEW, LIGHTS, ACCURACY 
+!! Description: Shows anisotropic Harvey scatter on an optical
+!! surface representing the hubcap of a car wheel with a turned
+!! surface of concentric grooves. The hubcap could be made more
+!! realistic by bounding it with edges or tubes. The RENDER MODELS
+!! command allows viewing all 3 scatter models used. The final
+!! view point is dependent on the geometry orientation, VIEW angle,
+!! and LIGHT source position.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+MODELS
+  HARVEY 1 -1 .1  !! Standard Harvey
+  HARVEY T 1 -.25 .012 .2  !! Anisotropic Harvey
+  LAMBERTIAN .01
+
+SURFACES
+  OPTICAL Y 30.6 -650 0 ELLIPSE 196 
+  OBJECT 'HUBCAP'  !! Simple hubcap - needs to be a surface
+                   !! for anisotropic scatter
+    SCATTER MODEL 2
+    REDEFINE COLOR 1 
+    ROTATE Z 90 
+    SHIFT X -127    
+    SHIFT Y -32
+RETURN
+ 
+SURFACES
+  PLANE Y -300 RECTANGLE 500 
+  OBJECT 'TABLE' 
+    SHIFT X 120    
+    REDEFINE COLOR 9
+  
+!! The following is just for the tire portion 
+SURFACES
+  OPTICAL X -115
+    10
+    ARRAY 10 22 0 0 !! To make tread
+  TUBE X -120 2@285 120 2@285 
+  TORUS X 0 250 40 150 .95 
+  OBJECT; .2 'INSIDE TIRE' 
+    SCATTER MODEL 3
+    REDEFINE COLOR 5
+  OBJECT 'OUTSIDE TREAD'
+    BOUNDS MULTIPLE .3
+    SCATTER MODEL 1 
+    REDEFINE COLOR 25
+RETURN  
+
+PIXELS 301  !! Reduce to make render faster, but less quality        
+OBLIQUE
+VIEW  !! For true perspective view with RENDER
+LIGHTS 1.8 1 -1 .8,  !! Light source intensity and dir for RENDER
+!! 1.4 .9 -.6 -.7  !! For a second light source - takes longer
+ 
+$IO PLOT CANCEL; $PLOT OFF  !! To only show the display data viewer 
+ACCURACY HIGH  !! Needed for best RENDER
+
+RENDER MODELS
+$PLOT NORM 
+$IO PLOT
+RETURN
+ 

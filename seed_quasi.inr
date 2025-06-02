@@ -1,0 +1,33 @@
+!!++
+!! SEED_QUASI.INR
+!! Title: Quasi-Random Emitters
+!! Category: Simple Problem
+!! Keywords: Sources, SEED, QUASI, random, rays, EMITTING 
+!! Description: Shows how to generate a quasi-random
+!! set of rays on emitting sources.  This enables a 
+!! smoother distribution of rays avoiding statistical
+!! clumping that can occur when using the default random
+!! ray generation. A before and after case is demonstrated.
+!! Simply changing the seed number will only start the rays
+!! at a different point in the sequence and still clump,
+!! but in different areas. The QUASI option is needed
+!! for a quasi-random sequence. Only one of 50 sequences are 
+!! available for emitters (n=1 to 50).
+!! Edit History: (latest first)
+!! 03/29/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+XMEMORY MIN
+EMITTING DISK Z 0 2@2 10000 
+WINDOW Y -2@2.1 X -2@2.1
+SPOTS POSITION 'RANDOM RAY DISTRIBUTION'
+
+RAYS 0  !! Clear old rays 
+SEED 1 QUASI
+EMITTING DISK Z 0 2@2 10000
+WINDOW Y -2@2.1 X -2@2.1
+SPOTS POSITION 'RAY DISTRIBUTION USING QUASI'
+RETURN

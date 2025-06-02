@@ -1,0 +1,77 @@
+!!++
+!! EDGE_SWEPT_ALONG_USERCURV_01.INR 
+!! Title: Sawtooth Edge Swept along USERCURVE Ellipse Function
+!! Category: Simple Problem
+!! Keywords: Edges, EDGES, USERCURVE, $FCN, extrude, curve, OBJECT, ALIGN, PLACE
+!! Description: A somewhat complex usage of ALIGN, PLACE and the OBJECT command
+!! to sweep a sawtooth edge made from POINTS along a USERCURVE function. In this 
+!! case, the fuction is a simple ellipse. The end result is that the sawtooth
+!! follows around the curve keeping its plane perpendicular at all times to the 
+!! ellipse. With ALIGN and PLACE in a loop, the edge is recreated multiple times 
+!! to follow the entire path of the ellipse. The edges are then extruded together
+!! with the OBJECT command to produce a single continuous grooved surface.
+!! Edit History: (latest first)
+!! 11/19/2014 - mt - change PLOT FACETS 5 5 to 5 5 0; corrected spelling for WEIRD;
+!!                   corrected format of $FCN
+!! 06/24/2014 - gb - replaced CURV with CURVE for correct syntax
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 04/14/2009 - cp - corrected USERCURVE spelling
+!! 10/20/2008 - jh - modified
+!! 10/15/2008 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+PI=ACOS(-1)
+
+A=15  !!Semi-major axis
+B=10  !!Semi-minor axis
+H=0   !!X-value of center of ellipse
+K=0   !!Y-value of center of ellipse
+
+$FCN ELLIPSE,
+     H+A*COS(_), K+B*SIN(_),  0 !!x,y,z
+EDGES
+!! Create the curve with 30 X values varying from -PI TO +PI
+  USERCURVE ELLIPSE  -2@(PI) 30
+  SMOOTH   
+
+EDGES   !! altered from Z-definition with rotation
+  POINTS Y 0  4.800 0.0  1,
+              4.000 0.5  1,
+              3.200 0.0  1,
+              2.400 0.5  1,
+              1.600 0.0  1,
+              0.800 0.5  1,
+              0.000 0.0  0
+
+EXTRUDE { 2  !! The Macro that does the lofting
+  PRINT EDGE #1
+  $GRAB 'total with' 0 -1 N K  !! Current line, start at beginning, put 1st 2 numbers in N & K                   
+    $DO 1 (N)                  !! (N=15, K=1)
+      { 
+      EDGE
+      REPEAT 2
+        ALIGN 0 1 0 TAN #1 ?  !! Align given vector to tangent of the curve at ?
+        PLACE CURVE #1 ?
+      REPEAT 2
+        ALIGN 0 1 0 TAN #1 ?.5
+        PLACE CURVE #1 ?.5
+      }
+    REPEAT 2  
+    ALIGN 0 1 0 TAN #1 N+.9999
+    PLACE CURVE #1 N+.9999
+  OBJECT; -(N*2)-K 2 .7 .7*(1-K) '#2'
+}
+Extrude Path EDGE (absolute number)>
+Name of OBJECT>
+
+$EXTRUDE 1 WEIRD
+ 
+CONSIDER ONLY WEIRD
+WINDOW Y X  
+PLOT FACETS 5 5 0   
+PLOT EDGE !! COLOR 2
+$VIEW
+RETURN

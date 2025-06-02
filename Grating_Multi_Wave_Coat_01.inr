@@ -1,0 +1,69 @@
+!!++
+!! GRATING_MULTI_WAVE_COAT_01.INR
+!! Title: Grating using Multi-Wavelength COATING PROPERTIES
+!! Category: Simple Problem
+!! Keywords: Gratings, DIFFRACT, MULTIPLE, diffraction, COATINGS, doe
+!! Description: A grating set up in transmission with two orders on
+!! with efficiencies given by COATING PROPERTIES.
+!! Edit History: (latest first) 
+!! 12/16/2015 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTHS 500 600 750 NM  !! Wavelength range
+BEAMS INCOHERENT GEOMETRIC
+
+COATING PROPERTIES
+  .2 .8  .3 .7  .4 .6  '1MULTI' !! 0 Order
+  .8 .2  .7 .3  .6 .4  '2MULTI' !! 1 Order
+
+SURFACES
+  PLANE Y 0          
+    MULTIPLE 1 0.002    
+  PLANE Z 0 RECTANGLE 3   
+OBJECT 'GRATING'
+  INTERFACE 0 1 AIR AIR DIFFRACT 0.2 0 1MULTI 1 2MULTI !! Orders 0 and 1 using different Coating Properties
+
+!! Define Sources
+
+!! Source 1 - red
+WAVELENGTH 500 
+GRID ELLIPTIC Z -3 -4@2.4 1 25
+  SOURCE DIRECTION 0 0 1
+
+!! Source 2 - green
+WAVELENGTH 600
+GRID ELLIPTIC Z -3 -4@2.4 1 25
+  SOURCE DIRECTION 0 0 1
+
+!! Source 2 - blue
+WAVELENGTH 750
+GRID ELLIPTIC Z -3 -4@2.4 1 25
+  SOURCE DIRECTION 0 0 1
+
+FLUX TOTAL 1 SOU 1
+FLUX TOTAL 1 SOU 2
+FLUX TOTAL 1 SOU 3
+
+!! Plot geometry and trace rays
+MISSED ARROWS 2
+WINDOW Y -3 3 Z -4 11
+PLOT FACETS 7 7 OVERLAY 'SINGLET 3-COLOR RAY TRACE'
+
+SELECT ONLY SOURCE 1 !! Red
+  TRACE PLOT COLOR 2 OVERLAY
+
+SELECT ONLY SOURCE 2 !! Green
+  TRACE PLOT COLOR 13 OVERLAY
+
+SELECT ONLY SOURCE 3 !! Blue
+  TRACE PLOT COLOR 3 OVERLAY
+
+SELECT ALL
+PLOT RAYS 10  !! To demonstrate flux intensity
+!!$VIEW
+STATS SOURCES
+RETURN

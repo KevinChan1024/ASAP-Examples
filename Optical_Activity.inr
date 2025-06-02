@@ -1,0 +1,150 @@
+!!++
+!! OPTICAL_ACTIVITY.INR
+!! Title: Analyzing Optically Active Media
+!! Category: Simple Problem
+!! Keywords: Polarization, PLOT, ACTIVITY, CRYSTAL, LIST ELLIPSE, POLARIZ, TRACE STEP, $WAIT
+!! Description: Using PLOT POLAR and LIST ELLIPSE to
+!! analyze a crystal-type polarizer coupled to an optically active element. 
+!! The CRYSTAL media generates two rays, ordinary and extraordinary. The 
+!! ordinary ray is then sent through the active medium where its 
+!! polarization state rotates as it propagates. The polarization
+!! is plotted as it is traced in steps, in a timed loop, to allow the 
+!! polarization vector direction to be watched as it evolves. 
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/30/2004 - cp - reformatted
+!! 01/20/2004 - jh - added ACTIVITY medium to existing script
+!! 03/16/2000 - cp - reformatted; added header
+!! 03/02/2000 - rh - creation (as POLARIZ_CRYSTAL.INR)
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 550 NM
+FRESNEL BOTH
+XMEMORY NORM  !! Minimum setting to track polarization
+SPLIT 1 
+
+BEAMS COHERENT DIFFRACT
+
+PI=4*ATAN(1)
+
+OATHICK=8         !! Thickness of ACTIVITY medium
+CRYSTALTHICK=20   !! Thickness of CRYSTAL medium
+CA=7              !! Clear aperture
+NOASTEPS=32       !! Number of steps to propagate through ACTIVITY
+TIMER=0.05        !! Time delay [seconds] per trace step in ACTIVITY medium
+
+MEDIA
+  1.6 ACTIVITY PI/8 (550E-6)/16 'ACTIV'
+
+  1.6 'CRYSTAL_ORD'
+  1.1  CRYSTAL Y 45 0 CRYSTAL_ORD 'CRYSTAL'
+
+   
+!! Uniaxial crystal element -- polarization splitter
+SURFACES
+  PLANE Z 0 RECTANGLE (CA)
+OBJECT 'CALCITE.FRONT'
+  INTERFACE COAT +BARE AIR CRYSTAL
+  REDEFINE COLOR 1
+
+SURFACES
+  PLANE Z (CRYSTALTHICK) RECTANGLE 2@(CA)
+OBJECT 'CALCITE.BACK'
+  INTERFACE COAT +BARE AIR CRYSTAL
+  REDEFINE COLOR 1
+  
+EDGES
+  RECTANGLE Z 0 2@(CA)
+  SWEEP DIRECTION (CRYSTALTHICK)  0 0 1
+OBJECT 'CALCITE.EDGE
+  INTERFACE 0 0 AIR CRYSTAL
+  REDEFINE COLOR 1
+
+!! Optically active element
+SURFACES 
+  PLANE Z (CRYSTALTHICK+0.2) RECTANGLE (CA)
+OBJECT 'OACTIVE.FRONT'
+  INTERFACE COAT +BARE AIR ACTIV
+  REDEFINE COLOR 7
+
+$DO 1 (NOASTEPS-1) 1
+  {
+  SURFACES
+    PLANE Z (CRYSTALTHICK+0.2+(OATHICK*?/(NOASTEPS))) RECTANGLE 2@(CA)
+  OBJECT 'OACTIVE.MID.?'
+    INTERFACE COAT +BARE ACTIV ACTIV
+    REDEFINE COLOR 7
+  }
+
+SURFACES
+  PLANE Z (CRYSTALTHICK+0.2+OATHICK) RECTANGLE 2@(CA)
+OBJECT 'OACTIVE.BACK'
+  INTERFACE COAT +BARE AIR ACTIV
+  REDEFINE COLOR 7
+  
+EDGES
+  RECTANGLE Z (CRYSTALTHICK+0.2) 2@(CA)
+  SWEEP DIRECTION (OATHICK)  0 0 1
+OBJECT 'OACTIVE.EDGE
+  INTERFACE 0 0 AIR ACTIV
+  REDEFINE COLOR 7 
+    
+GROUP OACTIVE.?
+SHIFT Y CA/2
+    
+!! Detector 
+SURFACES
+  PLANE Z (CRYSTALTHICK+OATHICK+3) (CA)  RECTANGLE 2@(CA*1.1)
+OBJECT 'DETECTOR'
+  INTERFACE 0 0 AIR AIR
+  REDEFINE COLOR 20
+
+THETA=5    !! source angle from Z in YZ plane
+
+!! Source  
+POLARIZ X 1 1  
+GRID RECT Z -1 -4@1   1 1
+  SOURCE DIRECTION Z (THETA) 90
+  SHIFT Y 2*(-SIN[THETA])
+
+WINDOW Y Z
+CONSIDER EXCEPT OACTIVE.MID.?      !! avoid showing intermediate planes
+
+PROFILES 0 0 -3 'Trace through crystal and optically active media' TEXT OVERLAY
+  0 (CA/1.5) 0.5, 0 0 0.5, 0 0.5 0 'Crystal'
+  0 (CA) (CRYSTALTHICK+0.7), 0 0 0.5, 0 0.5 0 'Activity'
+  -2 (CA) (CRYSTALTHICK+OATHICK+4), 0.5 0 0, 0 0.5 0 'Detector'
+RETURN
+
+CONSIDER ALL
+TRACE 0 OACTIVE.FRONT PLOT COLOR 2 OVERLAY
+
+$ECHO NONE
+&DO 1 (NOASTEPS) 1
+  {
+  TRACE STEP +1 PLOT COLOR 3 OVERLAY
+  CONSIDER ONLY OACTIVE.?
+  PLOT POLARIZATION COLOR 2 OVERLAY
+  CONSIDER ALL
+  $WAIT (TIMER) 'Optically active material step |'  
+  }
+$ECHO
+
+TRACE PLOT COLOR 2 OVERLAY
+PLOT POLARIZATION COLOR 3
+CONSIDER ONLY DETECTOR
+WINDOW Y X
+
+LIST ELLIPSE  
+
+$VIEW
+
+PIXELS 111
+SPREAD NORMAL
+$WAIT 0.2 !! To have 3d viewer scale to geometry before adding display file
+&VIEW BRO009.DAT
+RETURN

@@ -1,0 +1,107 @@
+!!++
+!! LENS_ASPHERIC_PERTURBED.INR
+!! Title: Aspheric Lens with Random Roughness 
+!! Category: Simple Problem
+!! Keywords: Lenses, aspheric, USERSAG, $FCN, Melles-Griot, sag, ROUGHNESS RANDOM
+!! Description: Original example - An Aspheric lens from Melles-Griot created
+!! by USERSAG, with raytrace. 
+!! Added a ROUGHNESS RANDOM to an aspheric surface to
+!! simulate surface height and slope errors. Either of 
+!! these could also be set to zero. The height 
+!! randomization is a Gaussian variation. The slope 
+!! variation is using an optional parameter to set to a 
+!! uniform variate, but may be set to other distributions
+!! as documented in ROUGHNESS help. 
+!!
+!! The variation is shown in PROFILES along with the 
+!! original base surface and two shifted surface to 
+!! approximate the variation bounds. The illustrative 
+!! surface objects should be omitted in a real raytrace.
+!! This method may be used for lenses defined by sag
+!! coefficients rather than aspheric coefficients. 
+!! Edit History: (latest first) 
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 07/21/2010 - jah - revised original to add roughness
+!! 04/09/2007 - cp - corrected keyword
+!! 04/10/2002 - cp - modified format and header
+!! 04/10/2002 - cl - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.5  'GLASS'
+COATINGS PROPERTIES 
+  0 1   'TRANSMIT'
+ARROWS OFF
+
+UNITS MM
+
+!! Define geometry
+
+!! Create aspheric surface of Melles Griot lens
+A1=1.6380E-03  !! First  order sag coefficient
+A2=8.4700E-02  !! Second order sag coefficient
+A3=7.2934E-04  !! Third  order sag coefficient
+A4=4.1096E-04  !! Fourth order sag coefficient 
+
+$FCN MG_LENS (_*A1+_^2*A2+_^3*A3+_^4*A4)  !! Define function for sag of lens
+SURFACES
+  USERSAG Z 0 MG_LENS ELLIPSE 6 6  !! 0 0 0 is the reference point for the function
+OBJECT 'Melles_Griot_LAG000_Surface_1'
+  INTERFACE COAT +TRANS AIR GLASS
+
+  RETURN
+  PIXELS 201
+  PROFILES 0 0 -1 OVERLAY COLOR 1 'Nominal surface and height perturbations'
+  OBJECT .1; SHIFT Z -1E-1
+  PROFILES 0 0 -1 OVERLAY COLOR 4 !! draw an "offset surface" to the original
+  OBJECT .1; SHIFT Z +2E-1
+  PROFILES 0 0 -1 OVERLAY COLOR 4 !! draw another "offset surface" to the original
+  
+  OBJECT .1; 
+  SHIFT Z -1E-1
+  ROUGHNESS RANDOM 0.40E-1 0.1 0 !! Gaussian height error 0.04; uniform slope error 0.1  
+  RETURN
+  PROFILES 0 0 -1 COLOR 3 !! draw randomly height-perturbed "tiles" of surface
+  $IO !! illustrates cartoonishly how the ROUGHNESS offset works
+  
+!! Create spherical surface of Melles Griot lens
+SURFACES
+  OPTICAL Z 5.5 -12.25 ELLIPSE 6 6
+OBJECT 'Melles_Griot_LAG000_Surface_2'
+  INTERFACE COAT +TRANS AIR GLASS
+
+!! Create edge of of Melles Griot lens
+SURFACES
+  TUBE Z 3.749171 2@6 3.92954 2@6
+OBJECT 'Melles_Griot_LAG000_Edge'
+  INTERFACE COAT +TRANS AIR GLASS
+
+!! Create a detector to catch the rays during tracing
+SURFACES
+  PLANE Z 10 ELLIPSE 6
+OBJECT 'Detector'
+
+!! Verify geometry
+WINDOW Y Z
+PLOT FACETS 31 31 0 OVERLAY
+
+!! Create source
+GRID ELLIPTIC Z -5 -4 4 -4 4 101 101
+  SOURCE DIRECTION 0 0 1
+
+!! Trace rays
+TRACE PLOT 100
+
+!! Analyze results
+CONSIDER ONLY DETECTOR
+FOCUS MOVE  !! Move the rays to the best rms focus position
+
+WINDOW X Y
+SPOTS POSITION
+RETURN      
+
+
+

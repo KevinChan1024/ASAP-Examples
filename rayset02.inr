@@ -1,0 +1,26 @@
+!!++
+!! RAYSET02.INR
+!! Title: Letter 'R' With RAYSET
+!! Category: Isolated Command
+!! Keywords: RAYSET, Sources
+!! Description: Generating a rayset by position
+!! in the shape of the letter 'R'.
+!! Edit History: (latest first)
+!! 10/09/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+RAYSET Z -2
+ -3 -4; -3 -3; -3 -2; -3 -1; -3 0  !! Side
+ -3 1; -3 2; -3 3; -3 4; -3 5      !! Side
+ -2 5; -1 5; 0 5; 1 5              !! Top
+ 2 1; 2 2; 2 3; 2 4                !! Otherside  
+ -3 0; -2 0; -1 0; 0 0; 1 0        !! Bottom
+ -1 0; 0 -1; 1 -2; 2 -3; 3 -4      !! Tail
+
+WINDOW Y X
+SPOTS POSITION ATTRIBUTE 2
+RETURN

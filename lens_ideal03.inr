@@ -1,0 +1,26 @@
+!!++
+!! LENS_IDEAL03.INR
+!! Title: Ideal Lens with Raytrace
+!! Category: Isolated Command
+!! Keywords: IDEAL, LENSES
+!! Description: An ideal lens with a single
+!! ray traced through.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES
+  IDEAL Z 0,  1 0.4 1; 1 0 -1/8 1
+OBJECT
+  
+WINDOW Y Z
+WINDOW 1.5
+ARROW 3
+RAY 0 -.8 -1, 0 0 1 PLOT OVERLAY 'LENS:IDEAL' COLORS 2
+PLOT LENSES 'LENS:IDEAL' COLORS 11
+RETURN

@@ -1,0 +1,22 @@
+!!++
+!! POLARIZ01.INR
+!! Title: Linear Vertical Polarization
+!! Category: Isolated Command
+!! Keywords: POLARIZ, Polarization
+!! Description: Setting up the POLARIZ command
+!! for a linear, vertically polarized source.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/09/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+BEAMS INCOHERENT GEOMETRIC
+POLARIZ X 0 1
+GRID RECT Z 0 -4@1 2@3
+  SOURCE DIRECTION 0 0 1
+  LIST ELLIPSE
+RETURN

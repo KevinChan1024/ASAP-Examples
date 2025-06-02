@@ -1,0 +1,59 @@
+!!++
+!! LIST03.INR
+!! Title: Output of LISTing Parabasals
+!! Category: Isolated Command
+!! Keywords: LIST, Wave, rays, Tracing
+!! Description: Using LIST for outputing 
+!! parabasal ray data. Example shows PS, DS,
+!! P#, and D# options.
+!! Note: This is not a runable inr file.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 12/21/2001 - cp - modified description
+!! 10/09/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+ 
+ --- UNITS CM
+ --- BEAMS COHERENT DIFFRACT
+ --- WAVELENGTH .557 UM
+ --- PARABASALS 4
+ --- RAYS Z -9
+ ---  0 0 1 .5 .5   !! Base ray
+ --- SOURCE DIRECTION 0 0 1
+       1 rays defined
+ 
+ --- LIST PS
+ 
+   Ray      X          Y            Z        Flux     Size        OPL
+ 
+      1 0.000000   0.000000    -9.00000      1.00     0.000     0.00000000
+        0.500000   0.000000     0.000000
+        0.000000   0.500000     0.000000
+        0.000000   0.000000     0.000000
+
+        0.000000   0.000000     0.000000
+ --- LIST P1
+ 
+   Ray      X          Y            Z        Flux     Size        OPL
+ 
+      1 0.500000   0.000000    -9.00000      1.00     0.000     0.00000000
+        0.500000   0.000000     0.000000
+ --- LIST DS
+ 
+   Ray      A          B            C        Flux     Size        OPL
+ 
+      1 0.000000   0.000000     1.00000      1.00     0.000     0.00000000
+        0.000000   0.000000     0.000000
+        0.000000   0.000000     0.000000
+
+        0.268290   0.000000     -.366617E-01
+        0.000000   0.268290     -.366617E-01
+ --- LIST D3
+ 
+   Ray      A          B            C        Flux     Size        OPL
+ 
+      1 0.268290   0.000000     0.963338     1.00     0.000    0.00000000
+        0.000000   0.000000     0.000000
+        0.000000   0.000000     0.000000
+        0.268290   0.000000     -.366617E-01

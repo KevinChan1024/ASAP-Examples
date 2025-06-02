@@ -1,0 +1,59 @@
+!!++
+!! ITERATIVE_MACROS_01.INR
+!! Title: Evaluate and display functions using iterative macros
+!! Category: Simple Problem
+!! Keywords: Macros_user, $ITER, COMBINE, iterate, function
+!! Description: Demonstrate evaluation of functions using $ITER within 
+!! user macros. Open and plot the data for each function 
+!! using DISPLAY. Multiply the two functions using the 
+!! COMBINE command in DISPLAY mode and plot this product.
+!! This shows that $ITER within a user macro stores its 
+!! result in a distribution file with the macro name as 
+!! its filename, e.g. a $ITER within a macro named 
+!! MACRO_ITER1 would store its result in the distribution 
+!! file MACRO_ITER1.DIS rather than ITER.DIS.
+!! Edit History: (latest first)
+!! 06/16/2014 - cp - added header
+!! 06/12/2014 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Define constant, PI
+PI=4*ATAN(1)
+
+!! Define a macro to evaluate a 2-D decaying sinusoid
+MY_ITER1 {
+$ITER Y -2@(2*PI) -51 X -2@(2*PI) -71 Z 
+  {
+  T=0.4*Y+1.6*X 
+  Z=EXP[-(T+4*PI)/(8*PI)]*COS(4*T/PI)
+  }
+}
+!! $ITER result stored in file MY_ITER1.DIS
+
+!! Define a macro to evaluate a 2-D elliptic sinusoid
+MY_ITER2 {
+$ITER Y -2@(2*PI) -51 X -2@(2*PI) -71 Z 
+  { 
+  Z=COS(3*SQRT[(Y/4)^2+((X+2*PI)/2)^2])
+  }
+}
+!! $ITER result stored in file MY_ITER2.DIS
+
+!! Run the macros to evaluate two different 2-D functions
+$MY_ITER1 
+$MY_ITER2
+  
+!! Plot the first function
+DISPLAY MY_ITER1.DIS
+  PICTURE '1st function'
+RETURN
+
+!! Plot the second function; then multiply by the first and plot the result
+DISPLAY MY_ITER2.DIS
+  PICTURE '2nd function'
+  COMBINE MY_ITER1.DIS 1  !! Multiplies 1st function by 2nd
+  PICTURE 'Product of two functions'
+RETURN

@@ -1,0 +1,90 @@
+!!++
+!! PATHS01.INR
+!! Title: Stray Light Analysis with PATHS
+!! Category: Isolated Command 
+!! Keywords: PATHS, Tracing, ghost, stray
+!! Description: A simple example to show a typical use
+!! of the PATHS command for ghost image analysis.
+!! Several surfaces are set up to create multiple
+!! trace paths through splitting and scattering.
+!! Paths are listed after the trace using the PATHS
+!! command.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/10/2013 - mt - changed PROFILES OVERLAY to PROFILES 0 0 -1 OVERLAY 
+!! 03/27/2000 - cp - modified format; added description
+!! 01/18/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CENTIMETERS
+ 
+MEDIA
+  2.4  'GLASS'
+  
+COATINGS PROPERTIES
+  1 0  'REFLECT'
+  0 1  'TRANSMIT'
+  0 0  'ABSORB' 
+
+LEVEL 1
+SPLIT 2
+FRESNEL AVERAGE
+
+MODELS
+  LAMBERTIAN 0.5
+
+SURFACES
+  PLANE Z 0.0 ELLIPSE 2.5  
+  OBJECT 'L1.FRONT'
+    INTERFACE COAT BARE AIR GLASS 
+    REDEFINE COLOR 1
+    
+SURFACES
+  OPTICAL Z 1.0 -5  0 ELLIPSE 2.5  
+  OBJECT 'L1.BACK'
+    INTERFACE COAT BARE AIR GLASS 
+    REDEFINE COLOR 1
+    SCATTER MODEL 1 
+      TOWARDS SPEC 1
+
+SURFACES
+  TUBE Z 0.0 2.5 2.5 1 2.5 2.5 0.0 0.0  
+  OBJECT 'L1.EDGE'
+    INTERFACE COAT ABSORB AIR GLASS 
+    BOUNDS -.2 +.3 
+    REDEFINE COLOR 1
+ 
+SURFACES
+  PLANE Z -2 ELLIPSE 3.5 3.5 .4  
+  OBJECT 'APERTURE'
+    INTERFACE COAT ABSORB AIR AIR
+    REDEFINE COLOR 1
+   
+SURFACES
+  PLANE Z 6 ELLIPSE 1  
+  OBJECT 'DETECTOR'
+    INTERFACE COAT ABSORB AIR AIR
+    REDEFINE COLOR 1
+   
+GRID RECT Z 0 -2.5 2.5 -2.5 2.5 11 11 
+  SOURCE POSITION 0 0 -10 
+  MOVE TO POINT 0 0 -10  
+
+WINDOW Y -7.34 7.34  Z -12 8
+
+STATS
+!! SAVE  !! Optional to study the HISTORY of any path
+PROFILES 0 0 -1 OVERLAY
+TRACE PLOT
+
+CONSIDER ONLY DETECTOR
+STATS
+PATHS
+
+RETURN
+
+
+

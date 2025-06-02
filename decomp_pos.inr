@@ -1,0 +1,68 @@
+!!++
+!! DECOMP_POS.INR
+!! Title: Decomposing in Position
+!! Category: Simple Problem
+!! Keywords: Wave, DECOMPOSE, FIELD, ENERGY, TRACE STEP, CLIP
+!! Description: Demonstration of decomposing in position.
+!! Edit History: (latest first)
+!! 10/06/2014 - mt - changed TRACE STEP 1 to TRACE STEP -1 
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 08/18/2005 - cp - reformatted, added keyword
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  0 1 'TRANS'
+
+EDGES 
+  ELLIPSE Z -5 2@7
+  RECTANGLE Z -5 5 2.5 16 
+OBJECT
+  0.1 0.2 'APERTURE'
+
+SURFACES
+  PLANE Z -4.95 ELLIPSE 7 
+OBJECT 'DUMMY_PLANE  !! A dummy plane to stop rays at aperture
+  INTERFACE COAT TRANS AIR AIR
+
+LENSES
+  MIRROR Z 0 5 50 -1
+OBJECT 'PRIMARY_MIRROR'
+
+SURFACES
+  PLANE Z -50 ELLIPSE 0.2
+OBJECT 'DETECTOR' 
+  
+PARABASALS 4 
+BEAMS COHERENT DIFFRACT
+WAVELENGTHS 1E-4
+WIDTHS 1.6
+GRID ELLIPTIC Z -10 -4@6 2@20
+  SOURCE DIR 0 0 1
+
+TRACE STEP -1  !! Trace rays up to dummy plane
+WINDOW Y -2@4 X -2@6
+PIXELS 51  !! Set window and pixel for decompose
+FIELD ENERGY -5 CLIP -0.4
+DISPLAY 29 ENERGY  !! Create distribution file
+  ISOMETRIC 'CLIPPED IRRADIANCE PATTERN'
+RAYS 0  !! Zero original rays
+
+DECOMPOSE POSITION  !! Create the spatial and angular beam set properties
+
+FIELD ENERGY -5
+DISPLAY 29 ENERGY
+  ISOMETRIC 'DECOMPOSED IRRADIANCE PATTERN'
+
+TRACE
+CONSIDER ONLY DETECTOR
+WINDOW Y -2@0.003 X -2@0.003
+SPREAD NORMAL -11
+DISPLAY 11
+  FORM -5
+  ISOMETRIC 'PSF OF RECTANGULAR APERTURE SYSTEM W/DECOMPOSE POSITION'
+RETURN

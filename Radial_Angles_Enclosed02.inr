@@ -1,0 +1,66 @@
+!!++
+!! RADIAL_ANGLES_ENCLOSED02.INR
+!! Title: Enclosed Energy vs. Angle #2
+!! Category: Simple Problem
+!! Keywords: Radiometry, enclosed, energy, $ITER, ANGLES, radial, $DO
+!! Description: This is a more advanced example of how to graph
+!! enclosed energy vs. angle out to 90 degrees using the $ITER
+!! command. It does not have the problem of spilling over 90
+!! degrees when radially averaging over a rectangular map of angles,
+!! as when performing a RADIAL BOTH after converting dir-cosine
+!! data to angles. This file compares both methods.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EMITTING RECT Z 0 1 1 20000
+
+ENCLOSED2 {
+  $DO #1 #1
+  ENCLOSED=T?
+}
+
+ENCLOSEDANGLES { 3 enclosed energy in angle space 
+  RADIANT #1 0 #2 #3 0 360 1
+ 
+  DISPLAY
+    WRITE INTENSITY DIS
+  $DO 0 #3; VALUES,  !! Perform VALUES once and loop on next line
+    #2*(?)/#3 0 V?,
+ 
+  RETURN
+
+  TOTAL=0
+  $DO 1 #3; TOTAL=0 VOLD=V0 T0=0
+    TOTAL=TOTAL-((V?+VOLD)/2)*(COS[?*#2/#3]-COS[(?-1)*#2/#3]) T?=TOTAL VOLD=V?
+
+  $ITER ANGLE 0 #2 -(#3+1) ENCLOSED  !! First form - iter over range, including end points
+    {
+    &ENCLOSED2 LIT[ANGLE*(#3/#2)]
+    }
+
+  DISPLAY ENCLOSEDANGLES
+    NORMALIZE MAX
+    NORMALIZE 0.0100001
+    WRITE ENCLOSED DIS
+    GRAPH 'Enclosed Energy vs. Angle from Zenith'
+  RETURN
+
+  DISPLAY INTENSITY
+    NORMALIZE MAX
+    NORMALIZE 0.0100001
+    GRAPH APPEND 'Enclosed Energy vs. Angle from Zenith'  !! Top title
+      '                              '
+      '1-Enclosed Energy, 2-Intensity'  !! Bottom title
+  RETURN
+}
+Enter Axis [X:Y:Z]
+Enter Maximum Angle>
+Enter Number of Angular Steps>
+
+ENCLOSEDANGLES Z 90 10 
+RETURN

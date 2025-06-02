@@ -1,0 +1,39 @@
+!!++
+!! MISSED01.INR
+!! Title: Rays Missing Absorbing Surface
+!! Category: Isolated Command
+!! Keywords: MISSED, rays, Analysis
+!! Description: Shows ho to display missed rays in
+!! the 3D viewer. Note that 2D plots show missed rays
+!! out to edge of plot as a convenience, but will not
+!! normally show up in 3D viewer. Uses an emitting
+!! spheroid reflected off an extruded edge toward
+!! an absorbing plane.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 05/12/2000 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  ELLIPSE Z 0 20 20 256
+  ELLIPSE Z 10 5 5 256
+  OBJECT
+    .1 .2 'COMBINED'
+    INTERFACE 1 0 
+    SHIFT Z 10
+
+SURFACES
+  PLANE Z -10 RECTANGLE 20 20
+  OBJECT 'DETECTOR'
+
+EMITTING SPHERE 0 0 0 0 0 0 1000
+
+MISSED ARROWS 30 !! To see missed rays in 3D viewer
+                 !! Choose an arrow length appropriate to system size
+PLOT FACETS 9 9 OVERLAY
+TRACE PLOT
+$VIEW
+RETURN

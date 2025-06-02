@@ -1,0 +1,54 @@
+!!++
+!! FLUX_INCOHERENT.INR
+!! Title: Setting Incoherent Source Flux
+!! Category: Isolated Command
+!! Keywords: FLUX, Sources, INCOHERENT  
+!! Description: Setting the flux of incoherent sources
+!! based on their initial irradiance setting.
+!! Flux may be set on a per-ray basis or on the
+!! total of rays in the source.
+!! Edit History: (latest first)
+!! 03/02/2002 - cp - changed title, added keyword
+!! 10/05/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM 'W'
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 0.6328 UM
+
+GRID RECTANGLE Z 0 -4@5 2@9
+  SOURCE DIRECTION 0 0 1, 0 SIN[20] COS[20]
+
+!! Defines two sources propagating primarily
+!! in the Z direction. The area of the beam is
+!! 100 square units. ASAP initially sets the
+!! irradiance of the beam to unity, therefore,
+!! the flux of each ray is equal to (assuming
+!! watts as the flux unit) the following equation:
+!! 1W/[unit area] x 100 [sq. units]/[81 rays] = 1.234W/ray)
+
+FLUX 0 3 SOURCE 1  !! The power of the first source is now 300W [or 3.7W/ray]
+FLUX 0 5 SOURCE 2  !! The power of the second source is 500W [or 6.17W/ray]
+
+!! Check:
+SELECT ONLY SOURCE 1
+  STATS
+SELECT ONLY SOURCE 2
+  STATS
+SELECT ALL 
+
+!! The same could have been more easily accomplished with:
+FLUX TOTAL 300 SOURCE 1  !! 300W
+FLUX TOTAL 500 SOURCE 2  !! 500W
+
+!! Check:
+SELECT ONLY SOURCE 1
+  STATS
+SELECT ONLY SOURCE 2
+  STATS
+SELECT ALL 
+RETURN

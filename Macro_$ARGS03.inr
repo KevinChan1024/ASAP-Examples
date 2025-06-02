@@ -1,0 +1,35 @@
+!!++
+!! MACRO_$ARGS03.INR
+!! Title: The USER Option
+!! Category: Simple Problem
+!! Keywords: Macros_pre, $ARGS, macro, USER
+!! Description: The USER option tells ASAP what to
+!! do with unspecified arguments in the "calling"
+!! line to the macro. It allows arguments to be left
+!! off that are not specifically prompted for in the
+!! macro.  Normally, if arguments are left off, ASAP
+!! will prompt the user, even if there are no prompts
+!! supplied by the macro. This allows for easier
+!! batch mode operation. Note that for all macros,
+!! the #n's are simple text substitutions done before
+!! any parsing occurs on the macro lines themselves.
+!! Any arguments that are left off are substituted
+!! with blanks.
+!! Edit History: (latest first)
+!! 12/01/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+ 
+TESTMAC { 1
+  NRAYS=#1
+  #2 #3  !! Reserved for 'PIXELS n' command
+}
+'Enter number of rays>'
+ 
+$ARGS USER  !! Allows for #2 and #3 to be left off
+$TESTMAC 10000 !! PIXELS 101
+$ARGS ALL 
+
+RETURN 

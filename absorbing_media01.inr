@@ -1,0 +1,52 @@
+!!++
+!! ABSORBING_MEDIA01.INR
+!! Title: Tracing in Absorbing Media
+!! Category: Simple Problem
+!! Keywords: Interfaces, MEDIA, ABSORB
+!! Description:  Shows how an absorbing media can stop
+!! the ray trace part way through. This generates an
+!! "Absorbed After" ray trace cessation warning in the 
+!! output console.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 07/12/2000 - cp - Modified format; added header
+!! 07/12/2000 - arg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 550 NM
+
+MEDIA
+ !!1.5`1E-7 'TEST' !! Gets through with ~99.8% of flux
+ !!1.5`1E-5 'TEST' !! Gets through with ~79.5% of flux
+ !!1.5`1E-4 'TEST' !! Gets through with ~10.1% of flux
+ 1.5`1E-3 'TEST' !! Gets absorbed inside the slab!
+
+SURFACES
+  PLANE Z 2 RECTANGLE 2 2
+  OBJECT 'FRONT'
+    INTERFACE 0 1 AIR TEST
+
+SURFACES
+  PLANE Z 3 RECTANGLE 2 2
+  OBJECT 'BACK'
+    INTERFACE 0 1 AIR TEST
+
+SURFACES
+ PLANE Z 5 RECTANGLE 3 3
+ OBJECT 'DETECTOR'
+   INTERFACE 0 0 AIR AIR 
+
+GRID ELLIPTIC Z 0 -4@1 2@1
+  SOURCE DIRECTION 0 SIN[5] COS[5]
+
+FLUX TOTAL 100.0
+
+WINDOW Y Z
+PLOT FACETS OVERLAY
+TRACE PLOT
+STATS
+RETURN

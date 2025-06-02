@@ -1,0 +1,37 @@
+!!++
+!! TORUS_ELLIPTICAL.INR
+!! Title: Torus with Elliptical Cross-Section
+!! Category: Simple Problem
+!! Keywords: Geometry, torus, macro, EDGES, OVAL, OBJECT, SMOOTH
+!! Description: This shows how to make an elliptical torus
+!! with a circular cross-section.  A $DO loop creates 9 oval
+!! edges that define positions around the torus.  The second sysntax
+!! of the OBJECT command takes the last 9 edges and extrudes them
+!! along a circular path.
+!! Edit History: (latest first)
+!! 02/28/2002 - cp - corrected style
+!! 02/04/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+TORUSELLIPSE { 3
+  R=#1 A=#2 B=#3
+  $DO 0 8 
+  {
+    EDGES
+     OVAL Z R*SIN[?*45] A+R*COS[?*45] B+R*COS[?*45] 0 0
+      SMOOTH
+  }
+OBJECT; -9 2 SQRT[0.5] 0  !! Extrudes last 9 edges around a circular path
+}
+Enter Cross-Section Radius>
+Enter A major semiwidth>
+Enter B minor semiwidth>
+
+&TORUSELLIPSE 1 6 3
+PLOT FACETS 7 7 
+PLOT EDGES  !! To see how it was constructed
+$VIEW
+RETURN

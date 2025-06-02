@@ -1,0 +1,49 @@
+!!++
+!! AXIS_CYLINDRICAL.INR
+!! Title: Selecting Rays by AXIS Cylindrical Coordinates
+!! Category: Simple Problem
+!! Keywords: Analysis, AXIS, SPOTS, SELECT, cylindrical
+!! Description: Shows how to use AXIS to SELECT rays
+!! by their cylindrical coordinates, or the distance from 
+!! the AXIS specified.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 04/09/2007 - cp - corrected keyword
+!! 08/03/2005 - sam - creation
+!!--
+
+SYSTEM NEW
+RESET
+UNITS MM
+
+!!  Collimated emitter
+EMITTING DISK Z 0 2@300 10000 2@0
+
+
+!!  A Detector
+ENT OBJ;PLANE Z 1 RECT 500 'THING'
+
+!!  Spot diagram
+WINDOW Y -2@400 X -2@400
+SPOTS POSITION
+STATS POSITION
+
+TRACE
+
+CONSIDER ONLY THING 
+
+!!  Set cylindrical coordinate system along Z
+AXIS Z
+
+!!  Select only rays with radial coordinate greater than 100
+SELECT ONLY 100 R
+
+!!  View data in cylindrical coordinates
+STATS POSITION
+!!  Turn off axis for subsequent data analysis
+AXIS OFF
+
+!!  Spot diagram of selected rays
+WINDOW Y -2@400 X -2@400
+SPOTS POSITION
+RETURN

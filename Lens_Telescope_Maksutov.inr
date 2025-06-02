@@ -1,0 +1,50 @@
+!!++
+!! LENS_TELESCOPE_MAKSUTOV.INR
+!! Title: Maksutov-Cassegrain Telescope
+!! Category: Simple Problem
+!! Keywords: Lenses, LENSES, TELESCOPE, Maksutov, Cassegrain
+!! Description: A two mirror telescope design similar to
+!! a Maksutov-Cassegrain, using the LENSES TELESCOPE command.
+!! The reference point of the system is the vertex of the
+!! primary mirror and it is oriented and located given the
+!! defined global coordinates axis and location.
+!! The second mirror of the Cassegrain configuration has a
+!! negative power and a positive magnification.
+!! This is an example of the design with two concentric
+!! mirrors with the stop. Such location of the mirrors
+!! eliminates third order coma, astigmatism and distortion
+!! without the addition of conics on the mirror. However,
+!! ASAP is programmed to always eliminate spherical aberration.
+!! That is why the two mirrors end up with conic constants
+!! that correct spherical aberration and coma.
+!! From the Lenses chapter.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 02/10/2000 - cp - modified format; added description
+!! 02/22/1999 - mc - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! The FL1/SEP/FL2 option requires more explicit input like
+!! the individual focal length of each mirror and their separation.
+!! STOP is the keyword that tells ASAP to add a corrector plate in
+!! front of the primary mirror. corrector plates are usually used
+!! to minimize spherical aberration. This corrector plate becomes
+!! a stop when the following media input is omitted or is AIR.
+LENSES 
+  TELESCOPE Z 0 100 FL1 200 SEP 120 FL2 -140 STOP 400 
+  OBJECT 'MAKSUTOV_CASSEGRAIN'
+  PRINT  !! Useful to verify thickness assignments
+
+GRID RECT Z 0 -4@100 1 13 0.35
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -410
+
+ARROWS OFF 
+WINDOW Y Z
+WINDOW 1.5  !! Enlarge window 50%
+PROFILES OVERLAY
+TRACE PLOT
+RETURN

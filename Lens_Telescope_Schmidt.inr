@@ -1,0 +1,45 @@
+!!++
+!! LENS_TELESCOPE_SCHMIDT.INR
+!! Title: Schmidt Telescope with Corrector
+!! Category: Simple Problem
+!! Keywords: Lenses, LENSES, TELESCOPE, Schmidt, mirror, corrector
+!! Description: A one mirror telescope using a simple
+!! parabolic mirror. The TELESCOPE command is programmed
+!! to design telescopes that are always corrected for
+!! third order spherical aberration. 
+!! The mirror has a 40 mm radius of curvature (2xFL). In
+!! this design, the mirror is concentric with the stop
+!! (the corrector plate). Such configuration eliminates third
+!! order coma, astigmatism and distortion introduced by the
+!! mirror. The asphericity of the corrector plate corrects
+!! spherical aberration and the mirror remains spherical with
+!! a zero conic constant.
+!! From the Lenses chapter.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 02/10/2000 - cp - modified format; added description
+!! 02/22/1999 - mc - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! FL is the telescope overall focal length.
+!! STOP is the keyword that tells ASAP to add a corrector plate
+!! in front of the primary mirror. Corrector plates are usually
+!! used to minimize spherical aberration. 
+LENSES 
+  TELESCOPE Z 0 10 FL 20 STOP 40 BK7
+  OBJECT 'SCHMIDT'
+  PRINT
+
+GRID RECT Z 0 -4@10 1 5
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -45
+
+ARROWS OFF 
+WINDOW Y Z
+WINDOW 1.5  !! Enlarge window 50%
+PROFILES OVERLAY  
+TRACE PLOT
+RETURN

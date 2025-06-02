@@ -1,0 +1,29 @@
+!!++
+!! APOD_ANGLES01.INR
+!! Title: Apodizing with USERAPOD and $FCN
+!! Category: Simple Problem
+!! Keywords: Sources, APODIZE, USERAPOD, ANGLES, $FCN, MESH
+!! Description: Apodizing in angle space using a simple
+!! user-defined function. The mesh plot displays the effects.
+!! Edit History: (latest first)
+!! 11/11/2013 - gb - changed "apodizing" keyword to "APODIZE"
+!! 10/30/2013 - cp - corrected keyword
+!! 02/15/2000 - cp - modified format; added description
+!! 01/18/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$FCN SINAP SIN(_1) !! No "_2" means symmetrical about Y
+
+USERAPOD ANGLES Z SINAP
+
+EMITTING SPHEROID 0 0 0   0 0 0   100000
+
+RADIANT
+DISPLAY
+  AVERAGE
+  MESH
+  $VIEW
+RETURN

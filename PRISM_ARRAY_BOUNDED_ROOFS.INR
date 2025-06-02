@@ -1,0 +1,100 @@
+!!++
+!! PRISM_ARRAY_BOUNDED_ROOFS.INR
+!! Title: Slanted Prism Array by Mutually Bounding TUBEs 
+!! Category: Simple Problem
+!! Keywords: Arrays, ROOF, ARRAY, prism, BOUNDS
+!! Description: An ARRAY of prisms created by using ROOF
+!! to form the main prism face, mutually bounded with a
+!! TUBE to form the sides and prism "heel". 
+!! It traceS like a real surface, and a few periods are
+!! traced to show it works.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 09/25/2007 - cp - added header
+!! 09/25/2007 - jh - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+SPLIT 1
+
+UNITS MM
+
+MEDIA
+  1.6 'PLASTIC'
+
+
+NX=6       !! NUMBER OF ARRAY ELEMENTS ALONG X
+NY=4       !! NUMBER OF ARRAY ELEMENTS ALONG Y
+ASX=4      !! ARRAY SPACING IN X
+ASY=7      !! ARRAY SPACING IN Y
+
+
+PHEIGHT=2
+PLENGTH=5  !! PRISM LENGTH IN BASE PLANE (Y-direction)
+PHWIDTH=3/2   !! PRISM HALF-WIDTH (X-direction)
+PANGLE=ATAN[PHEIGHT/PLENGTH]  !! PRISM TOP FACE ANGLE TO BASE PLANE [DEGREES]
+
+RANGLE=90-PANGLE
+RROT=RANGLE/2
+RLIMB=PLENGTH/COS[PANGLE]   !! ROOF LIMB LENGTH
+RLENGTH=RLIMB*SIN[RANGLE/2]   !! ROOF LENGTH ACROSS BASE FROM LIMB TO LIMB
+RWIDTH=PHWIDTH    !! HALF-WIDTH ALONG ROOF RIDGE
+ZR=PHEIGHT
+ZBASE=0 
+
+SURFACES 
+  TUBE Z -1 RWIDTH*0.999 PLENGTH/2 (PHEIGHT) RWIDTH*0.999 PLENGTH/2 1
+    SHIFT 0 (PLENGTH/1.99) 0
+    ARRAY NX-1 (ASX) 0 0 NY-1 0 (ASY) 0
+  ROOF Z (ZR) (RWIDTH) (RLENGTH*1.01) (RANGLE)
+  ROTATE X (RROT)
+    ARRAY NX-1 (ASX) 0 0 NY-1 0 (ASY) 0
+  PLANE Z (ZBASE) RECT NX*ASX/2 NY*ASY/2 
+    SHIFT (NX*ASX/2)-ASX/2 (NY*ASY/2)-ASY/4 0
+RETURN
+
+OBJECT
+  .2 'PRISM.BODY'
+      BOUNDS +.1  -.3
+      INTERFACE 0.5 0.5 AIR PLASTIC
+  .1 'PRISM.BASE'
+      INTERFACE 0.5 0.5 AIR PLASTIC 
+      BOUNDS MULTIPLE +.3
+      FACETS 51 51
+  .3 'PRISM.SIDE'
+      BOUNDS +.1 -.2 
+      INTERFACE 0.5 0.5 AIR PLASTIC
+
+RAYSET Y 5
+  1 1
+  1 5
+  1 9
+  1 13 
+SOURCE DIRECTION 0 -1 0
+RAYSET Y -5
+  1 -1
+  1  3
+  1  7
+  1 11 
+SOURCE DIRECTION 0 1 0
+RAYSET Y 25
+  1 1
+  1 5
+  1 9
+  1 13 
+SOURCE DIRECTION 0 -1 0
+RAYSET Y 20
+  1 -1
+  1  3
+  1  7
+  1 11 
+SOURCE DIRECTION 0 1 0
+
+MISSED ARROW 5
+ARROW 3
+WINDOW Z Y
+PLOT FACETS 11 11 0 OVERLAY
+TRACE PLOT
+$VIEW

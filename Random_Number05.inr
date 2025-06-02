@@ -1,0 +1,23 @@
+!!++
+!! RANDOM_NUMBER05.INR
+!! Title: Random Number after Kernel Restart
+!! Category: Simple Problem
+!! Keywords: Scripts, random, RAN, $RAN, $TIC, math 
+!! Description: The following shows how to get a different
+!! sequence (or starting seed) for random number generation
+!! after each Kernel restart (or program start).
+!! Edit History: (latest first)
+!! 11/09/2006 - rs/cp - creation
+!!--
+
+$TIC
+$GRAB 'TIC' 0 -1 TIME  !! CPU time is ignored by $GRAB so need '-1', not '-2'.
+ 
+$RAN (TIME*10000) !! Random starting seed
+ 
+TEST1=RAN[15] !! Generate 2 random numbers with Gaussian probability
+TEST2=RAN[15]
+ 
+$REG TIME TEST1 TEST2
+ 
+END KERNEL !! Rerun script and get different numbers each time

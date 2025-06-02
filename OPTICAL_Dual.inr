@@ -1,0 +1,43 @@
+!!++
+!! OPTICAL_DUAL.INR
+!! Title: Dual OPTICAL Surface
+!! Category: Isolated Command
+!! Keywords: OPTICAL, SURFACE, aspheric, singlet
+!! Description: Two examples of making two-sided
+!! singlet lenses as one object. The second line
+!! provides the optional second surface parameters.
+!! The first argument given is the relative distance
+!! (t) from the first surface.
+!! The first example shows an aspheric optical
+!! surface whose vertex is located at y = 0
+!! with a radius of curvature of -30 and a
+!! conic constant of -1. The 4th, 6th, 8th and
+!! 10th order deformation coefficients are 1E-3,
+!! -1E-6, 1E-10 and 1E-14, respectively. The
+!! semi-diameter of the surface is five (5). 
+!! The second example shows a simple conic surface
+!! and how the second surface does not have to be
+!! identical to the first. 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 04/22/2002 - cp - creation
+!!--
+
+SYSTEM NEW 
+RESET
+UNITS MM
+
+SURFACES
+  OPTICAL Z 0 -30 -1  1E-3 -1E-6  1E-10  1E-14 ELLIPSE 5
+           .5  30 -1 -1E-3  1E-6 -1E-10 -1E-14  !! Matching second surface
+OBJECT 'EXAMPLE1'
+
+SURFACES
+  OPTICAL Z 2    10 ELLIPSE 5
+            2.5 -15  !! Different ROC for second surface
+OBJECT 'EXAMPLE2'
+
+WINDOW Y Z
+PLOT FACETS 5 5
+RETURN
+

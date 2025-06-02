@@ -1,0 +1,68 @@
+!!++
+!! COATING_MODELS05.INR
+!! Title: Simple Polarization Independent Coating
+!! Category: Simple Problem
+!! Keywords: Interfaces, COATINGS, MODELS, BSDFDATA, POLARIZ
+!! Description: Uses a BSDFDATA ANGLES model to fix an R and T
+!! coating for all angles while using FRESNEL BOTH.  This avoids
+!! the fictitious 1/4-wave coating applied when a fixed coating is
+!! used with FRESNEL. The same R and T is applied for all incident
+!! angles.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 02/06/2013 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+FRESNEL BOTH  
+
+WAVELENGTH 2 UM 
+
+MODELS
+  BSDFDATA ANGLES 
+   0   0   1 
+   90   0  1
+
+COATINGS MODELS 1 1 1 1  !! Reference the same model for Rs, Ts, Rp, Tp
+  .75 .25  'ND' !! The behavior at normal incidence
+
+MEDIA
+  2.44  'ZNS'   !! a highy refractive medium
+  
+SURFACES  !! surface at an oblique angle
+  PLANE Z 0 RECT 10
+OBJECT 'COATED_SURFACE'
+  INTERFACE COAT +ND ZNS AIR !! Use -ND to check reflection at each polarization 
+  ROTATE X 62 0 0
+  
+!! trace p-polarized light through surface and 
+!! store transmission in PPOL
+POLARIZ Y       
+EMITTING RAYS 
+  0 0  -30 0 0 1 1 0 0 
+TRACE
+STATS 
+$GRAB 'TOTAL' 0 2 PPOL
+RAYS 0    
+
+!! trace s-polarized light through surface and 
+!! store transmission in SPOL
+POLARIZ X       
+EMITTING RAYS 
+  0 0  -30 0 0 1 1 0 0 
+
+TRACE 
+STATS 
+$GRAB 'TOTAL' 0 2 SPOL
+
+!! show result
+$SCR 3
+ \PPOL.6    \ Transmitted flux parallel polarization
+ \SPOL.6    \ Transmitted flux perpendicular polarization   
+\DUMMY:? 
+ 
+
+

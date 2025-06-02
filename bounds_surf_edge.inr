@@ -1,0 +1,39 @@
+!!++
+!! BOUNDS_SURF_EDGE.INR
+!! Title: Bounding Surface with an Edge
+!! Category: Simple Problem
+!! Keywords: Bounds, EDGES, BOUNDS, ELLIPSE
+!! Description: Bounding a surface with an edge
+!! that is off the plane of the surface.  The edge
+!! extends forever in both directions along the normal 
+!! to its plane and can be used to bound any surfaces
+!! in its projected path. In this case it intersects  
+!! the ellipse.  A positive bounds keeps the outer 
+!! portion of the surface.
+!! Note: Edges used for bounding must be a closed curve
+!! planar edge. No twists off plane. 
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2000 - cp - modified format; added description
+!! 01/18/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  ELLIPSE Z 0 0.3 0.3 64 360
+    SHIFT 0.4 0.5 1.0
+
+SURFACES
+  PLANE Z 0 ELLIPSE 1 1  
+OBJECT 'DISK'
+  BOUNDS .2
+  REDEFINE COLOR 2 
+
+WINDOW Y X  
+PLOT FACETS 7 7 OVERLAY
+PLOT EDGES   
+
+$VIEW
+RETURN

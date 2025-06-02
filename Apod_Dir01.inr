@@ -1,0 +1,63 @@
+!!++
+!! APOD_DIR01.INR
+!! Title: Apodizing in Direction
+!! Category: Simple Problem
+!! Keywords: Sources, apodizing, USERAPOD, DIRECTION, EMITTING
+!! Description: A simple example of USERAPOD DIRECTION applied
+!! to an emitting disk.  The center column in the list is
+!! the direction-cosine coordinate for either adjacent
+!! value in the other two columns. These outer columns
+!! contain the relative flux intensity values projected
+!! onto the axes orthoganol to the axis of propagation.
+!! This means if the emitting disk, as we have here, is 
+!! propagating down the Z axis, then the first column is
+!! the intensity projected onto the X axis, and the 3rd
+!! is the intensity projected onto the Y axis.
+!! Note that in the following example, data points are given
+!! only for one side of the hemisphere (0 to 90). When this 
+!! occurs, ASAP will automatically rotates the data
+!! symmetrically about both sides of each axis. This can be
+!! seen in the plots. 
+!! In addition, if the X and Y slices are also identical,
+!! you can leave out the right-hand column and ASAP will 
+!! assume orthoganol slices to be symmetrical.  Therefore,
+!! the right-hand column in this example is redundant.
+!! Edit History: (latest first)
+!! 04/08/2015 - cp - removed APODIZE keyword
+!! 11/11/2013 - gb - Added APODIZE to keywords 
+!! 02/08/2000 - cp - creation; modified from rh
+!!--
+
+SYSTEM NEW
+RESET
+
+XMEMORY MIN
+SEED 1 QUASI
+
+USERAPOD DIRECTION 1 1  !! The ones are flux scale factors
+  1.00  SIN[0]  1.00 
+  0.90  SIN[10] 0.90
+  0.80  SIN[20] 0.80
+  0.70  SIN[30] 0.70
+  0.60  SIN[40] 0.60
+  0.50  SIN[50] 0.50
+  0.40  SIN[60] 0.40
+  0.30  SIN[70] 0.30
+  0.20  SIN[80] 0.20
+  0.10  SIN[90] 0.10
+
+EMITTING DISK Z 0 1 1 100000 ISO  !! ISO is needed to apodize properly
+
+WINDOW X Y
+SPOTS DIRECTION ATTRIBUTE 0
+
+DISPLAY
+  AVERAGE 1 1
+  NORMALIZE
+  DIRECTIONAL UNWRAP
+  ANGLES
+  ISOMETRIC
+  CONTOUR 10 TICS 10
+RETURN
+
+

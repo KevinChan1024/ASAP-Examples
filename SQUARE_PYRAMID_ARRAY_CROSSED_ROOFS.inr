@@ -1,0 +1,92 @@
+!!++
+!! SQUARE_PYRAMID_ARRAY_CROSSED_ROOFS.INR
+!! Title: Square pyramid array by bounded, crossed ROOFS
+!! Category: Simple Problem
+!! Keywords: Arrays, ROOF, ARRAY, OBLIQUE, RENDER, LIGHTS, pyramid
+!! Description: An ARRAY of hexagonal pyramids is made using crossed
+!! ROOF surfaces. The two ROOFs are mutually bounded to form the pyramids.
+!! Please note the possibility for ray leakage (see Help, ROOF command)
+!! (approx 3% measured) when directing rays on axis with the pyramids. 
+!! This should not be a concern when intersecting with randomized ray directions.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/27/2007 - cp - corrected title
+!! 08/10/2006 - cp - added keyword
+!! 05/01/2006 - cp - modified original hex-pyramid array for square pyramids
+!! 12/02/2005 - jh - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+ZHEIGHT=6             !! Pyramid height
+XHWIDTH=4; YHWIDTH=3  !! Pyramid half-widths in X and Y
+XNUM=3; YNUM=4        !! Number of ARRAY periods in X and Y
+XSP=10 ; YSP=8        !! X and Y spacing
+BUFFER=1
+
+TX=XNUM*XSP+2*BUFFER
+TY=YNUM*YSP+2*BUFFER
+!! Make ROOF entities sized and oriented so
+!! they cross to define the pyramid limits.
+
+SURFACES
+  PLANE Z 1E-3 RECT TX/2 TY/2 
+    SHIFT (TX/2)-((XSP/2)+BUFFER) (TY/2)-((YSP/2)+BUFFER) 0
+  ROOF Z (ZHEIGHT) (XHWIDTH) (YHWIDTH) 2*ATAN[YHWIDTH/ZHEIGHT]
+    SOLID MINUS
+    ARRAY X XNUM-1 (XSP) Y YNUM-1 (YSP)  
+  ROOF Z (ZHEIGHT) (XHWIDTH) (YHWIDTH) 2*ATAN[YHWIDTH/ZHEIGHT]
+    SOLID MINUS
+    ROTATE Z 90
+    ARRAY X XNUM-1 (XSP) Y YNUM-1 (YSP)  
+
+RETURN
+
+!! Make the crossed ROOFS into objects and mutually 
+!! bound them to form the sides, 90° rotated sides of 
+!! the pyramids. 
+
+OBJECT
+  .2 'ROOF.1'
+   BOUNDS -.1 .3 
+   INTERFACE 0.9
+   REDEFINE COLOR 2 
+  .1 'ROOF.2'
+    BOUNDS -.2 .3
+    INTERFACE 0.9
+    REDEFINE COLOR 3 
+  .3 'ROOF.BASE'
+    FACETS 77 77
+    BOUNDS MULTIPLE +.1 +.2 
+    INTERFACE 0.9 
+    REDEFINE COLOR 7 
+
+!! Center the array on the global origin
+
+GROUP ROOF.?
+  SHIFT -XHWIDTH*(XNUM-1) -YHWIDTH*(YNUM-1) (ZHEIGHT)
+RETURN  
+
+WINDOW Z X 
+OBLIQUE 0 45 30 !! Oblique view rotated 45 degrees, tilted 30 degrees
+WINDOW 1.2      !! Zoom out a little for better view
+PLOT FACETS 23 23 0 
+ 
+$VIEW 
+
+PIXELS 111 1 OFF
+$PLOT OFF
+LIGHTS -10 -9 -8 22 20 -Z 45 -15  !! One point source, one collimated source
+RENDER    !! Render in same oblique geometry as plot above
+
+WINDOW Z X 
+OBLIQUE 0 30 -45 !! Oblique view rotated 30 degrees, tilted -45 degrees
+WINDOW 1.2      !! Zoom out a little for better view
+
+LIGHTS -10 -9 -8 22 20 -Z 45 -15  !! One point source, one collimated source
+RENDER    !! Render in complentary oblique geometry to plot above
+$PLOT NORM
+
+
+OBLIQUE OFF  !! Back to regular plotting coordinates

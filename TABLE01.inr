@@ -1,0 +1,67 @@
+!!++
+!! TABLE01.INR
+!! Title: Use of the TABLE command
+!! Category: Isolated Command
+!! Keywords: TABLE, triplet, Analysis, DISPLAY 
+!! Description: TABLE command with first element of Cooke Triplet 
+!! Prints out a table of the current distribution data.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/22/2007 - cp - reformatted
+!! 04/12/2007 - bf - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+MEDIA
+  1.613  'SK4'
+
+SURFACES
+  OPTICAL Z 0 44.55 ELLIPSE 16.9 16.9
+OBJECT 'L1.FRONT'    
+  INTERFACE 0 1 AIR SK4
+  
+SURFACES
+  OPTICAL Z 5 -436.6 ELLIPSE 16.9 16.9
+OBJECT 'L1.BACK'    
+  INTERFACE 0 1 AIR SK4
+
+SURFACES
+  TUBE Z 0 16.9 16.9   5 16.9 16.9
+OBJECT 'L1.EDGE'
+  BOUNDS  +.3  -.2
+
+SURFACES
+  PLANE Z  65.12    RECT 5
+OBJECT 'DETECTOR'  
+
+GRID ELLIPTIC Z -1 -4@16 101  101
+SOURCE DIRECTION 0 0 1
+FLUX TOTAL 100
+
+WINDOW Y Z
+PLOT FACETS 7 7 0   OVERLAY
+TRACE PLOT  111
+
+CONSIDER ONLY DETECTOR
+WINDOW X  Y  
+WINDOW 1.1
+PIXELS 101
+
+SPOTS POSITION 
+
+DISPLAY
+  AVERAGE
+  PICTURE
+  TABLE 101 101  7  SKIP 0 PLOT 1
+!! TABLE m x n size of table produced;
+!! 7 is number of characters in each number in the table,
+!! SKIP 0 leaves table values of 0 blank,
+!! PLOT 1 plots a table of numbers to the Plot Viewer,
+!! The number following PLOT is a scaling factor for the Plot.
+!! Zoom in on the table of numbers to find the
+!! maximum value shown in the Display Viewer.
+RETURN

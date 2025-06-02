@@ -1,0 +1,54 @@
+!!++
+!! POINT_SOURCE_TOWARDS_APERTURE_01.INR
+!! Title: Scattering Towards an Aperture
+!! Category: Simple Problem
+!! Keywords: Sources, Point Source, aperture, TOWARDS EDGE, Scatter
+!! Description: Example of a point source entering an aperture.  
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 05/02/2011 - cp - corrected header
+!! 08/04/2009 - cp - added header
+!! 07/21/2009 - wjd - creation
+!!--
+
+SYSTEM NEW
+RESET
+ 
+MODEL
+  LAMBERTIAN 0.0001
+RETURN
+
+CHOICE=2 !! DEFAULT
+$ASK '1=outer 2=inner' CHOICE
+!! GEOMETRY DEFINITIONS BEGIN HERE
+EDGES
+  ELLIPSE Z 0 5 5 !!64
+    SMOOTH
+  ELLIPSE Z 0 3 3 !!64 
+    SMOOTH
+OBJECT 
+  0.2 0.1 'APERTURE' 
+  
+SURFACES
+  PLANE Z 20 ELLIPSE 15
+OBJECT 'DETECTOR'
+  SHIFT Y 20
+
+SURFACES
+  ELLIPSOID .01 .01 .01 0 -20 -20
+OBJECT 'SCATTERER'
+  INTERFACE 0 1E-12 
+  SCATTER MODEL 1
+    TOWARDS EDGE (CHOICE) 1
+EMITTING SPHEROID 0 -20 -20 0 0 0 1000
+
+!! TRACE RAYS WITH OPTIONAL PLOT
+!!MISSED 50
+!!OBLIQUE
+WINDOW Y Z
+PLOT FACETS 5 5 0 OVERLAY
+!!PLOT RAYS 10
+TRACE PLOT
+$VIEW 
+RETURN
+!! ANALYSIS BLOCK BEGINS HERE

@@ -1,0 +1,34 @@
+!!++
+!! SURF_CORNER01.INR
+!! Title: Corner Cube Surface
+!! Category: Isolated Command
+!! Keywords: CORNER, SURFACE, corner, cube
+!! Description: Create an axis-aligned and a circular
+!! corner cube. Locate a reference plane in the system
+!! in order to see the effects of changing CORNER parameters.
+!! Edit History: (latest first)  
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/11/2002 - cp - reformatted
+!! 10/18/2000 - cp - modified format and header
+!! 04/06/2000 - bf - Added reference plane
+!! 04/05/2000 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  CORNER Z 0 HEIGHT 5
+OBJECT 'CIRCULAR CORNER CUBE'  
+  
+SURFACES
+  CORNER Z 5 LENGTH 3
+OBJECT 'AXIAL CORNER CUBE'  
+    
+SURFACES 
+  PLANE Z 0 RECTANGLE 1 1
+OBJECT 'REFERENCE GEOMETRY'  
+  
+VUFACETS 11 11 
+RETURN
+

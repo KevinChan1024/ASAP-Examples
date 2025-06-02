@@ -1,0 +1,25 @@
+!!++
+!! EMITTING_RECT.INR
+!! Title: Emitting Rectangle
+!! Category: Isolated Command
+!! Keywords: EMITTING, Sources
+!! Description: Demonstration of EMITTING RECT.
+!! A surface emitter which is Lambertian by
+!! default.
+!! Edit History: (latest first)
+!! 10/05/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+XMEMORY MIN
+SEED 1 QUASI
+
+EMITTING RECTANGLE Z 0 2@1 10000  !! Lambertian by default
+                             !! unless ISO option used
+WINDOW Y X
+WINDOW 1.2
+SPOTS POSITION
+RETURN

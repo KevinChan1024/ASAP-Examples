@@ -1,0 +1,29 @@
+!!++
+!! POLYNOMIAL_FIT02.INR
+!! Title: Polynomial Model Using Coefficients
+!! Category: Isolated Command
+!! Keywords: POLYNOMIAL, FIT, MODELS 
+!! Description: Polynomial model of Chemglaze
+!! 306M.  The coefficients used are a direct copy
+!! from a PRINT MODELS done on the POLYNOMIAL_FIT.INR.
+!! Note - commas must be added to continue lines.
+!! Edit History: (latest first)
+!! 09/02/2004 - cp - modified from POLYNOMIAL_FIT.INR
+!!-- 
+
+SYSTEM NEW
+RESET
+PIXELS 301
+MODEL
+  POLYNOMIAL 3 3 PLOT 0 30 45 60 'CHEM306M'
+  -2.035     1.300     -2.357     -2.539      3.439     -4.927      1.196,
+  -2.372     12.42     -6.899      2.769     -14.74      13.83      23.90,
+  -31.33     3.064     -13.43      7.407      26.85     -18.80      11.72,
+  -55.87     51.34      50.82     -36.11     -25.91     -14.00     -10.52,
+   20.19     10.40      22.48     -72.10      31.71      40.66      9.006,
+  -10.31     4.374     -36.82     -11.01      24.20
+
+
+DISPLAY CHEM306M_60 !! Display file of 60° BSDF created by model PLOT option
+  ISOMETRIC 'BSDF AT 60 DEGREES'
+RETURN

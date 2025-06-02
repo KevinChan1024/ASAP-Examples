@@ -1,0 +1,57 @@
+!!++
+!! MACRO_$IF03.INR
+!! Title: Examples with $IF THEN 
+!! Category: Isolated Command
+!! Keywords: $IF THEN, macro, Macros_pre, $IF, EQ, $GO
+!! Description: Several examples of using $IF.
+!! Note: This is not a runable inr file.
+!! Edit History: (latest first)
+!! 04/17/2003 - cp - added underscore note
+!! 12/21/2001 - cp - modified description
+!! 10/24/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+******************************************************
+!! If A is equal to four, then executes the next
+!! two records. If not, skips over them and continues
+!! executing at the PRINT command.
+
+$IF (A) EQ 4  2
+...
+...
+PRINT
+
+******************************************************
+!! This loop resets the FLUX of rays whose OPL is
+!! bounded between 0 and 2. Presumably the variable
+!! NRAYS has been initialized previously.
+
+$DO 1 (NRAYS)
+GET ?; $IF (OPL) LE 2 AND (OPL) GE 0; FLUX=0  PUT ?
+
+
+******************************************************
+!! This is a portion of a macro designed to loop over
+!! more than a single input record.
+
+$ERR end     !! On error, go to label "end"
+L=0          !! Initialize loop counter
+L=1+L        !! Increment loop counter at top of loop
+...
+...
+             !! Block of n-3 input records
+...
+...
+$IF (L) GE 10; $GO end  !! Test for end of loop
+$GO -n                  !! Otherwise go back to top of loop
+end  !! Note: Do not use underscores (_) in lower case labels
+
+
+******************************************************
+$DO 1 3
+{ $IF ?/2 EQ 1 THEN
+    A?=?
+  $ELSE
+    B?=?
+  $ENDIF }

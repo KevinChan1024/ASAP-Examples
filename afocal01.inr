@@ -1,0 +1,20 @@
+!!++
+!! AFOCAL01.INR
+!! Title: Afocal Telescope
+!! Category: Isolated Command
+!! Keywords: AFOCAL, LENSES, telescope
+!! Description: Defines a Catadioptric afocal
+!! telescope consisting of a singlet composed
+!! of Schott BK7 and a mirror. The axial
+!! separation of the elements is 5. The
+!! input beam diameter is 1.5; the output
+!! beam diameter is 8. 
+!! Edit History: (latest first)
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+LENSES
+  AFOCAL Z 0 5 .75 -4 BK7 REFL 
+
+

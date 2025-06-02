@@ -1,0 +1,53 @@
+!!++
+!! REPEAT02.INR
+!! Title: REPEAT for Surfaces
+!! Category: Isolated Command
+!! Keywords: REPEAT, SURFACE
+!! Description: REPEAT the first element of Cooke Triplet,
+!! shifted by 30 in the Z-direction.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/25/2008 - cp - changed category 
+!! 08/22/2007 - cp - reformatted
+!! 04/17/2007 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.613  'SK4'
+
+SURFACES
+  OPTICAL Z 0 44.55 ELLIPSE 16.9 16.9
+OBJECT 'L1.FRONT'    
+  INTERFACE 0 1 AIR SK4
+  
+SURFACES
+  OPTICAL Z 5 -436.6 ELLIPSE 16.9 16.9
+OBJECT 'L1.BACK'    
+  INTERFACE 0 1 AIR SK4
+
+SURFACES
+  TUBE Z 0 16.9 16.9   5 16.9 16.9
+OBJECT 'L1.EDGE'
+  BOUNDS  +.3  -.2
+
+SURFACES
+  REPEAT .3
+  SHIFT Z 30
+OBJECT 'NEW.FRONT'
+
+SURFACES
+  REPEAT .3
+  SHIFT Z 30
+OBJECT 'NEW.BACK'
+
+SURFACES
+  REPEAT .3
+  SHIFT Z 30
+OBJECT 'NEW.EDGE'
+BOUNDS +.3  -.2
+
+PLOT FACETS 5 5 0
+RETURN

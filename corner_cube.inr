@@ -1,0 +1,56 @@
+!!++
+!! CORNER_CUBE.INR
+!! Title: Corner Cube with POINTS
+!! Category: Simple Problem
+!! Keywords: Edges, POINTS, cube, corner, CONSIDER
+!! Description: A cube corner made with POINTS.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATING PROPERTIES
+  1 0 'REFL'
+  
+EDGES
+  POINTS 0 0 0 0  !! Apex of corner
+  POINTS 1 0 0 1, 0 1 0 1, 0 0 -1 1  !! Front face
+  ROTATE X -45 2@0
+  ROTATE Y SQRT(2)%2 2@0
+  OBJECT
+    0.1 0.2 'CORNER_CUBE' !! Note - this will generate a warning
+    INTERFACE COAT -REFL
+
+SURFACES
+  PLANE Z -2 RECTANGLE 2@0.5 0 0 -0.5
+  OBJECT 'IMAGE_PLANE'
+
+BEAMS INCOHERENT GEOMETRIC
+RAYS Z -2
+  $DO -4 5  !! Side 
+    -3 ?
+  $DO -2 1  !! Top
+    ? 5
+  $DO 1 4   !! Other side
+    2 ?
+  $DO -3 1  !! Bottom
+    ? 0
+  $DO -1 3  !! Tail
+    ? -(?+1)
+  SCALE 0.03 0.03 1  !! Used to scale xy ray distances
+
+  SOURCE DIRECTION 0 0 1
+  SHIFT Y 0.25
+
+TITLE 'CUBE CORNER AS A SINGLE FACETED OBJECT'
+WINDOW Y -1.25 1 Z -2 .5
+OBLIQUE
+CONSIDER EXCEPT IMAGE_PLANE  !! Consider all objects except for image plane
+  PLOT FACETS 1 1 OVERLAY
+CONSIDER ALL
+  TRACE PLOT
+RETURN

@@ -1,0 +1,63 @@
+!!++
+!! MACRO_$SCR02.INR
+!! Title: Screen Entry with $SCR 
+!! Category: Isolated Command
+!! Keywords: $SCR, macro, Macros_pre, input, string
+!! Description: Using $SCR to generate an input screen
+!! for the user. Suppose you wanted to setup a screen 
+!! entry for a mirror. One possibility involving two macros
+!! is shown below. The second macro MAKEOBJ was necessary
+!! in order to get the name of the OBJECT contained in the
+!! N" variable into the comment string. If you had written
+!! OBJECT 'N"' instead, the parser would have put the
+!! character string N" into the comment rather than the
+!! contents of N".
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/24/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MIRROR {  !! Macro for screen input of a mirror
+A=0 B=0 C=1 X=0 Y=0 Z=0  !! Initialize variables 
+$SCR 15 
+          MIRROR INPUT MENU                              
+Element name (up to 8 characters): \N"    ?              
+Outer diameter       \D.    ?     
+Inner hole diameter  \I.    ?  
+Radius of curvature  \R.    ?  
+Conic constant       \K.    ?  
+Reflectivity (in percent)  \P.  ?                                
+Vertex global coordinates (x,y,z)
+          \X.   ?
+          \Y.   ?
+          \Z.   ?
+Vertex direction cosines (a,b,c) 
+          \A.   ?
+          \B.   ?
+          \C.   ?      
+
+MAKEOBJ N"
+}
+
+MAKEOBJ {  !! Macro for creating ASAP input for a mirror
+COATINGS PROPERTIES
+  P/100 0   'MREFL'
+S=0.1 
+$IF (R) NE 0; S=1.2*ABS(D/2^2/2/R)
+SURFACES
+  OPTICAL Z 0 (R) (K) ELLIPSE D/2 D/2 I/D
+  OBJECT '#1'
+    INTERFACE COAT +MREFL
+    ALIGN 0 0 1, (A) (B) (C), 0 0 0
+    SHIFT (X) (Y) (Z)
+WINDOW Y Z
+PROFILES
+}
+
+$MIRROR
+RETURN
+

@@ -1,0 +1,43 @@
+!!++
+!! SURF_BICONIC02.INR
+!! Title: BICONIC with Trace
+!! Category: Isolated Command
+!! Keywords: BICONIC, SURFACE
+!! Description: A rectangular BICONIC reflector surface with
+!! a central hole. The hole is 0.2 times the size of the
+!! biconic aperture in each direction. The conic constant is
+!! -1.4 in the X direction and -1 in the Y direction. Rays
+!! are traced from an emitting sphere in the focal position.
+!! Edit History: (latest first)   
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/11/2002 - cp - reformatted
+!! 10/17/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+COATINGS PROPERTIES
+  1 0  'REFL'
+  
+EFL=45
+SURFACES         
+  BICONIC Z 0 x 2*EFL y 2*EFL xk -1.4 yk -1 cubic 3 RECT 100 50 0.2
+OBJECT 'REFLECTOR'
+  INTERFACE COAT -REFL
+
+XMEMORY MIN
+SEED 1 QUASI
+EMITTING SPHERE 0 0 (EFL) 3 1 1 100 
+
+WINDOW Y Z
+WINDOW 1.2
+OBLIQUE
+PLOT FACETS 5 5 'BICONIC SURFACE WITH EXTENDED SOURCE' OVERLAY
+MISSED ARROWS 50
+TRACE PLOT 
+$VIEW
+RETURN

@@ -1,0 +1,57 @@
+!!++
+!! ITER_GENERAL_FIRST_FORM.INR
+!! Title: Modifying a GENERAL Polynomial Surface with ALTER
+!! Category: Simple Problem
+!! Keywords: Geometry, $ITER, GENERAL, iterate, redefining, ALTER
+!! Description: The following uses the first form of $ITER to plot changes
+!! to the Radius of Curvature of an optical surface made with GENERAL. 
+!! The GENERAL polynomial is changed with ALTER at each iteration step.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 08/05/2004 - cp - added header and formatted
+!! 08/05/2004 - sm - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+!! The first two surfaces start out as identical. The second surface
+!! then has its radius of curvature changed using ALTER command over
+!! a range specified in the $ITER.
+!! Any of the surface polynomial coefficients can be changed using ALTER.
+!! Note the "polynomial coefficients" data output for each surface by
+!! using the PRINT commands. The OPTICAL can be represented as a polynomial.
+
+
+!!Define an optical surface
+RCRV=4
+
+SURFACES
+OPTICAL Z 0 (RCRV) ELLIPSE 1
+OBJECT 'MIR'
+PRINT .1
+
+!! Create the same surface (offset by 0.1) using GENERAL
+SURFACES
+ GENERAL 0 0 0.5
+ Z     1
+ X2   -1/(2*RCRV)
+ Y2   -1/(2*RCRV)
+ Z2   -1/(2*RCRV)
+LOCAL -6@1 Z
+PARAMETERIZE -Z
+OBJECT 'SAME_AS_MIR'
+PRINT .1
+
+
+!! Change radius of curvature of surface 2 to a new value 
+$ITER NEWVAL 4 10 -7
+ {SURFACE 2
+    ALTER X2 -1/(2*NEWVAL) 0 Y2 -1/(2*NEWVAL) 0 Z2 -1/(2*NEWVAL) 0       !!CHANGE RADIUS OF CURVATURE TO NEW VALUE 
+  RETURN
+  WINDOW Y Z
+  PLOT FACETS
+ }
+RETURN

@@ -1,0 +1,77 @@
+!!++
+!! OBJECT_REDEFINE02.INR
+!! Title: Redefining Objects: A Practical Application 
+!! Category: Simple Problem
+!! Keywords: Geometry, OBJECT, INTERFACE, BOUNDS, redefining, water, $DO
+!! Description: An application for modifying
+!! SURFACE and OBJECT database settings, including
+!! BOUNDS. This example shows a TUBE filled part
+!! way with water that rises a certain amount through
+!! each pass of the loop. INTERFACE COATING
+!! assignments are properly maintained for all objects
+!! by updating on each pass. Source creation, ray
+!! tracing, and analysis would normally be included
+!! withing the loop, as well. A RAYS 0 should be
+!! performed at the top of the loop to clear previously
+!! traced rays. All other objects, including detector
+!! can be made before the loop, similar to the 
+!! TUBE_OUTER seen here.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/21/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+ 
+UNITS MM
+WAVELENGTH 589 NM
+MEDIA
+  1.333 'WATER'
+  1.5 'GLASS'
+   
+SURFACES    
+  PLANE Y -1.5 RECTANGLE 10 2 
+OBJECT 'WATER'  
+  INTERFACE COAT BARE AIR WATER
+SURFACES  
+  TUBE Z -10 2 2 10 2 2
+
+OBJECT 'TUBE_UPPER'
+  BOUNDS  1
+  INTERFACE COAT BARE AIR GLASS 
+OBJECT 'TUBE_LOWER'
+  BOUNDS  -1
+  INTERFACE COAT BARE WATER GLASS 
+OBJECT 1
+  BOUNDS -2 
+  
+SURFACES  
+  TUBE  Z -10 2@2.1 10 2@2.1
+OBJECT 'TUBE_OUTER'
+  INTERFACE COAT BARE AIR GLASS  
+
+WINDOW Y X
+OBLIQUE
+PLOT FACETS 2 2
+
+SHFT=.2
+  
+$DO 1 12  
+{
+SURFACES  1       !! Redefine surface with added shift
+  SHIFT Y (SHFT)
+OBJECT 1 'WATER' !! Associate modified surface with existing object
+SURFACES  2       !! Redefine surface with same parameters for bounding
+  TUBE  Z -10 2 2 10 2 2
+OBJECT 2 'TUBE_UPPER' !! Redefines the bounding of object 2  
+  BOUNDS  1           !! with newly shifted surface
+OBJECT 3 'TUBE_LOWER' !! Redefines the bounding of object 3
+  BOUNDS  -1          !! with newly shifted surface
+OBJECT 1 'WATER'      !! Trims water plane at new level 
+  BOUNDS -2           !! with inner tube
+PLOT FACETS 2 2       !! Plot interim results
+}
+
+NUMBER NAMES  !! Show that only 4 objects are ever created
+RETURN

@@ -1,0 +1,55 @@
+!!++
+!! HOE2.INR
+!! Title: HOE by Two Point Sources
+!! Category: Simple Problem
+!! Keywords: Gratings, Lenses, hoe, doe, DIFFRACT, hologram, USERFUNC, MULTIPLE, $FCN
+!! Description: Define a function that is equal to the total
+!! optical path length along straight lines that connect the
+!! two points with a given point on the plane. The plane is
+!! assumed to be perpendicular to the z axis. A given point
+!! on the plane is given by the registers _1, _2, and _3
+!! (_3 is always zero). The xyz coordinates of the first point
+!! are _4, _5, and _6, and the coordinates of the second point
+!! are _7, _8, and _9. After the function is defined, the three
+!! components of the gradient for the function are defined
+!! (the z component of the gradient is zero).
+!! Edit History: (latest first)
+!! 11/19/2014 - mt - changed PROFILES OVERLAY to PROFILES 0 0 -1 OVERLAY
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 11/10/2011 - cp - modified keywords 
+!! 09/22/2008 - cp - fixed keyword
+!! 03/16/2000 - cp - Reformatted; added header
+!! 08/01/1995 - gp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$FCN HOE SQRT((_1-_7)^2+(_2-_8)^2+_9^2)+SQRT((_1-_4)^2+(_2-_5)^2+_6^2),
+   (_1-_7)/SQRT((_1-_7)^2+(_2-_8)^2+_9^2)+(_1-_4)/SQRT((_1-_4)^2+(_2-_5)^2+_6^2),
+   (_2-_8)/SQRT((_1-_7)^2+(_2-_8)^2+_9^2)+(_2-_5)/SQRT((_1-_4)^2+(_2-_5)^2+_6^2),
+   0
+
+!! Define a hologram definition wavelength, W0
+WAVELENGTH (W0=0.5E-3)
+
+!! Create the hologram with a multiple USERFUNC surface. The -1 order
+!! is given a 100% efficiency in this example.
+SURFACES
+  USERFUNC 0 0 0 HOE   0 1 -5   0 -2 -5 
+    MULTIPLE 2 (W0)
+  PLANE Z 0 RECTANGLE 1
+  OBJECT 'HOE'
+    INTERFACE 1 0 AIR AIR DIFFRACT .2 -1 1  !!Reflective hologram
+    REDEFINE COLOR 3
+
+!! Define a grid of rays to test the hologram
+GRID ELLIPTIC Z 0 -4@1 9 9 
+  SOURCE POSITION 0 1 -5
+  MOVE TO Z -5
+
+!! Set up a window and trace the rays
+WINDOW Y -3 1 Z -6 1
+PROFILES 0 0 -1 OVERLAY 'HOLOGRAM EXAMPLE'
+TRACE PLOT COLOR 2
+RETURN

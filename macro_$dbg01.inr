@@ -1,0 +1,40 @@
+!!++
+!! MACRO_$DBG01.INR
+!! Title: Output of $DBG Macro 
+!! Category: Isolated Command
+!! Keywords: $DBG, macro, Macros_pre
+!! Description: Example output of $DBG showing how
+!! ASAP parser reads an input line. Used for debugging
+!! purposes. In the second part, since the command is 
+!! on the same line, it does not get sent to the Kernel.
+!! Note: This is not a runable inr file.
+!! Edit History: (latest first)
+!! 09/29/2012 - cp - corrected spelling
+!! 12/21/2001 - cp - modified description
+!! 10/23/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+!! The following is taken from the ASAP Output Window:
+ --- MEDIA
+ --- $DBG
+ --- .075`1.93 .05`2.87 .06`3.75 .075`4.62 .09`5.45  'SILVER'
+ .075000003 .050000001 .059999999 .075000003 .090000004
+SILVER
+ Num Pos Len Typ      Literal    Integer            Real (Imag)
+   1   1   9  2  .075              0     0.750000029802322E-001  1.930000
+   2  11   8  2  .05               0     0.500000007450581E-001  2.870000
+   3  20   8  2  .06               0     0.599999986588955E-001  3.750000
+   4  29   9  2  .075              0     0.750000029802322E-001  4.620000
+
+   5  39   8  2  .09               0     0.900000035762787E-001  5.450000
+ --- $DBG SOURCE DIRECTION 0 SIN[30] COS[30]
+ $DBG SOURCE DIR 0 .5 .866025388
+ Num Pos Len Typ      Literal    Integer            Real (Imag)
+   1   2   3 -1  DBG               0     0.000000000000000
+   2   6   3 -1  SOURCE            0     0.000000000000000
+   3  10   3 -1  DIR               0     0.000000000000000
+   4  14   1  0  0                 0     0.000000000000000
+   5  16   7  1  SIN[30]           1     0.500000000000030
+
+   6  24   7  1  COS[30]           1     0.866025403784421

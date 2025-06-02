@@ -1,0 +1,58 @@
+!!++
+!! COATING_LAYERS01.INR
+!! Title: COATINGS LAYERS for Applying Thin Film Coatings
+!! Category: Isolated Command
+!! Keywords: COATINGS LAYERS, Interfaces, films, thin film
+!! Description: Using COATINGS LAYERS to apply
+!! user-defined thin film coatings. Thicknesses are in
+!! wavelength units, since no wavelength modifier is used. 
+!! Edit History: (latest first)
+!! 08/07/2012 - cp - corrected keyword 
+!! 02/28/2000 - cp - Modified syntax; added description
+!! 01/18/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 550 NM
+
+MEDIA
+  1.51 'GLASS'
+  1.38 'MGFL2'
+  1.70 'SIO'
+  2.10 'ZRO2'
+
+COATING PROPERTIES
+  0.31 0.69 'NO_COAT'
+  
+COATING LAYERS
+  99.638 MGFL2 'SINGLE'
+  99.638 MGFL2 80.882 SIO 'DOUBLE'
+  99.638 MGFL2 2*65.476 ZRO2 80.882 SIO 'TRIPLE' 
+
+SURFACE
+  PLANE Z 0 ELLIPSE 5
+OBJECT 'WINDOW.FRONT'
+  INTERFACE COATING SINGLE AIR GLASS
+SURFACE
+  PLANE Z 5 ELLIPSE 5
+OBJECT 'DETECTOR’
+  INTERFACE 0 0 AIR AIR
+
+SURFACE
+  PLANE Z -5 ELLIPSE 5
+OBJECT 'LIGHT_TRAP’
+  INTERFACE 0 0 AIR AIR
+  
+EMITTING RAYS
+  0 -2 4    0 SIN[25] -COS[25] 1
+
+FRESNEL AVERAGE
+STATS
+WINDOW Z Y
+PROFILES OVERLAY
+TRACE PLOT
+STATS 
+RETURN

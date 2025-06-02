@@ -1,0 +1,52 @@
+!!++
+!! BEAM_EXPANDER.INR
+!! Title: Anamorphic Scaling with PIXELS
+!! Category: Simple Problem
+!! Keywords: Analysis, PIXELS, FILL, OPTICAL, expander 
+!! Description: A model of a 10:1 beam expander. 
+!! The first plot is done at normal aspect ratio.
+!! The second plot uses the FILL option of the PIXELS
+!! command to expand the plot in both dimensions.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/02/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  1 0 'REFL'
+   
+SURFACES
+  OPTICAL Z 0 88.89451 ELLIPSE 1.2
+  OBJECT 'SECONDARY_MIRROR'
+    INTERFACE COAT REFL
+ 
+SURFACES
+  OPTICAL Z -400 888.92326 ELLIPSE 2@10 1.5/10
+  OBJECT 'PRIMARY_MIRROR'
+    INTERFACE COAT REFL
+ 
+SURFACES
+  PLANE Z 50 ELLIPSE 12
+  OBJECT 'DUMMY_PLANE'
+ 
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC Z -450 -4@1 10 1
+  SOURCE DIRECTION 0 0 1
+WINDOW X Z
+WINDOW 1.2  !! Enlarge 20%
+PROFILES OVERLAY 'A LONG BEAM EXPANDER'
+TRACE PLOT 
+
+RAYS 0  !! Clear old rayset
+PIXELS 39 FILL !! Pixel fill used to scale plot
+GRID ELLIPTIC Z -450 -4@1 10 1
+SOURCE DIRECTION 0 0 1
+WINDOW X Z
+WINDOW 1.2
+PROFILES OVERLAY 'A LONG BEAM EXPANDER W/PIXEL FILL'
+TRACE PLOT
+RETURN

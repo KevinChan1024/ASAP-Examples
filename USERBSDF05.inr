@@ -1,0 +1,63 @@
+!!++
+!! USERBSDF05.INR
+!! Title: Diffuser with Rectangular Scatter Pattern
+!! Category: Simple problem
+!! Keywords: Scatter, USERBSDF, $FCN, diffuser, math, RECT, STEP, GAUS  
+!! Description: This uses a USERBSDF with a $FCN designed to 
+!! limit the angular range to a rectangular pattern in direction space. 
+!! In this case +/-15° in the alpha direction and +/-20° in the beta.
+!! Note that the commented out $FCN shows how to make this distribution
+!! using the ASAP RECT function.  The alternate $FCN, shows that the STEP 
+!! function can perform the same task to make sharp corners, however the
+!! GAUS function was added here to round them out.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 09/12/2005 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+UNITS MM
+PI=ACOS(-1)  
+ 
+NORMFACT=0.3897814  !! Taken from Total Flux without normalization
+!! Need to normalize function to force energy conservation
+
+!!$FCN FUNKYRECT RECT[_1/(2*SIN[15])]*RECT[_2/(2*SIN[20])]/(NORMFACT)
+
+$FCN FUNKYRECT ALP=15*3.14159/180  BET=20*3.14159/180   SLP=50,
+   HOR=STEP[ALP-ABS(_1)]+(STEP[ABS(_1)-ALP]*(GAUS[((_1)+ALP)*SLP]+GAUS[((_1)-ALP)*SLP])),
+   VER=STEP[BET-ABS(_2)]+(STEP[ABS(_2)-BET]*(GAUS[((_2)+BET)*SLP]+GAUS[((_2)-BET)*SLP])),
+   HOR*VER/(NORMFACT)
+
+!! Produces a Lambertian distribution within range specified
+  
+MODEL 
+  USERBSDF Y FUNKYRECT  !! Anisotropic scatter model
+!! alpha is in x direction
+!! beta is in y direction - See anisotropic scattering in Help
+RETURN
+
+EMITTING RECT Z 0 2@1 1000 2@0
+
+SURFACES
+  PLANE Z 1 RECTANGLE 2
+OBJECT 'DIFFUSER'
+  INTERFACE 0 1E-15 AIR AIR
+  LEVEL ALL
+  SCATTER MODEL 1
+  TOWARDS SPEC 200 PI/6 0 !! Reduce initial cone angle to get more rays
+
+WINDOW Y Z
+PLOT FACETS OVER
+TRACE PLOT 10
+
+WINDOW Y -2@SIN[25] X -2@SIN[25]
+PIXELS 71
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+!!ANGLES
+PICTURE
+CONTOUR 10 TICS
+STATS 
+RETURN

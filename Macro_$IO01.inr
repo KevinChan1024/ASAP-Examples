@@ -1,0 +1,24 @@
+!!++
+!! MACRO_$IO01.INR
+!! Title: $IO Predefined Macro #1
+!! Category: Isolated Command
+!! Keywords: $IO, macro, Macros_pre, io, output, file, redirect
+!! Description: Simple use of $IO to output data to a file.
+!! FILE(10) tells ASAP to use a file unit number of 10 or
+!! higher.
+!! Edit History: (latest first)
+!! 11/05/2003 - cp - fixed keyword
+!! 02/11/2000 - cp - modified format; added description
+!! 07/27/1999 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EMITTING DISK Z 0 1 1 1000
+
+$IO OUTPUT INFOFILE.TXT FILE(10)
+  STATS POSITION
+$IO OUTPUT CLOSE 
+
+RETURN

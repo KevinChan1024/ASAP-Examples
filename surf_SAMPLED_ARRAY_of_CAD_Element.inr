@@ -1,0 +1,116 @@
+!!++
+!! SURF_SAMPLED_ARRAY_OF_CAD_ELEMENT.INR
+!! Title: An Arrayed Sampled Surface from a CAD Element
+!! Category: Simple Problem
+!! Keywords: Arrays, SAMPLED, SURFACE, ARRAY, MAP, cad, bumps, dots, backlight, diffuser
+!! Description: An example of reading in a CAD element 
+!! representing a bump, sample it and array it.
+!! MAP is used  to create a DISPLAY file which is then SAMPLED.
+!! This SAMPLED surface is then turned into an ARRAY. 
+!! It is assumed the array is to be at Z=0.
+!! Note: Copy CONY_2.INR to Working Directory from Examples folder
+!! before running file.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 11/03/2008 - cp - modified keywords
+!! 05/16/2008 - cp - formatted, added header
+!! 06/20/2007 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+UNITS UM
+
+$READ CONY_2  !! Read in CAD element-this needs moved from Examples folder to working directory
+              !! or apply full path in double quotes.
+WINDOW Y X
+
+PLOT FACETS 5 5 0
+
+$GRAB 'Vertical:' 0 1 YMIN0 YMAX0
+$GRAB 'Horizontal:' 0 1 XMIN0 XMAX0
+
+YCENTER=(YMAX0+YMIN0)/2
+XCENTER=(XMAX0+XMIN0)/2
+
+XMIN=XCENTER+XMIN0 
+XMAX=XCENTER+XMAX0 
+YMIN=YCENTER+YMIN0 
+YMAX=YCENTER+YMAX0 
+
+X_EXT=XMAX-XMIN
+Y_EXT=YMAX-YMIN
+
+&REG XMIN XMAX YMIN YMAX XCENTER YCENTER XMIN0 XMAX0 YMIN0 YMAX0 X_EXT Y_EXT
+
+$VIEW 
+
+GROUP
+  SHIFT (XCENTER) (YCENTER) 0
+RETURN
+
+
+!! set up replication
+
+ASX=X_EXT*1.4
+ASY=Y_EXT*1.2
+NX=3
+NY=4
+
+SURFACES
+  PLANE Z -1 RECT (X_EXT/1.8) (Y_EXT/1.8)
+OBJECT 'BASEPLANE'
+
+
+OBLIQUE OFF
+WINDOW Y -2@(Y_EXT/1.8) X -2@(X_EXT/1.8) 
+PIXELS 311
+MAP TRUNCCONY DEPTH -0.1  
+
+DISPLAY TRUNCCONY
+  PICTURE 'prism depth map' 
+RETURN 
+
+!! sample the surface and turn into an ARRAYed SURFACE
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  PLANE Z 0 RECTANGLE (ASX*NX/2) (ASY*NY/2)
+  SAMPLED TRUNCCONY
+    ARRAY (NX-1) (ASX) 0 0, (NY-1) 0 (ASY) 0
+    SHIFT -(ASX*[(NX/2)-1/2]) -(ASY*[(NY/2)-1/2]) 0
+OBJECT
+  .2 'BASEPLANE'
+      REDEFINE COLOR 20 
+      BOUNDS MULTIPLE -.1
+  .1 'WAVES' 
+      FACETS 3 3
+      REDEFINE COLOR 3
+      BOUNDS +.2
+
+PIXELS 111
+$PLOT OFF !! To just see in 3D view
+WINDOW Z Y
+CONSIDER ONLY BASEPLANE
+PLOT FACETS 151 151 0 OVERLAY 
+CONSIDER EXCEPT BASEPLANE
+PROFILES 0 0 -211 COLOR 11
+WINDOW Z X 
+PROFILES 0 0 -211 COLOR 11
+!! WINDOW Y X 
+!! PROFILES 0 0 -111 COLOR 11
+$VIEW
+
+$PLOT NORM 
+RETURN
+
+
+
+
+
+
+
+

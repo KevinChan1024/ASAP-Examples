@@ -1,0 +1,55 @@
+!!++
+!! MACRO_$STAMP01.INR
+!! Title: Passing a Date Stamp into a Path String
+!! Category: Isolated Command
+!! Keywords: $STAMP, Macros_pre, DUMP, LIT, string, path, $IF, $SYS, concatenation, literal
+!! Description: How to store a file, or in this example a rayset, to 
+!! a path folder name that changes with the date.  The challenge here 
+!! is that the date and month always needs to have 2 decimal places. 
+!! Using $STAMP, the current date values are used to pass as literals
+!! (using the LIT operator) to a macro which places them in a DUMP
+!! statement.  $IF's are used to concatenate a "0" in front of the 
+!! number when the date or month is below 10, because $STAMP does not
+!! provide the leading 0. 
+!! Normally, the folders in the path would be already created, but to
+!! force this file to run without error, we added a $SYS to first create
+!! the real path to store the dis file
+!! Edit History: (latest first)
+!! 08/17/2012- cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EMITTING SPHEROID 3@0 3@1 1000 !! Just to have something to DUMP
+
+MYDUMP {
+  $SYS MD "C:\USERS\PUBLIC\SIM#1#2#3\data\"
+  DUMP "C:\USERS\PUBLIC\SIM#1#2#3\data\RAY_SET_NAME.dis"  
+}
+  
+$STAMP !! Fills the registers below
+!!&REG _YEAR _MONTH _DAY  
+ 
+MONTH {
+ M1="#1#2"
+}
+
+DAY {
+ D1="#1#2"
+}
+
+$IF (_MONTH) LT 10 THEN
+  $MONTH LIT(0) LIT(_MONTH) 
+$ELSE
+  M1=LIT(_MONTH)
+$ENDIF 
+$IF (_DAY) LT 10 THEN
+  $DAY LIT(0) LIT(_DAY)  
+$ELSE
+  D1=LIT(_DAY)
+$ENDIF
+
+!!&REG M1 D1
+$MYDUMP LIT(_YEAR) M1" D1"
+RETURN

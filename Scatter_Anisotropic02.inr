@@ -1,0 +1,46 @@
+!!++
+!! SCATTER_ANISOTROPIC02.INR
+!! Title: Scatter into Specular Plane Only
+!! Category: Simple Problem
+!! Keywords: Scatter, anisotropic, HARVEY, MODELS
+!! Description: Shows a way to get Harvey scatter into a single plane
+!! made with the specular and surface Normal.  Rays will be generated over
+!! the full hemisphere (as seen with a TRACE PLOT), but most of the energy
+!! will be along a single plane, as described by the two shoulder points.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 09/30/2013 - cp - spelling corrections
+!! 09/08/2004 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+PIXELS 501
+MODEL     
+  HARVEY X 100 -2 0.001 1.0 PLOT 30
+
+RETURN
+
+
+SURFACES
+  PLANE Z 0 ELLIPSE 1
+OBJECT 'SCATTER_MIRROR'
+INTERFACE 1E-15 0
+  SCATTER MODEL 1
+   TOWARDS SPEC 10000 3.14159/2 0
+RETURN
+  
+GRID ELLIPTIC Z 5 -4@0.1 1 1
+  SOURCE DIRECTION 0 0 -1
+  FLUX TOTAL 1
+  ROTATE 30 ABOUT 0 1 0  0 0 0
+RETURN 
+
+WINDOW Y X
+PLOT FACETS OVERLAY
+TRACE 
+PLOT RAYS 4  !! Plot scatter on surface. Max intensity = length of 4.
+!!$VIEW
+RETURN 

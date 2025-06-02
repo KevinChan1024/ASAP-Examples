@@ -1,0 +1,24 @@
+!!++
+!! EMIT_SPHEROID01.INR
+!! Title: Emitting Spheroid
+!! Category: Isolated Command
+!! Keywords: EMITTING, SPHEROID, Sources
+!! Description: Demonstration of an EMITTING
+!! SPHEROID. A volume emitter.
+!! Edit History: (latest first)
+!! 10/05/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SEED 1 QUASI
+XMEMORY MIN
+
+EMITTING SPHEROID 3@0 3@1 10000 Z  !! ISO by default
+
+WINDOW Y X
+WINDOW 1.2
+SPOTS POSITION
+RETURN

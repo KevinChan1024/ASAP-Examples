@@ -1,0 +1,35 @@
+!!++
+!! EDGES02.INR
+!! Title: Five Rectangular Edges
+!! Category: Isolated Command
+!! Keywords: EDGES, Edges
+!! Description: 5 different ways to enter
+!! the same rectangular edge with a width
+!! of 2 and a height of 4.
+!! Edit History: (latest first)
+!! 10/09/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  RECTANGLE Z 0 1 2 16 0 360
+  ROUNDED Z 0 1 2 0 16 0 360
+  ELLIPSE Z 0 SQRT(2) SQRT(2) 4 0 360
+    ROTATE Z 45
+    SCALE Y 2
+  POINTS 1 2 0 1, -1 2 0 1, -1 -2  0 1, 1 -2 0 1
+  LINE -1 2 0, 1 2 0  !! These 4 make one rectangle
+  LINE -1 -2 0, 1 -2 0
+  LINE -1 2 0, -1 -2 0
+  LINE  1 2 0, 1 -2 0
+RETURN
+
+!! Display edges:  
+$DO 1 4
+  EDGES ?; SHIFT Z ?
+WINDOW Y Z
+PLOT EDGES
+RETURN

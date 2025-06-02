@@ -1,0 +1,54 @@
+!!++
+!! DIMENSION.INR
+!! Title: DIMENSION Command
+!! Category: Isolated Command
+!! Keywords: DIMENSION
+!! Description: DIMENSION Command Output.
+!! NOTE: For reference only. Do not run file.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 08/09/2012 - cp - corrected header
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+DIMENSION command output with ASAP:
+
+--- DIMENSION
+ 
+This version is dimensioned to handle up to:
+   25000 Total CurvEdge Points  100000 Total SurFunc Coefficients
+   10000 Total Lens Conicoids     1000 Geometrical Entities
+      60 General Isotropic Media    60 Thin Film Coatings
+      15 Interpolation Wavelengths  60 Unique Layers per Coating
+      60 Optional Scatter Models   300 Physical Objects
+      20 Deform Terms per Object     9 Concurrent Grating Orders
+      10 Bound Entities per Object   9 Scattering Areas per Object
+
+       9 Parabasals per Ray/Beam    10 Hermite-Gaus Modes per Beam
+     128 Independent Sources         8 Rays/Beams in Memory Buffer
+ 2400000 Ray Selection Flags       362 Sampling Pixels on a Side
+     120 SVD Fit Variables (Coefs) 972 SVD Fit Equations (Points)
+     256 Point Fourier Transform  1000 Entries per Command
+       9 Macro/DO Nesting Levels  1000 Lines in Output Buffer
+
+DIMENSION command output with ASAP/Pro:
+
+--- DIMENSION
+ 
+This version is dimensioned to handle up to:
+     750,000 Total CurvEdge Points        3,000,000 Total SurFunc Coefficients
+     300,000 Total Lens Conicoids            30,000 Geometrical Entities
+       100-1 General Refractive Media           100 Thin Film Coatings
+          25 Interpolation Wavelengths          100 Unique Layers per Coating
+         100 Optional Scatter Models       10,000-1 Physical Objects
+          20 Deform Terms per Object          100-1 Concurrent Grating Orders
+         100 Bound Entities per Object           20 Scattering Areas per Object
+           9 Parabasals per Ray/Beam             10 Hermite-Gaus Modes per Beam
+     1,000-1 Independent Sources                  8 Rays/Beams in Memory Buffer
+  32,000,000 Ray Selection Flags              1,600 Sampling Pixels on a Side
+         286 SVD Fit Variables (Coefs)        8,919 SVD Fit Equations (Points)
+     160,000 Distinct PATHS Listed            1,024 Point Fourier Transform
+      10,000 Entries per Command              2,000 Lines in Output Buffer
+          60 User $FCN Definitions            100-1 Macro Language Nesting Levels
+

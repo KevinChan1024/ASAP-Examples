@@ -1,0 +1,56 @@
+!!++
+!! MACRO_$IO04.INR
+!! Title: File Input and IO Control 
+!! Category: Isolated Command
+!! Keywords: $IO, macro, Macros_pre, file, redirect, output
+!! Description: Several examples of using $IO.
+!! Edit History: (latest first)
+!! 10/24/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+!!  Opens file FRED.INR and reads data into ASAP.
+$IO INPUT FRED
+
+!! Opens file FRED.DOG and reads data into ASAP.
+$IO INPUT FRED.DOG
+
+!! Verbose; suppresses character graphics output,
+!! 2D plot output and 3D vector output.
+$IO GRAPHICS CANCEL PLOT CANCEL VECTOR CANCEL
+
+!! Opens file MLIB.LIB and reads macros into ASAP.
+$IO LIBRARY MLIB
+
+!! Opens file STUFF.LIB and reads macros into ASAP.
+!! Since $IO MACRO is used, ASAP parses the input
+!! according to the old left-to-right precedence
+!! syntax parser.
+$IO MACRO STUFF
+
+!! Opens and writes text output to file FRED.OUT;
+!! no text output appears on the screen.
+$IO OUTPUT FRED
+
+!! Closes current output file; text output appears
+!! on the screen again.
+$IO OUTPUT CLOSE
+
+!! Rewinds BRO030.DAT so that next 3D vectors generated
+!! by ASAP start at the beginning of the file.
+$IO VECTOR REWIND
+
+!! Opens and writes text output to file FRED.out
+!! (assigned to FORTRAN unit 12).  Text output 
+!! appears on screen as well.
+$IO OUTPUT FRED 12
+
+!! Closes current output file; text is still directed
+!! to screen.
+$IO OUTPUT CLOSE
+
+!! Reopen existing file FRED.out and append any
+!! subsquent text to file.  Text output still appears
+!! on screen.
+$IO OUTPUT FRED +12
+

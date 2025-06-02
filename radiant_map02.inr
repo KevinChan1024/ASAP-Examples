@@ -1,0 +1,42 @@
+!!++
+!! RADIANT_MAP02.INR
+!! Title: Radiance Calculation
+!! Category: Isolated Command
+!! Keywords: RADIANT, Radiometry, radiance
+!! Description: Radiance calculation using the 
+!! RADIANT command.
+!! Edit History: (latest first)
+!! 10/11/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+NRAYS=1000
+SEED 1 QUASI
+XMEMORY MIN
+EMITTING 
+  1 SPHEROID 3@0 1*0.007 2@(A=1*0.006) (NRAYS); SHIFT X (A)
+  1 SPHEROID 3@0 2*0.007 2@(A=2*0.006) (NRAYS); SHIFT X (A)
+  1 SPHEROID 3@0 3*0.007 2@(A=3*0.006) (NRAYS); SHIFT X (A)
+  1 SPHEROID 3@0 4*0.007 2@(A=4*0.006) (NRAYS); SHIFT X (A)
+  1 SPHEROID 3@0 5*0.007 2@(A=5*0.006) (NRAYS); SHIFT X (A)
+  1 SPHEROID 3@0 6*0.007 2@(A=6*0.006) (NRAYS); SHIFT X (A)
+  1 SPHEROID 3@0 7*0.007 2@(A=7*0.006) (NRAYS); SHIFT X (A)
+  1 SPHEROID 3@0 8*0.007 2@(A=8*0.006) (NRAYS); SHIFT X (A)
+  1 SPHEROID 3@0 9*0.007 2@(A=9*0.006) (NRAYS); SHIFT X (A)
+  1 SPHEROID 3@0 10*0.007 2@(A=10*0.006) (NRAYS); SHIFT X (A)
+
+PIXELS 21
+WINDOW Y X
+WINDOW 1.5  !! Enlarge by 50%
+RADIANT X 0 180 1 0 360 1 MAP
+TITLE 'ISO LUMINANCE CURVE VIA RADIANT COMMAND'
+
+DISPLAY
+  AVERAGE
+  NORMALIZE MAX
+  NORMALIZE 0.01 
+  CONTOUR 10 TICS 0.02 0.02
+RETURN

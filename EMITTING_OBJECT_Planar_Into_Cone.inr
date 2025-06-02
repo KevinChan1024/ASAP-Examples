@@ -1,0 +1,41 @@
+!!++
+!! EMITTING_OBJECT_PLANAR_INTO_CONE.INR
+!! Title: Defining Angular Cone of a Planar Emitting Object
+!! Category: Simple Problem
+!! Keywords: Sources, APODIZE, CLIP DIR, EMITTING OBJECT, SELECT
+!! Description: Three methods to emit in a specified cone
+!! from a planar EMITTING OBJECT.  In this example a cone of 25°
+!! about Z was chosen. Comment out the commands as needed to
+!! select only one method below.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/21/2013 - cp - corrected example
+!! 12/14/2010 - cp - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+UNITS MM 
+
+SURFACES
+  PLANE Z 0 RECT 20
+OBJECT 'EMITTER'
+
+!!CLIP DIR -1 1 -1 1 COS[25] 1  !! Method 1
+
+EMITTING OBJECT 1 10000 ISO  
+
+!!SELECT ONLY COS[25] C !! Method 2
+
+APODIZE DIR 1 1 !! Method 3
+  1  SIN[0]  
+  1  SIN[25]
+   
+FLUX TOTAL 100    
+WINDOW Y -2@50 Z -5 95
+PLOT FACETS OVERLAY
+PLOT RAYS 100
+STATS
+$VIEW 
+RETURN

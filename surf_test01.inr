@@ -1,0 +1,40 @@
+!!++
+!! SURF_TEST01.INR
+!! Title: TEST Surface Modifier
+!! Category: Isolated Command
+!! Keywords: TEST, SURFACE, REVOLUTION, PROFILES
+!! Description: One branch of a REVOLUTION surface
+!! is selected using the TEST modifier. The example
+!! demonstrates how to select each curve separately
+!! by specifying a test point on that curve. In
+!! either case below, commenting the TEST command
+!! out would produce both curves as one object.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 10/18/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  REVOLUTION Y 0 -0.2 0.25 -1 0.05
+    TEST +POINT 0 5 0  !! Otherwise get upper AND lower curve
+    LOCAL -2@10 -1 6 -2@10
+OBJECT 'CURVE_UPPER'
+ 
+SURFACES
+  REVOLUTION Y 0 -0.2 0.25 -1 0.05
+    TEST -POINT 0 5 0
+    LOCAL -2@10 -1 6 -2@10
+OBJECT 'CURVE_LOWER'
+
+!! View objects
+WINDOW Y Z
+  PROFILES 0 0 -21
+WINDOW Y X
+  PROFILES 0 0 -21
+$VIEW
+RETURN

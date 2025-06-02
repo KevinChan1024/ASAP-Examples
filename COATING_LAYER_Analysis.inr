@@ -1,0 +1,78 @@
+!!++
+!! COATING_LAYER_ANALYSIS.INR
+!! Title: Checking a Coating Layer prescription with $ITER
+!! Category: Simple Problem
+!! Keywords: Analysis, COATINGS LAYERS, WAVELENGTH, irradiance, $ITER  
+!! Description: How to plot Irradiance in transmision vs. wavelength
+!! for a lens with coating layers applied.  Uses $ITER to run
+!! raytraces at wavelength intervals over the selected range,
+!! saving the irradiance results to the iter.dis display file.
+!! Edit History: (latest first)
+!! 08/07/2012 - cp - corrected keyword
+!! 09/08/2004 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTHS 550 NM 
+
+MEDIA
+  1.51 'GLASS'
+  1.38 'MGFL2'
+  2.40 'TI02'  
+  
+COATING LAYERS
+  122.43 MGFL2 23.12 TI02 50.44 MGFL2 16.33 TI02 'AR'
+  
+FRESNEL AVERAGE 
+AREA=25  !! Target area
+
+!! Front of lens 
+SURFACE
+  OPTICAL Z -.692 4.5 -1 ELLIPSE 2.5
+OBJECT 'FRONT'
+  INTERFACE COATING AR AIR SCHOTT_BK7
+
+!! Back of Lens
+SURFACE
+  OPTICAL Z 0 -4.5 -1 ELLIPSE 2.5
+OBJECT 'BACK'
+  INTERFACE COATING AR AIR SCHOTT_BK7
+    SHIFT Z 1
+
+!! Edge of Lens
+SURFACE
+  TUBE Z 0 2.5 2.5 0.3 2.5 2.5
+OBJECT 'EDGE'
+
+!!Target 
+SURFACE
+  PLANE Z 10 RECTANGLE 5 5  
+OBJECT 'TARGET' 
+
+$ITER WAVE 400 700 -10 IRRAD  !! Iterate across range with endpoints
+  {
+  RAYS 0  !! Clear previous rays 
+  WAVELENGTH (WAVE)
+  GRID ELLIPTIC Z -5 -4@2.5 10 10
+    SOURCE DIRECTION 0 0 1 
+  TRACE 
+  WINDOW Y X
+  CONSIDER ONLY TARGET
+  SPOTS POSITION ATTRIBUTE 0
+  $GRAB 'Flux' 1 2 T_FLUX
+  IRRAD=T_FLUX/AREA
+  CONSIDER ALL
+  }
+    
+RETURN  
+CONSIDER ALL 
+WINDOW Y Z 
+!!PLOT FACETS 5 5 0
+DISPLAY ITER 
+NORMALIZE 
+  GRAPH 'Transmission vs. Wavelength'
+RETURN

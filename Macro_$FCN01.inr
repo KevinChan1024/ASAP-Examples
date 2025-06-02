@@ -1,0 +1,25 @@
+!!++
+!! MACRO_$FCN01.INR
+!! Title: $FCN Predefined Macro 
+!! Category: Isolated Command
+!! Keywords: $FCN, macro, Macros_pre, function
+!! Description: Simple use of $FCN. A hyperbolic sine
+!! function is defined and named SINH which accepts a
+!! single parameter using the underscore character (_).
+!! Edit History: (latest first)
+!! 02/11/2000 - cp - modified format; added description
+!! 08/02/1999 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Define the hyperbolic sine function
+
+$FCN SINH (EXP(_)-EXP(-_))/2
+
+A=SINH(0.3)
+
+$REG A 'A='  
+
+RETURN

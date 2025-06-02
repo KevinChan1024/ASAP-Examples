@@ -1,0 +1,26 @@
+!!++
+!! CHARACTER01.INR
+!! Title: A Simple Character Edge
+!! Category: Isolated Command
+!! Keywords: CHARACTER, EDGES  
+!! Description: A Character edge made into
+!! the word "ASAP." A 3-D effect is produced 
+!! by extruding two similar edges with the 
+!! OBJECT command.
+!! Edit History: (latest first)
+!! 10/04/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  CHARACTER Z 0 1 1 'ASAP'
+  CHARACTER Z 0.2 1 1 'ASAP'
+  OBJECT 
+    0.1 0.2 'ASAP'
+WINDOW Y X
+OBLIQUE
+PLOT FACETS 'ASAP AS A CHARACTER EDGE'
+RETURN

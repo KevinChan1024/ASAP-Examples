@@ -1,0 +1,21 @@
+!!++
+!! GET01.INR
+!! Title: GETing Ray Data
+!! Category: Isolated Command
+!! Keywords: GET, rays
+!! Description: How to GET ray data.
+!! Note: This is not a runable inr file.
+!! Edit History: (latest first)
+!! 12/19/2001 - cp - modified description
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+GET 15
+
+Transfers the data from ray number 15 in the ray table to internally-
+defined variables.
+
+GET 25 150
+
+Transfers flux-weighted averaged ray data from rays 25 to 150 into internally-defined variables.

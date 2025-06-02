@@ -1,0 +1,26 @@
+!!++
+!! SURF_ELLIPSOID01.INR
+!! Title: ELLIPSOID Surface
+!! Category: Isolated Command
+!! Keywords: ELLIPSOID, SURFACE
+!! Description: An ellipsoidal surface
+!! with xyz semi-lengths of 2,1,3
+!! and center at 0,0,0.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/11/2002 - cp - reformatted
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  ELLIPSOID 2 1 3 0 0 0
+OBJECT
+  
+WINDOW Y Z  !! To view object
+WINDOW 1.5
+PLOT FACETS 5 5 'SURF:ELLIPSOID' COLORS 11
+RETURN

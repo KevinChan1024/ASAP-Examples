@@ -1,0 +1,63 @@
+!!++
+!! FRESNEL_LENS01.INR
+!! Title: Fresnel Lens by Redefining Normal
+!! Category: Simple Problem
+!! Keywords: Geometry, Fresnel, lens, REDEFINE, NORMAL, USERSAG, TORIC
+!! Description: This shows how to simulate a Fresnel lens by redefining
+!! the Normal of a plane surface with a USERSAG TORIC surface.
+!! Edit History: (latest first)
+!! 02/07/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.475 'SILICA'
+ 
+COATINGS PROPERTIES
+  0 1   'TRANS'
+
+SURFACES !! Create Fresnel surface
+  PLANE Z 0 ELLIPSE 3  !! The Fresnel surface to be altered
+  USERSAG Z 0 0 0 TORIC 3 RECTANGLE 2.99 2.99  !! Surface used to alter Normal
+  OBJECT; 0.2 'FRESNEL_SURF_1'
+    REDEFINE NORMAL 0.1  !! Alters Normal of plane surface with USERSAG Normals
+    INTERFACE COAT +TRANS AIR SILICA
+
+SURFACES
+  PLANE Z 0.4 ELLIPSE 3
+  OBJECT 'FRESNEL_SURF_2'
+    INTERFACE COAT +TRANS AIR SILICA
+
+SURFACES
+  TUBE Z 0 2@3 .4 2@3
+  OBJECT 'FRESNEL_LENS_EDGE'
+
+SURFACES
+  PLANE Z 6.632 ELLIPSE 2
+  OBJECT 'DETECTOR'
+
+PLOT FACETS 5 5 OVERLAY 'FRESNEL LENS USING ALTERNATE NORMAL OPTION' 
+
+BEAMS INCOHERENT GEOMETRIC
+GRID POLAR Z 0 0 3 0 360 7 6
+  SOURCE DIRECTION 0 0 1, 0 SIN[10] COS[10]  !! 2 sources, on-axis and 10° off-axis
+  MOVE TO Z -1
+TRACE PLOT 
+
+SELECT ONLY SOURCE 1
+  TITLE 'SPOT DIAGRAM OF ON-AXIS BUNDLE AT BEST FOCUS OF FRESNEL LENS'
+  FOCUS MOVE  !! Move rays to best focus
+  WINDOW Y X
+  WINDOW 1.3  !! Enlarge window 30%
+  SPOTS POSITION ATTRIBUTE 2  !! Use crosses
+
+SELECT ONLY SOURCE 2
+  TITLE 'SPOT DIAGRAM OF 10 DEGREE OFF-AXIS BUNDLE AT BEST FOCUS'
+  FOCUS MOVE  !! Move rays to best focus
+  WINDOW Y X
+  WINDOW 1.3  !! Enlarge window 30%
+  SPOTS POSITION ATTRIBUTE 2  !! Use crosses
+RETURN 
+

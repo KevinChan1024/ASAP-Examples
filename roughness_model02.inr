@@ -1,0 +1,56 @@
+!!++
+!! ROUGHNESS_MODEL02.INR
+!! Title: Roughness using Phong Model
+!! Category: Isolated Command
+!! Keywords: ROUGHNESS, Scatter, $FCN, MODELS, USERBSDF, Phong 
+!! Description: A roughness model using a Phong-like
+!! function for a USERBSDF.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+PIXELS 127
+!! Phong function = 0.1+0.3*(COS(angle from specular))^10
+$FCN FONG C=_2+SQRT((1-_1)*(1-_3)),  !! Cosine of angle from specular
+            _4*((C>0)^_5)+_6
+
+COATINGS PROPERTIES
+  0.47  0  'REFL'
+
+MODELS
+  USERBSDF FONG 0.3 10 0.1 PLOT 0  !! Create 0° Display file only
+
+DISPLAY FONG_0.DIS 
+  ISOMETRIC 2 '3D PLOT OF USER-DEFINED PHONG MODEL' !! Plot every 2nd line of data
+
+SURFACES
+  PLANE Z 0 ELLIPSE 5
+  OBJECT 'PHONG_LIKE_OBJECT'
+    INTERFACE 0.5
+    ROUGHNESS MODEL 1
+
+EMITTING RECT Z -1 2@1 50000 0
+TRACE
+
+WINDOW Y -2@1 X -2@1
+PIXELS 127
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+  ANGLES
+  AVERAGE 2 2
+  RADIAL 0.5 0.5
+  FORM -0.6
+  RANGE -1.0 -0.4
+  GRAPH 'INTENSITY DISTRIBUTIONS (BSDF) OF PHONG MODEL'
+DISPLAY
+  AVERAGE 2 2
+  RADIAL 0.5 0.5
+  FORM -0.6
+  RANGE -1.0 -0.4
+  ISOMETRIC 2 'INTENSITY DISTRIBUTIONS (BSDF) OF PHONG MODEL'
+RETURN

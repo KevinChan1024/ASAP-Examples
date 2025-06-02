@@ -1,0 +1,92 @@
+!!++
+!! SINGLET_GHOST_ANAL.INR
+!! Title: Ghost Analysis on a Singlet Lens
+!! Category: Simple Problem
+!! Keywords: Analysis, ghost, LENSES, SINGLET, SAVE, PATHS, HISTORY PX, EXPLODE, SELECT 
+!! Description: This file explodes a singlet and creates an edge around
+!! the front and back surfaces, yielding three objects.
+!! A grid of rays is launched 10mm in front of the lens. FRESNEL and
+!! SPLIT provide for ghost imaging. Split levels are set for the ghost order.
+!! The first 4 plots show the ghost images consecutively layered. 
+!! The last four plots show each ghost order separately using the 
+!! Path eXplorer, PX. Finally, Z axis positions of the ghosts are computed.
+!! Singlet details:
+!! n=1.50678
+!! wavelength=1053nm
+!! thickness=40 mm
+!! Radius of curvature = 1125.126 mm (front) -1125.126(back) mm
+!! Diameter = 20 cm
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 09/25/2007 - cp - modified format, header
+!! 09/25/2007 - wjd - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$DO 1 4
+ {
+ SYSTEM NEW      
+ RAYS 0
+ $IO VECTOR REWIND
+ SPLIT ?
+!! Define Media 
+ MEDIA 
+   1.50678 'BK7_SIMO' 
+  
+ UNITS MM
+ WAVELENGTH 1053 NM
+
+!! Variables
+ NRAYS=11 nxn
+ STARTZ=0
+ THICKNESS=40 mm
+ RC_F=1125.126 mm
+ RC_B=-1125.126 mm
+ DIAM=20 cm
+ DIAM=DIAM*10 mm
+                      
+!! Geometry definitions begin here                      
+ ENT;SINGLET Z (STARTZ) (THICKNESS) DIAM/2 BK7_SIMO RD (RC_F) (RC_B)
+ EXPLODE                                               
+ ENTITY 
+   TUBE Z STARTZ-5 2@DIAM/2 THICKNESS+5 2@DIAM/2
+ OBJECT 'LENS_EDGE'
+   BOUNDS .3 -.2
+   
+!! Assign media
+ OBJECT 1 INTERFACE COATING BARE AIR BK7_SIMO   
+ OBJECT 2 INTERFACE COATING BARE AIR BK7_SIMO
+ OBJECT 3 INTERFACE COATING BARE AIR BK7_SIMO   
+   
+!! SOURCE DEFINITIONS BEGIN HERE
+ GRID ELLIPTIC Z STARTZ-10 -4@DIAM/2 2@(NRAYS)
+ SOURCE DIRECTION 0 0 1
+ FLUX TOTAL 100
+ 
+!! TRACE RAYS WITH OPTIONAL PLOT
+ MISSED 500
+ WINDOW Y 0 0 Z -400 400
+ PLOT FACETS 5 5 0 'Ghost order 1 to ?' OVERLAY 
+ SAVE
+ TRACE PLOT                
+ }
+
+!! Analysis
+RETURN
+$IO VECTOR REWIND
+ 
+$DO 1 4
+ {
+ HISTORY PX; SPLITS EQ ?; REFRESH; PLOT '        GHOST LEVEL ?' 
+ RETURN; SELECT ONLY GENERATION ? 
+ FOCUS MOVE
+ $GRAB 'Centroid Point' 0 3 GHOST_ZPOS_ORDER?
+ STATS
+ $GRAB 'TOTAL' 0 2 GHOST_FLUX_ORDER?
+ }
+ 
+$DO 1 4
+&REG GHOST_FLUX_ORDER? GHOST_ZPOS_ORDER?
+RETURN                                 

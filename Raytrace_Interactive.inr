@@ -1,0 +1,358 @@
+!!++
+!! RAYTRACE_INTERACTIVE.INR
+!! Title: Projection Lens using Bounding Surfaces
+!! Category: Simple Problem
+!! Keywords: Tracing, Geometry, BOUNDS, RAY, interactive, projector, lens, raytrace
+!! Description: The lens design imported using ZEMAX (a trademark
+!! of Focus Software) is now supplemented with outer edges
+!! and annular front or rear surfaces to illustrate use
+!! of the BOUNDS command. The object names have also
+!! been changed at this time to better reflect their 
+!! function in the system. This will be useful later 
+!! when various reports name the surfaces involved in
+!! stray-light analysis. 
+!! The projector lens is very nearly telecentric to minimize 
+!! vignetting when projecting the image from the LCD. The 
+!! chief ray is approximately 3° from the normal at the edge 
+!! of the LCD. Distortion is below 1.6%. The probable use 
+!! for a lens like this is for a fixed focus rear projection 
+!! LCD system with multiple fold mirrors. All spherical glass 
+!! elements are used in this prototype system. Production 
+!! systems might use aspheres and some plastic elements. A 
+!! Zoom system would be desirable for front projection.
+!! A profile of the lenses will be plotted and then single
+!! ray tracing will be enabled via the mouse. First mark the
+!! start of the ray with the left mouse button. Mark the end
+!! point to indicate direction and initiate trace. The right
+!! mouse button ends the session.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 11/18/2003 - cp - fixed formatting
+!! 02/08/2000 - cp - modified format; added description
+!! 12/01/1997 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNIT MM
+WAVELENGTHS 450 550 633 NM
+SPECTRUM 1 1 1
+ARROWS OFF
+
+MEDIA
+  0.7`-7.0  0.7`-7.0  0.7`-7.0  'ZMX_ALUMINUM'
+
+COATINGS PROPERTIES
+  0.0 1.0  0.0 1.0  0.0 1.0  'TRANSMIT'
+  1.0 0.0  1.0 0.0  1.0 0.0  'REFLECT'
+  0.0 0.0  0.0 0.0  0.0 0.0  'ABSORB'
+
+!! Projection lens
+!! First element (projection lens 1 = pl1)
+!!
+!! Two surfaces must be added to close this lens.  The
+!! first is the annular ring.  It is made in ASAP as
+!! an ellipical planar surface entity.  The dimensions 
+!! of the annulus and central obscuration come from 
+!! the semi apertures of SURF1 and SURF2.
+!! The location along Z is not specified by anything
+!! that survives into the translated lens.  In this case,
+!! the sag of the second surface was calculated by hand
+!! and added to the z location of the second surface.
+!! The other surface is a tube.  It's Z extent is left
+!! to start at the origin and extend to the sag position
+!! previously calculated.  It is then "trimmed to fit" 
+!! with the BOUNDS object modifier.  
+
+SURFACES
+  OPTICAL Z 0 140 0
+    LOCAL -6@42 Z
+OBJECT 'PL1_SURF1'
+  INTERFACE COAT "TRANSMIT"  "AIR" "SCHOTT_LAKN12"
+  REDEFINE COLOR 1
+
+SURFACES
+  OPTICAL Z 0 480 0
+    LOCAL -6@40 Z
+OBJECT 'PL1_SURF2'
+  INTERFACE COAT "TRANSMIT"  "SCHOTT_LAKN12" "AIR"  
+  REDEFINE COLOR 1
+  SHIFT Z 16.8
+
+SURFACES
+  PLANE Z 0 ELLIPSE 2@42.0 40.0/42.0 0 0
+OBJECT 'PL1_ANNULUS'
+  INTERFACE COAT "ABSORB" "AIR" "SCHOTT_LAKN12"
+  REDEFINE COLOR 20
+  SHIFT Z 16.8+1.670
+
+SURFACES
+  TUBE Z 0 2@42.0 16.8+1.670 2@42.0
+OBJECT 'PL1_TUBE'
+  BOUNDS -0.2 0.4
+  INTERFACE COAT "ABSORB" "AIR" "SCHOTT_LAKN12"
+  REDEFINE COLOR 20
+
+!! Second element (projection lens 2 = pl2)
+SURFACES
+  OPTICAL Z 0 597 0
+    LOCAL -6@37 Z
+OBJECT 'PL2_SURF1'
+  INTERFACE COAT "TRANSMIT"  "AIR" "SCHOTT_SK10"  
+  REDEFINE COLOR 1
+  SHIFT Z 24.0854505297
+
+SURFACES
+  OPTICAL Z 0 736 0
+    LOCAL -6@34 Z
+OBJECT 'PL2_SURF2'
+  INTERFACE COAT "TRANSMIT"  "SCHOTT_SK10" "AIR"  
+  REDEFINE COLOR 1
+  SHIFT Z 34.4154505297
+
+SURFACES
+  PLANE Z 0 ELLIPSE 2@37.0 34.0/37.0 0 0
+OBJECT 'PL2_ANNULUS'
+  INTERFACE COAT "TRANSMIT" "AIR" "SCHOTT_SK10"
+  REDEFINE COLOR 20
+  SHIFT Z 34.4154505297+0.786
+
+SURFACES
+  TUBE Z 24.0 2@37.0 34.4154505297+0.786 2@37.0
+OBJECT 'PL2_TUBE'
+  BOUNDS -0.2 0.4
+  INTERFACE COAT "TRANSMIT" "AIR" "SCHOTT_SK10"
+  REDEFINE COLOR 20
+
+!! Tird element (projection lens 3 = pl3)
+SURFACES
+  OPTICAL Z 0 57.2 0
+    LOCAL -6@30 Z
+OBJECT 'PL3_SURF1'
+  INTERFACE COAT "TRANSMIT"  "AIR" "SCHOTT_PSK53A" 
+  REDEFINE COLOR 1 
+  SHIFT Z 35.878348028
+
+SURFACES
+  OPTICAL Z 0 814 0
+    LOCAL -6@29 Z
+OBJECT 'PL3_SURF2'
+    INTERFACE COAT "TRANSMIT"  "SCHOTT_PSK53A" "AIR" 
+  REDEFINE COLOR 1 
+  SHIFT Z 50.748348028
+
+SURFACES
+  PLANE Z 0 ELLIPSE 2@30.0 29.0/30.0 0 0
+OBJECT 'PL3_ANNULUS'
+  INTERFACE COAT "TRANSMIT" "AIR" "SCHOTT_PSK53A"
+  REDEFINE COLOR 20
+  SHIFT Z 50.748348028+0.517
+
+SURFACES
+  TUBE Z 35.8 2@30.0 50.748348028+0.517 2@30.0
+OBJECT 'PL3_TUBE'
+  BOUNDS -0.2 0.4
+  INTERFACE COAT "TRANSMIT" "AIR" "SCHOTT_PSK53A"
+  REDEFINE COLOR 20
+
+!! Fourth element (projection lens 4 = pl4)
+SURFACES
+  OPTICAL Z 0 0 0
+    LOCAL -6@25 Z
+OBJECT 'PL4_SURF1'
+  INTERFACE COAT "TRANSMIT"  "AIR" "SCHOTTNEW_SF6" 
+  REDEFINE COLOR 1 
+  SHIFT Z 55.620517722
+
+SURFACES
+  OPTICAL Z 0 198 0
+    LOCAL -6@20 Z
+OBJECT 'PL4_SURF2'
+  INTERFACE COAT "TRANSMIT"  "SCHOTTNEW_SF6" "AIR" 
+  REDEFINE COLOR 1 
+  SHIFT Z 67.830517722
+
+SURFACES
+  PLANE Z 0 ELLIPSE 2@25.0 20.0/25.0 0 0
+OBJECT 'PL4_ANNULUS'
+  INTERFACE COAT "TRANSMIT" "AIR" "SCHOTTNEW_SF6"
+  REDEFINE COLOR 20
+  SHIFT Z 67.830517722+1.013
+
+SURFACES
+  TUBE Z 55.620517722 2@25.0 67.830517722+1.013 2@25.0
+OBJECT 'PL4_TUBE'
+  BOUNDS -0.2 0.4
+  INTERFACE COAT "TRANSMIT" "AIR" "SCHOTTNEW_SF6"
+  REDEFINE COLOR 20
+
+!! Aperture stop
+SURFACES
+  PLANE Z 0 ELLIPSE 2@25.0 13.2702151/25.0
+OBJECT 'PL_STOP'
+  INTERFACE COAT "ABSORB"  "AIR" "AIR"
+  REDEFINE COLOR 3  
+  SHIFT Z 71.0965936308
+
+!! Fifth element (projection lens 5 = pl5)
+SURFACES
+  OPTICAL Z 0 64 0
+    LOCAL -6@18 Z
+OBJECT 'PL5_SURF1'
+  INTERFACE COAT "TRANSMIT"  "AIR" "SCHOTTNEW_SF56A" 
+  REDEFINE COLOR 1 
+  SHIFT Z 72.7740643509
+
+SURFACES
+  OPTICAL Z 0 40 0
+    LOCAL -6@16.5 Z
+OBJECT 'PL5_SURF2'
+  INTERFACE COAT "TRANSMIT"  "SCHOTTNEW_SF56A" "AIR"  
+  REDEFINE COLOR 1
+  SHIFT Z 79.4740643509
+
+SURFACES
+  PLANE Z 0 ELLIPSE 2@18.0 16.5/18.0 0 0
+OBJECT 'PL5_ANNULUS'
+  INTERFACE COAT "TRANSMIT" "AIR" "SCHOTTNEW_SF56A"
+  REDEFINE COLOR 20
+  SHIFT Z 79.4740643509+3.562
+
+SURFACES
+  TUBE Z 72.7740643509 2@18.0 79.4740643509+3.562 2@18.0
+OBJECT 'PL5_TUBE'
+  BOUNDS -0.2 0.4
+  INTERFACE COAT "TRANSMIT" "AIR" "SCHOTTNEW_SF56A"
+  REDEFINE COLOR 20
+
+!! Sixth element (projection lens 6= pl6)
+SURFACES
+  OPTICAL Z 0 -53 0
+    LOCAL -6@20 Z
+OBJECT 'PL6_SURF1'
+  INTERFACE COAT "TRANSMIT"  "AIR" "SCHOTT_SF55" 
+  REDEFINE COLOR 1 
+  SHIFT Z 94.2390625889
+
+SURFACES
+  OPTICAL Z 0 -45.4 0
+    LOCAL -6@21 Z
+OBJECT 'PL6_SURF2'
+  INTERFACE COAT "TRANSMIT"  "SCHOTT_SF55" "AIR"
+  REDEFINE COLOR 1  
+  SHIFT Z 101.559062589
+
+SURFACES
+  PLANE Z 0 ELLIPSE 2@21.0 20.0/21.0 0 0
+OBJECT 'PL6_ANNULUS'
+  INTERFACE COAT "TRANSMIT" "AIR" "SCHOTT_SF55"
+  REDEFINE COLOR 20
+  SHIFT Z 94.2390625889-3.918
+
+SURFACES
+  TUBE Z 94.2390625889-3.918 2@21.0 101.559062589-5.149 2@21.0
+OBJECT 'PL6_TUBE'
+  INTERFACE COAT "TRANSMIT" "AIR" "SCHOTT_SF55"
+  REDEFINE COLOR 20
+
+!! Seventh element (projection lens 7= pl7)
+SURFACES
+  OPTICAL Z 0 -32.5 0
+    LOCAL -6@22 Z
+OBJECT 'PL7_SURF1'
+  INTERFACE COAT "TRANSMIT"  "AIR" "SCHOTTNEW_SF56A"
+  REDEFINE COLOR 1  
+  SHIFT Z 114.627253579
+
+SURFACES
+  OPTICAL Z 0 -356 0
+    LOCAL -6@26 Z
+OBJECT 'PL7_SURF2'
+  INTERFACE COAT "TRANSMIT"  "SCHOTTNEW_SF56A" "AIR"  
+  REDEFINE COLOR 1
+  SHIFT Z 117.377253579
+
+SURFACES
+  PLANE Z 0 ELLIPSE 2@26.0 22.0/26.0 0 0
+OBJECT 'PL7_ANNULUS'
+  INTERFACE COAT "TRANSMIT" "AIR" "SCHOTTNEW_SF56A"
+  REDEFINE COLOR 20
+  SHIFT Z 114.627253579-8.578
+
+SURFACES
+  TUBE Z 114.627253579-8.578 2@26.0 117.377253579-0.951 2@26.0
+OBJECT 'PL7_TUBE'
+  INTERFACE COAT "TRANSMIT" "AIR" "SCHOTTNEW_SF56A"
+  REDEFINE COLOR 20
+
+!! Eighth element (projection lens 8= pl8)
+SURFACES
+  OPTICAL Z 0 -145.2 0
+    LOCAL -6@32 Z
+OBJECT 'PL8_SURF1'
+  INTERFACE COAT "TRANSMIT"  "AIR" "SCHOTTNEW_SF1"  
+  REDEFINE COLOR 1
+  SHIFT Z 125.787854515
+
+SURFACES
+  OPTICAL Z 0 -56.5 0
+    LOCAL -6@34 Z
+OBJECT 'PL8_SURF2'
+  INTERFACE COAT "TRANSMIT"  "SCHOTTNEW_SF1" "AIR" 
+  REDEFINE COLOR 1 
+  SHIFT Z 137.667854515
+
+SURFACES
+  PLANE Z 0 ELLIPSE 2@34.0 32.0/34.0 0 0
+OBJECT 'PL8_ANNULUS'
+  INTERFACE COAT "TRANSMIT" "AIR" "SCHOTTNEW_SF1"
+  REDEFINE COLOR 20
+  SHIFT Z 125.787854515-3.570
+
+SURFACES
+  TUBE Z 125.787854515-3.570 2@34.0 137.667854515-11.375 2@34.0
+OBJECT 'PL8_TUBE'
+  INTERFACE COAT "TRANSMIT" "AIR" "SCHOTTNEW_SF1"
+  REDEFINE COLOR 20
+
+!! Ninth element (projection lens 9= pl9)
+SURFACES
+  OPTICAL Z 0 77.8 0
+    LOCAL -6@40 Z
+OBJECT 'PL9_SURF1'
+  INTERFACE COAT "TRANSMIT"  "AIR" "SCHOTT_LAF3"
+  REDEFINE COLOR 1  
+  SHIFT Z 138.684428572
+
+SURFACES
+  OPTICAL Z 0 0 0
+    LOCAL -6@40 Z
+OBJECT 'PL9_SURF2'
+  INTERFACE COAT "TRANSMIT"  "SCHOTT_LAF3" "AIR" 
+  REDEFINE COLOR 1 
+  SHIFT Z 152.584428572
+
+SURFACES
+  TUBE Z 138.684428572+11.070 2@40.0 152.584428572 2@40.0
+OBJECT 'PL9_TUBE'
+  INTERFACE COAT "TRANSMIT" "AIR" "SCHOTT_LAF3"
+  REDEFINE COLOR 20
+
+RETURN
+
+!! Rotate to improve the initial 3-D view for 
+!! the sake of the demo
+GROUP -36
+  ROTATE Y -90
+
+PIXELS 101
+WINDOW Y X
+!!PLOT FACETS 5 5 OVERLAY  !! If using 3-D viewer
+PROFILES 0 0 -1 OVERLAY
+
+RAY -200 0 0  1 0 0  PLOT  !! See instructions above
+RETURN
+
+
+

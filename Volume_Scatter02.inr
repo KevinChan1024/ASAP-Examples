@@ -1,0 +1,106 @@
+!!++
+!! VOLUME_SCATTER02.INR
+!! Title: Volume Mie Scatter
+!! Category: Simple Problem
+!! Keywords: Interfaces, Scatter, MODELS, VOLUME, VOXELS FLUENCE
+!! Description: Demonstrates Monte Carlo volume scatter 
+!! using the Mie model. The model is referenced by the 
+!! Media SCATTER option. A VOXELS FLUENCE distribution file
+!! is created and displayed in the 3-d viewer, with geometry.
+!! Edit History: (latest first)
+!! 06/04/2015 - mt - modified geometry construction
+!! 02/29/2012 - cp - corrected keywords
+!! 12/19/2005 - cp - modified and added comments 
+!! 11/04/2003 - cp - corrected syntax
+!! 07/26/2001 - cp - corrected header
+!! 05/18/2001 - cp - corrected header and name
+!! 05/14/2001 - rh - creation 
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM 
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH (WL=632.8) NM
+
+!! Constants
+PI=4*ATAN(1)     !! Computer's value of Pi
+
+!! Parameters
+
+VTHICK=10            !! Pillbox thickness
+VRADI=50             !! Pillbox radius
+VCONC=1E6            !! Number of particles per unit of volume
+BEAMSIZE=1           !! Beam half diameter
+A_W=0.5              !! Particle Radius in waves (size parameter)
+A_NM=A_W*WL          !! True particle size in NM
+A_MM=A_NM*1E-6       !! True particle size in MM
+ 
+F=PI*(A_MM^2)*VCONC  !! Fractional area obscuration
+MFP=1/F              !! 1/F Roughly equals mean free path
+IBULK=1.33           !! Used for bulk media and MIE calculation
+LEVEL (LEVEL=1000)
+
+!! Two media must be defined.  One is the "BULK" media in
+!! which the particles are suspended.  This must be specified twice.
+!! The other is the index of the particles themselves (SPHERE).
+!! See Procedural Note "Using VOXELS in ASAP" 
+PIXELS 301 !! For good resolution on VOLUME...PLOT below
+MEDIA
+  1.59 'SPHERE'
+  (IBULK) 'BULK'
+  
+IMMERSE BULK !! Immerse spheres in BULK
+MODEL
+  VOLUME MIE SPHERE 2@(A_NM) (F) PLOT   
+   
+MEDIA
+  (IBULK) SCATTER 1 'BULK_SPHERES'
+  
+PRINT MODELS
+&REG
+  
+SURFACE
+	PLANE Z 0 ELLIPSE 2@50
+OBJECT
+	0.1	 'FRONT'
+  INTERFACE 0 1 AIR BULK_SPHERES
+  REDEFINE COLOR 1
+
+SURFACE
+	PLANE Z 10 ELLIPSE 2@50
+OBJECT
+	0.1	 'BACK'
+  INTERFACE 0 1 AIR BULK_SPHERES
+  REDEFINE COLOR 1
+  
+SURFACE
+	TUBE Z 0 2@50 10 2@50
+OBJECT
+	0.1  'TUBE'
+  INTERFACE 0 1 AIR BULK_SPHERES
+  REDEFINE COLOR 1
+  
+IMMERSE AIR  !! To switch from IMMERSE BULK earlier 
+GRID POLAR Z -10 0 (BEAMSIZE) 0 360  301 6 
+  GRID ELLIPSE Z -1 -4@(BEAMSIZE) 3 3
+  SOURCE DIRECTION 0 0 1
+
+FLUX 1 0
+PIXELS 39
+WINDOW Y  Z  
+PLOT FACETS 7 7 OVERLAY
+VOXELS FLUENCE -2@2 -2@2 0 10  31 31 INT(31*10/4)
+MISSED ARROW 5 
+TRACE PLOT 5000  COLOR 1
+
+!! When the view appears, hide the geometry, and zoom
+!! in to see the fluence distribution.
+
+$VIEW
+&VIEW BRO009.DAT  !! Add volume display file
+
+STATS 
+&REG
+RETURN

@@ -1,0 +1,64 @@
+!!++
+!! EXTREMES_POSITION_RADIAL_01.INR
+!! Title: Using EXTREMES POSITION Local to a Radial AXIS
+!! Category: Isolated Command
+!! Keywords: EXTREMES POSITION, AXIS, radial, cylindrical, Analysis
+!! Description: Demonstrate a source with obvious boundaries
+!! in the radial, tangential space produced by EXTREMES POSITION
+!! with an AXIS command. Show SPOTS POSITION for both Y,X 
+!! position and for T, R, and output the latter's EXTREMES
+!! POSITION in R, T (cylindrical) coordinates. 
+!! Edit History: (latest first) 
+!! 11/07/2008 - cp - added header
+!! 11/07/2008 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! make a 90-degree wedge of radius 99 from -11 to 79 degrees azimuth
+EDGE
+  ELLIPSE Z 0 17 17 16
+    SMOOTH 2
+   LINE 0 0 0 99 0 0 2
+   ARC    Z 0 99 0 0 0 90  
+   LINE 0 99 0 0 0 0 2
+  COMPOSITE -3 GAPS 1 1 
+    ROTATE Z -11 0 0
+RETURN
+
+!! bound the source to give it obvious structure in AXIS Z space
+OBJECT 0
+  BOUNDS -.1 +.2
+RETURN
+
+!! make a source that overfills the bounding edge
+EMITTING DISK Z 9.87 2@111 111111 2@22
+
+!! look at it in X, Y position space
+WINDOW Y -2@120 X -2@120 
+SPOTS POSITION OVERLAY 'Source SPOTS with its bounding edges'
+PLOT EDGE .1 COLOR 2 OVERLAY
+PLOT EDGE .2 COLOR 3
+
+!! change to tY, rX space (cylindrical coordinates)
+AXIS Z
+
+SPOTS POSITION YX -20 90 0 120  'Y, X corresponds to T, R (tangential, radial)' 
+
+DISPLAY
+  PICTURE 'source in R, T coordinates'
+RETURN
+
+EXTREMES POSITION 
+!! Note, the second line for each ray (A,B,C) coresponds to the
+!! projection of the A & B direction cosines for the extreme ray
+!! measured in Cartesian space and the angle with the local X axis,
+!! i.e. for the Ray with MINIMUM R component: 
+!! sqrt(A^2 + B^2) = .306287289
+!! atan(B/A) = -111.715569
+ 
+!! These values appear to have no practical significance and so can be ignored. 
+ 
+RETURN
+ 

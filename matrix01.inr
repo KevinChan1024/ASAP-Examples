@@ -1,0 +1,31 @@
+!!++
+!! MATRIX01.INR
+!! Title: MATRIX Rotation
+!! Category: Isolated Command
+!! Keywords: MATRIX, Manipulating
+!! Description: Example of a MATRIX command 
+!! equivalent to a ROTATE.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 12/21/2001 - cp - modified file structure
+!! 10/09/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  OPTICAL Z 4 35 -2 ELLIPSE 2
+    ROTATE X 45 0 5 LIST
+
+!! Is equivalent to:
+
+SURFACES
+  OPTICAL Z 4 35 -2 ELLIPSE 2
+    MATRIX
+      0.0000 1.0000  0.0000 0.0000
+      3.5355 0.0000  0.7071 -.7071
+      1.4645 0.0000  0.7071 0.7071
+
+RETURN

@@ -1,0 +1,74 @@
+!!++
+!! BOUNDING_SQUARE_TUBE.INR
+!! Title: Bounding Square Tube to Plane
+!! Category: Simple Problem
+!! Keywords: Bounds, MULTIPLE, POINTS, TUBE,  
+!! Description: Avoiding problems with square tube bounding
+!! which can cause unwanted "wings" to form at corner intersections.
+!! Here, a plane is bounded to a mockup of the tube using EDGE;
+!! POINTS, while the real tube is actually used in the system. If
+!! the plane was instead bounded directly to the TUBE, there would
+!! appear artifacts or "wings" at each corner which could interfere
+!! with a raytrace. This would occur with or without the rotations.
+!! Edit History: (latest first)
+!! 09/13/2011 - cp - creation
+!!--
+                                              
+SYSTEM NEW
+RESET
+
+X_1=10
+Y_1=-50 
+Z_1=18 
+
+X_2=3
+Y_2=10
+Z_2=5
+  
+TILT=-20  !! Tilt angle in degrees      
+
+EDGES
+  POINTS  (X_1)/2 (Y_1) -(Z_1)/2 1,  (X_1)/2 (Y_1)  (Z_1)/2 1,   (X_2)/2 (Y_2)  (Z_2)/2 1,  (X_2)/2 (Y_2) -(Z_2)/2 1 !! .8
+    ROTATE X (TILT) 0 0 
+ 
+  POINTS -(X_1)/2 (Y_1) -(Z_1)/2 1, -(X_1)/2 (Y_1)  (Z_1)/2 1,  -(X_2)/2 (Y_2)  (Z_2)/2 1, -(X_2)/2 (Y_2) -(Z_2)/2 1 !! .7 
+    ROTATE X (TILT) 0 0 
+
+  POINTS  (X_1)/2 (Y_1)  (Z_1)/2 1, -(X_1)/2 (Y_1)  (Z_1)/2 1,  -(X_2)/2 (Y_2)  (Z_2)/2 1,  (X_2)/2 (Y_2)  (Z_2)/2 1 !! .6 
+    ROTATE X (TILT) 0 0 
+ 
+  POINTS  (X_1)/2 (Y_1) -(Z_1)/2 1, -(X_1)/2 (Y_1) -(Z_1)/2 1,  -(X_2)/2 (Y_2) -(Z_2)/2 1,  (X_2)/2 (Y_2) -(Z_2)/2 1 !! .5 
+    ROTATE X (TILT) 0 0 
+    
+SURFACES    
+  PLANE Y 0 RECTANGLE (6*5) (4*5)                    !! .3   
+  PLANE Y (Y_1) RECTANGLE (Z_1)/2 (X_1)/2            !! .2  
+    ROTATE X (TILT) 0 0 
+  TUBE Y (Y_1) (Z_1)/2 (X_1)/2 (Y_2) (Z_2)/2 (X_2)/2 1 1   !! .1
+    ROTATE X (TILT) 0 0
+
+OBJECT; .3 'IN'
+  BOUNDS  -.4 -.5 -.6 -.7
+    FACETS 71 71    
+     
+OBJECT; .3 'SHIELD' !! 2nd object created from same entity
+  BOUNDS MULTIPLE .4 .5 .6 .7
+  FACETS 71 71   
+
+OBJECT; .2 'OUT' 
+OBJECT; .1  'TUBE_WALL'
+  BOUNDS -.3
+  FACETS 21 21
+               
+WINDOW Y Z 
+!!PLOT ENTITIES OVER !! Optional to visualize bounding entities   
+PLOT FACETS !! Still some corner artifacts seen which are not really there
+$VIEW 
+PIXELS 501 !! Check a rendering using internal raytrace to verify
+CONSIDER ONLY IN
+WIN X -2@4 Z -2@6
+RENDER 
+CONSIDER ONLY SHIELD
+RENDER
+RETURN 
+

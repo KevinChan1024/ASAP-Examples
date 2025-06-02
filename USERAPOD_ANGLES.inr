@@ -1,0 +1,77 @@
+!!++
+!! USERAPOD_ANGLES.INR
+!! Title: Apodizing for Extended Source
+!! Category: Isolated Command
+!! Keywords: USERAPOD, ANGLES, EMITTING, Sources, apodizing
+!! Description: Apodizing an emitting spheroid
+!! for an extended source.  This is an
+!! example of using an external Usap3d file
+!! with a ".1" extension. It will not run this without 
+!! such a file in the working directory. The data below
+!! may be used as an example.  Note, the first two numbers
+!! indicate the number of columns and rows, respectively.
+!! The first row is for azimuthal degrees, and the first column
+!! is polar degrees. The more data points there are, the better
+!! the interpolation.
+!! Edit History: (latest first) 
+!! 08/08/2006 - cp - added data file and further description
+!! 07/12/2001 - cp - modified filename and command
+!! 10/05/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+!! Note, this example must have a USAP3D.1 file located in the working directory.
+SYSTEM NEW
+RESET
+
+USERAPOD ANGLES Z zenith 0 180 azimuthal 0 360 file 1 
+EMITTING SPHEROID 0 0 0 3@0.1 1000000
+!!PLOT RAYS 10 EVERY 1000 
+RADIANT Z
+DISPLAY
+MESH 
+RETURN 
+$VIEW
+$IO
+
+!! The following should be copied to a text file labelled: USAP3D.1   
+!! and put in the Working Directory.
+ 6 37
+      0    60   120   180   240   300
+0.1   0     0    0     0     0     0  
+5     .5    .5   .5    .5    .5    .5 
+10	  1     1    1     1     1     1  
+15    2     2    2     2     2     2  
+20    5     5    5     5     5     5  
+25	  9     9    9     9     9     9  
+30	  18    18   18    18    18    18 
+35	  23    23   23    23    23    23 
+40	  35    35   35    35    35    35 
+45	  60    60   60    60    60    60 
+50	  74    74   74    74    74    74 
+55	  83    83   83    83    83    83 
+60	  92    92   92    92    92    92 
+65	  126   126  126   126   126   126
+70	  176   176  176   176   176   176
+75	  239   239  239   239   239   239
+80	  302   302  302   302   302   302
+85	  343   343  343   343   343   343
+90	  378   378  378   378   378   378
+95	  343   343  343   343   343   343
+100   302   302  302   302   302   302
+105   239   239  239   239   239   239
+110   176   176  176   176   176   176
+115   126   126  126   126   126   126
+120   92    92   92    92    92    92 
+125   83    83   83    83    83    83 
+130   74    74   74    74    74    74 
+135   60    60   60    60    60    60 
+140   35    35   35    35    35    35 
+145   23    23   23    23    23    23 
+150   18    18   18    18    18    18 
+155    9     9    9     9     9     9 
+160    5     5    5     5     5     5 
+165    2     2    2     2     2     2 
+170    1     1    1     1     1     1 
+175   .5    .5   .5    .5    .5    .5 
+179.9 0     0    0     0     0     0  

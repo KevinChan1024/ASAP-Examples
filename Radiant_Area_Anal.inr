@@ -1,0 +1,42 @@
+!!++
+!! RADIANT_AREA_ANAL.INR
+!! Title: Using SELECT ONLY to simulate RADIANT AREA
+!! Category: Simple Problem
+!! Keywords: Radiometry, RADIANT, AREA, SELECT, TRANSPOSE
+!! Description: Performs a similar function to a Radiant
+!! Area, using SELECT ONLY to look at directional info over a 
+!! specified area of a detector surface. Similar results could
+!! obtained using the WINDOW command rather than SELECT ONLY.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/26/2002 - cp - modified description
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SEED 2 QUASI 
+SURFACES
+  PLANE Z 2 RECTANGLE 10 10
+OBJECT 'TARGET'
+EMITTING RECT Z 0 .01 .01 100000 ISO
+  FLUX TOTAL 1
+WINDOW Y Z
+PLOT FACETS OVERLAY  
+TRACE PLOT 400
+
+PIXELS 39
+WINDOW Y  X  !! WINDOW Y 0 10 X 0 10 could be used instead of SELECT
+CONSIDER ONLY TARGET
+SELECT ONLY 0 X AND X 10 AND 0 Y AND Y 10  !! +X/+Y quadrant
+STATS
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY 
+  AVERAGE
+  ANGLES !! Convert to angle space
+  GRAPH  !! Intensity plot over region selected
+  TRANSPOSE
+  GRAPH  !! Orthoganol slice
+RETURN
+

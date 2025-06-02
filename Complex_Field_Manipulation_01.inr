@@ -1,0 +1,75 @@
+!!++
+!! COMPLEX_FIELD_MANIPULATION_01.INR
+!! Title: Manipulating Complex Fields
+!! Category: Simple Problem
+!! Keywords: Wave, Gaussian, FIELD, complex, DISPLAY, COMBINE, $FCN
+!! Description: Applying functions to Real and Imaginary parts of
+!! complex distributions. This example shows how to use COMBINE to
+!! apply two different functions, (real + imag)^2 and (real-_imag)^2.
+!! Edit History: (latest first)
+!! 01/04/2016 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 635 NM
+
+BEAMS COHERENT DIFFRACT
+PARABASALS 4
+WIDTHS 1.6
+
+GAUSSIAN Z 0, 0 5, 7 1, 2 0, 1.5 1.3  
+
+FIELD ENERGY 0.7 YX -2@5 -2@11 PIXELS 51
+
+!! Define function for [Re(E) + Im(E)]^2
+$FCN EPARTS_SUM_SQUARED (_1+_2)^2   
+
+!! Define function for [Re(E) - Im(E)]
+$FCN EPARTS_DIFF (_1-_2)   
+
+!! Open, visualize, and save the REAL part
+DISPLAY 29 REAL
+  PICTURE 'Real part'
+  WRITE REAL_PART DIS 
+RETURN
+
+!! Open, visualize, and save the IMAGinary part
+DISPLAY 29 IMAG
+  PICTURE 'Imag part'
+  WRITE IMAG_PART DIS 
+RETURN 
+
+!! Open the REAL part, and use COMBINE with our sum-squared function
+DISPLAY REAL_PART.DIS
+  COMBINE IMAG_PART.DIS EPARTS_SUM_SQUARED 
+  HEADER _, _, "Re_Im_SumSquared"           !! modify data header to describe properly
+  WRITE SUMSQ_FCN DIS                       !! save the data
+RETURN
+
+!! Open the REAL part, and use COMBINE with our difference function
+DISPLAY REAL_PART.DIS
+  COMBINE IMAG_PART.DIS EPARTS_DIFF
+  HEADER  _, _, "Re_Im_difference"          !! modify data header to describe properly               
+  WRITE DIFF_FCN DIS                        !! save the data                                         
+RETURN  
+
+!! Open each functional result, capture the integral data, and visualize
+
+$CLEAR
+DISPLAY SUMSQ_FCN.DIS 
+$GRAB 'Integral' 0 1 INT_RE_IM_SS
+&REG INT_RE_IM_SS 'Integral of (Re+Im)^2 = '
+  PICTURE 'sum^2 function'
+  !! Examine output for integral value and statistics
+RETURN
+
+$CLEAR
+DISPLAY DIFF_FCN.DIS
+$GRAB 'Integral' 0 1 INT_RE_IM_DIFF
+&REG INT_RE_IM_DIFF 'Integral of (Re-Im) = '
+  PICTURE 'difference function'
+  !! Examine output for integral value and statistics
+RETURN

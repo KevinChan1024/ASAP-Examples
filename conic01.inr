@@ -1,0 +1,30 @@
+!!++
+!! CONIC01.INR
+!! Title: Create a Conic Surface with SWEEP
+!! Category: Isolated Command
+!! Keywords: CONIC, EDGES, SWEEP
+!! Description: Use the SWEEP command on
+!! a CONIC edge for the equivalent of a 
+!! classical optical conicoid.
+!! Edit History: (latest first)
+!! 06/27/2001 - cp - minor mods
+!! 10/03/2000 - cp - modified format; added description
+!! 04/04/2000 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES !! or CURVE
+  R=1  !! Vertex radius of curvature
+  K=-1 !! Conic constant
+  H=1  !! Outer aperture height
+  O=0  !! Inner obscuration height
+  CONIC X 0, 0 0 -2*R 1 0 K+1, Y (O) (H)
+    SWEEP AXIS 360 Z
+  OBJECT
+
+PLOT FACETS 11 11
+$VIEW
+
+RETURN

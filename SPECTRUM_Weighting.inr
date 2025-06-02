@@ -1,0 +1,33 @@
+!!++
+!! SPECTRUM_WEIGHTING.INR
+!! Title: Weighting Flux to Wavelength using SPECTRUM 
+!! Category: Simple Problem
+!! Keywords: Sources, SPECTRUM, FLUX, $DO, STATS SOURCES
+!! Description: Making a polychromatic source with weighting applied
+!! to each wavelength.  The total flux assigned to all sources will be
+!! distributed according to the weights. 
+!! Edit History: (latest first)
+!! 08/25/2006 - cp - added header and comments
+!! 05/10/2000 - rs/bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM 'watts'
+W400=1
+W450=30
+W500=20
+W550=50
+W600=20
+$DO 400 600 50
+  {
+    WAVELENGTH ? NM           
+    SPECTRUM (W?)
+    EMITTING RECT Z 0 1 1 5000
+    RETURN
+  }
+  FLUX TOTAL 1
+  
+STATS SOURCES  !! List the flux and wavelength of each source
+RETURN

@@ -1,0 +1,77 @@
+!!++
+!! DATA_LOAD01.INR
+!! Title: Importing Data Set into Variables
+!! Category: Simple Problem
+!! Keywords: Macros_pre, variable, VALUES, $REG, import, data, macro
+!! Description: A macro which reads in an external file of data
+!! values, and assigns each number to a variable.  Two
+!! arguments are passed to the macro -- the number of data points, and
+!! the name of the file containing the data.  The data file should be
+!! a single column of values, and should have a name with a .INR
+!! extension. See description at end of file.  Do not run this script
+!! without first creating such a file in the Working Directory, named
+!! DATA.inr
+!! Edit History: (latest first)
+!! 06/02/2011 - cp - corrected typo
+!! 11/08/2001 - cp - modified comments and header
+!! 11/06/2001 - cl/ag - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Macro to read a file of values into separate variables
+!! Pass the number of values in the file as the first argument, #1
+!! Pass the name of the .INR file containing the values as the second
+!! argument, #2.
+!! (Note, this file *must* have an .INR extension!)
+
+READ_DATA { 2
+
+  NDATA=#1 !! the number of data values in the file 
+
+  !! Set the size of the distribution in the Y-direction
+  YMIN=0.5      
+  YMAX=(NDATA)+.5
+  !! Actual values will lie at Y=1, 2, 3, etc., up to Y=(NDATA)
+  
+  !! Load the numerical values into BRO009.DAT,
+  !! as a "fake" 1x(NDATA) SPOTS distribution.
+  DISPLAY -9
+  X 0 SPOTS Y (YMIN) (YMAX) 10 Z -1 1 1 !! Z limits are just dummy values
+  $READ #2
+
+  !! Now that all the values are in the distribution, assign
+  !! each value to a unique variable, VAR_1 through VAR_n 
+  $DO 1 (NDATA)
+    {
+    VALUES 1 ? VAR_?
+    !!$REG VAR_? !! Use this to check values as they are assigned
+    }       
+}
+Enter the number of values in the file:   
+Enter the filename of the data file (with .INR extension):
+
+!! Now call the macro.  (For this part to work, you
+!! must have a separate file called "DATA.INR", with at least 10 numbers
+!! in it, in a single column, as shown below. 
+&READ_DATA 10 DATA
+
+&REG  !! To list all variables
+RETURN
+***********************************************************
+!! Note that the format for the data file is simply (NDATA)
+!! numbers, in a single column, for example...
+!! 1
+!! 3
+!! 5
+!! 7
+!! 11
+!! 13
+!! 17
+!! 19
+!! 23
+!! 29
+!! The numbers don't have to be integers, and they don't
+!! have to be prime numbers. This is just an illustration.
+***********************************************************

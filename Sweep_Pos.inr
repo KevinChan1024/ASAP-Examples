@@ -1,0 +1,25 @@
+!!++
+!! SWEEP_POS.INR
+!! Title: Arc Swept in Position
+!! Category: Simple Problem
+!! Keywords: Edges, EDGES, ARC, SWEEP, POS
+!! Description: An ARC swept along a specified distance
+!! to a point, makes a partial tapered tube or trough. 
+!! Edit History: (latest first) 
+!! 02/28/2002 - cp - corrected style
+!! 02/28/00 - cp - Modified syntax; added description
+!! 01/18/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  ARC Z 0 2 0 1 1 180
+    SWEEP POSITION 0.8, 0 0 10
+OBJECT 'SWEPT_ARC'
+
+WINDOW Y X 
+PLOT FACETS 11 11 'A SWEEP POS ARC EDGE'
+$VIEW 
+RETURN

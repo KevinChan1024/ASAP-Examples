@@ -1,0 +1,135 @@
+!!++
+!! FLUORESCENCE_REFL01.INR
+!! Title: Modeling Fluorescence in Reflection
+!! Category: Simple Problem
+!! Keywords: Interfaces, Scatter, diffuser, MEDIA, CLIP, VOXELS, ABSORBED, fluorescence
+!! Description: A model of fluorescence microscopy to show a new
+!! fluorescent source being born from volume absorption.  The 
+!! Absorption data is stored to a file using the VOXELS command.
+!! The voxel region matches the size of the slab that is intended
+!! to fluoresce.  It is illuminated by a source at one wavelength,
+!! and then re-emits at a new wavelength where there is less or no
+!! absorption.  Only the rays in the reverse direction are created
+!! using CLIP and a scattering diffuser is used to direct those rays
+!! more eficiently through the microscope.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 12/19/2005 - cp - modified and added comments 
+!! 11/21/2002 - cp - added keyword
+!! 10/01/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+UNITS MM 
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTHS 450 633 NM  !! Wavelength range
+
+MEDIA
+  1.5`.110E-2  1.2 'TEST' !! Absorption at 450nm
+
+MODEL
+  LAMBERTIAN 1 
+
+FRESNEL TIR  !! Force TIR rays to edges of material  
+CEFF=.60 !! Conversion efficiency of fluorescent material
+    
+!! Fluorescent slab
+SURFACES
+  PLANE Z 4.4 RECT 1.5 1.5
+OBJECT 'SLAB.FRONT'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 1
+    
+SURFACES
+  PLANE Z 4.6 RECT 1.5 1.5
+OBJECT 'SLAB.BACK' 
+  INTERFACE 0 0 TEST AIR
+  REDEFINE COLOR 1
+     
+EDGES
+  RECTANGLE Z  4.4  1.5 1.5
+  RECTANGLE Z  4.6  1.5 1.5
+OBJECT; .1 .2 'SLAB.EDGE
+  REDEFINE COLOR 1 
+
+!! Microscope section   
+LENSES
+  IDEAL Z -.05 2 .1 2 
+     1 0 -1/4.4 1 0
+OBJECT 'LENS1'   
+
+LENSES
+  IDEAL Z -4.45 2.2 .1 2.2 
+     1 0 -1/4.4 1 0
+OBJECT 'LENS2' 
+
+EDGES 100
+  ELLIPSE Z -.05 2 2
+
+!!Detector
+SURFACES
+  PLANE Z -9 RECTANGLE 2 2
+OBJECT 'DETECTOR'
+
+!! Source 
+WAVELENGTH 450
+EMITTING RECT +Z 1 .5 .5 50000 16 16 RECT 
+  ROTATE X -39
+  SHIFT Y -3.0
+  FLUX TOTAL 100.0 
+  
+!! Select the exact volume for VOXEL distribution
+!! Otherwise, can use PIXELS, WINDOW and Local Box of objects 
+!! Note that absorption may be over-estimated due to small number
+!! of voxels and rays used here. See Procedural Note "Using VOXELS in ASAP"
+VOXELS ABSORBED -4@1.5 4.4 4.6 51 51 100
+ARROWS .5  !! Half-size arrow heads
+PIXELS 51
+WINDOW Y -2@4 Z -9.5 5
+PLOT FACETS 7 7 OVERLAY
+SPOTS POSITION OVERLAY !! Show source 
+TRACE PLOT 200 COLOR 2 OVERLAY
+$GRAB 'VOXELS' FLUX_ABSORBED !! Grab total flux absorbed
+$REG FLUX_ABSORBED !! Show at console output
+$COPY 9 VOXEL.DIS  !! Copy default bro009.dat to named file
+STATS
+RAYS 0  !! Clear previous source rays   
+
+!! Define new source
+WAVELENGTH 633 NM  !! New wavelength for fluorescence
+IMMERSE TEST  !! Rays start in TEST media
+CLIP DIRECTION -1 1 -1 1 -1 0  !! Only create rays in reflection
+EMITTING DATA VOXEL 50000  !! Make emission source from voxel data
+  FLUX TOTAL FLUX_ABSORBED*CEFF 
+STATS 
+
+SURFACES
+  PLANE Z 4.35 RECT 1.8 1.8
+OBJECT 'DIFFUSER'
+  INTERFACE 0 1E-15 AIR AIR  !! Transmit scatter rays only
+  SCATTER MODEL 1
+    TOWARDS EDGE 100 1  !! One scatter ray for each incident ray
+    LEVEL 1 ALL  !! Allow transmission scatter
+  
+WINDOW Y -2@4 Z -9.5 5
+VOXELS OFF  !! Save time - no need to capture voxels now
+TRACE PLOT 100  COLOR 13 
+CONSIDER ONLY DETECTOR
+WINDOW -Y -2@2 X -2@2
+SPOTS POSITION ATTRIBUTE 0 
+
+DISPLAY
+  AVERAGE
+  PICTURE 'RESULT'
+  WRITE RESULT DIS
+  RETURN
+DISPLAY VOXEL 1 
+  AVERAGE
+  TRANSPOSE  !! Make pictures in same orientation
+  PICTURE    !! for comparison
+$VIEW  !! View geometry and raytrace
+&VIEW VOXEL.DIS   !! View 3D voxel distribution inside slab
+&VIEW RESULT.DIS  !! View 2D detector distribution in 3D viewer
+RETURN

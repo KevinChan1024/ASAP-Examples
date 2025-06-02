@@ -1,0 +1,17 @@
+!!++
+!! PUT01.INR
+!! Title: PUTing Ray Data 
+!! Category: Isolated Command
+!! Keywords: PUT, rays 
+!! Description: Transfers the current variable
+!! data to ray number 15 in the ray table.
+!! In this case ray 15 will be turned off
+!! because its FLUX will be set to zero.
+!! Edit History: (latest first)
+!! 10/10/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!-- 
+
+FLUX=0
+PUT 15
+

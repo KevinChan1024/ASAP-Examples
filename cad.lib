@@ -1,0 +1,237 @@
+*
+* CAD.LIB - macros to turn SURFACEs into EDGEs for IGES translation
+*   Last modification 11/13/97
+* To use place the following at the start of your .INR file:
+*    $IO LIB CAD; DOMACROS FIRST; $ARGS NONE
+*    place & in front of all surface commands (i.e. &PLANE instead of PLANE)
+*
+* Note: All commands must be spelled out completely.
+*       Extruded EDGES will create an OBJECT (TUBE and BICONIC).
+*       All SHIFTs, ROTATEs, etc must be on a separate line 
+*          (separation using a ";" will result in wrong geometry)
+*
+* Commands Supported: ELLIPSOID, TUBE, OPTICAL, TORUS, BICONIC and PLANE.
+*
+
+ELLIPSOID { 6
+  CURVE
+  $IF #2 EQ #3 THEN
+    ARC Y 0 0 #1 0 0 180; SCALE Z #3/#1; SWEEP AXIS 360 X
+  $ELSEIF #3 EQ #1 THEN
+    ARC Z 0 0 #2 0 0 180; SCALE X #1/#2; SWEEP AXIS 360 Y
+  $ELSEIF #1 EQ #2 THEN
+    ARC X 0 0 #3 0 0 180; SCALE Y #2/#3; SWEEP AXIS 360 Z
+  $ELSE
+    $LEAVE
+  $ENDIF
+  $IF #0 EQ 4 ; SHIFT #4 0 0
+  $IF #0 EQ 5 ; SHIFT #4 #5 0
+  $IF #0 EQ 6 ; SHIFT #4 #5 #6
+}
+X height>
+Y height>
+Z height>
+X center>
+Y center>
+Z center>
+
+TUBE { 9
+
+*
+* OBJECT created from extruded EDGES 
+*
+
+ $IF #0 EQ 9 3
+  CURVES
+    OVAL #1 #2 #3 #4 #8<.9999 8; SMOOTH
+    OVAL #1 #5 #6 #7 #9<.9999 8; SMOOTH
+ $IF #0 EQ 8 3
+  CURVES
+    OVAL #1 #2 #3 #4 #8<.9999 8; SMOOTH
+    OVAL #1 #5 #6 #7 0 8; SMOOTH
+ $IF #0 EQ 7 3
+  CURVES
+    OVAL #1 #2 #3 #4 0 8; SMOOTH
+    OVAL #1 #5 #6 #7 0 8; SMOOTH
+  OBJECT; .2 .1
+}
+Symmetry axis>
+Begin axial location>
+  First height>
+  Second height>
+End axial location>
+  First height>
+  Second height>
+Begin shape factor>
+End shape factor>
+
+TORUS { 6
+$LOC A,B
+  $IF #1 EQ X; A="Y" B="Z"
+  $IF #1 EQ Y; A="Z" B="X"
+  $IF #1 EQ Z; A="X" B="Y"
+  $IF #0 EQ 4 4
+   CURVE
+     ARC A" 0 #3+#4 0 #3
+      SWEEP AXIS 360 #1
+      SHIFT #1 #2
+  $IF #0 EQ 5 4
+   CURVE
+     ELLIPSE A" 0 #4 #5 8; SMOOTH; SHIFT B" (#3)
+     SWEEP AXIS 360 #1 0
+     SHIFT #1 #2
+  $IF #0 EQ 6 4
+   CURVE
+     OVAL A" 0 #4 #5 (#6<.9999) ; SHIFT B" (#3)
+     SWEEP AXIS 360 #1
+     SHIFT #1 #2
+}
+Symmetry axis>
+Axial location>
+Torus radius>
+Cross-section radius along radial direction>
+Cross-section radius perp. to radial direction>
+rounding factor (1-rectangular, 0-circular)>
+ 
+OPTICAL { 8 
+
+*
+* Optical surface created. RECT option exports over-sized ellipse, which
+* can be trimmed in CAD.
+*
+
+$LOC A,B,C,W,H,M
+  $IF #1 EQ X; A="Y" B="Z"
+  $IF #1 EQ Y; A="Z" B="X"
+  $IF #1 EQ Z; A="X" B="Y"
+  C=#3; $IF (C) NE 0; C=1/C
+  H=0; $IF #0 EQ 8 ; H=#8
+  $IF #0 EQ 6 THEN
+   W=#6; $IF #5 EQS R ; W=SQRT[2]*#6
+   M=W
+  $ENDIF
+  $IF #0 GT 6 THEN
+   M=(#6<#7)
+   W=(#6>#7); $IF #5 EQS R ; W=SQRT[#6^2+#7^2]
+  $ENDIF
+  
+  CURVE
+    CONIC A" 0, 0 0 -2 (C) 0 C*(#4+1), B" H*(M) W.
+      SWEEP AXIS 360 #1
+      SHIFT #1 #2
+}
+Normal Axis>
+Axial location>
+Radius or curvature>
+Conic constant>
+ELLIP/RECT option (RECT bounds not translated)>
+First height>
+Second height>
+Hole ratio>
+ 
+PLANE { 6
+
+*
+* Cutout Hole in Plane creates OBJECT using extruded edges.
+*
+
+$LOC N
+  N=4; $IF #3 EQS E; N=8
+  $IF #0 EQ 4 3
+  CURVES
+    #3 #1 #2 #4 #4 (N)
+    $IF #3 EQS E; SMOOTH
+  $IF #0 GT 4 3
+  CURVES
+    #3 #1 #2 #4 #5 (N)
+    $IF #3 EQS E; SMOOTH
+  $IF #0 EQ 6 THEN
+   $IF #6 NEQ 0 3
+    #3 #1 #2 #6*#4 #6*#5 (N)
+    $IF #3 EQS E; SMOOTH
+    OBJECT; .1 .2
+  $ENDIF
+}
+Normal axis>
+Axial location>
+ELLIP or RECT>
+First height>
+Second height>
+Hole ratio>
+
+BICONIC { 10 
+
+*
+* BICONIC surface type 4 translator. ELLIP/RECT limiting supported.
+* Macro Creates OBJECT using extruded EDGEs. 
+* Bounding Shape is Circular and oversized to match ELL/RECT limits.
+* Center Hole Supported only for square and elliptical limits.
+*
+
+$LOC A,B,C,C1,C2,E,E1,E2,T,T1,T2,H,H1,H2,O,D,N,W
+  $IF #1 EQS X; A="Y" B="Z"
+  $IF #1 EQS Y; A="Z" B="X"
+  $IF #1 EQS Z; A="X" B="Y"
+  C1=#3; $IF (C1) NE 0; C1=1/C1
+  C2=#4; $IF (C2) NE 0; C2=1/C2
+  $IF "#5" EQS E THEN
+   $IF #0 EQ 6 ; E1=1 E2=1 H1=#6 H2=#6 O=0
+   $IF #0 EQ 7 ; E1=1 E2=1 H1=#6 H2=#7 O=0
+   $IF #0 EQ 8 ; E1=1 E2=1 H1=#6 H2=#7 O=#8
+  $ELSEIF "#6" EQS E THEN
+   $IF #0 EQ 7 ; E1=#5+1 E2=1 H1=#7 H2=#7 O=0
+   $IF #0 EQ 8 ; E1=#5+1 E2=1 H1=#7 H2=#8 O=0
+   $IF #0 EQ 9 ; E1=#5+1 E2=1 H1=#7 H2=#8 O=#9
+  $ELSEIF "#7" EQS E THEN
+   $IF #0 EQ 8 ; E1=#5+1; E2=#6+1; H1=#8 H2=#8 O=0
+   $IF #0 EQ 9 ; E1=#5+1; E2=#6+1; H1=#8 H2=#9 O=0
+   $IF #0 EQ 10; E1=#5+1; E2=#6+1; H1=#8 H2=#9 O=#10
+  $ELSEIF "#5" EQS R THEN
+   $IF #0 EQ 6 ; E1=1 E2=1 H1=#6*SQRT[2] H2=#6*SQRT[2] O=0
+   $IF #0 EQ 7 ; E1=1 E2=1 H1=SQRT(#6^2+#7^2) H2=SQRT(#6^2+#7^2) O=0
+   $IF #0 EQ 8 2; E1=1 E2=1 H1=SQRT(#6^2+#7^2) H2=SQRT(#6^2+#7^2) O=0
+   $SCR 1
+Warning. RECT limits/hole ratio unsupported. Hole ignored.
+  $ELSEIF "#6" EQS R THEN
+   $IF #0 EQ 7 ; E1=#5+1 E2=1 H1=#7*SQRT[2] H2=#7*SQRT[2] O=0
+   $IF #0 EQ 8 ; E1=#5+1 E2=1 H1=SQRT(#8^2+#7^2) H2=SQRT(#8^2+#7^2) O=0
+   $IF #0 EQ 9 2; E1=#5+1 E2=1 H1=SQRT(#8^2+#7^2) H2=SQRT(#8^2+#7^2) O=0
+   $SCR 1
+Warning. RECT limits/hole ratio unsupported. Hole ignored.
+  $ELSEIF "#7" EQS R THEN
+   $IF #0 EQ 8 ; E1=#5+1; E2=#6+1; H1=#8*SQRT[2] H2=#8*SQRT[2] O=0
+   $IF #0 EQ 9 ; E1=#5+1; E2=#6+1; H1=SQRT(#8^2+#9^2) H2=SQRT(#8^2+#9^2) O=0
+   $IF #0 EQ 10 2; E1=1 E2=1 H1=SQRT(#8^2+#9^2) H2=SQRT(#8^2+#9^2) O=0
+   $SCR 1
+Warning. RECT limits/hole ratio unsupported. Hole ignored.
+  $ELSEIF #0 GT 7 THEN
+  $ELSE
+BICONIC translator syntax unsupported by CAD.LIB.
+     END
+  $ENDIF
+  M=2 N=M*8 !angular samples, increase M for higher accuracy
+  D=360/N; W=COS[D]
+  CURVES
+   $DO 1 (N)
+    { T=?*D !effective angle
+        T1=H1*SIN[T] T2=H2*COS[T]
+        H=SQRT(T1*T1+T2*T2)
+      T=T1%T2 !actual angle
+        T1=SIN[T]^2 T2=1-T1
+        C=C1*T1+C2*T2 E=(C1*C1*E1*T1+C2*C2*E2*T2)/(C*C)
+      CONIC A" 0, 0 0 -2 (C) 0 C*E, B" O*H (H)
+        ROTATE #1 (T) 0 0
+        SHIFT #1 #2 }
+  OBJECT; -(N) 2 (W) (W)
+}
+            Normal Axis>
+         Axial location>
+1st radius of curvature>
+2nd radius of curvature>
+     1st conic constant>
+     2nd conic constant>
+      Dummy ELLIP entry>
+           First height>
+          Second height>
+             Hole ratio>
+

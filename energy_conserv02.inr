@@ -1,0 +1,64 @@
+!!++
+!! ENERGY_CONSERV02.INR
+!! Title: Energy Conservation Output
+!! Category: Simple Problem
+!! Keywords: Scatter, STATS, energy
+!! Description: Output from Energy Conservation
+!! with ROUGHNESS example.
+!! Note: This is to show console output only
+!! and is not a runable inr file.
+!! Edit History: (latest first)
+!! 08/09/2012 - cp - corrected header
+!! 12/19/2001 - cp - modified description
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+ --- SELECT ONLY SOURCE 1
+    169 ray flags changed
+    169 rays now selected
+ 
+ --- STATS  !! Original source flux
+ 
+ Object  Rays    Flux
+    0     169  16.9000
+ ------------------------
+ TOTAL    169  16.9000
+ 
+ --- LEVEL 0  !! Trace signal beam with no scatter rays
+ --- TRACE       
+        338 ray-objects encountered  at    157 per second
+        338 order-intersections done at    157 per second
+ 
+ --- SELECT ONLY SOURCE 2
+
+    338 ray flags changed
+    169 rays now selected
+ 
+ --- LEVEL 1  !! Trace pseudo beam with scatter rays
+ --- TRACE       
+        507 ray-objects encountered  at    124 per second
+        507 order-intersections done at    124 per second
+ 
+ --- SELECT ONLY SOURCE 1
+    507 ray flags changed
+    169 rays now selected
+ 
+ --- STATS  !! Appropriately reduced source flux at detector
+ 
+ Object  Rays    Flux
+    2     169  16.8799      DETECTOR
+
+ ------------------------
+ TOTAL    169  16.8799
+ 
+ --- SELECT ONLY SOURCE -2
+    338 ray flags changed
+    169 rays now selected
+ 
+ --- STATS  !! Scattered ray flux
+ 
+ Object  Rays    Flux
+    2     169 0.211727E-01  DETECTOR
+ ------------------------
+ TOTAL    169 0.211727E-01

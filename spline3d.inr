@@ -1,0 +1,40 @@
+!!++
+!! SPLINE3D.INR
+!! Title: General 3D Spline Curve 
+!! Category: Simple Problem
+!! Keywords: Edges, SPLINE, 3d, parabola, SEGMENTS  
+!! Description: Simple example of a general 3D SPLINE.
+!! This is only a parabola.  This example is created
+!! in the Z plane: y=x^2 is fit with a spline.
+!! ASAP expects X, Y and Z points, and then the
+!! Direction cosines of the slope vector.  The 
+!! points do not need to be evenly spaced.
+!! Edit History: (latest first)
+!! 11/18/2003 - cp - fixed keyword
+!! 05/03/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  SPLINE 0 0 0
+!!X     Y       Z          A            B               C
+0.00	0.000	0	   1.000000	0.000000	0
+0.10	0.010	0	   0.980581	0.196116	0
+0.20	0.040	0	   0.928477	0.371391	0
+0.30	0.090	0	   0.857493	0.514496	0
+0.40	0.160	0	   0.780869	0.624695	0
+0.50	0.250	0	   0.707107	0.707107	0
+0.60	0.360	0	   0.640184	0.768221	0
+0.70	0.490	0	   0.581238	0.813733	0
+0.80	0.640	0	   0.529999	0.847998	0
+0.90	0.810	0	   0.485643	0.874157	0
+1.00	1.000	0	   0.447214	0.894427	0
+
+SEGMENTS 300    
+WINDOW Y X
+PLOT EDGES
+RETURN 
+
+     

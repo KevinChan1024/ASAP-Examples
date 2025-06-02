@@ -1,0 +1,82 @@
+!!++
+!! PATHS_DIFFRACT.INR
+!! Title: Diffraction Ordering in PATHS
+!! Category: Isolated Command
+!! Keywords: PATHS, INTERFACE, DIFFRACT, diffraction
+!! Description: Linear grating with PATHS output to
+!! show ordering of output depending on
+!! order/efficiency pairs in the INTERFACE...DIFFRACT line.
+!! Change the order sequence in the INTERFACE line to see the
+!! effect on the PATHS output.  See Help for the meaning of
+!! digits under the Split/Scatter heading.
+!! Edit History: (latest first)
+!! 02/28/2014 - cp - header and comments
+!! 02/28/2014 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATING PROPERTIES 
+  0.4 0.6  'DOE'
+!!  0 0.6  'DOE'  !! To see transmission only
+SPLIT 1 !! Note that the grating object has its own SPLIT command
+
+SURFACE
+  PLANE Y 0          !! Grating line generating surface
+    MULTIPLE 1 0.1   !! Grating spacing 0.1, point 0 0 0
+  PLANE Z 0 RECTANGLE 1   !! Grating base surface
+OBJECT 'LINEAR_GRATING'
+  INTERFACE COATING DOE AIR AIR DIFFRACT 0.2 0th 0.5, -1st order 0.25, 1st 0.25
+  !! INTERFACE COATING DOE AIR AIR DIFFRACT 0.2 -1st order 0.25, 0th 0.5, 1st 0.25
+  SPLIT 1 REFL !! this makes transmitted initial order a child process
+RETURN
+
+SURFACE
+  PLANE Z  10 RECTANGLE 1  !! Detector transmitted 0 order
+OBJECT 'DETECTOR_T0'
+
+SURFACE
+  PLANE Z -10 RECTANGLE 1  !! Detector reflected 0 order
+OBJECT 'DETECTOR_R0'
+
+SURFACE
+  PLANE Z  10 RECTANGLE 1  !! Detector transmitted -1 order
+OBJECT 'DETECTOR_TM1'
+  ROTATE X ASIN[.25] 0 0
+
+SURFACE
+  PLANE Z -10 RECTANGLE 1  !! Detector reflected -1 order
+OBJECT 'DETECTOR_RM1'
+  ROTATE X -ASIN[.25] 0 0
+
+SURFACE
+  PLANE Z  10 RECTANGLE 1  !! Detector transmitted +1 order     
+OBJECT 'DETECTOR_TP1'                                           
+  ROTATE X -ASIN[.25] 0 0                                       
+                                                                
+SURFACE                                                         
+  PLANE Z -10 RECTANGLE 1  !! Detector reflected +1 order       
+OBJECT 'DETECTOR_RP1'
+  ROTATE X ASIN[.25] 0 0
+
+
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 0.025
+  GRID ELLIPTIC Z -1 -4@1 1 5
+    SOURCE DIRECTION 0 0 1
+
+WINDOW Y Z
+WINDOW 1.4
+TITLE 'GRATING W/-1,0,1st ORDERS IN REFLECTION AND TRANSMISSION'
+PROFILES OVERLAY
+TRACE PLOT TEXT 
+  0  -2.6   10, 0 0 .25, 0 .25 0, 1 '-1st order'
+  0  2.8   4.5, 0 0 .25, 0 .25 0, 1 '+1st order'
+  0   1   8.75, 0 0 .25, 0 .25 0, 1 '0th order'
+  0 1.75 -2.25, 0 0 .25, 0 .25 0, 1 '+1st order'
+  0  -2  -2.25, 0 0 .25, 0 .25 0, 1 '-1st order'
+RETURN
+
+NUMBERS NAMES 
+PATHS

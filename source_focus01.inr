@@ -1,0 +1,24 @@
+!!++
+!! SOURCE_FOCUS01.INR
+!! Title: SOURCE FOCUS Command
+!! Category: Isolated Command
+!! Keywords: SOURCE, Sources, FOCUS, MISSED
+!! Description: Example of creating three sources
+!! whose direction is given by focal coordinates.
+!! Edit History: (latest first)
+!! 10/13/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC Z 0 -4@2 10 10
+  SOURCE FOCUS 0 -3 3, 0 0 3, 0 3 3
+
+!! Display in 3d viewer
+MISSED ARROWS 5  !! See missed arrows with length of 5
+TRACE PLOT  !! To view rays in 3D viewer
+$VIEW
+RETURN

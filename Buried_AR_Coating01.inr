@@ -1,0 +1,96 @@
+!!++
+!! BURIED_AR_COATING01.INR
+!! Title: AR Coating within Two Dense Media
+!! Category: Isolated Command
+!! Keywords: COATINGS LAYERS, thin film
+!! Description: Analyzing reflectance of a buried AR coating between 
+!! dense layers for a given set of index choices and angle of incidence. 
+!! Finds the minimum reflectance and thickness for the buried AR buffer
+!! layer between two infinite slabs. The two slabs are of different index, 
+!! with a layer index between them as follows: 
+!! N1<N2<N3
+!!	  N1  
+!! ----------------------
+!!	  N2 (thin, using COATING LAYERS)
+!! ----------------------
+!!	  N3
+!! The interface is formed by one plane, and the layer is applied as a
+!! coating (COATINGS LAYERS) between them. All the media matter in this 
+!! problem. The angle of incidence is fixed by a variable, and iterated
+!! to graph the results and find the minimum reflectance as a function
+!! of thickness. For some choices of angle of incidence or index combinations
+!! it may be necessary to expand the thickness range to get the minimum.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 08/08/2012 - cp - added header
+!! 08/06/2012 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! variables
+AOI=40        !! angle of incidence [degrees]
+
+UNITS MM
+WAVELENGTH (WL=555) NM
+
+MEDIA
+  1.5 'G_LOW'       !! low-index slab
+  1.7 'G_HIGH'      !! high-index slab
+  1.6 'FILM_MID'    !! buried film between layers
+RETURN
+
+FRESNEL AVE
+SPLIT 1 REFL
+
+!! geometry
+
+SURFACES
+  PLANE Z 0 RECT 1
+OBJECT
+  .1 'TEST'
+RETURN 
+
+
+IMMERSE G_LOW !! G_HIGH
+THK=0.5
+
+$ITER THK 1E-3 0.7 -101 FLUX_REFL
+  {
+  RAYS 0
+  COATINGS 1 LAYERS (WL)
+    (THK) FILM_MID 'BAR'
+    
+  OBJECT TEST
+  INTERFACE COAT BAR G_HIGH G_LOW
+  
+  GRID ELLIPTIC Z 0 -4@1 2@1
+  SOURCE DIRECTION Z (AOI) 90
+  MOVE BY -1
+  FLUX TOTAL 1
+  
+  MISSED ARROW 0.5
+  !! PLOT FACETS 2 2 0 OVERLAY
+  TRACE !! PLOT COLOR 2
+  
+  !! Reflected
+  SELECT ONLY C 0
+  $CLEAR
+  STATS 
+  $GRAB 'TOTAL' 0 2 FLUX_REFL
+
+  !! Transmitted
+  SELECT ONLY 0 C
+  $CLEAR
+  STATS
+  $GRAB 'TOTAL' 0 2 FLUX_TRAN
+  
+  &REG THK FLUX_REFL FLUX_TRAN 'Reflectance and Transmittance '
+  } 
+ 
+DISPLAY ITER.DIS
+  GRAPH 'reflectance with buried-layer thickness'
+RETURN  
+
+&REG THK FLUX_REFL 'Thickness [waves] @ minimum Reflectance'

@@ -1,0 +1,33 @@
+!!++
+!! ASYM_MODIFIER.INR
+!! Title: ASYM as a Surface Modifier
+!! Category: Isolated Command
+!! Keywords: ASYM, OPTICAL
+!! Description: ASYM used as a modifier for surfaces.
+!! Edit History: (latest first)
+!! 10/15/2013 - mt - removed TUBE from keywords
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/02/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Defines an optical surface whose radii
+!! of curvature in the x and y directions,
+!! respectively, are equal to 25 and 50.
+SURFACES
+  OPTICAL Z 4 25 ELLIPSE 5
+    ASYM 1 .5
+
+!! Defines a cylindrical optical surface
+!! whose radii of curvature in the z and x
+!! directions, respectively, are equal to
+!! infinity and 18.
+SURFACES
+  OPTICAL Y -5 18 ELLIPSE 3
+    ASYM 0 1
+
+PLOT ENTITIES 
+RETURN

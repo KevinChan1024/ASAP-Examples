@@ -1,0 +1,47 @@
+!!++
+!! INVERT01.INR
+!! Title: Use of the INVERT command
+!! Category: Isolated Command
+!! Keywords: INVERT, EDGE, POINTS 
+!! Description: Create (2) identical edge points.
+!! Use ROTATE to see the effect.
+!! For second edge use INVERT before ROTATE.
+!! Note, there is no effect on the rotation of the edges,
+!! but the points are reordered as seen by PLOT EDGES
+!! Edit History: (latest first) 
+!! 08/22/2007 - cp - reformatted
+!! 04/17/2007 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET     
+
+EDGES
+POINTS Z 0
+0 0 1
+-2 0  1
+-2 1  1
+-1 2 -2
+ 0 2 90
+ 0 3  0
+ROTATE  Z 60   0 0
+
+EDGES
+POINTS Z 0
+0 0 1
+-2 0  1
+-2 1  1
+-1 2 -2
+ 0 2 90
+ 0 3  0
+INVERT !! Reverse direction of edge
+ROTATE  Z 60   0 0
+
+PLOT EDGES
+$VIEW
+RETURN
+
+
+
+
+

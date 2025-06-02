@@ -1,0 +1,107 @@
+!!++
+!! ENCIRCLED_ENERGY01.INR
+!! Title: Enclosed Energy of a Circle
+!! Category: Simple Problem
+!! Keywords: Radiometry, enclosed, encircled, energy, $ITER, RADIAL
+!! Description: An example of how to calculate encircled or enclosed energy
+!! of a circle, rather than of a rectangular window as with RADIAL INTEGRAL.
+!! This method uses a circular mask which only counts energy that is actually in
+!! the measurement window and it requires that the signal be centered in that window. 
+!! The mask-generation macro is run after capturing the measurement into BRO009.dat.
+!! COMBINE is used to multiply the mask with the measurement. 
+!! The example could be easily modified to set the mask center to some arbitrary
+!! point rather than the window center.
+!! Edit History: (latest first) 
+!! 06/08/2012 - cp - added header
+!! 06/07/2012 - jh - creation
+!!--
+
+SYSTEM NEW
+RESET    
+
+$UNVAR ERROR
+
+PI=4*ATAN(1)
+
+UNITS MM
+WAVELENGTH 555 NM 
+
+XMEMORY NORM 1E6     
+
+!! A square coherent plane wave source to fill the window 
+RAD_SOURCE=5.0  
+
+
+BEAMS COHERENT DIFFRACT
+PARABASAL 4
+WIDTHS 1.6 
+
+GRID RECT Z 0 -4@(RAD_SOURCE) 2@201
+  SOURCE DIRECTION 0 0 1 
+  FLUX TOTAL 100
+RETURN
+
+FIELD ENERGY 0.0 YX -4@5.0 PIXELS 201
+
+$CLEAR
+DISPLAY
+  $GRAB 'Scalar Diffracted FIELD' 2 1 XMIN XMAX XPIX
+  $GRAB 'Scalar Diffracted FIELD' 3 1 YMIN YMAX YPIX
+  &REG XMIN XMAX XPIX YMIN YMAX YPIX
+  $GRAB 'Average' 0 1 IAVG  
+  $GRAB 'Integral' 0 1 PTOT  
+  ICIRCLE=IAVG/(PI/4)
+  &REG IAVG PTOT ICIRCLE
+  PICTURE 'full energy'
+  RADIAL INTEGRAL 50 !!99.99 !!75 
+RETURN
+
+
+!! Define a circular mask of specified physical radius
+!! centered on the center of the current BRO009.DAT
+!! distribution window and pixels.
+CIRCLE_MASK { 2
+  $CLEAR
+  DISPLAY
+  $GRAB 'Scalar Diffracted FIELD' 2 1 X_MIN X_MAX X_PIX
+  $GRAB 'Scalar Diffracted FIELD' 3 1 Y_MIN Y_MAX Y_PIX
+  &REG Y_MIN Y_MAX Y_PIX X_MIN X_MAX X_PIX 'Window parameters'
+  X_RAD=(X_MAX-X_MIN)/2 
+  Y_RAD=(Y_MAX-Y_MIN)/2 
+  X_CTR=(X_MAX+X_MIN)/2 
+  Y_CTR=(Y_MAX+Y_MIN)/2
+  &REG X_RAD Y_RAD X_CTR Y_CTR  
+  
+!! This assumes the circular aperture function is 
+!! applied from window center.
+  $ITER XP (X_MIN) (X_MAX) (X_PIX) YP (Y_MIN) (Y_MAX) (Y_PIX) VAL
+  {
+  VAL=STEP[#1-SQRT[(XP-X_CTR)^2+(YP-Y_CTR)^2]]
+  }
+}
+centered aperture >>  
+
+!! Create a circular mask with same window as energy distribution. 
+!! Test case: radius [2*sqrt[2]/max_radius] m to encircle half of total energy
+!! Test case: radius [max_radius/2] to encircle 1/4 of total energy
+&CIRCLE_MASK (RAD_ENC=RAD_SOURCE) !! (RAD_ENC=2*SQRT[2]/(RAD_SOURCE))
+
+DISPLAY CIRCLE_MASK.DIS
+  PICTURE 'circle mask'
+RETURN
+
+!! Get the integral enclosed by a particular circle
+!! by multiplying a circular mask by the function's
+!! distribution.
+$FCN MULT (_1*_2)
+DISPLAY
+  $CLEAR
+  COMBINE CIRCLE_MASK.DIS MULT  
+  $GRAB 'Integral' 0 1 P_ENC  
+  &REG P_ENC 'encircled energy 
+  PICTURE 'masked energy'
+RETURN
+
+ENCL_TOT_RATIO=P_ENC/PTOT  
+!! Examine the output integral of distribution.  
+&REG P_ENC RAD_ENC PTOT RAD_SOURCE ENCL_TOT_RATIO  'encircled energy, encircled radius, total source power, source size' 

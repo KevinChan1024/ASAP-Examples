@@ -1,0 +1,27 @@
+!!++
+!! PLANE04.INR
+!! Title: PLANE POINTS Surface
+!! Category: Isolated Command
+!! Keywords: PLANE, SURFACE
+!! Description: A plane surface described by 
+!! three points on the surface. The Normal is 
+!! determined by the right-hand rule.
+!! Edit History: (latest first)
+!! 09/16/2000 - arg - creation
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  PLANE POINTS 0 1 -1  0 0 0  1 0 0
+  LOCAL -6@1.4
+  OBJECT
+  
+WINDOW Y Z  !! To view object
+WINDOW 1.5 
+OBLIQUE
+PROFILES 0 0 -51 'SURF:PLANE POINTS' COLORS 11
+RETURN

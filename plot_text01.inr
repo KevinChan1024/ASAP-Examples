@@ -1,0 +1,38 @@
+!!++
+!! PLOT_TEXT01.INR
+!! Title: Annotating Plots with Text
+!! Category: Simple Problem
+!! Keywords: Analysis, PLOT, TEXT, annotation, label
+!! Description: How to add labels to a plot using
+!! the TEXT option of the PLOT command.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 09/21/2000 - cp - modified format; Added description
+!! 09/16/2000 - arg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  PLANE X 0 RECTANGLE 5 5
+  OBJECT 'X_PLANE'
+
+SURFACES
+  PLANE Z -2 ELLIPSE 5 5
+  OBJECT 'Z_PLANE'
+
+SURFACES
+  PLANE Z 2 ELLIPSE 5 5
+  OBJECT 'Z_PLANE_Z_PLANE'
+
+WINDOW Y Z
+
+PLOT FACETS 5 5 'HERE ARE THE OBJECTS' TEXT
+  -1 2 -1.9, 0 0 .25, 0 .25 0, 'HERE'S THE Z_PLANE OBJECT'
+  -1 -2 2.4, 0 .2 0, 0 0 -.2, 2 red 'Z_PLANE, Z_PLANE!'
+   
+RETURN  !! Needed to get out of 'text' mode
+
+$VIEW
+RETURN

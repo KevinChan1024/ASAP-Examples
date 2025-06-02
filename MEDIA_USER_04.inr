@@ -1,0 +1,112 @@
+!!++
+!! MEDIA_USER_04.INR
+!! Title: Two Scatter Models using MEDIA USER
+!! Category: Isolated Command
+!! Keywords: MEDIA USER, Scatter, volume, diffuser
+!! Description:  Using MEDIA USER with the new USERPROG.DLL for ASAP 2014. 
+!! Allows the user to define a phase function for volumetric scattering
+!! calculations using the subroutine USERSCAT in the USERPROG.DLL.
+!! See Help under MEDIA USER for more details on usage.
+!! To run this file, copy both DIFFUSER.txt and CC1320.txt from the ASAP 
+!! Examples folder to your Working Directory. This shows that more than 
+!! one scattering media can be used.
+!! Edit History: (latest first)
+!! 1/15/2014 - gb - replaced command abbreviations with proper form
+!! 12/12/2013 - cp - added header
+!! 12/12/2013 - kg - creation
+!!--
+
+SYSTEM NEW 
+RESET
+
+UNITS MM
+WAVELENGTH 633 NM
+
+SPLIT 1000 MONTECARLO 
+LEVEL 1000
+FRESNEL AVERAGE  
+
+SEED 
+
+THICK=4  
+THICK_GLASS=3
+
+REF_PC=1.59 !! refractive index PC
+MEDIA 
+  (REF_PC) USER 1~1000000 0 1   'CC1320'   !! defines scattering model
+                                          !! and reads data from file 
+                                          !! CC1302.txt  
+  (REF_PC) USER 1~1000000 0 20  'DIFFUSER' !! defines scattering model
+                                          !! and reads data from file 
+                                          !! DIFFUSER.txt 
+                                          !! 100 X MORE SCATTERING
+                                       
+  1.51 'GLASS'
+                                       
+!! GEOMETRY  
+SURFACES
+  PLANE Z 0 ELLIPSE 5 5 
+OBJECT 'SAMPLE1.FRONT'
+  INTERFACE COAT BARE AIR CC1320
+    
+!!
+SURFACES
+  PLANE Z (THICK) ELLIPSE 5 5 
+OBJECT 'SAMPLE1.BACK'
+  INTERFACE COAT BARE GLASS CC1320
+  
+SURFACES
+  TUBE Z 0  5 5  (THICK)  5 5 
+OBJECT 'SAMPLE1.SIDE'
+ INTERFACE COAT BARE AIR CC1320  
+                 
+SURFACES
+  TUBE Z (THICK)  5 5  (THICK+THICK_GLASS)  5 5 
+OBJECT 'GLASS.SIDE'
+  INTERFACE COAT BARE AIR GLASS  
+ 
+!! GEOMETRY SAMPLE 2 
+SURFACES
+  PLANE Z 0 ELLIPSE 5 5 
+OBJECT 'SAMPLE2.FRONT'
+  INTERFACE COAT BARE GLASS DIFFUSER   
+ 
+!!
+SURFACES
+  PLANE Z (THICK) ELLIPSE 5 5 
+OBJECT 'SAMPLE2.BACK'
+  INTERFACE COAT BARE AIR DIFFUSER
+
+SURFACES
+  TUBE Z 0  5 5  (THICK)  5 5 
+OBJECT 'SAMPLE2.SIDE'
+  INTERFACE COAT BARE AIR DIFFUSER  
+
+GROUP -3 
+ SHIFT Z (THICK+THICK_GLASS)
+
+BEAMS INCOHERENT           
+GRID ELLIPTIC Z -1 -4@0.5 11 11
+SOURCE DIRECTION 0 0 1   
+ FLUX TOTAL 1  
+
+TITLE 'RAY TRACE'
+MISSED ARROWS 10
+WINDOW X Z 
+PLOT FACETS 7 7 OVERLAY
+TRACE PLOT     
+STATS  
+$VIEW
+RETURN
+
+
+
+ 
+ 
+
+                      
+                      
+
+
+
+

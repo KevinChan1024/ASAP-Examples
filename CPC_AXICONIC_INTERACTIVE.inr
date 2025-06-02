@@ -1,0 +1,309 @@
+!!++
+!! CPC_AXICONIC_INTERACTIVE.INR
+!! Title: AXICONIC CPC Using User Inputs with Export
+!! Category: Simple Problem
+!! Keywords: Macros_user, cpc, AXICONIC 
+!! Description: This file creates a cpc based on user inputs.
+!! If the length of the CPC entered by the user is shorter or longer
+!! than the calculated maximum, the user is notified and given a choice
+!! whether to truncate or add a tube to the end of the cpc. If it is too long
+!! or if it is too short, the user can force it to its maximum length or 
+!! create a truncated CPC.   
+!! Lastly, at the very end, is code that will create a separate file entitled
+!! cpc_output.inr that contains all the geometry necessary to recreate the cpc
+!! created while running this file.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 08/10/2006 - cp - added Cancel button to first SCR
+!! 03/15/2006 - cp - added header and reformatted
+!! 08/03/2005 - gg - modified format; added description
+!! 07/20/2005 - mt - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$IO VECTOR REWIND
+$IO PLOT REWIND
+$FCN
+$DATIM OFF OFF
+
+UNITS MM
+WAVELENGTH 550 NM
+
+MEDIA
+  1.492  'ACRYLIC'
+ 
+COATINGS PROPERTIES
+  0.000000  0.000000  'ABSORB'
+  1.000000  0.000000  'REFLECT'
+  0.000000  1.000000  'TRANSMIT'
+  0.860000  0.000000  'CHROME'
+                     
+
+CPCIN=4    !! Input diameter
+CPCANG=30  !! Acceptance angle
+CPCOUT=CPCIN*SIN[CPCANG]  !! Output diameter
+CPCDEP_MAX=(CPCOUT/2*(1+SIN[CPCANG])*COS[CPCANG])/(SIN[CPCANG]^2)
+!! Maximum length of CPC
+CPCDEP_USER=(CPCOUT/2*(1+SIN[CPCANG])*COS[CPCANG])/(SIN[CPCANG]^2)
+
+SCR_CANCEL=1
+TITLE 'CPC'
+$SCR 4
+  SETUP CPC PARAMETERS
+  INPUT APERTURE DIAMETER    \CPCIN.  ? MM
+  ACCEPTANCE ANGLE OF CPC    \CPCANG.  ? DEG
+  LENGTH OF CPC              \CPCDEP_USER. ? MM
+
+$IF (SCR_CANCEL) EQ 1; $GO usercancel        
+!! Redefine these (dependent on above definitions)        
+CPCOUT=CPCIN*SIN[CPCANG]  !! INPUT DIAMETER
+CPCDEP_MAX=(CPCOUT/2*(1+SIN[CPCANG])*COS[CPCANG])/(SIN[CPCANG]^2)
+$IF (CPCDEP_MAX) LT (CPCDEP_USER) THEN
+ {    
+ 
+ !! The length of the physical CPC cannot exceed CPCDEP_MAX
+ !! no matter what!
+ CPCDEP=(CPCDEP_MAX)   
+ 
+ !! Initialize the variable 'ADD_TUBE' which is used to determine
+ !! whether or not a tube will be added to the end of the CPC to 
+ !! make it the length the user desired initially  
+ 
+ ADD_TUBE=0  !! Default is to truncate the CPC and have no tube
+ 
+ $SCR 7   
+ CPC length exceeds the maximum allowable length.
+ Please choose whether or not to add a tube to the CPC.
+ 
+ Add a tube to the end of the CPC  \ADD_TUBE:?  
+ 
+ If no tube is chosen, the CPC will be truncated to its 
+ maximum possible length                     
+ 
+ !! The variable 'ADD_TUBE' will be checked when
+ !! creating geometry
+ }                   
+ 
+$ELSEIF (CPCDEP_MAX) EQ (CPCDEP_USER) THEN
+     CPCDEP=(CPCDEP_USER) !! If the user's input is the same as the 
+          !! maximum allowable length continue on.
+           
+$ELSE 
+  {
+  !! If the CPC length is shorter than the maximum 
+  
+  CPCDEP=(CPCDEP_USER)
+  
+  !! Initialize variable max
+  !! the default is to make a shortened CPC
+  MAX=0
+
+  $SCR 5
+  The CPC is shorter than the maximum allowable length.
+  A truncated CPC will be created.  You can force a maximum
+  length CPC by checking the box below.
+
+  Make maximum length CPC?  \MAX:? 
+  
+  !! Check the variable 'MAX' to determine length of CPC
+  $IF (MAX) EQ 0 
+       CPCDEP=(CPCDEP_USER)           
+  
+  $IF (MAX) EQ 1 
+       CPCDEP=(CPCDEP_MAX)
+  }
+$ENDIF 
+
+
+!! Create the geometry (CPC, optional tube, and the detector)
+
+SURFACES
+ AXICONIC Z 0 (CPCOUT/2) 0 -(CPCOUT/2) (CPCANG) LENGTH -(CPCDEP)
+OBJECT 'THE_CPC'
+ ROTATE Y 180
+ SHIFT Z -(CPCDEP)
+ INTERFACE COAT CHROME AIR AIR
+ REDEFINE COLOR 2
+RETURN  
+ 
+
+
+!! If the CPC is longer than maximum length, check variable 'ADD_TUBE'
+$IF (ADD_TUBE) EQ 1 THEN
+   { 
+   !! Create the tube
+   SURFACES
+        TUBE Z 0 2@(CPCIN/2) CPCDEP_USER-CPCDEP 2@(CPCIN/2)
+   OBJECT 'LONG_TUBE'
+   INTERFACE COAT CHROME AIR AIR 
+   
+   SURFACES
+        PLANE Z -(CPCDEP)-.1 ELLI 1 1 
+   OBJECT 'TARGET'
+
+   }
+$ELSE      
+   { 
+   !! Create a target
+   SURFACES
+        PLANE Z -(CPCDEP)-.1 ELLI 1 1 
+   OBJECT 'TARGET'      
+   
+   }       
+$ENDIF
+
+
+!! Show the geometry
+WINDOW Y Z
+PLOT FACETS OVERLAY 'MY CPC'
+
+!! Create the source
+$IF (ADD_TUBE) EQ 1 THEN
+   {                                    
+   GRID ELLIPSE Z 0 -4@(CPCOUT-1) 1 21
+   SOURCE DIRECTION 0 SIN[CPCANG-.001] -COS[CPCANG-.001]
+   SHIFT Y -(CPCIN/4)  
+   SHIFT Z CPCDEP_USER-CPCDEP
+   }
+$ELSE
+   {        
+   GRID ELLIPSE Z 0 -4@(CPCOUT-1) 1 21
+   SOURCE DIRECTION 0 SIN[CPCANG-.001] -COS[CPCANG-.001]
+   SHIFT Y -(CPCIN/4)     
+   } 
+$ENDIF     
+ 
+!! Trace rays 
+TRACE PLOT   
+
+*********************************************************************************                                    
+ 
+!! The following exports the cpc you designed to a file named CPC_OUTPUT.INR
+!! It will be located in your current working directory
+
+$ECHO NONE
+$IO OUTPUT MY_CPC.INR FILE(81)
+$SCR 12
+UNITS MM
+WAVELENGTH 550 NM
+
+MEDIA
+ 1.492  'ACRYLIC'
+ 
+COATINGS PROPERTIES
+ 0.000000  0.000000  'ABSORB'
+ 1.000000  0.000000  'REFLECT'
+ 0.000000  1.000000  'TRANSMIT'
+ 0.860000  0.000000  'CHROME'                     
+
+$IO OUTPUT CLOSE
+$ECHO ALL
+
+!! Need some additional variables to be able to export the data
+Z_AX_INPUT1=(CPCOUT/2)
+Z_AX_INPUT2=-(CPCOUT/2)
+LENGTH_INPUT1=-(CPCDEP)
+
+!! Write the geometry to a new file                      
+$ECHO NONE
+$IO OUTPUT MY_CPC.INR +FILE(81)
+$SCR 9 
+SURFACES
+  AXICONIC Z 0 \Z_AX_INPUT1.\ 0 \Z_AX_INPUT2.\ \CPCANG.\ LENGTH \LENGTH_INPUT1.\
+OBJECT 'THE_CPC'
+  ROTATE Y 180
+  SHIFT Z \LENGTH_INPUT1.\
+  INTERFACE COATING CHROME AIR AIR
+  REDEFINE COLOR 2
+RETURN
+ 
+$IO OUTPUT CLOSE
+$ECHO ALL 
+
+     TUBE_INPUT1=CPCIN/2
+     TUBE_INPUT2=CPCDEP_USER-CPCDEP
+     TUBE_INPUT3=CPCIN/2
+     PLANE_INPUT1=-CPCDEP-.1
+
+$IF (ADD_TUBE) EQ 1 THEN
+   { 
+   $ECHO NONE
+   $IO OUTPUT MY_CPC.INR +FILE(81)
+   $SCR 8 
+   SURFACES
+     TUBE Z 0 2@\TUBE_INPUT1.\ \TUBE_INPUT2.\ 2@\TUBE_INPUT3.\
+   OBJECT 'LONG_TUBE'
+   INTERFACE COAT CHROME AIR AIR
+   SURFACES
+     PLANE Z \PLANE_INPUT1.\ ELLI 1 1 
+   OBJECT 'TARGET'
+   
+   $IO OUTPUT CLOSE
+   $ECHO ALL 
+   }
+$ELSE      
+   { 
+   $ECHO NONE
+   $IO OUTPUT MY_CPC.INR +FILE(81)
+   $SCR 3 
+   SURFACES
+     PLANE Z \PLANE_INPUT1.\ ELLI 1 1 
+   OBJECT 'TARGET'
+   $IO OUTPUT CLOSE
+   $ECHO ALL 
+   }       
+$ENDIF
+ 
+ 
+$ECHO NONE
+$IO OUTPUT MY_CPC.INR +FILE(81)
+$SCR 2
+WINDOW Y Z
+PLOT FACETS  OVERLAY 'MY CPC'
+$IO OUTPUT CLOSE
+$ECHO ALL
+ 
+!! Write the source to separate file
+WIDTH1=CPCOUT-1
+DIRECTION1=SIN[CPCANG-.001]
+DIRECTION2=-COS[CPCANG-.001]
+SHIFT1=-(CPCIN)/4
+SHIFT2=CPCDEP_USER-CPCDEP
+
+
+!! Create the source
+
+$IF (ADD_TUBE) EQ 1 THEN
+   {
+   $ECHO NONE
+   $IO OUTPUT MY_CPC.INR +FILE(81)
+   $SCR 5                                   
+   GRID ELLIPSE Z 0 -4@\WIDTH1.\ 1 21
+   SOURCE DIRECTION 0 \DIRECTION1.\ \DIRECTION2.\
+   SHIFT Y \SHIFT1.\     
+   SHIFT Z \SHIFT2.\ 
+   TRACE PLOT 
+   $IO OUTPUT CLOSE
+   $ECHO ALL
+   }
+$ELSE
+   {
+   $ECHO NONE
+   $IO OUTPUT MY_CPC.INR +FILE(81)
+   $SCR 4        
+   GRID ELLIPSE Z 0 -4@\WIDTH1.\ 1 21
+   SOURCE DIRECTION 0 \DIRECTION1.\ \DIRECTION2.\
+   SHIFT Y \SHIFT1.\ 
+   TRACE PLOT 
+   $IO OUTPUT CLOSE
+   $ECHO ALL
+   } 
+$ENDIF     
+usercancel
+** THE END **
+
+
+
+

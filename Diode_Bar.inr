@@ -1,0 +1,80 @@
+!!++
+!! DIODE_BAR.INR
+!! Title: Coherent array of laser diodes
+!! Category: Simple Problem
+!! Keywords: Wave, GAUSSIAN, DECOMPOSE, diode, laser
+!! Description: Create an array of diode lasers
+!! using DECOMPOSE DIRECTION.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 03/20/2009 - cp - removed $COPY from $DO loop
+!! 08/11/2003 - cp - reformatted
+!! 07/31/2003 - sam - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM  
+
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6
+
+PI=ACOS(-1)  
+CFAC=SQRT[LOG(2)]*SQRT[PI/4]  !! Scale factor FWHM to ASAP HW
+FWHMX=7  FWHMY=40             !! FWHM divergence angles in degrees
+NUMD=49                       !! Number of diodes
+LNGTH=100                     !! Total length of bar
+NSTEP=4*LNGTH/(2*NUMD-1)      !! Distance between diodes
+WBX=.005                      !! Horizontal window size
+WBY=WBX/4
+
+!! Create seed beam and move to waist
+WAVELENGTH 800 NM
+GAUSSIAN Z 1 2@0 2@1 2@0 FWHMX*CFAC FWHMY*CFAC DEGREES
+  MOVE TO Z 0
+
+!! View seed beam
+WINDOW Y -2@(WBY) X -2@(WBX)
+PIXELS 49
+FIELD ENERGY
+DISPLAY
+  PICTURE 'SEED BEAM'
+RETURN
+
+$COPY BRO029.DAT DIODE.DAT
+
+RAYS 0  !! Clear seed ray
+
+!! Loop to create individual diodes and shift into position
+$DO 1 (NUMD)
+ { WAVELENGTH (800+(-0.01~0.01)) NM
+   XSTEP=(?-(NUMD+1)/2)*NSTEP   
+   DECOMPOSE DIODE DIRECTION
+   SELECT ONLY SOURCE .1   
+   SHIFT X (XSTEP)
+     
+!! Comment out the $GO to see each beam
+$GO nodraw
+   WINDOW Y -2@(WBY) X XSTEP-WBX XSTEP+WBX 
+   PIXELS 49
+   SPREAD NORMAL 
+   DISPLAY
+     PICTURE
+   RETURN
+nodraw
+}
+
+SELECT ALL
+
+!! Detector
+SURFACES
+  PLANE Z 10 RECTANGLE 150
+OBJECT 'DET'
+
+ARROWS OFF
+WINDOW X Z
+PLOT FACETS 5 5 0 OVERLAY
+TRACE PLOT 10  !! Plot every 10th ray 
+RETURN

@@ -1,0 +1,35 @@
+!!++
+!! EDGES_EXTRUDE01.INR
+!! Title: Making a Semi-Circle Surface
+!! Category: Isolated Command
+!! Keywords: OBJECT, LINE, ARC, EDGES, COMPOSITE 
+!! Description: Extruding a LINE edge to an
+!! ARC edge, to make a semi-circular surface.
+!! A COMPOSITE could also be used, instead of
+!! using the second form of OBJECT.
+!! Edit History: (latest first)
+!! 04/23/2002 - cp - creation
+!!--
+
+SYSTEM NEW  
+RESET
+
+EDGES
+  ARC Z 0 -4 0 0 0 180
+  LINE -4 0 0, 4 0 0, 2
+!! COMPOSITE -2 
+
+OBJECT 
+  1 2 !! Not needed if COMPOSITE was used above
+
+!! Trace a source to test surface 
+GRID RECTANGLE Z -5 -4@4 12 12 
+  SHIFT Y -2
+  SOURCE DIRECTION 0 0 1
+MISSED ARROWS 10
+WINDOW Y X
+PLOT FACETS 11 11 OVERLAY
+TRACE PLOT 
+$VIEW
+RETURN
+ 

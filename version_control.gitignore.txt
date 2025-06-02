@@ -1,0 +1,32 @@
+# Operating System generated files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.bak
+*~
+
+# Python specific (因为你提到了有Python文件的文件夹)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+pip-wheel-metadata/
+# 如果你将来在这个项目里创建Python虚拟环境文件夹，也可以加上：
+# .venv/
+# venv/
+# env/
+# .env/
+
+# ASAP specific output/log files (这些是示例，你需要根据ASAP实际生成的、
+# 且你不想版本控制的文件类型来添加或修改)
+# *.out
+# *.lis
+# *.log
+# *.err
+# *.hst (history files, if any)
+# *.plt (如果这些是ASAP生成的二进制绘图数据文件，而不是脚本)
+# Add any other binary output files or large result files you don't want to track

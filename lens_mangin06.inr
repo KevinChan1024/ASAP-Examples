@@ -1,0 +1,34 @@
+!!++
+!! LENS_MANGIN06.INR
+!! Title: Mangin Mirror with Trace
+!! Category: Isolated Command
+!! Keywords: MANGIN, LENSES
+!! Description: A MANGIN mirror lens with an
+!! emitting rectangle to show simple use and
+!! properties.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 10/18/2000 - cp - modified format and header
+!! 05/10/2000 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES
+  MANGIN Z 0 .3 1 BK7 FL 1 -20
+  OBJECT 'MANGIN LENS'
+
+SURFACES
+  PLANE Z -5  RECTANGLE  3 3
+  OBJECT 'DETECTOR'
+   
+EMITTING RECT Z -3 .1 .1 20000   
+
+PLOT FACETS 7 7 OVERLAY
+TRACE PLOT 100 
+SPOTS POSITION
+$VIEW
+RETURN
+
+

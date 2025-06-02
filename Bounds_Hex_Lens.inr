@@ -1,0 +1,170 @@
+!!++
+!! BOUNDS_HEX_LENS.INR
+!! Title: Hex Lens Array
+!! Category: Simple Problem
+!! Keywords: Bounds, lens, ARRAY, hex, Edges, OPTICAL, $DO 
+!! Description: A Hex-pack micro-lens array made
+!! by bounding a series of EDGES to ARRAYs of OPTICALs.
+!! Rows of EDGEs are made, each offset from each other,
+!! describing the top and bottom edges of the hex pattern.
+!! ARRAYs of OPTICALs are made row by row (one dimensional
+!! array), each offset from each other to match the edge
+!! patterns above.  Each row (ARRAY) is BOUNDed to the
+!! corresponding EDGEs (top and bottom) to make the 
+!! hexagonal lenses.  The result is an array of hex
+!! lenses packed together edge to edge. 
+!! You can remove the comments at the end to see how
+!! the edges were made.
+!! The special $DO which makes the edges was done to 
+!! make the code more compact.  This could be replaced
+!! with a long-hand version.
+!! Edit History: (latest first)
+!! 05/27/2015 - cp - removed stray 'S' causing geometry issue
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 02/25/2009 - cp - corrected keyword
+!! 08/13/2001 - cp - modified; added description
+!! 07/05/2001 - arg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+ 1.5 'GLASS'
+
+CURV=-10
+XWIDTH=3
+YHEIGHT=8
+ARR_NUM=7   !! ARR_NUM+1 elements accross center row
+NUM_ROWS=11 !! total number of rows, top to bottom
+HEX_SIDE=XWIDTH*TAN[30]
+HEX_TOP=SQRT(HEX_SIDE^2+XWIDTH^2) !!/2   
+
+&REG XWIDTH HEX_SIDE HEX_TOP
+
+EDGES
+  POINTS Z 2, 0 (HEX_SIDE) 1; $DO 2 (2*(NUM_ROWS-1)) 2
+   {(?-1)*(XWIDTH)  (HEX_TOP)  1
+     ?*(XWIDTH)   (HEX_SIDE)  1
+  }
+  (2*(NUM_ROWS-1)+1)*(XWIDTH) (HEX_TOP)  0
+  SHIFT Y (HEX_SIDE+HEX_TOP)*((NUM_ROWS-1)/2)
+  SHIFT X (-ARR_NUM*XWIDTH-4*XWIDTH) !! 1
+
+$DO 1 ((NUM_ROWS-1)/2)
+  {REPEAT
+    SHIFT Y -(HEX_SIDE+HEX_TOP)
+    SHIFT X (XWIDTH)
+   REPEAT
+    SHIFT Y -(HEX_SIDE+HEX_TOP)
+    SHIFT X -(XWIDTH)
+  }
+  REPEAT
+    SHIFT Y -(HEX_SIDE+HEX_TOP)      !! 12
+    SHIFT X (XWIDTH)
+
+SURFACES
+  OPTICAL Z 0 (CURV) RECTANGLE (XWIDTH) (YHEIGHT)
+    SHIFT Y 4*(HEX_SIDE+HEX_TOP)
+    ARRAY (ARR_NUM) (2*XWIDTH) 0 0   !! 13
+    SHIFT X (-ARR_NUM*XWIDTH)
+OBJECT 'LENSES_2' 
+  INTERFACE 0 1 AIR GLASS
+  BOUNDS -.11 .12
+
+SURFACES
+  OPTICAL Z 0 (CURV) RECTANGLE (XWIDTH) (YHEIGHT)
+    SHIFT Y 2*(HEX_SIDE+HEX_TOP)
+    ARRAY (ARR_NUM) (2*XWIDTH) 0 0   !! 14
+    SHIFT X (-ARR_NUM*XWIDTH)
+OBJECT 'LENSES_4' 
+  INTERFACE 0 1 AIR GLASS
+  BOUNDS -.10 .11
+
+SURFACES
+  OPTICAL Z 0 (CURV) RECTANGLE (XWIDTH) (YHEIGHT)
+    ARRAY (ARR_NUM) (2*XWIDTH) 0 0   !! 15
+    SHIFT X (-ARR_NUM*XWIDTH)
+OBJECT 'LENSES_6' 
+  INTERFACE 0 1 AIR GLASS
+  BOUNDS -.9 .10
+
+SURFACES
+  OPTICAL Z 0 (CURV) RECTANGLE (XWIDTH) (YHEIGHT)
+    SHIFT Y -2*(HEX_SIDE+HEX_TOP)
+    ARRAY (ARR_NUM) (2*XWIDTH) 0 0   !! 16
+    SHIFT X (-ARR_NUM*XWIDTH)
+OBJECT 'LENSES_8' 
+  INTERFACE 0 1 AIR GLASS
+  BOUNDS -.8 .9
+
+SURFACES
+  OPTICAL Z 0 (CURV) RECTANGLE (XWIDTH) (YHEIGHT)
+    SHIFT Y -4*(HEX_SIDE+HEX_TOP)
+    ARRAY (ARR_NUM) (2*XWIDTH) 0 0   !! 17
+    SHIFT X (-ARR_NUM*XWIDTH)
+OBJECT 'LENSES_10' 
+  INTERFACE 0 1 AIR GLASS
+  BOUNDS -.7 .8
+
+SURFACES
+  OPTICAL Z 0 (CURV) RECTANGLE (XWIDTH) (YHEIGHT)
+    SHIFT Y 5*(HEX_SIDE+HEX_TOP)
+    ARRAY (ARR_NUM+1) (2*XWIDTH) 0 0  !! 18
+    SHIFT X (-(ARR_NUM+1)*XWIDTH)
+OBJECT 'LENSES_1' 
+  INTERFACE 0 1 AIR GLASS
+  BOUNDS -.17 .18
+
+SURFACES
+  OPTICAL Z 0 (CURV) RECTANGLE (XWIDTH) (YHEIGHT)
+    SHIFT Y 3*(HEX_SIDE+HEX_TOP)
+    ARRAY (ARR_NUM+1) (2*XWIDTH) 0 0  !! 19
+    SHIFT X (-(ARR_NUM+1)*XWIDTH)
+OBJECT 'LENSES_3' 
+  INTERFACE 0 1 AIR GLASS
+  BOUNDS -.16 .17
+
+SURFACES
+  OPTICAL Z 0 (CURV) RECTANGLE (XWIDTH) (YHEIGHT)
+    SHIFT Y 1*(HEX_SIDE+HEX_TOP)
+    ARRAY (ARR_NUM+1) (2*XWIDTH) 0 0  !! 20
+    SHIFT X (-(ARR_NUM+1)*XWIDTH)
+OBJECT 'LENSES_5' 
+  INTERFACE 0 1 AIR GLASS
+  BOUNDS -.15 .16
+
+SURFACES
+  OPTICAL Z 0 (CURV) RECTANGLE (XWIDTH) (YHEIGHT)
+    SHIFT Y -1*(HEX_SIDE+HEX_TOP)
+    ARRAY (ARR_NUM+1) (2*XWIDTH) 0 0  !! 21
+    SHIFT X (-(ARR_NUM+1)*XWIDTH)
+OBJECT 'LENSES_7' 
+  INTERFACE 0 1 AIR GLASS
+  BOUNDS -.14 .15
+
+SURFACES
+  OPTICAL Z 0 (CURV) RECTANGLE (XWIDTH) (YHEIGHT)
+    SHIFT Y -3*(HEX_SIDE+HEX_TOP)
+    ARRAY (ARR_NUM+1) (2*XWIDTH) 0 0  !! 22
+    SHIFT X (-(ARR_NUM+1)*XWIDTH)
+OBJECT 'LENSES_9' 
+  INTERFACE 0 1 AIR GLASS
+  BOUNDS -.13 .14
+
+SURFACES
+  OPTICAL Z 0 (CURV) RECTANGLE (XWIDTH) (YHEIGHT)
+    SHIFT Y -5*(HEX_SIDE+HEX_TOP)
+    ARRAY (ARR_NUM+1) (2*XWIDTH) 0 0  !! 23
+    SHIFT X (-(ARR_NUM+1)*XWIDTH)
+OBJECT 'LENSES_11' 
+  INTERFACE 0 1 AIR GLASS
+  BOUNDS -.12 .13
+
+WINDOW Y X
+PLOT FACETS !!OVERLAY  !! Use 5 5 facets for better rendering
+!!PLOT EDGES
+$VIEW 
+RETURN
+
+

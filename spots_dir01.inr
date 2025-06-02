@@ -1,0 +1,45 @@
+!!++
+!! SPOTS_DIR01.INR
+!! Title: A Directional Spots Diagram
+!! Category: Isolated Command
+!! Keywords: SPOTS, DIRECTION, Analysis, TEXT
+!! Description: Creating a spots diagram in
+!! direction cosine space. Note that in all
+!! cases here, a display file is not created. 
+!! Typically, one would create a display file
+!! and not want to plot the spots (ATTRIBUTE 0).
+!! In this example, two methods for plotting the
+!! spots are shown. One plots all 3 sources at
+!! once using plus signs. The other selects a
+!! different symbol for each and includes text
+!! in the plot. The spots are actual ray direction
+!! cosine coordinates on the unit sphere.
+!! Edit History: (latest first)
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC Z 0 -4@2 10 10
+  SOURCE FOCUS 0 -3 3, 0 0 3, 0 3 3  !! 3 sources
+
+CONSIDER ONLY 0  !! To plot rays on source only
+WINDOW Y X
+WINDOW 1.2  !! Enlarge window 20%
+
+SPOTS DIRECTION ATTRIBUTE 1 'SPOT DIAGRAM IN DIRECTION COSINE SPACE'
+
+TITLE 'COMPOSITE SPOT DIAGRAM IN DIRECTION COSINE SPACE'
+SELECT ONLY SOURCE 1
+  SPOTS DIRECTION ATTRIBUTE 1 OVERLAY  !! Plus sign
+SELECT ONLY SOURCE 2
+  SPOTS DIRECTION ATTRIBUTE 2 OVERLAY  !! Cross
+SELECT ONLY SOURCE 3
+  SPOTS DIRECTION ATTRIBUTE 3 TEXT     !! Up triangle plus text
+    6.7 1.7, 0.15 0, 0 0.15 'PLUS SIGN   => Y=-3'
+    6.7 1.4, 0.15 0, 0 0.15 'X CROSS     => Y=0'
+    6.7 1.1, 0.15 0, 0 0.15 'UP TRIANGLE => Y=+3'
+RETURN

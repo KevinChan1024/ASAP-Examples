@@ -1,0 +1,89 @@
+!!++
+!! INTERFACE_REPEAT.INR
+!! Title: Redefining OBJECT Properties
+!! Category: Simple Problem
+!! Keywords: Geometry, OBJECT, INTERFACE REPEAT, PRINT OBJECTS
+!! Description: How to change the interface properties of
+!! the second object with a previously-defined object. 
+!! In this case, the interface properties are changed
+!! to match the first object.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 12/18/2008 - cp - fixed operation and keywords
+!! 09/04/2007 - cp - modified header
+!! 04/17/2007 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 550 NM    
+
+MEDIA
+  1.613  'SK4'
+    
+SPLIT 3
+
+SURFACES
+  OPTICAL Z 0 44.55 ELLIPSE 16.9 16.9
+OBJECT 'L1.FRONT'    
+  INTERFACE .1 .9  AIR SK4
+  
+SURFACES
+  OPTICAL Z 5 -436.6 ELLIPSE 16.9 16.9
+OBJECT 'L1.BACK'    
+  INTERFACE .3 .7 AIR SK4
+
+SURFACES
+  PLANE Z 10 ELLIPSE 25 25
+OBJECT 'AFTPLANE'
+
+SURFACES
+  PLANE Z -10 ELLIPSE 25 25
+OBJECT 'BEFPLANE'
+
+
+!! Verify the properties of the objects
+PRINT OBJECTS
+!! Object 1
+!!    Interface Reflectance   0.10000
+!!             Transmittance  0.90000
+!! Object 2
+!!    Interface Reflectance   0.30000
+!!              Transmittance 0.70000 
+
+GRID ELLIPSE Z -2 -4@16 3 3
+SOURCE DIRECTION 0 0 1
+FLUX TOTAL 100
+PLOT FACETS 5 5 0  OVERLAY
+TRACE PLOT
+STATS
+
+!! Change the coating properties associated with the second object
+OBJECT .3
+  INTERFACE REPEAT 1 !! Make same as Object 1
+!!RAYS 0
+
+GRID ELLIPSE Z -2 -4@16 3 3
+SOURCE DIRECTION 0 0 1
+SELECT ONLY SOURCE 2
+FLUX TOTAL 100
+SELECT ALL
+
+PLOT FACETS 5 5 0  OVERLAY
+TRACE PLOT
+STATS
+
+!!!!  Verify the changed coating properties of the second object.
+!!PRINT OBJECTS
+!!!! Object 1
+!!!!    Interface Reflectance   0.10000
+!!!!             Transmittance  0.90000
+!!!! Object 2
+!!!!    Interface Reflectance   0.10000
+!!!!              Transmittance 0.90000 
+!!!! IT CHANGED FOR OBJECT 2 !!
+PRINT OBJECT 2
+!!
+RETURN

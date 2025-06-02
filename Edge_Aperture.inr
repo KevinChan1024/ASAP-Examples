@@ -1,0 +1,46 @@
+!!++
+!! EDGE_APERTURE.INR
+!! Title: Annular Ring Aperture
+!! Category: Simple Problem
+!! Keywords: Edges, aperture, annular, EDGES, circular, BOUNDS
+!! Description: Annular aperture made by bounding an Edge
+!! to an infinite plane and then adding an absorbing
+!! ellipse at center to result in a annular ring
+!! aperture.
+!! Edit History: (latest first)   
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 09/24/2003 - cp - modified category name
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES !! Edge used for bounding
+  ELLIPSE Y 0 2@3
+
+SURFACES 
+  PLANE Y 0 !! Infinite plane
+  OBJECT 'APERT'
+    BOUNDS .2  !! Will not show up in plot facets
+   
+SURFACES
+  PLANE Y 0 ELLIPSE 2@2 
+  OBJECT 'ANNULAR_CENTER'
+
+SURFACES
+  PLANE Y 10 RECTANGLE 10 10
+  OBJECT 'DETECTOR'
+
+GRID RECT Y -10 -4@10 51 51
+  SOURCE DIRECTION 0 1 0
+
+WINDOW X -10 10 -Y -10 10
+TRACE PLOT 3 OVERLAY 
+PLOT FACETS 5 5 OVERLAY
+CONSIDER ONLY DETECTOR
+  SPOTS POSITION
+  $VIEW
+RETURN
+
+

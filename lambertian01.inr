@@ -1,0 +1,62 @@
+!!++
+!! LAMBERTIAN01.INR
+!! Title: Lambertian Scatter Towards an Edge
+!! Category: Isolated Command
+!! Keywords: LAMBERTIAN, MODELS, SCATTER, TOWARDS
+!! Description: Demonstration of scatter towards an
+!! edge. An emitting grid is used to show Lambertian
+!! scatter through a lens toward a rectangular edge.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 10/18/2000 - cp - modified format and header
+!! 05/10/2000 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+FRESNEL AVERAGE
+BEAMS INCOHERENT GEOMETRIC
+
+MODELS
+  LAMBERTIAN .5  !! For 50% TIS
+
+MEDIA
+  1.66368 'STK3'
+  
+LEVEL 1
+
+EDGES  
+  RECTANGLE Z 0 10 20 
+    SHIFT Z 20
+
+SURFACES
+  OPTICAL Z 0 20 ELLIPSE 10 10
+  OBJECT 'FIRST_SURFACE'
+    INTERFACE COAT +BARE AIR STK3
+    SHIFT Z 0
+   
+SURFACES
+  OPTICAL Z 0 200 ELLIPSE 10 10
+  OBJECT 'SECOND_SURFACE'
+    INTERFACE COAT +BARE AIR STK3
+    SHIFT Z 3
+    SCATTER MODEL 1  !! Calls Lambertian model
+      TOWARDS EDGE 1 5  !! 5 scatter rays toward edge #1
+
+GRID ELLIPTIC Z -10 -4@5 25 25
+  SOURCE DIRECTION 0 0 1
+  FLUX TOTAL 100
+
+CONSIDER ALL
+
+MISSED ARROWS 25
+WINDOW X Z
+PLOT EDGES OVERLAY
+PLOT FACETS 5 5 OVERLAY
+TRACE PLOT 10
+
+SELECT ONLY SOURCE -1   
+STATS  !! Scatter rays only
+$VIEW
+RETURN

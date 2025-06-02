@@ -1,0 +1,132 @@
+!!++
+!! GHOST_ANALYSIS.INR
+!! Title: Ghost Analysis Showing Multiple Paths
+!! Category: Simple Problem
+!! Keywords: Lenses, ghost, LENSES, triplet, SPREAD, COLENGTH, PATHS, HISTORY 
+!! Description: A Triplet lens system is used to demonstrate
+!! real ghost image analysis. Initially a plot of the lens system
+!! is shown with an on-axis and off-axis source. Then SPLIT
+!! is set to 2 and a single source is traced.
+!! Children and grandchildren rays are produced and generate
+!! alternate paths to the target. A spread function of
+!! imaged and ghost rays is performed showing radial
+!! distance using THE COLENGTH modifier or by SHAPEing the
+!! ghost rays first. Finally, individual ghost paths are traced
+!! using SAVEd HISTORY file.
+!! Edit History: (latest first)
+!! 12/20/2001 - cp - modified SCR dialogs
+!! 04/05/2001 - cp - modified format; added description
+!! 12/11/1998 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+Z9=0
+
+$SCR 6
+  Demonstration of Ghost Image Analysis Capabilities
+  in the Advanced Systems Analysis Package! 
+
+  First, a triplet lens system is created and then
+  the ghost image analysis is performed.         
+\Z9:?
+
+UNITS IN
+FRESNEL AVERAGE
+
+!! Create triplet lens system and image plane
+
+LENSES
+  SEQUENCE RADI
+    0 0 0, 0 0 1, 11 36.203 0 0 SK16
+    4.5 11 -3521.1268 0 0 0
+    8.7512 7 -57.9878 0 0 SCHOTTNEW_F4
+    2.5 7 36.2056 0 0 0
+    9.6205 11 161.2383 0 0 SK16
+    6 11 -45.4752 0 0 0
+OBJECT; 0.1 'TRIPLET'
+  INTERFACE COATING BARE AIR AIR
+ 
+SURFACE
+  PLANE Z 115.0809 ELLIPSE 30
+OBJECT; 0.1 'IMAGE_PLANE'
+ 
+!! Create picture of system (ray fans)
+
+TITLE 'TRIPLET SYSTEM TO DEMONSTRATE GHOST IMAGING'
+XMEMORY OFF
+SPLIT OFF
+CUTOFF 1E-6
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 0.55 UM
+GRID ELLIPTIC Z 14.3876 -4@7.9365 1 5 
+  SOURCE DIRECTION 0 0 1, 0 TAN[10] 1
+  MOVE TO Z -5
+WINDOW Y Z
+WINDOW 1.2
+PROFILES OVERLAY
+TRACE PLOT
+
+!! Show ray trace with ghosts included.
+
+TITLE 'GHOST IMAGING ANALYSIS OF TRIPLET LENS SYSTEM'
+RAYS 0
+GRID ELLIPTIC Z 14.3876 -4@7.9365 1 5
+  SOURCE DIRECTION  0 0 1
+  MOVE TO Z -5
+SPLIT 2
+PROFILES OVERLAY
+TRACE PLOT
+ 
+$SCR 4
+ ASAP will now perform a more detailed analysis using
+ more rays to show how ghosts impact the point spread 
+ function (PSF).  
+\Z9:?
+
+SAVE 0 FRED
+CUTOFF 1E-6
+RAYS 0
+SPLIT 2
+BEAMS COHERENT DIFFRACT 
+PARABASALS 8
+WIDTHS 1.6
+WAVELENGTH 0.55 
+GRID ELLIPTIC Z 14.3876 -4@7.9365 15 15
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -5
+TRACE GRAPH
+CONSIDER ONLY .1
+
+!! Show point spread function including ghosts
+
+WINDOW Y 0 5 X -2.5 2.5
+PIXELS 361
+SPREAD NORMAL -39 DOWN 0.5 0.5 COLENGTH 1
+DISPLAY 39
+NORM MAX
+FORM -5
+GRAPH 'SPREAD FUNCTION FROM IMAGED & GHOST RAYS'
+'RADIAL DISTANCE
+'CALCULATED WITH SPREAD NORMAL...COLENGTH
+RETURN
+
+$SCR 5
+ ASAP allows the user to review individual ghost
+ paths to see which ones are most troublesome. 
+
+ The first order path is shown first 
+\Z9:?
+
+$DO 1 6
+ { CONSIDER ONLY 2
+   PATHS
+   SELECT ONLY PATH ?
+   CONSIDER ALL
+   WINDOW Y Z
+   TITLE 'RAY TRACE FOR PATH ?'
+   PROFILES OVERLAY
+   HISTORY 0 PLOT
+   SELECT ALL
+  }

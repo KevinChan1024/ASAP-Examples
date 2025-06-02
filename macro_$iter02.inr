@@ -1,0 +1,66 @@
+!!++
+!! MACRO_$ITER02.INR
+!! Title: Iterating Records 
+!! Category: Isolated Command
+!! Keywords: $ITER, macro, Macros_pre, loop, iterate
+!! Description: Plotting transverse ray abberations
+!! using $ITER. The $ITER below looks for a ray with
+!! minimum Y value over a range of rows that were
+!! printed to the output console.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/24/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTHS 0.4861 0.5876 0.6563 UM
+MEDIA
+  1.7 1.6 1.5 'GLASS'      
+
+LENSES
+  SINGLET Z 0 5 10 GLASS RD 20 0
+  OBJECT 'SINGLET'
+
+SURFACES
+  PLANE Z 29.8 RECTANGLE 5                       
+  OBJECT 'DETECTOR'                    
+  
+ANALYSIS { 1  !! Set source and calculate transverse ray fan
+BEAMS INCOHERENT GEOMETRIC 
+ $IF #1 EQS ON_AXIS THEN
+   WAVELENGTH 0.5876                 
+   GRID RECT  Z -5 -4@5 1 51         
+     SOURCE DIRECTION 0 0 1
+     MOVE TO Z -10                   
+ $ELSE
+   WAVELENGTH 0.5876                 
+   GRID RECT  Z -5 -4@5 1 51         
+     SOURCE DIRECTION 0 SIN[5] COS[5]
+     MOVE TO Z -10                   
+
+ $ENDIF
+ TRACE
+ CONSIDER ONLY DETECTOR
+   FOCUS MOVE
+ 
+ LIST POSITION 26
+ $ITER ROW -25 25 -51 Y
+   $GRAB 'Ray' (ROW+27) 3 Y
+ 
+ CONSIDER ALL            
+ DISPLAY ANALYSIS
+   NORM 1 MAX
+   GRAPH 0.5  '#1 BEAM TRANSVERSE RAY ABERRATIONS'
+    'NORMALIZED PUPIL COORDINATE
+    'ALL OTHER DIMENSIONS IN MM
+    'RAY COORDINATES RELATIVE TO CHIEF RAY
+}
+SELECT SOURCE (ON_AXIS or OFF_AXIS)>
+
+&ANALYSIS ON_AXIS
+
+RETURN

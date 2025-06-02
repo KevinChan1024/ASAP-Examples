@@ -1,0 +1,44 @@
+!!++
+!! FIELD02.INR
+!! Title: Slicing Irradiance with FIELD
+!! Category: Isolated Command
+!! Keywords: FIELD, irradiance, psf 
+!! Description: Slicing an irradiance pattern
+!! using the FIELD command.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 11/05/2003 - cp - fixed keyword
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS IN
+
+LENSES
+  MIRROR Z 0 2 20 -1
+OBJECT 'MIRROR'
+SURFACES
+  PLANE Z -20 ELLIPSE 0.1
+OBJECT 'DETECTOR' 
+  
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTHS 488 NM
+WIDTHS 1.6
+GRID POLAR Z -1 0 2 0 360 5 6
+  SOURCE DIRECTION 0 0 1
+
+TRACE
+STATS POSITION
+CONSIDER ONLY DETECTOR
+WINDOW Y -2@.0006 X -2@.000005
+PIXELS 127  !! Note the smaller window
+FIELD ENERGY -20
+DISPLAY 
+  PLOT3D 'SLICE THROUGH IDEAL POINT SPREAD FUNCTION - FIELD'
+  FORM -6
+  PLOT3D 'SLICE THROUGH IDEAL POINT SPREAD FUNCTION - FIELD (LOG PLOT)'
+RETURN

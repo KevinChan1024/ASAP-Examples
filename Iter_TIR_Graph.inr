@@ -1,0 +1,45 @@
+!!++
+!! ITER_TIR_GRAPH.INR
+!! Title: Graphing Reflected Flux Approaching TIR
+!! Category: Simple Problem
+!! Keywords: Tracing, $ITER, tir, IMMERSE
+!! Description: Uses first form of $ITER to graph
+!! a ray traced within glass at an angle range from
+!! 0 to 50°.  The reflected flux is saved to the ITER
+!! display file and graphed at the end.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 11/05/2003 - cp - fixed keyword
+!! 02/09/2000 - cp - modified format; added description
+!! 02/09/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.5 'GLASS'
+
+SURFACES 
+  PLANE Z 0 RECTANGLE -2@1
+OBJECT 
+  INTERFACE COAT -BARE GLASS AIR  !! Allow reflection only
+
+FRESNEL AVERAGE
+THETA=43
+
+IMMERSE GLASS  !! Rays born in glass
+
+$ITER THETA 0 49.9 -101 REFL  !! 101 steps over range, including end points
+  {
+  RAYS 0  !! Clear previous ray
+  EMITTING RAYS
+    0 0 -0.001 Z (THETA) 0 1  !! THETA range 0 to 49.9
+  TRACE
+  GET 1
+  REFL=F0  !! Record flux of ray 1
+  }
+
+DISPLAY ITER  !! Display file created by $ITER
+  GRAPH 'Reflected flux approaching TIR'
+RETURN

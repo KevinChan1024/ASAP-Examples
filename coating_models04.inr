@@ -1,0 +1,243 @@
+!!++
+!! COATING_MODELS04.INR
+!! Title: Multi-Wavelength Coating Model
+!! Category: Simple Problem
+!! Keywords: Geometry, COATINGS, MODELS, WAVELENGTHS
+!! Description: How to define a multiple wavelength
+!! coating on a surface using COATING MODELS. A 
+!! three color source is traced through a lens with two
+!! surfaces having this coating applied. The flux of
+!! the rays are plotted on each surface after the trace.
+!! The front surface is allowed to split to see 
+!! differences in the reflected flux.  The back of the
+!! lens only allows transmission for simplicity.  Look
+!! at the STATS output to see actual flux levels for
+!! each wavelength which is controlled by the coating
+!! definitions.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 04/24/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+UNITS MM
+WAVELENGTHS 450 550 633 NM  !! Wavelength range
+
+XMEMORY NORM
+FRESNEL BOTH 
+
+MODELS
+  BSDFDATA ANGLES !! R(s-pol) for 450 NM (1)
+    0   0   1
+    10  0   1.3
+    20  0   1.5
+    30  0   1.7
+    40  0   1.8
+    50  0   1.8.5
+    60  0   1.9
+    70  0   1.95
+    80  0   1.98
+    90  0   2.0
+      
+  BSDFDATA ANGLES !! T(s-pol) for 450 NM (2)
+    0   0   1
+    10  0   .98
+    20  0   .95
+    30  0   .9
+    40  0   .85
+    50  0   .7
+    60  0   .6
+    70  0   .5
+    80  0   .2
+    90  0   .1
+  BSDFDATA ANGLES !! R(p-pol) for 450 NM (3)
+    0   0   1
+    10  0   1.3
+    20  0   1.5
+    30  0   1.7
+    40  0   1.8
+    50  0   1.8.5
+    60  0   1.9
+    70  0   1.95
+    80  0   1.98
+    90  0   2.0
+  BSDFDATA ANGLES !! T(p-pol) for 450 NM (4)
+    0   0   1
+    10  0   .98
+    20  0   .95
+    30  0   .9
+    40  0   .85
+    50  0   .7
+    60  0   .6
+    70  0   .5
+    80  0   .2
+    90  0   .1    
+  BSDFDATA ANGLES !! R(s-pol) for 550 NM (5)
+    0   0   1
+    10  0   1.2
+    20  0   1.3
+    30  0   1.35
+    40  0   1.4
+    50  0   1.45
+    60  0   1.5
+    70  0   1.6
+    80  0   1.6
+    90  0   1.6    
+  BSDFDATA ANGLES !! T(s-pol) for 550 NM (6)
+    0   0   1
+    10  0   .8
+    20  0   .7
+    30  0   .65
+    40  0   .6
+    50  0   .5
+    60  0   .46
+    70  0   .35
+    80  0   .24
+    90  0   .1    
+  BSDFDATA ANGLES !! R(p-pol) for 550 NM (7)
+    0   0   1
+    10  0   1.2
+    20  0   1.3
+    30  0   1.35
+    40  0   1.4
+    50  0   1.45
+    60  0   1.5
+    70  0   1.6
+    80  0   1.6
+    90  0   1.6    
+  BSDFDATA ANGLES !! T(p-pol) for 550 NM (8)
+    0   0   1
+    10  0   .8
+    20  0   .7
+    30  0   .65
+    40  0   .6
+    50  0   .5
+    60  0   .46
+    70  0   .35
+    80  0   .24
+    90  0   .1    
+  BSDFDATA ANGLES !! R(s-pol) for 633 NM (9)
+    0   0   1
+    10  0   1.41
+    20  0   1.53
+    30  0   1.6
+    40  0   1.7
+    50  0   1.8
+    60  0   1.8
+    70  0   1.7
+    80  0   1.5
+    90  0   1.3    
+  BSDFDATA ANGLES !! T(s-pol) for 633 NM (10)
+    0   0   1
+    10  0   .8
+    20  0   .7
+    30  0   .5
+    40  0   .35
+    50  0   .2
+    60  0   .25
+    70  0   .2
+    80  0   .15
+    90  0   .05    
+  BSDFDATA ANGLES !! R(p-pol) for 633 NM (11)
+    0   0   1
+    10  0   1.41
+    20  0   1.53
+    30  0   1.6
+    40  0   1.7
+    50  0   1.8
+    60  0   1.8
+    70  0   1.7
+    80  0   1.5
+    90  0   1.3    
+  BSDFDATA ANGLES !! T(p-pol) for 633 NM (12)
+    0   0   1
+    10  0   .8
+    20  0   .7
+    30  0   .5
+    40  0   .35
+    50  0   .2
+    60  0   .25
+    70  0   .2
+    80  0   .15
+    90  0   .08    
+
+COATINGS MODELS 
+  0.2 1 3 0.8 2 4   0.1 5 7 0.9 6 8   0.15 9 11 0.85 10 12  'MULTI_COAT'  !! For all wavelengths
+
+
+!! Lens front
+SURFACES
+  OPTICAL Z -.5 4 -1 ELLIPSE 2.5
+  OBJECT 'FRONT'
+    INTERFACE COAT MULTI_COAT AIR SCHOTT_BK7
+
+
+!! Lens back 
+SURFACES
+  OPTICAL Z 1.5 -4 -1 ELLIPSE 2.5
+  OBJECT 'BACK'
+    INTERFACE COAT MULTI_COAT AIR SCHOTT_BK7 
+    SPLIT 0  !! To stop internal reflection in lens
+
+!! Lens edge
+SURFACES
+  TUBE Z -1.5 2@2.5 2 2@2.5 
+  OBJECT 'EDGE'
+    BOUNDS .3 -.2
+
+!! Define Sources
+
+!! Source 1 - red
+WAVELENGTH 633 
+GRID ELLIPTIC Z -3 -4@2.4 1 25
+  SOURCE DIRECTION 0 0 1
+
+!! Source 2 - green
+WAVELENGTH 550
+GRID ELLIPTIC Z -3 -4@2.4 1 25
+  SOURCE DIRECTION 0 0 1
+
+!! Source 2 - blue
+WAVELENGTH 450
+GRID ELLIPTIC Z -3 -4@2.4 1 25
+  SOURCE DIRECTION 0 0 1
+
+FLUX TOTAL 1 SOU 1
+FLUX TOTAL 1 SOU 2
+FLUX TOTAL 1 SOU 3
+
+!! Plot geometry and trace rays
+MISSED ARROWS 2
+WINDOW Y -3 3 Z -4 11
+PLOT FACETS 7 7 OVERLAY 'SINGLET 3-COLOR RAY TRACE'
+
+SELECT ONLY SOURCE 1 !! Red
+  TRACE !!PLOT COLOR 2 OVERLAY
+
+SELECT ONLY SOURCE 2 !! Green
+  TRACE !!PLOT COLOR 13 OVERLAY
+
+SELECT ONLY SOURCE 3 !! Blue
+  TRACE !!PLOT COLOR 3 OVERLAY
+CONSIDER ONLY BACK
+SELECT ONLY SOURCE 1
+STATS
+SELECT ONLY SOURCE 2
+STATS
+SELECT ONLY SOURCE 3
+STATS
+
+CONSIDER ONLY FRONT
+SELECT ONLY SOURCE 1
+STATS
+SELECT ONLY SOURCE 2
+STATS
+SELECT ONLY SOURCE 3
+STATS
+CONSIDER ALL
+SELECT ALL
+PLOT RAYS 10  !! To demonstrate flux intensity
+!!$VIEW
+RETURN

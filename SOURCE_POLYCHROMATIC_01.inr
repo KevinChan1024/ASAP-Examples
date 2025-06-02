@@ -1,0 +1,150 @@
+!!++
+!! SOURCE_POLYCHROMATIC_01.INR
+!! Title: A Blackbody Polychromatic Source 
+!! Category: Isolated Command
+!! Keywords: SOURCE POLYCHROMATIC, Sources, scotopic, photopic, blackbody, eye, cie
+!! Description: A polychromatic source evaluated over a spectrum of 81
+!! wavelengths for photopic and scotopic response. Syntax 1 - Blackbody 
+!! is chosen as the default.  Syntax 2 is also provided.
+!! Edit History: (latest first)
+!! 04/09/2013 - cp - added header and formatted
+!! 04/04/2013 - kg - creation
+!!--
+
+!! ASAP photometry calculations
+SYSTEM NEW
+RESET
+
+UNITS MM 'lm' lumens
+WAVELENGTH 0.555 UM
+
+!! Set up blackbody emitter
+TEMP=6500 !! Daylight D65 source temperature in Kelvin
+DLAMBDA=5
+
+T=(TEMP)
+H=6.62606957E-34  !! Planck constant
+C=2.99792458E8    !! Speed of light in vacuum
+K=1.380648E-23    !! Boltzman constant
+
+!! Planck black body equation
+$FCN PLANCK LAMBDA=(_*1E-9) 2*H*C^2/LAMBDA^5*(1/(EXP((H*C)/(LAMBDA*K*T))-1)) 
+
+$EVAL WAVE 380 780 -81 PLANCK
+DISPLAY EVAL
+ NORM MAX
+ GRAPH 'PLANCK BLACK BODY CURVE'
+  'WAVELENGTH IN NM
+  'PLOT OF PLANCK BLACK BODY EQUATION
+RETURN
+  
+POLYCHROMO_SOURCE {
+!! Sets up a polychromatic source
+!! Uncomment the source polychromatic command of interest and comment out the others 
+
+XMEMORY MIN
+SEED 200000001 QUASI
+EMITTING RECT Z 0 2@0.5 500
+SOURCE POLYCHROMATIC BB (TEMP) 10 81 380 780 'POLY_SRC'    
+!!SOURCE POLYCHROMATIC FCN PLANCK 10 81 380 780 'D65' RANDOM POSITION 0.1    
+!!SOURCE POLYCHROMATIC CIE D65 10 81 380 780 'D65' RANDOM BOTH 0.1 25  
+ 
+$ITER WAVE 380 780 -((780-380)/DLAMBDA+1) BBPOWER
+ {
+  SELECT ONLY SOURCE (WAVE-380)/DLAMBDA+1 
+  STATS
+  $GRAB 'TOTAL' 0 2 BBPOWER
+ }
+SELECT ALL
+}
+
+VISIBILITY { 1
+$IF #1 EQS PHOTOPIC THEN
+ $ITER WAVE 0.380 0.780 -((780-380)/DLAMBDA+1) VISIBILITY
+  VISIBILITY=EYE(WAVE)
+$ELSEIF #1 EQS SCOTOPIC THEN
+ $ITER WAVE 0.380 0.780 -((780-380)/DLAMBDA+1) VISIBILITY
+  VISIBILITY=EYE[WAVE]
+$ELSE
+ $ITER WAVE 0.380 0.780 -((780-380)/DLAMBDA+1) VISIBILITY
+  VISIBILITY=EYE(WAVE)
+  $PLOT OFF
+  DISPLAY VISIBILITY
+  GRAPH 'PHOTOPIC RESPONSE'
+  'WAVELENGTH IN UM
+ $ITER WAVE 0.380 0.780 -((780-380)/DLAMBDA+1) VISIBILITY
+  VISIBILITY=EYE[WAVE]
+  $PLOT NORM
+  DISPLAY VISIBILITY
+  GRAPH APPEND 'PHOTOPIC AND SCOTOPIC RESPONSE'
+  'WAVELENGTH IN UM
+  'CURVE 1 IS PHOTOPIC RESPONSE (RED LINE)
+  'CURVE 2 IS SCOTOPIC RESPONSE (BLUE LINE)
+  $GO end
+$ENDIF
+ DISPLAY VISIBILITY
+ GRAPH '#1 RESPONSE'
+ 'WAVELENGTH IN UM
+ '
+ '
+end
+}
+ENTER RESPONSE TYPE (PHOTOPIC, SCOTOPIC, OR BOTH)>
+
+PHOTOPIC_NORM {
+!! Normalizes spectral distribution to photopic response of the eye
+!! Creates a plot of the normalization 
+
+$ITER WAVE 380 780 -((780-380)/DLAMBDA+1) NPOWER
+ {
+  SELECT ONLY SOURCE (WAVE-380)/DLAMBDA+1
+  FLUX 0 683*EYE(WAVE/1000) 
+  STATS
+  $GRAB 'TOTAL' 0 2 NPOWER
+ }
+SELECT ALL
+}
+
+
+!! Set up polychromatic emitter
+$POLYCHROMO_SOURCE
+LIST SOURCE POLYCHROMATIC 
+STATS
+DISPLAY POLYCHROMO_SOURCE
+GRAPH 'SPECTRAL POWER DISTRIBUTION OF POLYCHROMATIC SOURCE'
+'WAVELENGTH IN NANOMETERS, POWER IN WATTS
+'
+'
+
+!! Plots the photopic or scotopic visibility curves 
+&VISIBILITY BOTH
+
+!! Photopically normalize the polychromatic PSD
+$PHOTOPIC_NORM
+STATS
+DISPLAY PHOTOPIC_NORM
+GRAPH 'PHOTOPIC RESPONSE OF THE POLYCHROMATIC SOURCE'
+'WAVELENGTH IN NANOMETERS, POWER IN LUMENS
+'THE CURVE IS A SPECTRAL POWER DISTRIBUTION OF A PHOTOPICALLY
+'NORMALIZED POLYCHROMATIC SOURCE
+RETURN
+
+!! Demonstrate source differences with and without RANDOM option
+$DO 1 2
+ {
+  SELECT ONLY SOURCE ?
+  WINDOW Y -2@0.5 X -2@0.5
+  SPOTS POSITION 'SOURCE ? SPOTS POSITION'
+ }
+  
+$DO 1 2
+ {
+  SELECT ONLY SOURCE ?
+  WINDOW Y -2@1 X -2@1
+  SPOTS DIRECTION 'SOURCE ? SPOTS DIRECTION'
+ }
+RETURN
+
+
+
+

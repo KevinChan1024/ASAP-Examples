@@ -1,0 +1,45 @@
+!!++
+!! COARSEN.INR
+!! Title: Coarsening the edges of an ellipse
+!! Category: Isolated Command
+!! Keywords: Geometry, COARSEN, OVAL, REPEAT, EDGES
+!! Description: Altering the number of points used to plot a curve.
+!! The command is used as an edge modifier
+!! Edit History: (latest first)
+!! 07/11/2005 - gg - creation
+!!--
+        
+SYSTEM NEW
+RESET
+
+
+!! Create the original oval (HAS 32 POINTS MAKING UP THE CURVE)
+EDGES
+     OVAL Z 0 1 2 .75 32
+RETURN                                                         
+
+!! Plot the oval
+WINDOW X Y
+PLOT ENTITIES OVERLAY
+!! Plot each subsequent oval over the original                
+
+$ASK 'PLOTTING EVERY POINT' 
+                           
+!! $DO loop decreases number of points used to make the oval
+!! for every repetition
+$DO 2 8 1
+{
+EDGES
+     REPEAT 1
+     COARSEN ?
+RETURN
+                       
+!! PLOT THE NEW OVAL
+WINDOW X Y
+PLOT ENTITIES OVERLAY
+    
+$ASK 'PLOTTING EVERY ? POINTS' 
+
+}
+
+RETURN                           

@@ -1,0 +1,21 @@
+!!++
+!! EMITTING_BOX.INR
+!! Title: Emitting Box
+!! Category: Isolated Command
+!! Keywords: EMITTING, BOX, Sources
+!! Description: Demonstration of an EMITTING
+!! BOX. A volume emitter.
+!! Edit History: (latest first)
+!! 08/22/2007 - cp - modified format; added description
+!! 04/06/2007 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EMITTING BOX 0 0 0  1 1 1 1000 Z  !! ISO by default
+PLOT RAYS .1
+WINDOW Y X
+SPOTS POSITION 
+$VIEW
+RETURN

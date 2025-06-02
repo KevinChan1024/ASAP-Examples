@@ -1,0 +1,42 @@
+!!++
+!! ELLIPSE01.INR
+!! Title: A Glass Plate
+!! Category: Isolated Command
+!! Keywords: ELLIPSE, EDGES  
+!! Description: A glass plate made with
+!! ELLIPSE edges. The edge is made by extruding
+!! the two with the OBJECT command.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/04/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.5168 'BK7'
+COATINGS PROPERTIES
+  0 1  'TRANS'
+
+EDGES
+  ELLIPSE Z 0 2 2
+  ELLIPSE Z 0.5 2 2
+  
+  OBJECT
+    0.2 'FIRST_SURFACE'
+    INTERFACE COAT +TRANS AIR BK7
+
+  OBJECT
+    0.1 'SECOND_SURFACE'
+    INTERFACE COAT +1 AIR BK7
+
+  OBJECT
+    0.1 0.2 'PLATE_EDGE'
+    INTERFACE COAT +TRANS AIR BK7 
+
+WINDOW Y X
+OBLIQUE
+PLOT FACETS 5 5
+RETURN

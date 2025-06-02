@@ -1,0 +1,78 @@
+!!++
+!! RPM_MALUS_LAW_01.INR
+!! Title: Polarization Effect of Rotating Polarizer
+!! Category: Isolated Command
+!! Keywords: RPM, POLARIZ, polarizer, Polarization, $ITER, Malus
+!! Description: Illustrate Malus' Law. This version graphs the transmitted flux value 
+!! as a function of the initial polarization angle.
+!! Edit History: (latest first)
+!! 09/21/2015 - cp - added header
+!! 08/31/2015 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+BEAMS INCOHERENT GEOMETRIC
+FRESNEL BOTH
+XMEMORY NORM 6E5
+
+UNITS MM
+WAVELENGTH (WL=0.55) UM 
+
+!! Define parameters
+ZDET=0.2              !! detector Z location
+ZSOURCE=-0.1          !! source Z location
+SRC_POL_ANGLE=45      !! source polarization angle [degrees, from X axis in X-Y plane]
+
+!! Define coatings
+COATINGS PROPERTIES
+  0 1 'TRANSMIT'
+  1 0 'REFLECT' 
+  0 0 'ABSORB'
+
+!! Polarization devices 
+RPM 1E16 1.0 0.0 0.0 90 1.5 'RPM1'
+
+!! First RPM (H-polarizer)      
+SURFACES
+  OPTICAL Z 0.00 0 0 ELLIPSE 2@1000
+  OBJECT 'RPMH' 
+  INTERFACE POLARIZATION POL RPM1 0 0 AIR AIR 
+
+
+!! Set up detector
+SURFACES
+  OPTICAL Z (ZDET) 0 0 RECT 2@1000
+  OBJECT 'DETECTOR' 
+  INTERFACE COAT ABSORB AIR AIR 
+
+!! Set up reference ray
+POLARIZ K Z
+POLARIZ TREF X
+
+
+$ITER SRC_POL_ANGLE 0 360 -91 PFLUX
+  {
+  RAYS 0
+  CONSIDER ALL
+
+  !! create source
+  POLARIZ COS[SRC_POL_ANGLE] SIN[SRC_POL_ANGLE] 
+       
+  !! Source definition begins here
+  RAYSET Z (ZSOURCE) 
+  0 0 1
+  SOURCE DIRECTION Z 0 90
+  
+  !! Trace and measure       
+  TRACE
+  CONSIDER ONLY DET
+  STATS 
+  $GRAB 'TOTAL' 0 2 PFLUX
+  &REG PFLUX 'Transmitted polarized flux '
+  }
+  
+DISPLAY ITER.DIS
+  GRAPH 'Illustrating Malus Law'
+RETURN

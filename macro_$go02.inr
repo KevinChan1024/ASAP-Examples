@@ -1,0 +1,71 @@
+!!++
+!! MACRO_$GO02.INR
+!! Title: Jump and Skip with $GO 
+!! Category: Isolated Command
+!! Keywords: $GO, macro, Macros_pre, $IO
+!! Description: Using $GO to skip records or
+!! jump to other locations in the program. 
+!! Several examples are shown below. Note 
+!! that the jump-to label must begin in
+!! the first column.
+!! Note: This is not a runable inr file.
+!! Refrain from using underscores (_) in lower-case label names. 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 04/17/2003 - cp - added note on underscores
+!! 12/21/2001 - cp - modified description
+!! 10/24/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+****************************************************
+!! The following macro takes two arguments: the 
+!! type of grid (either ELLIPSE or RECT) and 
+!! the semi-diameter or half-width of the grid.
+!! The macro branches to the fourth line if the
+!! first argument is ELLIPSE; the second $GO
+!! unconditionally branches out of the macro.
+
+BEAM {  !! Rectangular or elliptical grid setup macro
+$IF #1 EQS ELLIPSE; $GO 4
+GRID RECT Z 0 -4@#2 2@11
+  SOURCE DIRECTION 0 0 1
+$GO +100
+GRID ELLIPTIC Z 0 -4@#2 2@11
+  SOURCE DIRECTION 0 0 1
+}
+
+****************************************************
+!! This block of macro instructions creates a
+!! structure that loops five times.
+
+I=0
+I=I+1
+...(record 1)...
+...(record 2)...
+...(record 3)...
+$IF (I) GE 5; $GO finish
+$GO -6
+finish
+
+****************************************************
+!! When ASAP encounters the $GO command, it
+!! skips records until it reaches the next
+!! label and resumes execution with the PRINT
+!! command. The records that are skipped are
+!! never executed.
+
+$GO next
+:
+:
+next
+PRINT
+
+****************************************************
+!! These commands rewind the input (*.inr)
+!! file and begin executing after finding the
+!! label top.  Together these commands will
+!! lead to an infinite loop.
+
+$IO INPUT REWIND; $GO top  !! Branch backwards with a label
+

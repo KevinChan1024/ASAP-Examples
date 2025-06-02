@@ -1,0 +1,105 @@
+!!++
+!! GRATING_SHEARING.INR
+!! Title: Grating Shearing Interferometer Analysis
+!! Category: Simple Problem
+!! Keywords: Gratings, Analysis, psf, aperture, beams, SPREAD, filter, sampling
+!! Description: Single beam analysis of a Grating
+!! Shearing Interferometer. Two pairs of diffraction gratings
+!! are placed at the focus of a parabolic mirror under test.
+!! Each pair of gratings consists of two gratings with slightly
+!! different periods; these are located a short distance apart.
+!! ASAP is instructed to generate +1, -1, and 0 diffracted orders.
+!! SPLIT is defaulted to 1 so that the diffracted orders are not
+!! additionally diffracted. When light reflected from the parabolic
+!! mirror intersects the gratings, 12 diffracted diverging beams
+!! are generated. These beams interfere at the detector plane to
+!! create a fringe pattern. The contours of the fringe pattern are
+!! an indication of the aberrations caused by the mirror.
+!! Edit History: (latest first) 
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 11/05/2003 - cp - fixed keyword
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTHS 0.6328 UM
+COATINGS PROPERTIES
+  1 0  'REFL'
+  0 1  'TRANS'
+
+SURFACES
+  OPTICAL Z -10 40 -1 ELLIPSE 1
+OBJECT 'PRIMARY_MIRROR'
+  INTERFACE COAT REFL
+
+SURFACES
+  PLANE Z 10
+  PLANE Z 10.1
+  PLANE Z 10.2
+  PLANE Z 10.3
+  PLANE Y 0
+    MULTIPLE 1 1/300 0 0 0  !! 300 lines/mm grating (Y)
+  PLANE Y 0
+    MULTIPLE 1 1/310 0 0 0  !! 310 lines/mm grating (Y)
+  PLANE X 0
+    MULTIPLE 1 1/300 0 0 0  !! 300 lines/mm grating (X)
+  PLANE X 0
+    MULTIPLE 1 1/310 0 0 0  !! 310 lines/mm grating (X)
+ 
+OBJECT 
+  0.8 'Y_GRATING_300'
+    LIMITS -4@1 9.9 10.4 Z
+    INTERFACE COAT TRANS 0 0 DIFFRACT 0.4 ord 0 eff 0.5, +1 0.25, -1 0.25
+ 
+OBJECT
+  0.7 'Y_GRATING_310'
+    LIMITS -4@1 9.9 10.4 Z
+    INTERFACE COAT TRANS 0 0 DIFFRACT 0.3 ord 0 eff 0.5, +1 0.25, -1 0.25
+ 
+OBJECT
+  0.6 'X_GRATING_302'
+    LIMITS -4@1 9.9 10.4 Z
+    INTERFACE COAT TRANS 0 0 DIFFRACT 0.2 ord 0 eff 0.5, +1 0.25, -1 0.25
+ 
+OBJECT 
+  0.5 'X_GRATING_312'
+    LIMITS -4@1 9.9 10.4 Z
+    INTERFACE COAT TRANS 0 0 DIFFRACT 0.1 ord 0 eff 0.5, +1 0.25, -1 0.25
+ 
+SURFACES
+  PLANE Z 20
+OBJECT 'DETECTOR'
+  LIMITS -4@2.6 19.9 20.1
+ 
+TITLE 'GRATING SHEARING INTERFEROMETER'
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC Z 5 -4@1 2 2
+  SOURCE DIRECTION 0 0 -1
+
+PLOT LIMITS OVERLAY
+TRACE PLOT
+RAYS 0  !! Clear old rays
+
+PARABASALS 8
+BEAMS COHERENT DIFFRACT
+RAYS Z 5
+  0 0 flux 1  x width 1  y width 1  beam shape -1
+SOURCE DIRECTION 0 0 -1
+
+TRACE
+CONSIDER ONLY DETECTOR
+  WINDOW Y -2.5 2.5 X -2.5 2.5
+  PIXELS 121
+  SPREAD NORMAL -14
+  DISPLAY 14
+    CONTOUR 2 VECTOR 'FRINGE PATTERN AT DETECTOR PLANE'
+CONSIDER ALL
+  WINDOW Y X
+  OBLIQUE
+  PIXELS 121 FILL
+  REPLOT 'OBLIQUE VIEW OF GRATING SHEARING INTERFEROMETER' !! Right-click on plot to end
+RETURN

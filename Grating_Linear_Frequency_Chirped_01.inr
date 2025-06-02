@@ -1,0 +1,114 @@
+!!++
+!! GRATING_LINEAR_FREQUENCY_CHIRPED_01.INR
+!! Title: Frequency-chirped Linear Grating
+!! Category: Simple Problem
+!! Keywords: Gratings, doe, DIFFRACT, MULTIPLE, USERFUNC, $FCN, diffraction, chirp
+!! Description: Chirped grating made with a $FCN and USERFUNC 
+!! MULTIPLE surface to create the diffractive lines. The 
+!! grating line spatial frequency is varied linearly about
+!! the center frequency using a USERFUNC surface with a 
+!! function defined by $FCN. The variation is defined as a 
+!! proportion of the center frequency. 
+!! A single order of diffraction is specified. The trace plot 
+!! shows test rays across the full aperture of the grating to 
+!! demonstrate the variation of diffraction angle produced by
+!! the chirped grating frequency function. The diffraction 
+!! direction of the middle and edge rays is calculated, and
+!! may be compared to the output of LIST RAYS provided for 
+!! the relevant rays after the trace.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 11/11/2011 - jh - based on GRATING_LINEAR.INR
+!! 11/05/2003 - cp - fixed keyword
+!! 03/16/2000 - cp - Reformatted; added header
+!! 03/02/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+$UNVAR ERROR
+
+UNITS MM
+WAVELENGTH (WL_UM=0.55) UM     
+
+WL_MM=WL_UM*1E-3
+
+PI=4*ATAN(1) 
+
+!! grating parameters
+GFREQMID=1000                 !! grating spatial frequency [mm^-1] at grating middle
+DGFREQ=0.50                   !! fractional frequency variation across semi-aperture
+GFREQBOT=GFREQMID*[1-DGFREQ]  !! grating spatial frequency [mm^-1] at grating bottom
+GFREQTOP=GFREQMID*[1+DGFREQ]  !! grating spatial frequency [mm^-1] at grating top
+ORDER=1                       !! grating order
+THETA0=0                      !! angle of incidence [degrees]
+                              
+Y_SEMIAP=3                    !! semi-aperture in Y (grating) direction [mm] 
+                              
+Z0=0                          !! grating Z plane    
+
+!! grating output angle solutions at middle and edges for verification
+G_ANGLE_MID=-ASIN[GFREQMID*ORDER*WL_MM+SIN[THETA0]]   
+G_ANGLE_BOT=-ASIN[(GFREQMID*(1-DGFREQ))*ORDER*WL_MM+SIN[THETA0]]   
+G_ANGLE_TOP=-ASIN[(GFREQMID*(1+DGFREQ))*ORDER*WL_MM+SIN[THETA0]] 
+
+!! grating output solutions at middle and edges for verification in 
+!!  terms of direction cosines
+DCZ_MID=COS[G_ANGLE_MID]  
+DCZ_BOT=COS[G_ANGLE_BOT]  
+DCZ_TOP=COS[G_ANGLE_TOP]  
+
+DCY_MID=SIN[G_ANGLE_MID]  
+DCY_BOT=SIN[G_ANGLE_BOT]  
+DCY_TOP=SIN[G_ANGLE_TOP]
+
+&REG WL_MM GFREQMID DGFREQ GFREQBOT GFREQTOP ORDER THETA0 G_ANGLE_MID G_ANGLE_BOT G_ANGLE_TOP DCZ_MID DCZ_BOT DCZ_TOP DCY_MID DCY_BOT DCY_TOP
+            
+!! Grating function: vary frequency monotonically from 
+!!  GFREQMID-DGFREQ at -Y edge to 
+!!  GFREQMID+DGFREQ at +Y edge.
+!! Note: there's a quirk in the derivative;  The grating variation parameterization 
+!!                                            is not treated as a function of Y in 
+!!                                            terms of grating phase. 
+$FCN GRAT_LIN_FREQ Y=_2,  
+            [GFREQMID*(1+(DGFREQ*Y/Y_SEMIAP))]*Y,
+            0,
+            [GFREQMID*(1+(1*DGFREQ*Y/Y_SEMIAP))],
+            0
+
+!! Define the grating
+SURFACES
+  USERFUNC 0 0 0 GRAT_LIN_FREQ !! GRAT_LIN_FREQ
+    MULTIPLE  1 1 
+  PLANE Z (Z0) RECTANGLE (Y_SEMIAP/10) (Y_SEMIAP*1.01) !! slightly oversized so we can probe at desired grating limits
+OBJECT 'GRATING'
+  INTERFACE 0 1 AIR AIR DIFFRACT .2 -1 1.0
+
+!! Set up source ray grid and trace 
+BEAMS INCOHERENT GEOMETRIC
+
+NRAY=19 !! use odd number to ensure center ray for checking
+
+!! A 1-dimensional fan of rays to probe and check the grating behavior
+GRID ELLIPSE Z (Z0) -4@(Y_SEMIAP*NRAY/(NRAY-1)) 1 (NRAY)    !! NRAY/(NRAY+1) factor to place rays at design aperture edge
+SOURCE DIRECTION Z (THETA0) 90
+MOVE TO Z -1
+  
+WINDOW Y -(2.5*Y_SEMIAP) (1*Y_SEMIAP) Z -1 4*Y_SEMIAP
+MISSED ARROW 4*Y_SEMIAP  
+
+!! Plot the geometry and trace 
+PLOT FACETS 3 3 0 OVERLAY 'Linear-Frequency-Chirped Grating Example'
+TRACE PLOT COLOR 2
+RETURN    
+
+SELECT EXCEPT 2 NRAY-1
+SELECT ADD INT((NRAY+1)/2)
+$IF (NRAY\2) LT 0.5        !! if even number of rays, we list the two rays on either side of center
+  SELECT ADD 1+INT((NRAY+1)/2)
+LIST RAYS
+
+&REG GFREQBOT GFREQMID GFREQTOP DCY_BOT DCY_MID DCY_TOP DCZ_BOT DCZ_MID DCZ_TOP G_ANGLE_BOT G_ANGLE_MID G_ANGLE_TOP  'Compare calculated ray directions to values from LIST RAYS above '
+
+

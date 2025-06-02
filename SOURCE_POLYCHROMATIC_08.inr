@@ -1,0 +1,33 @@
+!!++
+!! SOURCE_POLYCHROMATIC_08.INR
+!! Title: A File-Driven Polychromatic Source 
+!! Category: Isolated Command
+!! Keywords: SOURCE POLYCHROMATIC, STATS SOURCES, Sources
+!! Description: A polychromatic source using the FILE option -
+!! Syntax 4. Requires that the file spect1.inr be placed
+!! in the same working folder.
+!! Edit History: (latest first)
+!! 06/02/2014 - gb - added STATS SOURCES to keywords
+!! 04/09/2013 - cp - added header and formatted
+!! 03/13/2013 - js - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 500 NM
+
+EMITTING RECT Z 0 1 2 10000 0
+SOURCE POLYCHROMATIC FILE SPECT1.INR 2/.284495 11 SKIP 2  !!RANDOM BOTH .3 .5
+
+LIST SOURCES
+STATS SOURCES
+
+WINDOW Y X
+SPOTS POSITION 
+DISPLAY
+  PICTURE
+RETURN
+

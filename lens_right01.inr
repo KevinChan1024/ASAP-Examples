@@ -1,0 +1,31 @@
+!!++
+!! LENS_RIGHT01.INR
+!! Title: Right-Angle Prism Lens
+!! Category: Isolated Command
+!! Keywords: RIGHT, LENSES, prism
+!! Description: A right-angle prism made
+!! with LENSES command. The first conicoid is
+!! located at z = 0.  The prism has an aperture
+!! semi-diameter of .5 and is composed of medium 1.
+!! The prism is oriented so that a ray entering
+!! the prism along the z-axis leaves the prism
+!! propagating along the positive y-direction.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 10/07/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES
+  RIGHT Z 0 0.5 BK7  Y
+  OBJECT
+  
+WINDOW Y Z
+WINDOW 1.5  !! Enlarge 50%
+ARROW 3
+RAY 0 0 -1,  0 0 1 PLOT OVERLAY 'LENS:RIGHT' COLORS 2
+PLOT LENSES 'LENS:RIGHT' COLORS 11
+RETURN

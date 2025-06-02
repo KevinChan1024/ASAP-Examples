@@ -1,0 +1,70 @@
+!!++
+!! ABSORBING_MEDIA02.INR
+!! Title: Defining Absorbing Media
+!! Category: Simple Problem
+!! Keywords: Interfaces, MEDIA, ABSORB, acrylic
+!! Description:  Demonstrates the two different methods
+!! of inputing the absorption index of a media.  Equal
+!! results are obtained whether given as a complex index
+!! of refraction or as an absorption coefficient with
+!! the ABSORB option.  Note that the complex index
+!! method requires specifying the wavelength. Data for 
+!! acrylic was taken from the The Handbook of Plastic
+!! Optics by U.S. Precision Lens, Inc. pg 19.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 05/06/2004 - cp - added more info
+!! 07/12/2000 - cp - Modified format; added header
+!! 07/12/2000 - arg - creation
+!!--
+ 
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 589 NM !! Used to calculate the complex absorption value below
+
+!! The data says 92% luminous transmittance at .125 in.
+!! This typically includes Fresnel losses at front and back surfaces.
+!! Since here we are using 100% transmission with no FRESNEL AVE,
+!! we can leave this in the equation.  If we would rather have ASAP calculate
+!! the Fresnel losses at all angles (using FRESNEL AVERAGE and BARE), the built-in  
+!! Fresnel loss should first be added back in by calculating the Fresnel loss at  
+!! Normal incidence for both surfaces (n2-n1/n2+n1)^2*2. [n1 is typically AIR=1]. 
+!! The Transmission value with Fresnel losses (Tf=1-loss) is divided into the 92% (.92)
+!! to correct for Fresnel losses.
+!! For this example we are leaving it at 92%. Note that either of the following 
+!! produces the same results.
+
+MEDIA
+!! 1.4917`1.23084E-6 'ACRYLIC'
+ 1.4917 ABSORB (.02626) 'ACRYLIC' !! Alpha=LOG(1/.92)/3.175 (Natural Log of 1/.92 divided by .125 in.)
+
+!! Note: The imaginary portion of the complex index above was calculated by 
+!! K=(alpha*589E-6)/(4*PI) or (.02626*590E-6)/(4*3.14159)=1.23084E-6.
+
+SURFACES
+  PLANE Z 2 RECTANGLE 2 2
+  OBJECT 'FRONT'
+    INTERFACE 0 1 AIR ACRYLIC
+
+SURFACES
+  PLANE Z 5.175 RECTANGLE 2 2  !! .125 inch slab = 3.175mm
+  OBJECT 'BACK'
+    INTERFACE 0 1 AIR ACRYLIC
+
+SURFACES
+  PLANE Z 6 RECTANGLE 3 3
+  OBJECT 'DETECTOR'
+    INTERFACE 0 0 AIR AIR 
+
+GRID ELLIPTIC Z 0 -4@1 2@1
+  SOURCE DIRECTION 0 SIN[5] COS[5]
+
+FLUX TOTAL 100.0
+
+WINDOW Y Z
+PLOT FACETS OVERLAY
+TRACE PLOT
+STATS 
+RETURN

@@ -1,0 +1,70 @@
+!!++
+!! GRIN_TEST.INR
+!! Title: GRIN Media
+!! Category: Isolated Command
+!! Keywords: GRIN, MEDIA, axial, index, step, GENERAL
+!! Description: A demonstration of light bending
+!! through a gradient index material. Change the GRIN
+!! thickness or the step size to see the different
+!! effects in the plot.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 07/25/2008 - cp - changed category
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+N1=1.5         !! Index at top of surface
+N2=1.58        !! Index at bottom of surface
+GRIN_THK=1     !! Thickness over which refractive index varies
+GRIN_OFFSET=5  !! Offset of surface in global Y coordinate
+STEP_SIZE=GRIN_THK/10  !! Step size for GRIN function
+
+FUNCTION
+  GENERAL
+    C (N1)
+    Y ((N2-N1)/GRIN_THK)
+  SHIFT Y (GRIN_OFFSET) 
+
+!! The following uses lower case comments    
+MEDIA
+  1 GRIN function 1 exponent 2 stepsize (STEP_SIZE) 'AXIAL'
+
+COATINGS PROPERTIES
+  0 1 'TRANS'
+  0 0 'ABSORB'
+
+SURFACES
+  PLANE Z -2.1 RECTANGLE 2.1 2
+    SHIFT Y GRIN_OFFSET+1
+  OBJECT 'SURF_3'
+    INTERFACE COAT +TRANS AIR AXIAL
+SURFACES
+  PLANE Z 2.1 RECTANGLE 2.1 2
+    SHIFT Y GRIN_OFFSET+1
+  OBJECT 'SURF_4'
+    INTERFACE COAT +TRANS AIR AXIAL
+SURFACES
+  PLANE Z 2.7 RECTANGLE 2.1
+    SHIFT Y GRIN_OFFSET+1
+  OBJECT 'DETECTOR'
+    INTERFACE COAT ABSORB AIR AIR
+
+WINDOW Y 4 10 Z -3 3
+PIXELS 127
+
+BEAMS INCOHERENT GEOMETRIC
+GRID RECTANGLE Z -3 -4@0.4 1 21  !! One dimensional grid of 21 rays
+  SOURCE DIRECTION 0 0 1
+  SHIFT Y GRIN_OFFSET+1
+
+SPOTS POSITION OVERLAY
+PLOT FACETS 4 4 'AXIAL GRIN LENS' OVERLAY
+TRACE PLOT 2  !! Plot every 2nd ray
+
+GET 1  !! Load registers with ray #1 info
+  $REG STEP_SIZE X_POS_B Y_POS_B Z_POS_B X_DIR_B Y_DIR_B Z_DIR_B
+RETURN
+

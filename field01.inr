@@ -1,0 +1,35 @@
+!!++
+!! FIELD01.INR
+!! Title: Simple Diffraction Analysis
+!! Category:  Isolated Command
+!! Keywords: FIELD, Wave, diffraction 
+!! Description: Simple diffraction calculation
+!! of a plane wave in energy and amplitude.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/05/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTHS 0.78 UM 
+WIDTHS 1.61
+GRID ELLIPTIC X -1 -4@2 2@21
+  SOURCE DIRECTION 1 0 0
+
+WINDOW Z -2@2.5 Y -2@2.5
+PIXELS 71
+
+FIELD ENERGY -1
+
+DISPLAY 
+  PLOT3D 'A DIFFRACTION CALCULATION WITH FIELD ENERGY'
+
+DISPLAY 29 AMPLITUDE 
+  PLOT3D 'A DIFFRACTION CALCULATION WITH FIELD AMPLITUDE'
+RETURN

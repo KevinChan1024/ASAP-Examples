@@ -1,0 +1,29 @@
+!!++
+!! UNITS_LABEL.INR
+!! Title: Flux Labeling with UNITS
+!! Category: Simple Problem
+!! Keywords: Scripts, UNITS, flux, unit, label 
+!! Description: Shows an example of using the label
+!! option for the UNITS command.  It is only for
+!! plotting purposes and has no bearing on calculations.
+!! Edit History: (latest first)
+!! 02/16/2000 - cp - modified format; added description
+!! 03/13/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM 'LUMENS'  !! This label appears in last plot
+
+XMEMORY MIN
+SEED 1 QUASI
+EMITTING DISK Z 0 2@2 10000 
+
+WINDOW Y -2@2.1 X -2@2.1
+SPOTS POSITION 'POSITIONAL SPOTS DIAGRAM'
+
+DISPLAY
+  AVERAGE
+  ISOMETRIC 'ILLUMINANCE CALCULATION WITH SPOTS POSITION'
+RETURN

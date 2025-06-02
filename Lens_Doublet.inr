@@ -1,0 +1,34 @@
+!!++
+!! LENS_DOUBLET.INR
+!! Title: A Doublet Lens
+!! Category: Simple Problem
+!! Keywords: Lenses, DOUBLET, LENSES
+!! Description: How to make a doublet lens.  
+!! From the Lenses chapter.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 02/08/2000 - cp - modified format; added description
+!! 02/19/1999 - mc - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! DOUBLET creates a cemented doublet lens made of a 
+!! positive and of a negative element put in contact.
+!! Such lenses are typically designed to minimize axial color.
+LENSES 
+  DOUBLET Z 0 2.4 3 BK7 SCHOTTNEW_F2  f 10 b 1 
+  OBJECT 'DOUBLET_LENS'
+
+GRID RECT Z 0 -4@3 1 5
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -15
+
+ARROWS OFF 
+WINDOW Y Z
+WINDOW 2  !! Double window size
+PROFILES OVERLAY
+TRACE PLOT 
+
+RETURN

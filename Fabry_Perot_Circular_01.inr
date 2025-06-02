@@ -1,0 +1,102 @@
+!!++
+!! FABRY_PEROT_CIRCULAR_01.INR
+!! Title: Fabry-Perot with Circular Fringes
+!! Category: Simple Problem
+!! Keywords: Wave, Fabry-Perot, diffraction
+!! Description: A  Fabry-Perot interferometer showing
+!! circular fringes. 
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 07/31/2012 - cp - added header
+!! 07/27/2012 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+UNITS MM 
+
+!! variables
+RCAV=0.7               !! cavity reflectance
+NOMINAL_THICKNESS=0.5  !! cavity nominal thickness [mm]
+N_GLASS=1.52           !! cavity glass refractive index
+
+WL_NM=632.8            !! wavelength [nm]
+WL_MM=WL_NM*1E-6       !! wavelength [mm]
+
+WAVELENGTH (WL_NM) NANOMETERS
+MEDIA
+  (N_GLASS) 'GLASS'
+  
+SPLIT 8 REFL  !! Allow 8 generations of splitting parent rays,
+              !!  with the reflected ray as the parent.
+              !! The low flux condition may limit the number
+              !! of splits, depending on the transmission and
+              !! reflectivity values.
+
+FRESNEL OFF   !! ignore R/T variation with angle of incidence
+HALT 1E-12    !! remove rays with very low relative flux
+CUTOFF 31     !! stop after a specified number of bounces
+
+COATINGS PROPERTIES
+  (RCAV) (TCAV=1-RCAV) 'CAV_COAT'
+  
+!! find condition for maximum transmission on axis
+NOMINAL_M=2*N_GLASS*NOMINAL_THICKNESS/WL_MM
+CAVITY_THICKNESS=INT(NOMINAL_M)*WL_MM/[2*N_GLASS]
+FINESSE=4*RCAV/[1-RCAV]^2
+&REG WL_NM WL_MM N_GLASS NOMINAL_THICKNESS NOMINAL_M CAVITY_THICKNESS FINESSE 'Cavity parameters '
+
+!! Create geometry
+SURFACES
+  PLANE Z 0 RECTANGLE 10
+OBJECT 'CAVITY.1'
+  INTERFACE COAT CAV_COAT GLASS AIR  
+SURFACES
+  PLANE Z (CAVITY_THICKNESS) RECTANGLE 10
+OBJECT 'CAVITY.2'
+  INTERFACE COAT CAV_COAT GLASS AIR
+SURFACES
+  PLANE Z 20 RECTANGLE 15
+OBJECT 'DETECTOR_1' 
+SURFACES
+  PLANE Z -20 RECTANGLE 15
+OBJECT 'DETECTOR_2'    
+ 
+!! Verify geometry
+!!VUFACETS
+
+!! Set up coherent trace parameters
+BEAMS COHERENT DIFFRACT  
+PARABASAL 4
+WIDTHS 1.6               
+
+
+GRID ELLIPTIC Z 0 -4@9 2@51
+  SOURCE POSITION 0 0 -127  
+  MOVE BY -5
+
+!! save ray count for governing trace plot  
+$CLEAR
+RAYSET
+$GRAB 'defined' 0 -1 NRAYS0
+&REG NRAYS0 'initial number of rays: '
+          
+  
+PLOT FACETS 5 5 OVERLAY
+TRACE PLOT 1>INT(NRAYS0/17)       !! Trace rays
+CONSIDER ONLY DETECTOR_1          !! Consider only the flux that transmits through the 
+                                  !! etalon, landing on DETECTOR_1
+                                  !! You can try DETECTOR_2 for reflectance - see below
+
+PATHS
+$WAIT 1 !! check PATHS
+
+PIXELS 201    !! Sets precision of subsequent FIELD calculation
+
+WINDOW Y X
+
+SPREAD NORMAL
+
+DISPLAY              
+  PICTURE 'cavity transmission'
+RETURN

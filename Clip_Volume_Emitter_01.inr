@@ -1,0 +1,25 @@
+!!++
+!! CLIP_VOLUME_EMITTER_01.INR
+!! Title: Clipping a Volume Emitter
+!! Category: Simple Problem
+!! Keywords: Sources, clipping, volume, EMITTING, CLIP
+!! Description: A simple model of clipping a volume emitter 
+!! to create an alternative shape for the volume of rays.
+!! Edit History: (latest first)
+!! 12/19/2006 - cp - modified header
+!! 12/14/2006 - res - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+CLIP POS -4@.5 -2@1 Z .5     !!Clipping region is a hollow cylinder
+
+EMITTING BOX 3@0 3@1 2E5     !!Emitting region is initially a cube
+
+SPOTS POSITION YZ
+SPOTS POSITION YX
+$VIEW 
+RETURN

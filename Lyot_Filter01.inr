@@ -1,0 +1,276 @@
+!!++
+!! LYOT_FILTER01.INR
+!! Title: Illustration of a three-stage Lyot filter
+!! Category: Simple Problem
+!! Keywords: Polarization, Lyot, POLARIZ, POLAR, IDEAL, filter, waveplate, quartz, crystal
+!! Description: This model uses three cascaded stages that are first, 
+!! second, and fourth order, respectively. Each stage consists of a 
+!! polarizer/analyzer and a crystal waveplate that modulates the 
+!! throughput of the stage (as a function of wavelength, angle, ...).   
+!!
+!! Each waveplate is rotated about the device axis 45 degrees
+!! relative to the X polarizer/analyzers so it may act on the
+!! two polarization components and rotate the resultant polarization.
+!! This results in modulation of throughput at the following analyzer. 
+!! A diverging point grid source with X nominal polarization 
+!! illuminates the filter. All polarizers are X-aligned. The 
+!! throughput is checked using field energy integral at the detector.
+!!
+!! The position of all geometry elements is set by variables to
+!! make it simple to keep these (typically) thin elements from 
+!! colliding. The element size and the detector size is scaled to be
+!! sure to capture the entire beam.
+!!
+!! This model uses quartz refractive index data at 400, 458, 590, 
+!! and 694 nm from J.V.Atansoff and P.J.Hart, Phys. Rev. Vol.59, 
+!! pp 85-96 1941, and A.W.Lawson, Phys. Rev. Vol 59, pp.838-839, 1941 
+!! Wavelengths from 351 to 980 nm are included, so a reference 
+!! wavelength should be set within this range to avoid extrapolation.
+!!
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 02/19/2006 - cp - formatted
+!! 02/16/2006 - jah - cleanup, verification against other cases w/2005V2R2 
+!! 08/25/2005 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$UNVAR ERROR
+$GUI ClearCounters
+
+FRESNEL BOTH
+SPLIT 3
+
+PI=4*ATAN(1)
+
+
+!! ---------------------------------------------
+!! Note: the reference wavelength WLREF is used to
+!!       determine the thickness of the waveplates via
+!!       the overall first-order retardance.
+!! The wavelength WL is the wavelength actually traced.
+!! ---------------------------------------------
+WLREF=600   !! reference wavelength, nm (between 351-980nm)
+WL=400      !! trace wavelength, nm
+
+$ASK WLREF 'Design reference wavelength [nm] '
+$ASK WL    'Analysis wavelength [nm] '
+
+!! ---------------------------------------------
+!! units, wavelengths for index interpolation
+!! ---------------------------------------------
+UNITS MM
+WAVELENGTHS 351 400 458 590 694 800 980 NM 
+!! ---------------------------------------------
+
+MEDIA
+  1.565 1.558 1.552 1.544 1.541 1.538 1.535  'QUARTZ_ORD'
+  1.575 1.567 1.561 1.553 1.551 1.547 1.546 CRYSTAL Y 0 0 QUARTZ_ORD 'QUARTZ'
+
+COATINGS PROPERTIES
+  0 1, 0 1, 0 1, 0 1, 0 1, 0 1, 0 1 'TRANSMIT'
+  1 0, 1 0, 1 0, 1 0, 1 0, 1 0, 1 0 'REFLECT'
+
+!! ---------------------------------------------
+!! get the index at the reference wavelength
+!! ---------------------------------------------
+
+WAVELENGTH (WLREF) NM            !! set current wavelength to reference
+PRINT MEDIA QUARTZ               !! output extraordinary index data
+$GRAB 'Index/Absorb' 1 2 NEREF   !! grab extraordinary index data
+
+PRINT MEDIA QUARTZ_ORD           !! output ordinary index data 
+$GRAB 'Index/Absorb' 1 2 NOREF   !! grab ordinary index data   
+&REG NOREF NEREF
+
+!! ---------------------------------------------
+
+!! ---------------------------------------------
+!! calculations for setting element thickness, sanity checking  
+!!
+!! Note: these are using a base thickness that is
+!! first-order, i.e. one wave retardance. Other design
+!! approaches abound, but this is an understandable design.
+!! If thickness is changed, the retardation calculation
+!! may be useful, though here it is trivial.
+!! ---------------------------------------------
+DN=ABS(NOREF-NEREF)   !! dN |ORDINARY-EXTRAORDINARY| at reference wavelength
+DZ=WLREF/(DN*1E6)     !! first-order retarder thickness, mm
+RETARDATION=DN*DZ*1E6 !! better be reference wavelength for first-order!
+DPHI=2*PI*RETARDATION/WLREF  !! phase retardation
+TRANS=((COS(DPHI/2))^2)/2    
+
+!! output sanity check 
+&REG WLREF DN DZ RETARDATION DPHI TRANS
+!! ---------------------------------------------
+
+!! ---------------------------------------------
+!! location of key surfaces 
+!! ---------------------------------------------
+ZS=-10        !! point source position
+ZG=-1         !! source grid position
+Z0=0.1        !! first polarizer
+Z11=0.200     !! first surface, first element, first order 
+!! -- caution is suggested in editing below ----
+Z12=Z11+DZ    !! second surface, first element, first order 
+Z1=Z12+0.2    !! second polarizer
+Z21=Z1+0.2    !! first surface, second element, second order 
+Z22=Z21+2*DZ  !! second surface, second element, second order 
+Z2=Z22+0.2    !! third polarizer
+Z31=Z2+0.2    !! first surface, third element, fourth order 
+Z32=Z31+4*DZ  !! second surface, third element, fourth order 
+Z3=Z32+0.2    !! fourth polarizer
+ZD=Z3+0.2     !! detector
+!! ---------------------------------------------
+!! other geometry parameters 
+!! ---------------------------------------------
+RSOURCE=5                      !! source radius
+CA=1.1*RSOURCE*(Z3-ZS)/(ZG-ZS) !! clear aperture 
+CADET=1.1*RSOURCE*(ZD-ZS)/(ZG-ZS) !! detector minimum clear aperture
+  
+!! ---------------------------------------------
+!! Geometry
+!! ---------------------------------------------
+
+!! first make all entities
+!! ---------------------------------------------
+!! polarizing elements as IDEAL lenses
+LENSES
+  IDEAL Z (Z0) (CA) 0 
+        1 0 0 1
+        1 0 0 0         !! X polarizer
+  IDEAL Z (Z1) (CA) 0 
+        1 0 0 1
+        1 0 0 0         !! X polarizer
+  IDEAL Z (Z2) (CA) 0 
+        1 0 0 1
+        1 0 0 0         !! X polarizer
+  IDEAL Z (Z3) (CA) 0 
+        1 0 0 1
+        1 0 0 0         !! X polarizer
+
+!! ---------------------------------------------
+!! real elements 
+SURFACES
+  PLANE Z (ZD)  RECT 2@(CADET>(1.2*CA))  !! oversize if close to element clear aperture      
+
+  PLANE Z (Z11) RECT 2@(CA)         
+  PLANE Z (Z12) RECT 2@(CA)         
+  TUBE  Z (Z11) 2@(CA) (Z12) 2@(CA) 1 1
+
+  PLANE Z (Z21) RECT 2@(CA)         
+  PLANE Z (Z22) RECT 2@(CA)         
+  TUBE  Z (Z21) 2@(CA) (Z22) 2@(CA) 1 1
+
+  PLANE Z (Z31) RECT 2@(CA)         
+  PLANE Z (Z32) RECT 2@(CA)         
+  TUBE  Z (Z31) 2@(CA) (Z32) 2@(CA) 1 1
+
+!! ---------------------------------------------
+!! now make objects of the entities
+!! ---------------------------------------------
+OBJECT
+  .9 'WAVEPLATE.1.FRONT'
+      INTERFACE COAT TRANSMIT AIR QUARTZ
+  .8 'WAVEPLATE.1.BACK'
+      INTERFACE COAT TRANSMIT AIR QUARTZ
+  .7 'WAVEPLATE.1.EDGE'
+  .6 'WAVEPLATE.2.FRONT'
+      INTERFACE COAT TRANSMIT AIR QUARTZ
+  .5 'WAVEPLATE.2.BACK'
+      INTERFACE COAT TRANSMIT AIR QUARTZ
+  .4 'WAVEPLATE.2.EDGE'
+  .3 'WAVEPLATE.3.FRONT'
+      INTERFACE COAT TRANSMIT AIR QUARTZ
+  .2 'WAVEPLATE.3.BACK'
+      INTERFACE COAT TRANSMIT AIR QUARTZ
+  .1 'WAVEPLATE.3.EDGE'
+  .14 'POL.0'
+  .13 'POL.1'
+  .12 'POL.2'
+  .11 'POL.3'
+  .10 'DETECTOR'
+      REDEFINE COLOR 25
+  
+RETURN
+
+GROUP "POL.?"
+  COLORS 20
+RETURN
+GROUP "WAVEPLATE.1.?"
+  COLORS 3
+RETURN
+GROUP "WAVEPLATE.2.?"
+  COLORS 7
+RETURN
+GROUP "WAVEPLATE.3.?"
+  COLORS 23
+RETURN
+
+!! group and rotate birefringent elements relative to polarizers
+!! so polarization components can be acted upon by them
+GROUP "WAVEPLATE.?"
+  ROTATE Z 45
+RETURN
+
+!! ---------------------------------------------
+!! SOURCE
+!! ---------------------------------------------
+
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6
+PARABASALS 4
+
+POLARIZ X 1 0  
+
+RAYS 0
+WAVELENGTH (WL) NM
+GRID ELLIPTIC Z (ZG) -4@(RSOURCE) 23 23
+SOURCE POSITION 0 0 (ZS)
+!! SOURCE DIRECTION Z 0 0
+
+FIELD ENERGY (ZG) YX -4@(1.1*RSOURCE) PIXELS 111
+
+DISPLAY
+  PICTURE 'initial source'
+RETURN
+$GRAB 'Integral =' 0 1 INIT
+      
+MOVE TO Z (ZS)  !! if we want to show trace from source point
+
+PLOT FACETS 3 3 0 OVERLAY
+PLOT POLARIZATION OVERLAY
+!! PLOT RAYS OVERLAY
+
+!! ---------------------------------------------
+!! these lines are useful for debugging 
+!! individual stages of the filter
+!! ---------------------------------------------
+!! CONSIDER EXCEPT WAVEPLATE.2.?  !! CHECK BEHAVIOR OF EACH FILTER STAGE
+!! CONSIDER REMOVE WAVEPLATE.1.?  !! CHECK BEHAVIOR OF EACH FILTER STAGE
+
+TRACE PLOT OVERLAY
+MOVE BY Z 0.5
+PLOT POLARIZATION !! OVERLAY
+!! PLOT RAYS 
+
+STATS
+
+CONSIDER ONLY DETECTOR
+FIELD ENERGY (ZD) YX -4@(CADET) PIXELS 111
+
+DISPLAY
+  PICTURE 'Lyot filter output'
+  HEADER _, (ZD+0.2)           !! shift data past detector to show in 3D Viewer
+  WRITE OUT.DIS
+RETURN 
+
+$VIEW             !! show geometry
+&VIEW OUT.DIS     !! show output energy with geometry
+
+$GRAB 'Integral =' 0 1 OUT
+THRU=OUT/INIT
+&REG OUT INIT THRU
+RETURN

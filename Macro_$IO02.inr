@@ -1,0 +1,37 @@
+!!++
+!! MACRO_$IO02.INR
+!! Title: $IO for Redirection
+!! Category: Isolated Command
+!! Keywords: $IO, macro, Macros_pre, io, $ECHO, redirect, file
+!! Description: Using $IO to output selected data to a file.
+!! Shows hot to turn off console output while writing to file.
+!! Also shows how to append data to the current file.
+!! FILE(10) tells ASAP to use a file unit number of 10 or
+!! higher.
+!! Edit History: (latest first)
+!! 11/05/2003 - cp - fixed keyword
+!! 02/11/2000 - cp - modified format; added description
+!! 07/29/1999 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EMITTING DISK Z 0 1 1 1000
+
+$ECHO NONE  !! Turn off writing to console
+$IO OUTPUT INFOFILE FILE(10)  !! Create new file
+  STATS POSITION
+$IO OUTPUT CLOSE  !! Close file
+$ECHO  !! Turn on console output
+
+!! Additional commands go here
+!! that we do not want to 
+!! redirect to the output file
+
+$ECHO NONE
+$IO OUTPUT INFOFILE +FILE(10) !! Append new data
+  STATS DIRECTION
+$IO OUTPUT CLOSE
+$ECHO  
+RETURN

@@ -1,0 +1,278 @@
+!!++
+!! BPMYBRANCH.INR
+!! Title: Y Branch with Square Cross-section
+!! Category: Simple Problem
+!! Keywords: Wave, coupling, bpm, FIELD, COUPLE
+!! Description:  This file demonstrates the use of
+!! ASAP's Beam Propagation Method (BPM) for calculating
+!! the field propagated along a Y Branch with 
+!! square cross-section channels.  The overall
+!! efficiency of the branch is also calculated.
+!! Note: Requires ASAP Optical module to run.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 11/03/2010 - cp - added category
+!! 11/10/2004 - cp - added note
+!! 11/05/2003 - cp - reformatted
+!! 12/18/2000 - DCS - creation
+!!--
+
+!! Initialization commands...
+
+SYSTEM NEW; RESET  !! Clear out any existing geometry and sources/rays...
+$UNVAR ERROR       !! Stop if undefined variables are encountered
+UNITS MICRONS      !! Set system units to microns (wavelengths will be the same)
+
+PI=ACOS(-1)
+
+
+!! Define setable parameters...
+
+WAVEL=1.55       !! Wavelength (in microns)
+RES=300          !! Vertical resolution
+RCORE=5.9/2      !! Half-width of square core
+DCLAD=50         !! Minimum cladding distance around core
+DBRANCH=8*RCORE  !! Distance between branch edges
+DLEAD1=100       !! Length of input lead before junction
+DLEAD2=200       !! Length of branch leads
+NCORE=1.456427   !! Core index of refraction
+NCLAD=1.449679   !! Cladding index of refraction
+THETA=1          !! Branch angle (in degrees)
+RCRV=50000       !! Radius of curvature in turns
+EPS=0.01         !! = epsilon, a small distance
+NPLANES=32       !! Number of planes to write during BPM calculation
+
+
+!! Calculate other parameters...
+
+RJCT=2*RCORE*COS[THETA]           !! Half-width of fat part of junction
+LJCT=(RJCT-RCORE)/TAN[THETA/2]    !! Length of junction
+LEXT=2*RCORE*SIN[THETA]           !! Length of junction extension
+DC=RCRV*SIN[THETA]                !! Length of curve along Z
+HC=RCRV*(1-COS[THETA])            !! Height of curve along Y
+HANG=DBRANCH/2+RCORE-RJCT/2-HC    !! Height of angled straight section along Y
+DANG=HANG/TAN[THETA]              !! Length of angled straight section along Z
+DCST=(DLEAD1+LJCT+LEXT/2+DANG)    !! Z coordinate at start of curves
+L=DCST+DC+DLEAD2                  !! Total length of branch
+XWIND=RCORE+DCLAD                 !! X window to use for BPM calculation
+YWIND=DBRANCH/2+2*RCORE+DCLAD     !! Y window to use for BPM calculation
+
+
+!! Check parameters...
+
+$IF (HANG) LT 0 THEN
+  $REG HANG
+  $ABORT 'HANG<0'
+$ENDIF
+
+
+!! Calculate numerical aperture and V number of the fiber...
+
+NA=SQRT(NCORE*NCORE-NCLAD*NCLAD)
+VN=2*PI*RCORE*NA/WAVEL
+$REG NA,VN
+
+
+!! Set wavelength and define media
+
+WAVELENGTH (WAVEL) MICRONS
+
+MEDIA
+  (NCORE) 'CORE_MED'
+  (NCLAD) 'CLAD_MED'
+    
+!! ============================================================================
+    
+!! Define a macro to do the extrusion of one edge along another...
+
+EXTRUDE { 2  !! ( EDGE_NUM, OBJ_NAME )
+  !! Note that this macro assumes the edge has no logical breaks, only 
+  !! physical breaks.  The PRINT EDGE command shows information on the
+  !! number and type of breaks.
+  $CLEAR
+  PRINT EDGE #1
+  $GRAB 'total with' 0 -1 N K !! Get the number of segments and breaks 
+  EDGE .1
+  $DO 1 (N)
+  {
+    ALIGN NORM EDGE .1, TANG #1 ?; PLACE CURV #1 ?
+    REPEAT
+    ALIGN NORM EDGE .1, TANG #1 ?.5; PLACE CURV #1 ?.5
+    REPEAT
+  }
+  ALIGN NORM EDGE .1, TANG #1 N+.9999; PLACE CURV #1 N+.9999
+  $LOC W
+  W=1 !! 0.7
+  OBJECT; -2*N-K 2 (W) W*(1-K) *#2
+}
+Extrude Path EDGES (absolute number)>
+Name of OBJECT>
+
+!! ============================================================================
+
+!! To save typing, define macro to use for cross section curve...
+
+CROSS_SECT { 1  !! ( VERT_HWID )
+  EDGES
+    RECTANGLE Z 0 (RCORE) (#1)
+}
+Vertical half width>    
+
+!! ============================================================================
+
+!! Define edges for top and bottom branches.  We will extrude along these
+!! edges.  They are created first so we'll know their absolute edge numbers,
+!! which are required in the EXTRUDE macro.
+
+
+EDGES !! Edge #1  - used for top branch
+  POINTS X 0 (RJCT/2) (DLEAD1+LJCT+LEXT/2) 0
+  ARC X 0 (RJCT/2+HANG)          (DCST),
+          (DBRANCH/2+RCORE-RCRV) (DCST+DC),
+          (THETA)
+  POINTS X 0 (DBRANCH/2+RCORE) (DCST+DC+DLEAD2) 0
+  COMPOSITE -3 GAPS 1 0
+  REPEAT  !! Edge #2 - copy of previous edge
+    SCALE 1 -1 1  !! Mirror along Y axis to make bottom branch
+
+
+!! Form input lead by lofting together two cross section curves...
+$CROSS_SECT (RCORE)
+  REPEAT
+    SHIFT Z (DLEAD1)
+OBJECT; .2 1 .1 0 'INPUT_LEAD.SIDES'
+  INTERFACE 0 1 CORE_MED CLAD_MED
+
+
+!! Form main part of junction by lofting together two cross section
+!! cuves of different widths...
+$CROSS_SECT (RCORE)
+  SHIFT Z (DLEAD1)
+$CROSS_SECT (RJCT)
+  SHIFT Z (DLEAD1+LJCT)
+OBJECT; .2 1 .1 0 'JUNCTION.MAIN'
+  INTERFACE 0 1 CORE_MED CLAD_MED
+
+
+!! Form triangular fillers at junction...
+EDGES
+  POINTS X (RCORE)  (RJCT) (DLEAD1+LJCT) 1,
+                   -(RJCT) (DLEAD1+LJCT) 1,
+                        0  (DLEAD1+LJCT+LEXT) 1
+  REPEAT
+    SHIFT X -(2*RCORE)
+OBJECT; .2 'JUNCTION.EXT.TOP'
+  INTERFACE 0 1 CORE_MED CLAD_MED
+OBJECT; .1 'JUNCTION.EXT.BOTTOM'
+  INTERFACE 0 1 CORE_MED CLAD_MED
+
+
+!! Form top branch by extruding cross section along 'rail' curve
+!! defined above as edge number 1...
+$CROSS_SECT (RCORE)
+  SHIFT 0 (RJCT/2) (DLEAD1+LJCT+LEXT/2) 
+$EXTRUDE 1 TOP_BRANCH.SIDES
+  INTERFACE 0 1 CORE_MED CLAD_MED
+
+
+!! Similarly, form bottom branch using edge number 2...
+$CROSS_SECT (RCORE)
+  SHIFT 0 -(RJCT/2) (DLEAD1+LJCT+LEXT/2) 
+$EXTRUDE 2 BOTTOM_BRANCH.SIDES
+  INTERFACE 0 1 CORE_MED CLAD_MED
+
+
+!! Cap the input lead...
+$CROSS_SECT (RCORE)
+OBJECT 'INPUT_LEAD.CAP'
+  INTERFACE 0 1 CORE_MED CLAD_MED
+
+
+!! And cap the output leads...
+
+$CROSS_SECT (RCORE)
+  SHIFT 0 (DBRANCH/2+RCORE) (L)
+OBJECT 'TOP_BRANCH.CAP'
+  INTERFACE 0 1 CORE_MED CLAD_MED
+$CROSS_SECT (RCORE)
+  SHIFT 0 -(DBRANCH/2+RCORE) (L)
+OBJECT 'BOTTOM_BRANCH.CAP'
+  INTERFACE 0 1 CORE_MED CLAD_MED
+
+
+!! Create the input field.  First we create a single ray with the cross-
+!! sectional shape of a fiber mode.  The fiber is assumed to have a radius
+!! equal to the half-width of our square channels, and the same core and 
+!! cladding indices of refraction.  Second, we generate the input field
+!! by calculating the field for this single ray.
+
+BEAMS COHERENT DIFFRACT
+IMMERSE CLAD_MED  !! we start the input just outside of the input lead
+WINDOW Y -2@(YWIND) X 0 (XWIND) !! take advantage of bilateral symmetry across x axis
+RAYSET Z -(EPS); 0 0 1 2@(RCORE) -FIBR (VN) !! create single ray with fiber mode shape
+SOURCE DIRECTION Z  !! send it in the +z direction
+PIXELS (RES) 1.0  !! set the vertical resoultion
+FIELD ENERGY 0  !! generate the input field
+
+
+!! Make copies of the input field and plot its cross-section...
+
+$COPY 29 INPUT_29.DIS
+$COPY 9  INPUT.DIS
+$CLEAR
+DISPLAY
+  $GRAB 'Integral' E1
+  GRAPH 1
+RETURN
+
+
+!! Propagate through the coupler using BPM algorithm.  Note that the ray we
+!! created above is NOT used here, only the input field that was generated from
+!! it.
+
+ACCURACY LOW  !! lowest order approximation in BPM is adequate for along-axis guided problems
+FIELD 29 ENERGY -(EPS) (L+EPS) (NPLANES) BC 1 1 !! reflective boundary conditions
+  
+  
+!! Make copies of the results and add cross-section plot...
+
+$COPY 29 OUTPUT_29.DIS
+$COPY 9  OUTPUT.DIS    !! modulus of field
+DISPLAY 9 (NPLANES+1)
+  GRAPH 1 APPEND
+RETURN  
+
+
+!! Show 3D view of the system geometry, along with modulus of the field we 
+!! just calculated...
+
+VUFACETS 3 3      !! plot facets and launch 3d viewer
+&VIEW BRO009.DAT  !! added calculated field the the 3d viewer
+
+
+!! Couple the field in the branches to the corresponding fiber modes to 
+!! determine efficiency of the branch...
+
+RAYS 0
+IMMERSE CLAD_MED  !! we're just outside of the top and bottom branches
+RAYSET Z (L+EPS); 0  (DBRANCH/2+RCORE) 1 2@(RCORE) -FIBR (VN) !! create single ray with fiber mode shape
+RAYSET Z (L+EPS); 0 -(DBRANCH/2+RCORE) 1 2@(RCORE) -FIBR (VN) !! create single ray with fiber mode shape
+SOURCE DIRECTION Z  !! send it in the +z direction
+FIELD ENERGY (L+EPS)  !! generate the corresponding field
+FIELD OUTPUT_29.DIS ENERGY COUPLE !! couple propagation result to this field
+$CLEAR
+DISPLAY
+  GRAPH 1 APPEND
+  $GRAB 'Integral' E2
+RETURN      
+EFF=(E2/E1)*100
+
+
+!! Display the efficiency in the output window...
+
+$SCR 1
+Efficiency = \EFF.1\%
+
+
+!! That's all folks!!!
+

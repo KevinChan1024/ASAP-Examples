@@ -1,0 +1,28 @@
+!!++
+!! LENS_PENTA_PRISM.INR
+!! Title: Penta Prism Lens
+!! Category: Simple Problem
+!! Keywords: Lenses, LENSES, PENTA, prism
+!! Description: An example of a penta prism lens using
+!! the PENTA command modifier. From the Lenses chapter.
+!! Edit History: (latest first)
+!! 02/10/2000 - cp - modified format; added description
+!! 02/18/1999 - mc - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! PENTA creates a 90 degree deviation penta prism
+!! with 4 circular surfaces.
+LENSES 
+  PENTA Z 0 5 SCHOTT_BK7 Y, X
+  OBJECT 'PENTA_PRISM'
+  PRINT  !! Useful to verify thickness assignments
+
+WINDOW Y Z
+PROFILES 
+PLOT FACETS 6 6
+$VIEW
+
+RETURN

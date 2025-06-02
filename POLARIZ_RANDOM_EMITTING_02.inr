@@ -1,0 +1,123 @@
+!!++
+!! POLARIZ_RANDOM_EMITTING_02.INR
+!! Title: Randomizing Polarization of Various Emitters 
+!! Category: Isolated Command
+!! Keywords: POLARIZ RANDOM, EMITTING, Polarization, SELECT
+!! Description: A set of all 14 EMITTING sources are created and displayed
+!! after setting a random polarization using the UNIFORM option.
+!! The user can choose which source to show the ray directions and
+!! polarization ellipses in the 3D viewer. 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/05/2009 - cp - added header
+!! 02/03/2009 - jh - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+$UNVAR ERROR
+
+UNITS MM
+WAVELENGTH 0.555 UM 
+
+SURFACES
+  TUBE Z 3 2 1 5 2 1 0 0
+  TUBE Z 6 1 2 8 1 2 0 0
+OBJECT 'TESTEM'
+
+POLARIZ K Z
+POLARIZ TREF X
+
+POLARIZ RANDOM UNIFORM 0.0 0.2 -10 20 0 360  
+
+EMITTING SPHEROID 0 -5 7, 3 2 1, 1111
+  DUMP TEST_POL                         !! save for use by EMITTING DATA 
+RAYS 0
+
+EMITTING DISK Z 0 3 5 1111 10 15 RECT ISO
+SPOTS DIRECTION ATTRIBUTE 0 YX -2@0.3 -2@0.2 PIXELS 11
+DISPLAY
+  ANGLES
+  IESFILE MYDISK SFLUX 10 ELLIP 3 0.1 5 PAD 0.1
+RETURN
+RAYS 0  
+
+!! For EMITTING FILAMENT command
+R=1 radius T=5 turns L=5 length 
+$FCN EFCN x L*(_-0.5) w y 4+R*SIN(6.2832*T*_) z 7+R*COS(6.2832*T*_) !! 0<_<1
+
+
+EMITTING DISK Z   1 1 2 1111 20 30      !! source 1
+EMITTING RECT -Z -1 2 1 1111 20 30      !! source 2
+EMITTING ENTITY .2 137                  !! source 3
+EMITTING OBJECT TESTEM 1111             !! source 4
+EMITTING CONE X -3 1 2, -6 2 3, 3111    !! source 5
+EMITTING PYRAMID X 3 2 3, 6 1 2, 3111   !! source 6
+EMITTING BOX 0 -5 0, 1 2 3, 3111        !! source 7
+EMITTING SPHEROID 0 5 0, 1 2 3, 3111    !! source 8
+EMITTING HELIX  Z -9 -4 4 1 0.2 3111    !! source 9
+EMITTING FILAMENT EFCN 0 1 3111 .1      !! source 10
+EMITTING DATA TEST_POL.DIS              !! source 11
+EMITTING  IES MYDISK Y 2 3 4 1111       !! source 12
+EMITTING RAYS                           !! source 13
+-0.5 -0.5 11, 0 0 1, 1 
+-0.4 -0.4 11, 0 0 1, 1 
+-0.3 -0.3 11, 0 0 1, 1 
+-0.2 -0.2 11, 0 0 1, 1 
+-0.1 -0.1 11, 0 0 1, 1 
+ 0.0  0.0 11, 0 0 1, 1 
+ 0.1  0.1 11, 0 0 1, 1 
+ 0.2  0.2 11, 0 0 1, 1 
+ 0.3  0.3 11, 0 0 1, 1 
+ 0.4  0.4 11, 0 0 1, 1 
+ 0.5  0.5 11, 0 0 1, 1 
+EMITTING RAYS 555, 2 1 1, 0 0 0.2       !! source 14
+-4 -4 -6, 0 SIN[-25] COS[-25], 1
+ 4 -4 -6, 0 SIN[-25] COS[-25], 1
+
+WINDOW Y -2@7 Z -9 13
+SPOTS POSITION 
+$VIEW
+
+$DO 1 14
+  {
+  SELECT ONLY SOURCE ?
+  STATS
+  $GRAB 'TOTAL' 0 1 NRAYS? FLUX0?
+  &REG NRAYS? FLUX0? 'Rays of source ? :' 
+  FLUX 0 100/FLUX0?
+  STATS
+  $GRAB 'TOTAL' 0 2 FLUX?
+  &REG NRAYS? FLUX? 'Rays of source ? :' 
+  }
+SELECT ALL
+
+&REG NRAYS1 NRAYS2 NRAYS3 NRAYS4 NRAYS5 NRAYS6 NRAYS7 NRAYS8 NRAYS9 NRAYS10 NRAYS11 NRAYS12 NRAYS13 NRAYS14
+&REG FLUX1 FLUX2 FLUX3 FLUX4 FLUX5 FLUX6 FLUX7 FLUX8 FLUX9 FLUX10 FLUX11 FLUX12 FLUX13 FLUX14
+
+!! $IO !! $IO continue to see polarization plot
+
+$IO VECTOR REWIND
+
+QSRC=1
+$SCR 1 'Choose a source for polarization plot' 
+Source number: \QSRC?\
+
+$IF (QSRC) NE 13 THEN
+SELECT ONLY EVERY 11 AND SOURCE (QSRC)
+$ELSE
+SELECT ONLY SOURCE (QSRC)
+$END
+
+WINDOW Y Z
+WINDOW 1.2
+OBLIQUE 60 40
+PLOT RAYS 0.4 COLOR 1 OVERLAY
+PLOT POLARIZATION 0.01 COLOR 2 
+$VIEW
+
+LIST RAYS
+
+
+

@@ -1,0 +1,70 @@
+!!++
+!! USERBSDF07.INR
+!! Title: Truncated Harvey Model
+!! Category: Simple problem
+!! Keywords: Scatter, USERBSDF, $FCN, Harvey  
+!! Description: Define a Harvey which is band limited -- 
+!! In other words, there is a minimum and maximum value for
+!! q= sin(theta)-sin(theta') beyond which the BRDF is zero.
+!! Here, theta is the polar angle of the specular beam and
+!! theta' is that of the scattered beam. In this model, the
+!! light is scattered into a ring around the specular direction.
+!! This technique might be used to study the effect of scattering
+!! from a lens surface in detail. Due to the very narrow band
+!! cutoff, the individual BSDF plot files are best displayed
+!! with the PICTURE viewer.  
+!! Note: This example does not correspond to any real material.
+!! Edit History: (latest first)
+!! 05/05/2006 - cp - modified and added header
+!! 05/05/2006 - sm - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS IN
+
+PIXELS 901 !! For hi-res plot files
+
+BO=1.625
+S=-1.8
+L=0.002
+
+!! Cutoff parameter
+CO=SIN[20]^2
+
+!! Define a truncated harvey function
+$FCN TRUNCHARV  T=_1-2*_2+_3,
+  HARV=BO*(1+T/(L^2))^(S/2),
+  HARV*RECT[T/CO]
+
+$PLOT OFF !! Turn off plotting - just create log-BSDF display files   
+$ECHO NONE !! Turn off echoing plot data
+
+!! Define model
+MODEL
+  USERBSDF TRUNCHARV PLOT 0 15 30 45 !! Create files at specular angles given
+RETURN
+$PLOT NORM
+$ECHO
+
+!! Visualize models
+DISPLAY TRUNCHARV_0
+  ANGLES
+  PICTURE '0 DEG'
+RETURN
+
+DISPLAY TRUNCHARV_15
+  ANGLES
+  PICTURE '15 DEG'
+RETURN
+
+DISPLAY TRUNCHARV_30
+  ANGLES
+  PICTURE '30 DEG'
+RETURN
+
+DISPLAY TRUNCHARV_45
+  ANGLES
+  PICTURE '45 DEG'
+RETURN

@@ -1,0 +1,118 @@
+!!++
+!! VOLUME_SCATTER01.INR
+!! Title: Volume Scatter
+!! Category: Simple Problem
+!! Keywords: Interfaces, Scatter, MODELS, VOLUME, VOXELS FLUENCE
+!! Description: Demonstrates Monte Carlo volume scatter using
+!! the simple Henyey-Greenstein model. The model is referenced
+!! by the Media SCATTER option. A VOXELS FLUENCE 
+!! distribution file is created and displayed in the 3-d viewer,
+!! with geometry.
+!! Note: the Obscuration 'f' parameter is essentially 1/mean-free-path.
+!! The mean-free-path is the average distance a ray will go before
+!! making a turn in the volume.  It can be determined from the particle
+!! density (in inverse length cubed) times the particle average cross-
+!! sectional area.  It is all referenced to whatever the UNITS are set
+!! to.  Both the Efficiency 'q' and Obscuration 'f' multiplied together
+!! represents the extinction coefficient.  Note: there is now an optional 
+!! argument for absorption efficiency which may be placed just after
+!! the 'q' parameter separated by a tick mark (found under the "tilde")
+!! with no spaces in between, such as q`p.  The 'p argument is assumed
+!! to be 0 if not used.
+!! In this example, the Scatter direction parameter 'g' is weighted
+!! slightly into the forward scatter direction (range: -1 to 1).
+!! See also Procedural Note "Using VOXELS in ASAP"
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/29/2012 - cp - corrected keywords
+!! 12/19/2005 - cp - modified and added comments 
+!! 03/12/2002 - cp - added 'S' to MODEL
+!! 02/28/2002 - cp - corrected style
+!! 01/21/2002 - cp - Added description for 'p argument
+!! 04/19/2001 - rh - increased LEVEL and modified graphics
+!! 01/10/2001 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 550 NM 
+
+LEVEL 1000 !! To continue scattering in volume
+PIXELS 501 !! For PLOT used below
+MODELS
+  VOLUME scatter .2 efficiency 1  obscuration 2  PLOT
+  
+MEDIA
+  1.5 SCATTER 1 'TEST' 
+
+SURFACES
+  PLANE X -1 RECTANGLE 1 1.5
+  SHIFT Z 2.5
+OBJECT 'SIDE1'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 2  
+
+SURFACES
+  PLANE X 1 RECTANGLE 1 1.5
+  SHIFT Z 2.5
+OBJECT 'SIDE2'
+  INTERFACE 0 1 AIR TEST 
+  REDEFINE COLOR 2    
+
+SURFACES
+  PLANE Y 1 RECTANGLE 1.5 1
+  SHIFT Z 2.5
+OBJECT 'SIDE3'
+  INTERFACE 0 1 AIR TEST 
+  REDEFINE COLOR 2    
+
+SURFACES
+  PLANE Y -1 RECTANGLE 1.5 1
+  SHIFT Z 2.5
+OBJECT 'SIDE4'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 2      
+
+SURFACES
+  PLANE Z 1 RECTANGLE 1 1
+OBJECT 'FRONT'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 2
+    
+SURFACES
+  PLANE Z 4 RECTANGLE 1 1
+OBJECT 'BACK'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 2
+    
+EDGES
+  RECTANGLE Z  1  1 1
+  RECTANGLE Z  4  1 1
+  RECTANGLE X  1  1 1.5
+    SHIFT Z 2.5
+  RECTANGLE X -1 1 1.5
+    SHIFT Z 2.5
+  RECTANGLE Y  1 1.5 1
+    SHIFT Z 2.5
+  RECTANGLE Y -1 1.5 1
+    SHIFT Z 2.5
+PLOT EDGES COLOR 2
+    
+GRID ELLIPTIC Z 0 -4@1 2@601 
+  SOURCE FOCUS 0 0 7 
+
+FLUX TOTAL 100.0 
+
+VOXELS FLUENCE -4@1.0 1 4 50 50 75 !! Increase voxels for better res.
+WINDOW Y -2@1.2 Z -.5 6
+PLOT FACETS  OVERLAY
+TRACE PLOT 1000 !! Show ray entry and direction
+
+$COPY 9 FLUENCE.DIS
+STATS
+$VIEW 
+&VIEW FLUENCE.DIS
+RETURN 

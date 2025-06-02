@@ -1,0 +1,326 @@
+!!++
+!! BPMEWAVECOUPLERUSINGGEOM.INR
+!! Title: Evanescent wave coupling between fibers
+!! Category: Simple Problem
+!! Keywords: Wave, bpm, FIELD, COUPLE, extrude, $COPY, evanescent
+!! Description:  This file demonstrates the use of
+!! the Beam Propagation Method (BPM) in ASAP to propagate
+!! through a system with two cores of varying 
+!! separation.  A fiber mode is sent into the top
+!! core, and couples partially into the bottom
+!! core.  The distance where the cores are near 
+!! is chosen to produce a roughly 50% energy split 
+!! between them.  The cores in this example 
+!! are produced by extruding a circular cross
+!! section along another curve.  The CONDUIT
+!! command is an alternative way to create this
+!! geometry.  The example can be run in either 2 
+!! or 3 dimensions.  In 2d, this models two slab 
+!! waveguides coming together.  In 3d, it's two fibers.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 11/03/2010 - cp - added category
+!! 05/15/2006 - cp - added keyword, changed title
+!! 12/08/2004 - cp - added $COPY keyword
+!! 11/05/2003 - cp - reformatted
+!! 12/22/2000 - DCS - creation
+!!--
+
+!! Initialization commands...
+
+SYSTEM NEW; RESET  !! Clear out system geometry and sources
+UNITS UM           !! Set system units to microns
+
+PI=ACOS(-1)
+
+
+!! Parameter definitions...
+
+NDIM=2           !! Default # of dimensions (2 or 3).  User will be prompted later for this.
+RES=301          !! Vertical resolution for BPM calculation
+VRES=300         !! Vertical res for side views of geometry maps
+HRES=300         !! Horizontal res for side views of geometry maps
+WAVEL=1.3        !! Wavelength (in microns)
+NCORE=1.456427   !! Core index of refraction
+NCLAD=1.449679   !! Cladding index of refraction
+RCORE=5.9/2      !! Core radius (or half-width if 2d)
+DLEAD=400        !! Length of leads before first curve and after last curve
+DMIX=375         !! Length of 'mixing' straight section (where the cores are near)
+D=RCORE          !! Distance between the cores (edges) when closest
+R=50000          !! Radius of curvature in turns
+A=3*RCORE        !! Half offset distance of each fiber branch
+DCLAD=6*RCORE    !! Minimum cladding distance
+THETA=1.0        !! Angle at the cores approach (in degrees)
+EPS=0.01         !! = Epsilon (a small distance)
+$IF (NDIM) EQ 2 THEN
+  NPLANES=150    !! Number of planes at which to store the propagation results
+$ELSE
+  NPLANES=32     !! Number of planes at which to store the propagation results
+$ENDIF
+
+
+!! Calculated parameters...
+
+TAN_TH=TAN[THETA]
+DANG=2*(A-R*(1-COS[THETA]))/TAN_TH !! Distance (along Z) of angled straight section
+HANG=2*(A-R*(1-COS[THETA]))        !! Height of angled straight section
+DC=R*SIN[THETA]                    !! Curve distance along Z
+D1=DLEAD+DC
+D2=D1+DANG
+D3=D2+DC
+D4=D3+DMIX
+D5=D4+DC
+D6=D5+DANG
+D7=D6+DC
+L=(2*DLEAD)+(4*DC)+(2*DANG)+DMIX   !! Overall propagation length (along Z)
+OS=(D/2)+2*A+RCORE
+OSC=(D/2)+A+RCORE
+YWIND=OS+RCORE+DCLAD               !! Y window for BPM propagation
+XWIND=RCORE+DCLAD                  !! X window for BPM propagation
+
+
+!! Prompt user for whether to do 2d or 3d calculation...
+
+$ASK NDIM 'Number of dimensions'
+
+
+!! Check some key parameters for validity...
+
+$IF (DANG) LE 0 THEN
+  $REG DANG
+  $ABORT 'DANG <= 0'
+$ELSEIF (HANG) LE 0 THEN
+  $REG HANG
+  $ABORT 'HANG <= 0'
+$ELSEIF (D) LE 0 THEN
+  $ABORT 'Must have D>0'  !! Use BpmEWaveCouplerUsingGrin.inr if D<0 needed
+$ELSEIF (NDIM) NE 2 AND (NDIM) NE 3 THEN
+  $ABORT 'Must have NDIM=2 or NDIM=3'
+$ENDIF
+
+
+!! Define media...
+
+MEDIA
+  (NCORE) 'CORE_MED'
+  (NCLAD) 'CLAD_MED'
+
+!! =======================================================================
+
+!! define a macro to do the extrusion of one edge along another...
+
+EXTRUDE { 2
+  $CLEAR
+  PRINT EDGE #1
+  $GRAB 'total with' 0 -1 N K
+  EDGE .1
+  $DO 1 (N)
+  {
+    ALIGN NORM EDGE .1, TANG #1 ?; PLACE CURV #1 ?
+    REPEAT
+    ALIGN NORM EDGE .1, TANG #1 ?.5; PLACE CURV #1 ?.5
+    REPEAT
+  }
+  ALIGN NORM EDGE .1, TANG #1 N+.9999; PLACE CURV #1 N+.9999
+  $LOC W
+  W=1 !! 0.7
+  OBJECT; -2*N-K 2 (W) W*(1-K) *#2
+}
+Extrude Path EDGE (absolute number)>
+Name of OBJECT>
+
+!! =======================================================================
+
+!! How sections and parameters are related:
+!!
+!!  horz_str  curve  ang_str  curve  horz_str  curve  ang_str  curve  horz_str
+!!   DLEAD     DC     DANG     DC     DMIX      DC     DANG     DC     DLEAD 
+!!                 D1       D2     D3        D4     D5       D6     D7
+
+!! Build 'rail curves' for top and bottom fibers...
+
+EDGES
+  POINTS X 0 (OS) 0 0
+  ARC X 0 (OS) (DLEAD) (OS-R) (DLEAD) (THETA)
+  ARC X 0 (OSC-HANG/2) (D2) (D/2+RCORE+R) (D3) -(THETA)
+  ARC X 0 (D/2+RCORE) (D4) (D/2+RCORE+R) (D4) -(THETA)
+  ARC X 0 (OSC+HANG/2) (D6) (OS-R) (D7) (THETA)
+  POINTS X 0 (OS) (D7+DLEAD) 0
+  COMPOSITE -6 GAPS 1 0
+  REPEAT  !! make reflected copy of edge for the bottom fiber...
+    SCALE 1 -1 1
+
+
+!! Cross section curve for top fiber...
+
+EDGES
+  ARC Z 0 (RCORE)
+    SHIFT Y (OS)
+
+
+!! Extrude this edge along the first edge to form the top fiber...
+
+$EXTRUDE 1 TOP_FIBER.SIDES
+  INTERFACE 0 1 CLAD_MED CORE_MED
+
+
+!! Cross section curve for bottom fiber...
+
+EDGES
+  ARC Z 0 (RCORE)
+    SHIFT Y -(OS)
+
+
+!! Extrude this edge along the second edge to form the bottom fiber...
+
+$EXTRUDE 2 BOTTOM_FIBER.SIDES
+  INTERFACE 0 1 CLAD_MED CORE_MED
+
+
+!! Make end caps for each fiber...
+
+ENT OBJ
+  ARC Z 0 (RCORE) 'TOP_FIBER.CAP1'
+    SHIFT Y (OS)
+    INTERFACE 0 1 CLAD_MED CORE_MED
+  REPEAT 'TOP_FIBER.CAP2'
+    SHIFT Z (L)
+    INTERFACE 0 1 CLAD_MED CORE_MED
+  ARC Z 0 (RCORE) 'BOTTOM_FIBER.CAP2'
+    SHIFT Y -(OS)
+    INTERFACE 0 1 CLAD_MED CORE_MED
+  REPEAT 'BOTTOM_FIBER.CAP2' 
+    SHIFT Z (L)
+    INTERFACE 0 1 CLAD_MED CORE_MED
+
+
+!! Produce MAP of geometry for verification purposes...
+!! Note: this map is best viewed with the display window in nonisotropic mode.
+
+PIXELS (VRES) (HRES/VRES)*(2*YWIND)/L
+MAP FIBER_PROFILE.DIS YZ -2@(YWIND) 0 (L) 
+DISPLAY FIBER_PROFILE.DIS
+  PICTURE
+RETURN 
+
+
+!! Calculate and display numerical aperture and V number...
+
+NA=SQRT(NCORE*NCORE-NCLAD*NCLAD)
+VN=2*PI*RCORE*NA/WAVEL
+$SCR 3 !! 
+Fiber characteristics:
+  Numerical Aperture = \NA.3\
+  V Number = \VN.3\
+
+
+!! set window and create a single ray, from which the input will be generated...
+
+BEAMS COHERENT DIFFRACT
+WAVELENGTH (WAVEL)
+IMMERSE CLAD_MED
+$IF (NDIM) EQ 2 THEN
+  WINDOW Y -2@(YWIND) X -2@0.01 !! only a thin slice in X is required for 2d calculation 
+  RAYSET Z -(EPS); 0 (OS) 1 2@(RCORE) -SLAB (VN) !! start with slab (2d) mode
+$ELSE  
+  WINDOW Y -2@(YWIND) X 0 (XWIND) !! take advantage of bilateral symmetry for 3d calculation
+  RAYSET Z -(EPS); 0 (OS) 1 2@(RCORE) -FIBR (VN) !! start with 3d fiber mode
+$ENDIF
+SOURCE DIR Z
+PIXELS (RES) 1.0
+
+
+!! Generate input field from ray created above...
+
+FIELD ENERGY 0
+
+
+!! Make a copy of the input field...
+
+$COPY 29 INPUT_29.DIS
+$COPY 9 INPUT.DIS
+
+
+!! Grab total energy in input field, for later efficiency calculations...
+
+$CLEAR
+DISPLAY
+  $GRAB 'Average' E0
+  GRAPH 1
+RETURN
+
+
+!! Propagate through the coupler using BPM...
+
+ACCURACY LOW  !! lowest order BPM approximation
+FIELD 29 ENERGY -(EPS) (L+EPS) (NPLANES) BC 1 1 !! reflective BCs
+$COPY 29 OUTPUT_29.DIS
+$COPY 9 OUTPUT.DIS
+$IF (NDIM) EQ 2 THEN
+  DISPLAY
+    PICTURE
+    GRAPH 0.0, 1.0
+  RETURN
+$ELSE
+  $VIEW BRO009.DAT
+$ENDIF
+  
+
+!! Couple to fiber mode in top branch...
+
+RAYS 0  !! clear out any existing rays
+IMMERSE CLAD_MED  !! we're just outside of the top and bottom branches
+$IF (NDIM) EQ 2 THEN
+  RAYSET Z (L+EPS); 0 (OS) 1 2@(RCORE) -SLAB (VN)
+$ELSE
+  RAYSET Z (L+EPS); 0 (OS) 1 2@(RCORE) -FIBR (VN)
+$ENDIF
+SOURCE DIR Z  !! send it in the +z direction
+FIELD ENERGY (L+EPS)  !! generate the corresponding field
+FIELD OUTPUT_29.DIS ENERGY COUPLE !! couple propagation result to this field
+
+
+!! And grab the total energy that coupled to the mode...
+
+$CLEAR
+DISPLAY
+  $GRAB 'Average' ET
+RETURN      
+
+
+!! Couple to fiber mode in bottom branch...
+
+RAYS 0
+IMMERSE CLAD_MED  !! we're just outside of the top and bottom branches
+$IF (NDIM) EQ 2 THEN
+  RAYSET Z (L+EPS); 0 -(OS) 1 2@(RCORE) -SLAB (VN)
+$ELSE
+  RAYSET Z (L+EPS); 0 -(OS) 1 2@(RCORE) -FIBR (VN)
+$ENDIF
+SOURCE DIR Z  !! send it in the +z direction
+FIELD ENERGY (L+EPS)  !! generate the corresponding field
+FIELD OUTPUT_29.DIS ENERGY COUPLE !! couple propagation result to this field
+
+
+!! And grab the total energy that coupled to the mode...
+
+$CLEAR
+DISPLAY
+  $GRAB 'Average' EB
+RETURN      
+
+
+!! Calculate and display efficiencies...
+
+ET_EFF=(ET/E0)*100
+EB_EFF=(EB/E0)*100
+EFF=((ET+EB)/E0)*100
+
+$SCR 5
+Energy:
+  at beginning                         = \E0.5\  (100%)
+  at top branch end (in fiber mode)    = \ET.5\  (\ET_EFF.1\%)
+  at bottom branch end (in fiber mode) = \EB.5\  (\EB_EFF.1\%)
+Overall efficiency = \EFF.1\%
+  
+  

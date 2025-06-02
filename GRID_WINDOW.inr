@@ -1,0 +1,39 @@
+!!++
+!! GRID_WINDOW.INR
+!! Title: Using the GRID WINDOW Command
+!! Category: Simple Problem
+!! Keywords: Sources, GRID WINDOW, PLOT RAYS
+!! Description: Creates a rectangular raster-type ray grid
+!! using the current WINDOW and PIXELS settings. 
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 09/04/2007 - cp - reformatted 
+!! 04/17/2007 - bf - creation 
+!!--
+
+SYSTEM NEW
+RESET
+
+WINDOW X 0 5 Y -2 2 
+PIXELS 10
+
+!! Simple form of GRID WINDOW
+GRID WINDOW 
+  SOURCE DIRECTION 0 0 1
+  FLUX TOTAL 100
+
+!! Introduce randomization into the raster grid.
+!! The PIXELS value (10 5) must be introduced.
+!! It is not taken from the current WINDOW setting.
+GRID WINDOW 0 10 5 RANDOM 1
+  SOURCE DIR 0 0 1
+SELECT ONLY SOURCE 2
+  FLUX TOTAL 100
+SELECT ALL
+
+WINDOW Y Z
+STATS
+
+PLOT RAYS 5
+$VIEW
+RETURN

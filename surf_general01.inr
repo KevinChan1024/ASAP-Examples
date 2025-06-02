@@ -1,0 +1,37 @@
+!!++
+!! SURF_GENERAL01.INR
+!! Title: GENERAL Surface
+!! Category: Isolated Command
+!! Keywords: GENERAL, SURFACE, LOCAL, hyperbolic
+!! Description: An GENERAL surface made to be
+!! hyperbolic. There are two branches that result.
+!! The LOCAL box modifier may be used to limit
+!! boundaries to one branch or the other.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 11/09/2004 - cp - added keyword 
+!! 02/28/2002 - cp - corrected style
+!! 10/17/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+A=2 B=2 C=4
+
+SURFACES
+  GENERAL 0 0 0 
+    C 1
+    X2 1/A^2
+    Y2 1/B^2
+    Z2 -1/C^2
+    LOCAL -4@20 -2@30  !! For right side only, Z="0 30": For left Z="-30 0"
+OBJECT 'HYPERBOLA'
+
+WINDOW Y Z
+PROFILES 0 0 -20 'A GENERAL SURFACE MODEL OF A HYPERBOLA' TEXT 
+  1 1, 0.2 0, 0 0.2    'NOTE THE TWO BRANCHES OF THE HYPERBOLA'
+  1 0.65, 0.2 0, 0 0.2 'USE LOCAL BOX TO CHOOSE ONE SIDE OR THE OTHER'
+RETURN

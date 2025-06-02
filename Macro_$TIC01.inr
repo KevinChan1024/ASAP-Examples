@@ -1,0 +1,31 @@
+!!++
+!! MACRO_$TIC01.INR
+!! Title: Time Interval Check using $TIC
+!! Category: Isolated Command
+!! Keywords: $TIC, time 
+!! Description: Using $TIC to measure elapsed time. An 
+!! interval of CPU time is tracked from one TIC
+!! to the next. The &TIC is used to reset the timer with
+!! no elapsed time output generated. Optional fixed time
+!! units may be specified (MICroseconds, MILliseconds, SEConds,
+!! MINutes, HOUrs, YEArs, or OFF for floating units).
+!! Edit History: (latest first)
+!! 08/04/2014 - gb - corrected misspelling of milliseconds
+!! 11/25/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+NRAYS=5000
+SEED 1 QUASI
+XMEMORY MIN
+
+&TIC MIL !! Reset timer with no output generated
+
+$DO 1 10; EMITTING; !! Multiple composite emitting spheroid
+  1 SPHEROID 3@0 ?*0.007 2@(?*0.006) (NRAYS); SHIFT X (?*0.006)
+
+$TIC !! Display elapsed time since last TIC in milliseconds
+
+RETURN

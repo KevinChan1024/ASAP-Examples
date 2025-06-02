@@ -1,0 +1,76 @@
+!!++
+!! COMPLEX_FIELD_IMPORT_EXPORT.INR
+!! Title: Complex Field I/O
+!! Category: Simple Problem
+!! Keywords: Wave, Gaussian, FIELD, complex, DISPLAY, hand, $FAST, import, export
+!! Description: A way to import large complex fields made externally as
+!! Real and Imaginary pairs avoiding the need to add tick symbols.
+!! This also shows how to extract individual complex components for possible
+!! manipulation by external programs. Note, the syntax below the DISPLAY -29
+!! uses an arbitrary optical axis position of 0.  the important numbers are the 
+!! window extents of the field and number of pixels or values entered.
+!! In the following case, since Z is first, the FIELD (at Z=0) will
+!! be in the plane (Window) of X-Y.  $READ is generally used to
+!! import data from large files. They are in-line here to avoid multiple files.
+!! Also note, the first number in the set was changed to avoid the Warning 
+!! about no variation in data.
+!! Edit History: (latest first)
+!! 11/02/2006 - cp - creation - modified from Gaussian_Phase_Hand.inr
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 1.0 UM
+WIDTHS 1.6
+
+P=57.3  !! Offset phase by 1 radian = 57.3 degrees
+
+DISPLAY -29  !! Rewind BRO029.DAT and set up to write data
+Z 0 FIELD X -10 10 7 Y -10 10 6  !! Can use $READ to import a large file - X rows, Y columns
+2'(60) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P)  !! Complex Data in Amplitude and Phase (angle) format
+1'(P)  1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 
+1'(P)  1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 
+1'(P)  1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 
+1'(P)  1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 
+1'(P)  1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 
+1'(P)  1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 
+
+RETURN
+DISPLAY 29 REAL    !! Extract Real component
+TEXTFILE REAL.TXT  !! Output Real values to text file
+DATA 6  !! 6 columns
+EOF 
+DISPLAY 29 IMAGINARY !! Extract Imaginary component
+TEXTFILE IMAGIN.TXT  !! Output Imaginary values to text file
+DATA 6  !! 6 columns
+EOF 
+RETURN
+DISPLAY -29  !! Rewind BRO029.DAT to write new data
+Z 0 FIELD X -10 10 7 Y -10 10 6  !! The following are data combined from the two files generated above.
+!! Note, the COMPLEX keyword allows inputting numbers in groups of 2, representing Real and Imaginary parts.
+!! This eliminates the need to provide a "tick" mark for each number, possibly saving time with large external files.
+!! The following lines may instead be in an external file read in using $READ <filename>.
+
+$FAST 6 7 COMPLEX !! Data equivelent to above but given as Real and Imaginary   
+1.000000 1.732051 .540240 .841511  .540240 .841511 .540240 .841511 .540240 .841511  .540240 .841511
+.540240 .841511   .540240 .841511  .540240 .841511 .540240 .841511 .540240 .841511  .540240 .841511
+.540240 .841511   .540240 .841511  .540240 .841511 .540240 .841511 .540240 .841511  .540240 .841511
+.540240 .841511   .540240 .841511  .540240 .841511 .540240 .841511 .540240 .841511  .540240 .841511
+.540240 .841511   .540240 .841511  .540240 .841511 .540240 .841511 .540240 .841511  .540240 .841511
+.540240 .841511   .540240 .841511  .540240 .841511 .540240 .841511 .540240 .841511  .540240 .841511
+.540240 .841511   .540240 .841511  .540240 .841511 .540240 .841511 .540240 .841511  .540240 .841511  
+
+RETURN
+DISPLAY 29 AMPLITUDE   !! Extract Amplitude component
+TEXTFILE AMPLITUDE.TXT !! Output Amplitude values to text file
+DATA 6                 !! Open file and see that values match the original
+EOF                    !! amplitude values given in the first set.
+DISPLAY 29 PHASE   !! Extract Phase component
+TEXTFILE PHASE.TXT !! Output Phase values to text file
+DATA 6             !! Open file and see that values match original phase values
+EOF                !! in the first set, but converted to Radians.
+RETURN

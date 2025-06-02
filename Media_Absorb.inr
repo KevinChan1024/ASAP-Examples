@@ -1,0 +1,47 @@
+!!++
+!! MEDIA_ABSORB.INR
+!! Title: Making Absorbing Media
+!! Category: Simple Problem
+!! Keywords: Interfaces, MEDIA, ABSORB, beer's law
+!! Description:  How to make an absorbing media letting ASAP
+!! calculate the absorption, using MEDIA ABSORB command.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 06/02/2008 - cp - corrected spelling
+!! 05/06/2004 - cp - added more info
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+!! Transmission at 3mm is ~26.6% (For R9 standard RED) ie Te=0.266
+!! This is the total transmission including internal loss due to
+!! absorption coefficient (alpha) and fresnel reflection losses.
+
+ITRANS=0.32  !! This is the internal transmission without fresnel
+             !! losses due to surface reflections (front and back). 
+             !! This is necessary if using FRESNEL AVE and BARE interfaces
+             !! to allow ASAP to calculate Fresnel losses automatically.
+             !! ITRANS was calculated assuming 8.5% loss at each interface so 
+             !! (1-2*.085)=Tf=0.83.
+             !! ITRANS=.266/.83=.32 - with no Fresnel losses 
+             
+THICK=3      !! For thickness of 3mm
+
+MEDIA
+  1.489 ABSORB -LOG(ITRANS)/THICK  'ACRYLIC'  !! BEER'S LAW (or LOG(1/ITRANS)/THICK)
+   
+!! Note: Curved brackets mean natural log (LN).  Above expression (after
+!! ABSORB) is basically alpha, or the absorption coefficient. 
+!! alpha/mm = rate of loss of light. Note -log(n) = log(1/n). It is
+!! not meant to represent a negative absorption or gain media.
+!! This method using ABSORB is not wavelength dependent.  For wavelength dependency,
+!! the entire line (before the name 'ACRYLIC') may be replaced by a complex index
+!! (natural log based), if known (in this case, wavelength needs specified
+!! previously).  Exa: For 590nm in system units of MM, imaginary part K=(alpha*590E-6)/(4*PI) or 
+!! ((LOG(1/.32)/3)*590E-6)/(4*3.14159)=1.78324E-5.  So 1.489`1.78324E-5 could be used
+!! instead for the complex index of ACRYLIC at 590nm.
+RETURN

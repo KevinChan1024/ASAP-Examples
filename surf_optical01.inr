@@ -1,0 +1,22 @@
+!!++
+!! SURF_OPTICAL01.INR
+!! Title: Aspheric OPTICAL Surface
+!! Category: Isolated Command
+!! Keywords: OPTICAL, SURFACE
+!! Description: Defines an aspheric optical
+!! surface whose vertex is located at y = -2
+!! with a radius of curvature of -30 and a
+!! conic constant of -1. The 4th, 6th, 8th and
+!! 10th order deformation coefficients are 1E-3,
+!! -1E-6, 1E-10 and 1E-14, respectively. The
+!! semi-diameter of the surface is five (5).
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/17/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SURFACES
+  OPTICAL Y -2 -30 -1 1E-3 -1E-6 1E-10 1E-14 ELLIPSE 5
+
+

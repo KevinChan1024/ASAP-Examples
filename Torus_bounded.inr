@@ -1,0 +1,44 @@
+!!++
+!! TORUS_BOUNDED.INR
+!! Title: Torus Cut with an Edge  
+!! Category: Simple Problem
+!! Keywords: Edges, TORUS, wedge, BOUNDS, EDGES, POINTS
+!! Description: The following shows how to cut a wedge
+!! out of a TORUS surface between two angular positions.
+!! The EDGE POINTS command creates the triangular wedge of
+!! points which subtend a selected angle originating at
+!! the global origin. When the TORUS surface is bounded
+!! to this edge, a section of the torus is removed or
+!! remaining, depending on whether it was a plus or minus
+!! BOUNDS. Note that an edge mathematically extends forever
+!! perpendicular to its plane, and so will cut through the
+!! torus at any position in its path.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 02/04/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+FIRSTANGLE=10
+SECONDANGLE=350
+
+EDGES
+  POINTS 0 0 0 1
+  100*SIN[FIRSTANGLE] 100*COS[FIRSTANGLE] 0 1
+  100*SIN[SECONDANGLE] 100*COS[SECONDANGLE] 0 1
+SURFACES
+  TORUS Z 0.063 1 .042 
+
+OBJECT 'PLUS_BOUNDS'
+  BOUNDS +0.2
+ 
+!! Use following to see negative bounding results
+!! OBJECT 'NEG_BOUNDS'
+!! BOUNDS -0.2
+
+PLOT FACETS 4 4
+$VIEW
+RETURN

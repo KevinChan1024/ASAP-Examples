@@ -1,0 +1,68 @@
+!!++
+!! SAWTOOTH_SLAB_02.INR
+!! Title: Sawtooth Slab using Bounded Surfaces 
+!! Category: Simple Problem
+!! Keywords: Bounds, sawtooth, EDGES, corrugated, LINE, REPEAT, SWEEP, COMPOSITE, BOUNDS
+!! Description: Creates a slab with top corrugated using SAWTOOTH
+!! and LINE EDGES COMPOSITEd for the sides.
+!! Edit History: (latest first)
+!! 06/02/2014 - gb - added REPEAT to keywords
+!! 12/09/2009 - cp - added header 
+!! 11/05/2009 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! CREATE A SLAB WITH TOP CORRUGATED AS SAWTOOTH
+EDGES 
+  !! top
+  SAWTOOTH  X -5, 4 2, 5 0, 3 13
+    SWEEP DIR 10 1 0 0 
+  !! far edge
+  LINE -5 15  0, -5 15 -2
+    SWEEP DIR 10 1 0 0 
+  !! bottom
+  LINE -5 15 -2, -5  0 -2
+    SWEEP DIR 10 1 0 0 
+  !! near edge
+  LINE -5  0 -2, -5  0  0 
+    SWEEP DIR 10 1 0 0 
+  !! repeat the above edges and composite them to make sides
+  REPEAT .4 
+  REPEAT .4 
+  REPEAT .4 
+  REPEAT .4 
+  COMPOSITE -4 GAPS -1 
+RETURN
+
+SURFACES
+  PLANE X -5 RECT 7.5 2
+    SHIFT Y 7.5  
+  PLANE X +5 RECT 7.5 2
+    SHIFT Y 7.5  
+RETURN
+
+!! plot the component edges and surfaces
+WINDOW Z Y
+PLOT EDGES OVERLAY
+PLOT SURFACES 
+
+OBJECT
+  .7 'SLAB.TOOTH'
+  .6 'SLAB.END.FAR'
+  .5 'SLAB.BOTTOM'
+  .4 'SLAB.END.NEAR'
+  .2 'SLAB.SIDE.1'
+      BOUNDS -.3
+      FACETS 51 23   !! improve plot fidelity of side
+  .1 'SLAB.SIDE.2' 
+      BOUNDS -.3
+      FACETS 51 23   !! improve plot fidelity of side
+RETURN
+
+!! plot the objects
+PLOT FACETS 5 5 0  
+$VIEW 
+RETURN
+      

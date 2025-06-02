@@ -1,0 +1,81 @@
+!!++
+!! VOXELS_EMISSION01.INR
+!! Title: Re-emission of an Absorption Volume
+!! Category: Simple Problem
+!! Keywords: Interfaces, MEDIA, VOXELS ABSORBED, volume, emission, fluorescence
+!! Description:  How to capture a 3-D representation
+!! of absorption within a volume and use it to
+!! create an emitting source. The VOXELS command
+!! specifies the range and resolution over which this
+!! energy is captured. In this case, the volume matches
+!! the space between the Front and Back surfaces of a
+!! complex absorbing medium. The volume file is saved
+!! and turned into an emitting source using the
+!! EMITTING DATA command. This could be used to
+!! simulate fluorescence or other emission related
+!! phenomena. The 3-D viewer is used to visualize both
+!! the volume absorption file and volume source.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/29/2012 - cp - corrected keywords
+!! 12/19/2005 - cp - modified and added comments 
+!! 11/21/2002 - cp - added keyword
+!! 08/20/2001 - cp - fixed title
+!! 05/18/2001 - cp - final editing
+!! 01/09/2001 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+BEAMS INCOHERENT GEOMETRIC
+UNITS MM
+WAVELENGTH 450 550 NM
+
+MEDIA
+  1.5`.4E-4 1.5 'TEST' !! Absorption at 450 nm
+
+SURFACES
+  PLANE Z 1 RECTANGLE 1.2 1.2
+  OBJECT 'FRONT'
+    INTERFACE 0 1 AIR TEST
+    REDEFINE COLOR 1
+    
+SURFACES
+  PLANE Z 4 RECTANGLE 1.2 1.2
+  OBJECT 'BACK'
+    INTERFACE 0 1 AIR TEST
+    REDEFINE COLOR 1
+     
+WAVELENGTH 450    
+GRID ELLIPTIC Z 0 -4@1 2@101 
+  SOURCE DIRECTION 0 0 1 
+FLUX TOTAL 100.0 
+
+!! Select the exact volume for VOXEL distribution
+!! Otherwise, can use PIXELS, WINDOW and Local Box of objects
+!! Note that absorption may be over-estimated due to small number
+!! of voxels and rays used here. See Procedural Note "Using VOXELS in ASAP"
+VOXELS ABSORBED -4@1.2 1 4 32 32 80
+
+WINDOW Y -2@1.2 Z -.5 6
+PLOT FACETS  OVERLAY
+TRACE 0 FRONT PLOT 50 OVERLAY !! Show ray entry and direction
+SPOTS POSITION OVERLAY
+TRACE
+$GRAB 'VOXELS' FLUX_ABSORBED !! Grab total flux absorbed
+$REG FLUX_ABSORBED
+$COPY 9 VOXEL.DIS  !! Copies default bro009.dat to named file
+STATS
+
+RAYS 0
+IMMERSE TEST !! To emit rays from TEST material
+WAVELENGTH 550  !!  New wavelength for emission
+EMITTING DATA VOXEL 50000  !! Make emission source from Voxel data
+  FLUX TOTAL (FLUX_ABSORBED) !! Could correct for conversion efficiency
+STATS
+SPOTS POSITION EVERY 5
+$VIEW
+&VIEW VOXEL.DIS  !! Adds the saved volume distribution
+!! Hide (H) the voxel.dis in 3D viewer to see just the emission source
+RETURN

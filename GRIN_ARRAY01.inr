@@ -1,0 +1,80 @@
+!!++
+!! GRIN_ARRAY01.INR
+!! Title: Array of GRINs
+!! Category: Isolated Command
+!! Keywords: GRIN, FUNCTION, GENERAL, ARRAY
+!! Description: Example of a GRIN lens array. Features
+!! a bi-planer lens where the GRIN is actually doing
+!! the focusing.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 03/08/2001 - cp - Reformatted; added header
+!! 02/26/2001 - arg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+N00=1.8080   N10=-7.778E-4   N20=2.9543E-7
+
+FUNCTION
+  GENERAL
+    C 1
+    Y2 N10/N00
+    Z2 N10/N00 
+    Y4 N20/N00
+    Y2Z2 2*N20/N00
+    Z4 N20/N00
+    ARRAY 2 0 50 0 
+
+MEDIA
+ (N00) GRIN function 1  exponent 2  stepsize 0.1 'GRIN'
+ 
+COATINGS PROPERTIES
+  0 1 'TRANSMIT'
+
+SURFACES
+  PLANE X 0 ELLIPSE 15 15
+    ARRAY 2 0 50 0
+OBJECT 'FRONT'
+  INTERFACE COAT TRANSMIT AIR GRIN
+
+SURFACES
+ PLANE X 10 ELLIPSE 15 15
+  ARRAY 2 0 50 0
+  OBJECT 'BACK'
+    INTERFACE COAT TRANSMIT AIR GRIN
+
+SURFACES
+  TUBE X 0 15 15 10 15 15
+  ARRAY 2 0 50 0
+  OBJECT 'SIDE'
+    INTERFACE COAT TRANSMIT AIR GRIN
+
+GRID ELLIPTIC X 9.3 -4@12.5 5 5
+SOURCE DIRECTION 1 0 0
+  SHIFT Y 0
+  MOVE TO X -10  
+
+GRID ELLIPTIC X 9.3 -4@12.5 5 5
+SOURCE DIRECTION 1 0 0
+  SHIFT Y 50
+  MOVE TO X -10
+
+GRID ELLIPTIC X 9.3 -4@12.5 5 5
+  SOURCE DIRECTION 1 0 0
+  SHIFT Y 100
+  MOVE TO X -10
+
+WINDOW Y X
+PLOT FACETS 3 3 OVERLAY
+MISSED ARROWS 15
+TRACE PLOT
+$VIEW 
+RETURN
+
+
+
+
+
+

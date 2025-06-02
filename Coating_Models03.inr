@@ -1,0 +1,116 @@
+!!++
+!! COATING_MODELS03.INR
+!! Title: Polarizing Beam Splitter using COATING MODELS
+!! Category: Simple Problem
+!! Keywords: Interfaces, COATINGS, MODELS, BSDFDATA, POLARIZ, splitter, pbs
+!! Description: Uses BSDFDATA ANGLES to make a polarizing
+!! beam splitter for a 45° incident angle.  Four sets of angle
+!! data are provided for s and p polarization in R and T.  A
+!! coating called 'PBS' is created with a 50% split between 
+!! R and T. At 45° R is mainly s-polarized and T is mainly
+!! p-polarized. This coating is applied to the beam splitter
+!! surface which is situated at 45° to the incident beam.
+!! You may rerun the file using the alternate coating,
+!! 'PBS2' (with s and p reversed), applied to 'POLARIZER_2'
+!! and view the results. 
+!! Note that the second pair of models are duplicated for
+!! clarity, but could have been left out.  Model numbers
+!! may be specified more than once in the COATING MODELS
+!! command.
+!! Note: SPLIT number must be set at least as high as the
+!! number of polarizers used.  This is because each new
+!! continuing polarized component is another child ray
+!! generation.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 11/05/2003 - cp - fixed keyword
+!! 08/13/2001 - cp - added important SPLIT info
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+FRESNEL BOTH
+SPLIT 2  !! Equal to or greater than number of polarizers used
+
+MODELS
+  BSDFDATA ANGLES
+    0  0 1  !! This is automatically normalized to 1
+    45 0 2
+    90 0 1
+  BSDFDATA ANGLES
+    0  0 1
+    45 0 1E-8
+    90 0 1
+  BSDFDATA ANGLES
+    0  0 1
+    45 0 1E-8
+    90 0 1
+  BSDFDATA ANGLES
+    0  0 1
+    45 0 2
+    90 0 1
+
+COATINGS MODELS 1 2 3 4  !! s reflected, p transmitted
+  0.5 0.5 'PBS'
+
+COATINGS MODELS 2 1 4 3  !! p reflected, s transmitted
+  0.5 0.5 'PBS2'
+
+SURFACES
+  PLANE Z 0 RECTANGLE 5 5
+OBJECT 'POLARIZER_1'
+  ROTATE X 45
+  REDEFINE COLOR 2  !! Red
+  INTERFACE COAT PBS AIR AIR
+
+SURFACES
+  PLANE Z 0 RECTANGLE 5 5
+OBJECT 'POLARIZER_2'
+  ROTATE X 45
+  SHIFT Y 10
+  REDEFINE COLOR 13  !! Green
+  INTERFACE COAT PBS AIR AIR  !! Rerun with PBS2 instead
+
+SURFACES
+  PLANE Z 10 RECTANGLE 4 4
+OBJECT 'DETECTOR_1'
+  REDEFINE COLOR 11 !! Blue
+  INTERFACE 0 0 AIR AIR
+
+SURFACES
+  PLANE Z 10 RECTANGLE 4 4
+OBJECT 'DETECTOR_2'
+  SHIFT Y 10
+  REDEFINE COLOR 11 !! Blue
+  INTERFACE 0 0 AIR AIR
+
+SURFACES
+  PLANE Y 20 RECTANGLE 4 4
+OBJECT 'DETECTOR_3'
+  REDEFINE COLOR 11 !! Blue
+  INTERFACE 0 0 AIR AIR
+
+POLARIZ Y  !! A P-Polarized ray
+GRID ELLIPTIC Z -10 -4@0.1 1 1
+  SOURCE DIRECTION 0 0 1
+  FLUX TOTAL 1
+
+WINDOW Y Z
+PLOT FACETS 3 3 OVERLAY
+TRACE PLOT
+
+STATS
+RAYS 0  !! Clear old rays
+
+POLARIZ X  !! An S-Polarized ray
+GRID ELLIPTIC Z -10 -4@0.1 1 1
+  SOURCE DIRECTION 0 0 1
+  FLUX TOTAL 1
+
+WINDOW Y Z
+PLOT FACETS 3 3 OVERLAY
+TRACE PLOT
+STATS
+RETURN

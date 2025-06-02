@@ -1,0 +1,28 @@
+!!++
+!! MACRO_$DO01.INR
+!! Title: $DO Predefined Macro
+!! Category: Isolated Command
+!! Keywords: $DO, macro, Macros_pre, loop
+!! Description: Simple $DO loop to create 3 planes. 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/11/2000 - cp - modified format; added description
+!! 08/02/1999 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$DO -1 1
+  {
+  SURFACES
+    PLANE Z 0 RECTANGLE 2@0.5
+    OBJECT 'PLANE_?'
+      INTERFACE 0 0 AIR AIR
+      SHIFT X ? 
+  }
+
+WINDOW Y Z
+OBLIQUE
+PLOT FACETS 11 11
+RETURN

@@ -1,0 +1,38 @@
+!!++
+!! USERAPOD_FLUX_COMPARE.INR
+!! Title: Turning USERAPOD On and Off
+!! Category: Simple Problem
+!! Keywords: Sources, USERAPOD, flux, Gaussian, apodizing
+!! Description: Gives a comparison plot and stats of a simple
+!! grid source with and without a Gaussian USERAPOD applied.
+!! Edit History: (latest first)
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+UNITS MM
+PI=3.1416
+
+BEAMS INCOHERENT GEOMETRIC 
+WAVELENGTH 0.6328 UM
+
+!! No apodization      
+GRID POLAR Z 0 1 10 RANDOM
+  SOURCE DIRECTION 0 0 1
+PLOT RAYS 1 COLOR 2  !! All ray fluxes are equal
+STATS  !! Note total flux
+
+RAYS 0  !! Clear old rays
+USERAPOD OFF !! Turn off apodization
+
+!! With apodization
+USERAPOD POSITION (U=SQRT(PI/2)*0.75) (V=SQRT(PI/2)*0.75) U*V
+GRID ELLIPTIC Z 0 -4@1 2@15
+  SOURCE DIRECTION 0 0 1
+PLOT RAYS 1  !! Shows Gaussian profile of ray fluxes
+$VIEW        !! shows comparison of flux weighting
+STATS        !! Shows less total flux than without apodizing
+
+RETURN

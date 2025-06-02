@@ -1,0 +1,29 @@
+!!++
+!! MACRO_$ARGS02.INR
+!! Title: $ARGS to Call Dialog Box
+!! Category: Isolated Command
+!! Keywords: $ARGS, macro, Macros_pre
+!! Description: Using $ARGS to create a dialog box
+!! for passing arguments to a macro.
+!! Edit History: (latest first)
+!! 10/18/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$ARGS SCR
+
+SYSRAY { 4
+GRID #1 #2 #3 -4@10 2@#4 
+  SOURCE DIRECTION 0 0 1
+}
+ENTER TYPE OF GRID..>
+ENTER GRID AXIS.....>
+ENTER AXIAL LOCATION>
+ENTER NUMBER OF RAYS>
+
+$SYSRAY
+
+RETURN

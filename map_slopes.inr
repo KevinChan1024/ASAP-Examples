@@ -1,0 +1,42 @@
+!!++
+!! MAP_SLOPES.INR
+!! Title: Accessing Multivalued Display Files
+!! Category: Simple Problem
+!! Keywords: Analysis, DISPLAY, MAP, SLOPES
+!! Description: Using DISPLAY options of 1ST,
+!! 2ND, and so forth, to access additional matrix
+!! values. Some display commands will produce these
+!! additional matrices.  For this example, MAP SLOPES
+!! is used. It creates two additional matrices of slope
+!! values for each window dimension. These are accessed
+!! through the 2ND and 3RD option as shown below.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/31/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 500 NM
+
+SURFACES
+  PLANE Z 0 ELLIPSE 50  !! This is the base surface
+  ZERNIKE Z 0 0 0 0 0 1 ELLIPSE 1  !! This is the deform surface
+    SCALE 2@50 1 3@0    !! Scale the deform surface
+  OBJECT; 0.2 'SAMPLE_OBJECT' !! From base surface
+    DEFORM 0.1  !! Deform the plane with the Zernike surface
+    INTERFACE 1 0
+
+PIXELS 101
+WINDOW X Y
+MAP REF_MAP SLOPES
+ 
+DISPLAY REF_MAP 1ST
+  ISO 'HEIGHT VALUES FOR ENTIRE PIXEL MATRIX'
+DISPLAY REF_MAP 2ND
+  ISO 'SLOPE VALUES IN Y'
+DISPLAY REF_MAP 3RD
+  ISO 'SLOPE VALUES IN X'
+RETURN

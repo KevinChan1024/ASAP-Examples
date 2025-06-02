@@ -1,0 +1,79 @@
+!!++
+!! SCRIPT_LENS_ANAL.INR
+!! Title: A Typical Script
+!! Category: Simple Problem
+!! Keywords: Scripts, lens, Geometry, Analysis
+!! Description: A typical script showing geometry, source
+!! and analysis. A lens is built with surface entities and
+!! then analyzed.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/14/2008 - cp - removed keyword
+!! 03/11/2002 - cp - reformatted
+!! 02/16/2000 - cp - modified format; added description
+!! 09/14/1997 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Setup optical property data base
+UNITS MILLIMETERS          !! Set system units
+WAVELENGTHS 0.4861 0.5876 0.6563 UM  !! Microns to mm conversion
+
+MEDIA
+  1.7  1.6  1.5   'GLASS'  !! Define refractive indices
+
+COATINGS PROPERTIES
+  0 1  0 1  0 1   'TRANS'  !! Define coating properties "r t"
+
+!! Setup entity data base
+SURFACES                    !! Key word for entity data base entry      
+  PLANE Z 0 ELLIPSE 10     !! Entity surface type
+OBJECT 'BACK_SIDE'         !! Setup object data base
+  INTERFACE COAT TRANS AIR GLASS  !! Assign optical properties to object
+
+SURFACES
+  OPTICAL Z -5 20 ELLIPSE 10
+OBJECT 'FRONT_SIDE'
+  INTERFACE COAT TRANS AIR GLASS
+
+SURFACES                           
+  PLANE Z 29.8 ELLIPSE 5                      
+OBJECT 'DETECTOR'  !! With no INTERFACE command it defaults to totally absorbing
+  
+!! Setup sources
+BEAMS INCOHERENT GEOMETRIC      !! Assign physical property to source
+WAVELENGTH 0.5876 UM                
+GRID POLAR Z -5 0 5 0 360 10 6     !! Define spatial property & flux
+  SOURCE DIRECTION 0 SIN[5] COS[5] !! Define angular property
+  MOVE TO Z -10                    !! Force rays to start at this point
+      
+!! Perform simple analysis
+TITLE 'SIMPLE LENS ANALYSIS'    !! Set title for future plots
+PRINT                           !! Verify system numerically
+WINDOW Y Z
+  PROFILES 'SYSTEM GEOMETRY'    !! Verify system graphically
+STATS POSITION                  !! Verify ray data numerically
+STATS DIRECTION                
+WINDOW Y X
+  SPOTS POSITION ATTRIBUTE 1 'INPUT' !! Verify ray data graphically
+WINDOW Y Z
+  PLOT FACETS 4 4               !! Draw picture of system
+  PROFILES OVERLAY              !! Draw a profile slice through system, with ray trace
+  TRACE PLOT                  
+$VIEW                           !! View geometry and ray trace in 3-D viewer
+CONSIDER ONLY DETECTOR          !! Isolate ray data on OBJECT
+  FOCUS MOVE                    !! Move ray data to best focus
+
+WINDOW Y X
+WINDOW 1.2                      !! Enlarge current window by 20%
+PIXELS 101                      !! Set higher resolution (default=39)
+SPOTS POSITION 'SPOT DIAGRAM'   !! Plot spot diagram and create data distribution file
+DISPLAY                         !! Load spots file into display
+  ISOMETRIC 'ISO PLOT OF SPOTS DIAGRAM' !! Some different display commands
+  PLOT 'PLOT3D OF SPOTS DIAGRAM
+  CONTOUR 'CONTOUR PLOT'
+  PICTURE
+RETURN
+  

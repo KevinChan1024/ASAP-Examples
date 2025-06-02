@@ -1,0 +1,163 @@
+!!++
+!! APERTURE_SAMPLING.INR
+!! Title: Properly Sampling an Aperture
+!! Category: Simple Problem
+!! Keywords: Wave, sampling, beams, aperture, Gaussian, SPREAD, $ASK, WIDTHS
+!! Description: Shows the right way and several wrong ways
+!! to sample an aperture.  Clearly shows how Gaussian beams are
+!! handled in ASAP.  The parabasals always follow the base ray. 
+!! Therefore if the beam set is smaller than the aperture, they 
+!! will go straight through with no truncation.  Even a single
+!! beam with a wide divergence angle will go through with no
+!! truncation of energy, as if the aperture was not there.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 07/08/2003 - cp - increased aperture faceting
+!! 03/16/2000 - cp - Reformatted; added header
+!! 03/02/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MILLIMETERS
+WAVELENGTH 632.8 NANOMETERS
+
+!! Define Geometry
+W=8  !! Triangle width 
+H=W*COS[30]  !! Height of triangle
+P1X=0
+P1Y=W/(2*COS[30])
+P2X=W/2
+P2Y=((W/(2*COS[30]))-H)
+P3X=-W/2
+P3Y=((W/(2*COS[30]))-H)
+FACTOR=1.0
+
+EDGES
+  POINTS Z 0,
+    FACTOR*(P1X) FACTOR*(P1Y) 1,
+    FACTOR*(P2X) FACTOR*(P2Y) 1,
+    FACTOR*(P3X) FACTOR*(P3Y) 1
+
+SURFACES
+  PLANE Z 0 RECTANGLE 15 15
+EDGES
+  POINTS Z 0,
+    FACTOR*(P1X) FACTOR*(P1Y) 1,
+    FACTOR*(P2X) FACTOR*(P2Y) 1,
+    FACTOR*(P3X) FACTOR*(P3Y) 1
+OBJECT; 0.2 'APERTURE'
+  BOUNDS 0.1
+  REDEFINE COLOR 3
+
+!! Detector
+SURFACES
+  PLANE Z 100000 RECTANGLE 50 50  !!163.4686 RECTANGLE 10 10 
+OBJECT 'DETECTOR'
+
+WINDOW X Y
+CONSIDER ONLY APERTURE
+PLOT FACETS 23 23 
+CONSIDER ALL
+
+$ASK 'Triangular aperture'
+
+!! Define source and trace
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6  !! Typical parabasal overlap setting
+WAVELENGTH 632.8 NANOMETERS
+
+GRID RECTANGLE Z -10 -4@4.5 40 40 
+  SOURCE DIRECTION 0 0 1
+
+WINDOW X Y
+CONSIDER ONLY 0 APERTURE
+PLOT FACETS 23 23 OVERLAY
+PLOT BEAMS
+CONSIDER ALL
+$ASK 'Correct sampling of aperture'
+TRACE
+
+CONSIDER ONLY DETECTOR
+WINDOW X -2@100 Y -2@100
+PIXELS 151
+SPREAD NORMAL
+DISPLAY
+  ISOMETRIC 'CORRECT PATTERN'
+  FORM -4
+  PICTURE
+RETURN
+RAYS 0  !! Clear rays
+$ASK 'Expected diffraction pattern'
+
+GRID RECTANGLE Z -10 -4@10 1 1 
+  SOURCE DIRECTION 0 0 1
+WINDOW X Y
+CONSIDER ONLY 0 APERTURE
+PLOT FACETS 23 23 OVERLAY
+PLOT BEAMS OVERLAY
+SPOTS POSITION
+CONSIDER ALL
+$ASK 'A single large Gaussian beam centered'
+TRACE 
+
+CONSIDER ONLY DETECTOR
+WINDOW X -2@65 Y -2@65
+PIXELS 151
+SPREAD NORMAL
+
+DISPLAY
+  ISOMETRIC 'LARGE GAUSSIAN'
+  FORM -4
+  PICTURE
+RETURN
+RAYS 0
+$ASK 'Passes through unaffected'
+
+GRID RECTANGLE Z -10 -4@.75 15 15 
+  SOURCE DIRECTION 0 0 1
+WINDOW X Y
+CONSIDER ONLY 0 APERTURE
+PLOT FACETS 23 23 OVERLAY
+PLOT BEAMS
+CONSIDER ALL
+$ASK 'A small square grid passes right through'
+TRACE
+FOCUS MOVE
+
+CONSIDER ONLY DETECTOR
+WINDOW X -2@350 Y -2@350
+PIXELS 151
+SPREAD NORMAL
+DISPLAY
+  ISOMETRIC 'SQUARE SOURCE'
+  FORM -4
+  PICTURE
+RETURN
+RAYS 0
+$ASK 'Diffracts like a square aperture'
+
+GRID ELLIPTIC Z -10 -4@.75 15 15 
+  SOURCE DIRECTION 0 0 1
+WINDOW X Y
+CONSIDER ONLY 0 APERTURE
+PLOT FACETS 23 23 OVERLAY
+PLOT BEAMS
+CONSIDER ALL
+$ASK 'Small round grid passes right through'
+TRACE
+FOCUS MOVE
+
+CONSIDER ONLY DETECTOR
+WINDOW X -2@300 Y -2@300
+PIXELS 151
+SPREAD NORMAL
+DISPLAY
+  ISOMETRIC 'ROUND SOURCE'
+  FORM -4
+  PICTURE
+RETURN
+$ASK 'Diffracts like a circular aperture'
+RETURN

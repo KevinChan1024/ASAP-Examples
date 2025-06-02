@@ -1,0 +1,28 @@
+!!++
+!! ELLIPSE03.INR
+!! Title: A Faceted Tube
+!! Category: Isolated Command
+!! Keywords: ELLIPSE, EDGES, extrude  
+!! Description: An extrusion of two ellipse
+!! edges. The resulting tube has 16 facets
+!! due to the default 16 segments for each 
+!! ellipse.
+!! Edit History: (latest first)
+!! 10/04/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  ELLIPSE Y 4 1 .5
+  ELLIPSE Y 12 3 1.5
+  OBJECT
+    0.1 0.2 'FACETED_TUBE'
+
+TITLE 'A FACETED TUBE'
+WINDOW Z X
+OBLIQUE 
+PLOT FACETS 10 10 
+RETURN

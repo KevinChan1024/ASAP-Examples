@@ -1,0 +1,86 @@
+!!++
+!! ITER_OPTICAL_SECOND_FORM.INR
+!! Title: Modifying OPTICAL RC with $ITER
+!! Category: Simple Problem
+!! Keywords: Scripts, $ITER, LENSES, minimum, merit, iterate, redefining
+!! Description: The following uses the second form of $ITER to find
+!! the best Radius of Curvature of an OPTICAL surface to focus rays at a
+!! specified target position. The OPTICAL is actually rebuilt with
+!! a new R of C value at each iteration (the object's associated 
+!! OPTICAL entity is redefined) and the XZ deviations of the the rays
+!! at the target are tested for minimum. When a best minimum is
+!! found, the new R of C is printed along with the Centroid Y 
+!! position, which should equal the Target Y position. It starts
+!! with a desired focus position of 18. This is where the target
+!! is placed. Change this number to view different results. The $ITER
+!! R of C range should be made to cover the new Target position.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 08/05/2004 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET  
+
+MEDIA
+  1.5 'GLASS'  
+  
+FOCPOS=18 !! Change this for a new desired focus (target) position
+SURFACES 
+  OPTICAL Y 0 5 0 ELLIPSE 2.5 2.5
+OBJECT 'CURVED_SURF'
+
+  INTERFACE 0 1 AIR GLASS
+
+WINDOW X Y
+SURFACES
+  PLANE Y (FOCPOS) RECTANGLE 10 10
+OBJECT 'TARGET' 
+
+ITERATE {
+  $ITER R_CURV 3 7 0.002 MERIT  !! Uses second form - Finding the minimum
+    {
+    RAYS 0  !! Clear old rays
+    SURFACES 1 !! REDEFINES SURFACE 100
+      OPTICAL Y 0 (R_CURV) 0 ELLIPSE 2.5 2.5
+    OBJECT 1 'CURVED_SURF' !! Redefine Object 1 with new R_CURV
+      INTERFACE 0 1 AIR GLASS
+    GRID ELLIPTIC Y -10 -2 2 -2 2 10 10
+      SOURCE DIRECTION 0 1 0
+    TRACE
+    CONSIDER ONLY TARGET
+    STATS POSITION
+    $GRAB 'RMS Deviation' 0 1 XDEV
+    $GRAB 'RMS Deviation' 0 3 ZDEV
+    MERIT=ABS(XDEV+ZDEV)  !! Find minimum deviations in X and Y
+    $GRAB 'Centroid' 0 2 CENTROID
+    CONSIDER ALL
+    }
+}
+
+R_CURV=5 NSTEPS=30  !! R_CURV is starting point for radius of curvature
+$ECHO NONE  !! Turn off console echo  
+
+!! The $DO loops over the ITERATE macro NSTEPS times. Search Start Point is R_CURV=5
+$DO 1 (NSTEPS)
+  &ITERATE
+ 
+$ECHO  !! Turn back on console echo
+
+RAYS 0 !! Clear old rays
+GRID ELLIPTIC Y -10 -2 2 -2 2 10 10
+  SOURCE DIRECTION 0 1 0 
+  MISSED ARROWS 50
+PLOT FACETS 5 5 0 OVERLAY
+TRACE PLOT OVERLAY 
+CONSIDER ONLY TARGET
+SPOTS POSITION 
+
+$SCR 4  !! The following 3 lines get printed
+  For Target plane at \FOCPOS.\
+  Found minimum at \MERIT.\  
+  R of C = \R_CURV.    \ for a Centroid Y position of \CENTROID.  \   
+\DUMMY:? 
+!! \DUMMY:? Causes $SCR to print in a pop up window   
+     
+RETURN

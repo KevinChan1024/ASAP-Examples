@@ -1,0 +1,30 @@
+!!++
+!! SOURCE_POS01.INR
+!! Title: SOURCE POSITION Example
+!! Category: Isolated Command
+!! Keywords: SOURCE, POS
+!! Description: Two sources are created with ray
+!! directions determined by their virtual origins.
+!! The rays will start tracing from the GRID
+!! position, but appear to come from the point
+!! given by the SOURCE POS coordinates. This is
+!! useful for plotting a fan of rays at a 
+!! particular angle starting just before an optic
+!! though their origin may be far away. 
+!! Edit History: (latest first)
+!! 03/11/2002 - cp - reformatted
+!! 10/13/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC Z 0 -4@2 10 10
+  SOURCE POSITION 0 -3 -3, 0 3 -3  !! 2 sources with different origins
+
+WINDOW Y Z
+PLOT RAYS 10
+$VIEW
+RETURN

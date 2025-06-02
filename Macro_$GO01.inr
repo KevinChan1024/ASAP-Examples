@@ -1,0 +1,43 @@
+!!++
+!! MACRO_$GO01.INR
+!! Title: $GO Predefined Macro
+!! Category: Isolated Command
+!! Keywords: $GO, macro, Macros_pre, goto, skip
+!! Description: Skipping a portion of code using
+!! the $GO pre-defined macro. The label used here may 
+!! be lower or upper case.  Lower case was chosen to
+!! allow easy commenting out of $GO line, without 
+!! having to find the closing label (lower case ignored
+!! otherwise).
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/11/2000 - cp - modified format; added description
+!! 08/02/1999 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  PLANE Z 0 RECTANGLE 0.5
+  OBJECT 'PLANE_1'
+    INTERFACE 0 0 AIR AIR
+
+$GO skip
+
+SURFACES
+  PLANE Z 1 RECTANGLE 0.5
+  OBJECT 'PLANE_2'
+    INTERFACE 0 0 AIR AIR
+
+skip
+
+SURFACES
+  PLANE Z 2 RECTANGLE 0.5
+  OBJECT 'PLANE_3'
+    INTERFACE 0 0 AIR AIR
+
+WINDOW Y Z
+OBLIQUE
+PLOT FACETS 11 11  
+RETURN

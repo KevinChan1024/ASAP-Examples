@@ -1,0 +1,46 @@
+!!++
+!! INTERFACE02.INR
+!! Title: Refractive Interface
+!! Category: Isolated Command
+!! Keywords: INTERFACE, Interfaces
+!! Description: Several ways of defining
+!! refractive interfaces. The PLUS (+) sign
+!! prevents reflected rays from being traced.
+!! Note: This file only contains code fragments.
+!! It is not a run-able file.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 04/27/2001 - cp - added note to description
+!! 10/11/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+MEDIA
+  4 'GERMANIUM'
+COATINGS PROPERTIES
+  0 1 'TRANS'
+
+!! More code here
+
+INTERFACE COAT +TRANS AIR GERMANIUM
+
+WAVELENGTHS          
+  587.6E-7   656.3E-7
+COATINGS PROPERTIES
+  0  0.95    0 0.95
+
+!! More code here
+
+INTERFACE COAT +1 SCHOTT_BK7 SCHOTTNEW_F2
+
+!! The FRESNEL command should be executed first
+!! if the user wishes an automatic calculation of
+!! transmission coefficients with angle. In this case,
+!! the use of BARE (short for BARE_SUBSTRATE) will 
+!! insure proper calculations for the media used.
+FRESNEL AVERAGE
+WAVELENGTHS  587.6E-7  656.3E-7
+
+!! More code here
+
+INTERFACE COAT +BARE SCHOTT_BK7 SCHOTTNEW_F2

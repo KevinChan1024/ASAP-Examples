@@ -1,0 +1,74 @@
+!!++
+!! FIELD_MODULUS.INR
+!! Title: FIELD MODULUS of Aberrated System
+!! Category: Simple Problem
+!! Keywords: Wave, FIELD, MODULUS, diffraction, macro, aberrated, UPDATE  
+!! Description: Performing a FIELD MODULUS of an
+!! aberrated optical system. The analysis is contained
+!! in a macro which is called four times.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/05/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  1 0  'REFL'
+  
+!! Use F/1 mirror to generate third-order aberrations  
+SURFACES
+  OPTICAL Z (F=2) (R=-2*F) (K=-1)
+  OBJECT 'MIRROR'
+    LIMITS -4@1.1 F-.2 F+.001 Z
+    INTERFACE COAT -REFL
+    
+SURFACES
+  PLANE Z 0 
+  OBJECT 'DETECTOR'
+
+PIXELS SQRT(8192/3) 1
+
+ANALYZE { !! This defines a macro which is repeated four times
+ PARABASALS 4
+ BEAMS COHERENT DIFFRACT
+ WAVELENGTHS (W=.0001)
+ WIDTHS 1.6
+ SEARCH SEQUENTIAL
+ GRID POLAR Z 0 0 1 0 360 5 6 -.7071
+   SOURCE DIRECTION 0 #1 1
+ TRACE
+ FIELD MODULUS 0
+ SPOTS POSITION ATTRIBUTE 1 OVERLAY
+ DISPLAY
+   CONTOUR 10
+   RAYS 0  !! Clear rayset
+}
+
+TITLE 'SPOTS AND THRU-FOCUS DIFFRACTION PATTERN FOR PERFECT BEAM'
+WINDOW Y -.0005 .0005 Z .0015 -.0005
+$ANALYZE 0
+
+TITLE 'SPOTS AND FOCAL PLANE DIFFRACTION PATTERN FOR OFF-AXIS COMA'
+B=(A=.002)/2 
+WINDOW X -(B) (B) Y (A*F-B) (A*F+B)
+$ANALYZE (A)
+
+TITLE 'SPOTS AND MEDIAL FOCAL PLANE PATTERN FOR ASTIGMATISM'
+UPDATE  !! Allow for more entity data space to redefine surface 1
+SURFACE 1
+  OPTICAL Z (F) (R) (K)
+  ASYM (E=W*R*.64)+1 1-E
+WINDOW X -.001 .001 Y -.001 .001
+$ANALYZE 0
+
+TITLE 'SPOTS AND THROUGH FOCUS PATTERN FOR SPHERICALLY ABERRATED BEAM'
+UPDATE
+SURFACE 1
+  OPTICAL Z (F) (R) .95*256*W+K
+WINDOW Y -.0005 .0005 Z .0015 -.0005
+$ANALYZE 0
+
+RETURN

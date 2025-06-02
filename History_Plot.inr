@@ -1,0 +1,90 @@
+!!++
+!! HISTORY_PLOT.INR
+!! Title: Plotting Ray Histories
+!! Category: Simple Problem
+!! Keywords: Tracing, HISTORY, PLOT, PATHS, SAVE
+!! Description: Using HISTORY PLOT to plot the reverse
+!! trajectory of a selected ray path. The SAVE command
+!! must be invoked before the trace in order to have 
+!! saved ray intersection data.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 12/20/2001 - cp - updated HISTORY syntax
+!! 02/28/2000 - cp - modified format; added description
+!! 01/19/00 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CENTIMETERS
+ 
+MEDIA
+  2.44  'ZNSE'
+  
+MODEL 
+  HARVEY 0.1 -1.8
+  
+FRESNEL AVERAGE
+SPLIT 2
+LEVEL 1
+   
+EDGES
+  RECTANGLE Z 6 1.0 1 16 0.0 360.0
+   
+SURFACES
+  PLANE Z 0.0 ELLIPSE 2.5  
+  OBJECT 'LENS.FRONT'
+    INTERFACE COAT BARE AIR ZNSE
+    REDEFINE COLOR 1
+   
+SURFACES
+  OPTICAL Z 1 -5 ELLIPSE 2.5  
+  OBJECT 'LENS.BACK'
+    INTERFACE COAT BARE AIR ZNSE
+    REDEFINE COLOR 1 
+    SCATTER MODEL 1 
+      TOWARDS EDGE 1 5
+     
+SURFACES
+  TUBE Z 0.0 2.5 2.5 .3301 2.5 2.5 0.0 0.0  
+  OBJECT 'LENS.EDGE'
+    INTERFACE 0 0 AIR AIR
+    REDEFINE COLOR 1
+  
+SURFACES
+  PLANE Z -2 ELLIPSE 3.5 3.5 1.5/3.5  
+  OBJECT 'APERTURE' 
+    INTERFACE 0 0 AIR AIR
+    REDEFINE COLOR 3
+  
+SURFACES
+  PLANE Z 6 RECTANGLE 1  
+  OBJECT 'DETECTOR'
+    INTERFACE 0 0 AIR AIR
+    REDEFINE COLOR 2
+  
+GRID ELLIPTIC Z 0 -2.5 2.5 -2.5 2.5 1 51 
+  SOURCE POSITION 0 0 -10 
+  MOVE TO Z -10 
+RETURN 
+
+SAVE 10
+TRACE
+
+CONSIDER ONLY DETECTOR 
+PATHS
+
+CONSIDER ALL
+WINDOW Y Z
+PROFILES 0 0 OVERLAY  'The History of Path 6'
+
+SELECT ONLY PATH 6 
+
+!! Leave PLOT out to list intersection data
+HISTORY PLOT 1 COLOR 2  !! Plot every (1) ray in red (2)
+RETURN
+
+
+
+

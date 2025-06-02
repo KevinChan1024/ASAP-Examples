@@ -1,0 +1,62 @@
+!!++
+!! COATINGS_LAYERS_COMPARISON.INR
+!! Title: COATINGS LAYERS With or Without Wavelength Option
+!! Category: Simple Problem
+!! Keywords: Analysis, COATINGS LAYERS, WAVELENGTH  
+!! Description: A comparison of COATINGS LAYERS using the wavelength option
+!! and without.  Demonstrates how the wavelength option requires coating
+!! thickness in waves in the medium and not a vacuum. Therefore, multiply
+!! the thickness in a vacuum by the real part of the index at the reference
+!! wavelength.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 08/07/2012 - cp - corrected spelling
+!! 11/07/2008 - cp - added header
+!! 11/03/2008 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM 'MW'
+WAVELENGTH 500 NM
+
+MEDIA
+  1.52 'GLASS'
+  0.76`5.32 'ALUMINUM'
+
+COATINGS LAYERS 500 !! with wavelength option
+        0.040*0.76 ALUMINUM 'AL_COAT1' !!-------- 1st syntax
+        !! thickness in waves in the medium, not vacuum
+        !! 20/500=.04 =fractional wave thickness in vacuum 
+        
+COATINGS LAYERS  !! without wavelength option
+        20.0 ALUMINUM 'AL_COAT2' !!---------- 2nd syntax
+        !! 500*.04=20 =nm thickness in vacuum
+
+SPLIT 1 1E-19
+FRESNEL AVE
+
+SURFACES
+  PLANE Z -2 RECT 1
+  PLANE Z  2 RECT 1
+  PLANE Z 0.0 RECT 1
+  PLANE Z 0.1 RECT 1
+OBJECT 
+  .2 'TEST.1'
+      INTERFACE COAT AL_COAT1 AIR GLASS  !! <---- Change AL_COAT number and re-run
+  .1 'TEST.2'                               !! to compare the STATS results below.
+      INTERFACE COAT +BARE AIR GLASS     !! They should be identical.
+  .4 'R_DET'
+  .3 'T_DET'
+  
+RAYSET Z -1
+  0 0 1
+SOURCE DIRECTION Z 1.0 90
+
+PLOT FACETS 5 5 0 OVERLAY
+MISSED ARROW 2
+TRACE PLOT  
+
+STATS 
+RETURN

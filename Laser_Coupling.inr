@@ -1,0 +1,154 @@
+!!++
+!! LASER_COUPLING.INR
+!! Title: Laser Coupling
+!! Category: Simple Problem
+!! Keywords: Wave, laser, coupling, FIELD, COUPLE, DECOMPOSE
+!! Description: This file demonstrates the use of
+!! ASAP for calculating the coupling efficiency
+!! of a laser diode to a single-mode fiber. The 
+!! beams must be decomposed in direction first
+!! to determine the total energy losses for the
+!! coupling efficiency calculation later. 
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 02/21/2002 - js - added FIBR for a clad fiber mode
+!! 03/27/2000 - cp - modified format; added description
+!! 11/01/1999 - js - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LAMBDA=1.55    !! SOURCE WAVELENGTH IN MICROMETERS
+UNITS MM
+WAVELENGTH (LAMBDA) MICRONS
+
+MEDIA
+  2.1417 'NBALL'
+  1.4505 'CORE'        !! INDEX OF CORE @1.55 UM FOR CORNING SMF-28 FIBER
+  1.4447 'CLADDING'    !! INDEX OF CLADDING @1.55 UM FOR CORNING SMF-28 FIBER
+
+FRESNEL AVERAGE
+
+!! Define geometry parameters
+DLENS=0.5       !! Lens diameter
+RLENS=DLENS/2   !! Lens Radius
+D1=0.043        !! Source-to-lens distance
+D2=0.922        !! Lens-to-fiber distance    
+
+!! Define the ball lens at Z=D1+RLENS
+SURFACES
+  ELLIPSOID 3@(RLENS) 0 0 (D1+RLENS)
+  OBJECT 'BALL_LENS'
+    INTERFACE COAT +BARE AIR NBALL
+    REDEFINE COLOR 1
+
+!! Define the detector at D1+DLENS+D2
+SURFACES
+  PLANE Z (D1+DLENS+D2) ELLIPSE (RLENS) (RLENS)
+  OBJECT 'DETECTOR'
+    INTERFACE 0 0 AIR AIR
+    REDEFINE COLOR 3
+
+!! Define the source
+WIDTHS 1.6
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+
+W0X=(1.50/1000)*0.886  !! convert to ASAP width def
+W0Y=(0.65/1000)*0.886  !! convert to ASAP width def
+GAUSSIAN Z 0 0 0  1 1  0 0  (W0X) (W0Y)
+
+WINDOW X -2@0.004 Y -2@0.002
+PIXELS 201
+FIELD ENERGY 0
+
+!! Decompose directionally due to very small waist
+RAYS 0  !! Delete old rays before making new
+DECOMPOSE DIRECTION 0.1 45 
+
+!! Look at the field just in front
+!! of the ball lens, and "grab" the
+!! total integrated flux from the 
+!! console window, saving it to a
+!! the variable named E0.  Note that
+!! the beams were not traced up to 
+!! this place.  ASAP can compute the
+!! field at any Z position specified
+!! as long as there are no intervening
+!! optical elements.  D1 is the location
+!! of the ball-lens "vertex." 
+!! This is not part of the coupling 
+!! Calculation, but used to determine
+!! the total energy losses throughout
+!! the system due to various causes.
+
+WINDOW Y -0.056 0.056  X -0.056 0.056
+FIELD ENERGY (D1-0.001)
+
+DISPLAY
+  $GRAB 'Integral' E0
+  PICTURE
+  GRAPH
+  TRANSPOSE
+  GRAPH
+RETURN
+
+WINDOW Y Z
+PLOT FACETS 9 9 OVERLAY
+
+!! Trace rays through the ball lens
+TRACE PLOT 5 COLOR 2
+
+CONSIDER ONLY DETECTOR
+WINDOW X -0.03 0.03 Y -0.03 0.03
+FIELD ENERGY (D1+DLENS+D2)
+
+!! Grab the resulting energy from the 
+!! console window and save it to E1
+!! This shows other losses, including
+!! Fresnel.
+
+DISPLAY
+  $GRAB 'Integral' E1
+RETURN      
+
+!! Next define the fiber mode as if it
+!! were a new source, and compute the
+!! overlap with FIELD COUPLE.  This
+!! version of the FIELD command computes
+!! the coupling coefficient of the current
+!! ray set relative to the previously 
+!! computed field. This examples models
+!! a Corning SMF-28 Fiber. 1.4505 and 1.4447 
+!! are the core and cladding indices. 
+
+RAYS 0  !! delete all previous rays/sources
+ 
+PI=ACOS(-1)
+CORE_RADIUS=4.1        
+V=2*PI/LAMBDA*CORE_RADIUS*SQRT(1.4505^2-1.4447^2)  
+
+RAYSET Z (D1+DLENS+D2)
+ 0 0 1 0.0041 0.0041 -9 (V)
+ SOURCE DIRECTION 0 0 1
+
+PIXELS 201
+WINDOW X -0.03 0.03 Y -0.03 0.03
+FIELD ENERGY (D1+DLENS+D2) COUPLE
+
+$GRAB 'Coupling Efficiency' CE
+
+DISPLAY
+  PICTURE
+RETURN
+
+!! Write the various results to a file
+RAT=E1/E0
+$ECHO NONE
+$IO OUTPUT RESULTS +FILE(11)  !! Append to file
+$SCR 1
+\DLENS.3\ \D1.3   \ \D2.3   \  \E0.        \\E1.       \\RAT.3   \\CE.3   \
+$IO OUTPUT CLOSE
+$ECHO
+RETURN

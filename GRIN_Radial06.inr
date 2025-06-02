@@ -1,0 +1,111 @@
+!!++
+!! GRIN_RADIAL06.INR
+!! Title: Radial GRIN with 3D Index of Refraction Profiles
+!! Category: Isolated Command
+!! Keywords: GRIN, MEDIA, FUNCTION, radial, fiber, SECH, hyperbolic
+!! Description: Based on GRIN_RADIAL05.inr but with index function in 3D: 
+!! Sech(radial), decaying exponential in Z.
+!! Edit History: (latest first)
+!! 08/24/2016 - jah - made index profile 3D and measurement iteration 3D
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 12/07/2009 - cp - added header
+!! 12/04/2009 - jah - replaced quadratic radial GRIN from grin_radial02.inr
+!!-- 
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTHS 0.6328 UM
+
+$FCN SECH_DEXPZ  R=SQRT[_1^2+_2^2],
+              A=_4,
+              B=_5,
+              [(2*EXP(-_3/B))/(EXP(A*R)+EXP(-A*R))] 
+
+
+FUNCTION
+  USERFUNC 0 0 0 SECH_DEXPZ 0.25 60
+MEDIA 
+  1.8 GRIN surf 1 exponent 1 stepsize .1 mm 'SECH_DEXP_PROFILE'
+
+COATINGS PROPERTIES
+  0 1 'TRANS'
+
+SYSTEM TO SYSTEM_SETTINGS
+
+ROD_SEMIDIAM=2.5  
+ROD_LENGTH=49
+
+SURFACES
+  PLANE Z 0 ELLIPSE (ROD_SEMIDIAM)
+  OBJECT 'FIBER_FACE' 
+    INTERFACE COAT TRANS AIR SECH_DEXP_PROFILE
+SURFACES
+  TUBE Z 0 2@(ROD_SEMIDIAM) (ROD_LENGTH) 2@(ROD_SEMIDIAM)
+  OBJECT 'FIBER_BODY' 
+    INTERFACE COAT TRANS AIR SECH_DEXP_PROFILE
+SURFACES
+  PLANE Z (ROD_LENGTH) ELLIPSE (ROD_SEMIDIAM)
+  OBJECT 'FIBER_END' 
+    INTERFACE COAT TRANS AIR SECH_DEXP_PROFILE
+SURFACES
+  PLANE Z 52 RECTANGLE (ROD_SEMIDIAM*2)
+  OBJECT 'DETECTOR' 
+
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPSE Z 0 -4@.75 1 10
+  SOURCE POSITION 0 0 -1
+  MOVE TO Z -1
+
+WINDOW Y -5 5  Z -5 65
+PIXELS 127
+PROFILES 'YZ slice through SechR-ExpZ GRIN rod with trace' OVERLAY
+TRACE PLOT 
+RETURN
+
+FOCUS !! check focus of beam
+
+SYSTEM TO HOLD_SYSTEM
+
+!! Iterate to get radial index plot
+
+AOI=10  !! angle-of-incidence to use for index determination by refracted angle. Must be non-zero; choice may affect accuracy of result.
+
+!! iterate through radial and z to measure index
+!! Note: stopping just short of full radius may avoid some anomalies
+$ITER RADIAL_COORD 0 (ROD_SEMIDIAM*0.999) -21 Z_COORD 0 (ROD_LENGTH) -11 N_REFRACTED NOMIN
+  {
+  SYSTEM FROM SYSTEM_SETTINGS
+  SURFACE 
+    PLANE Z (Z_COORD) RECT 2@(ROD_SEMIDIAM)
+  OBJECT 'DUMMY'
+    INTERFACE 0 1 AIR SECH_DEXP_PROFILE
+  RETURN   
+  RAYS 0
+  RAYSET Z (Z_COORD)
+  0 (RADIAL_COORD) 1
+  SOURCE DIRECTION 0 SIN[AOI] COS[AOI] 
+  MOVE BY -0.5
+  TRACE 0 +DUMMY
+  CONSIDER ONLY DUMMY
+  $CLEAR
+  STATS 
+  $GRAB 'TOTAL' 0 1 R_RAYS R_FLUX
+  &REG R_RAYS R_FLUX
+    !! be sure we do not count a ray that misses
+    $IF (R_RAYS) GT 0.5 THEN 
+    GET 1
+    N_REFRACTED=SIN[AOI]/Y_DIR_B
+    $ELSE
+    N_REFRACTED=1
+    $ENDIF
+  CONSIDER ALL  
+  }
+
+DISPLAY ITER.DIS
+  PICTURE 'Radial GRIN refractive index profile by tracing rays'
+  GRAPH 0.0 0.2 0.4 0.6 0.8 0.99 'Radial/Z-exponential GRIN profiles at various Z'
+RETURN  
+
+SYSTEM FROM HOLD_SYSTEM

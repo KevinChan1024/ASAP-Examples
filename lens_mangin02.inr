@@ -1,0 +1,26 @@
+!!++
+!! LENS_MANGIN02.INR
+!! Title: Mangin Mirror by Focal Length
+!! Category: Isolated Command
+!! Keywords: MANGIN, LENSES
+!! Description: A mangin mirror, using FL
+!! entries for focal length and bending,
+!! with ray trace.
+!! Edit History: (latest first)
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES
+  MANGIN Z 0, .4 1 BK7 FL 3 -20
+  OBJECT
+  
+WINDOW Y Z
+WINDOW 1.5
+ARROW 3
+RAY 0 -.8 -1, 0 0 1 PLOT OVERLAY 'LENS:MANGIN fl' COLORS 2
+PLOT LENS 'LENS:MANGIN fl' COLORS 11
+RETURN

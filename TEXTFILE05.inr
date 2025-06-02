@@ -1,0 +1,27 @@
+!!++
+!! TEXTFILE05.INR
+!! Title: Default Formatting of TEXTFILE Output
+!! Category: Isolated Command
+!! Keywords: TEXTFILE, output, data, file, formatting
+!! Description: Create a text file of spots data 
+!! to show default format of output file.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/23/2006 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EMITTING DISK Z 0 4 4  100000  30 30
+
+WINDOW X -2@2 Y -2@3 !! X=Vertical, Y=Horizontal
+PIXELS 4 !! Force 4 pixels vertical and 6 horizontal to match window using square pixels
+SPOTS POSITION !! Show format of window
+
+DISPLAY
+  TEXTFILE MYFILE.TXT  !!  Note data arranged 4 (=X) columns by 6 (=Y) rows
+    DATA               !!  Allows optional formatting of data
+    EOF	               !!  Required line to close file
+    
+RETURN

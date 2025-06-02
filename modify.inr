@@ -1,0 +1,22 @@
+!!++
+!! MODIFY.INR
+!! Title: MODIFY Display Command
+!! Category: Isolated Command
+!! Keywords: MODIFY, DISPLAY
+!! Description: Modifies the distribution.
+!! Performed after a DISPLAY command.
+!! Note: This is not a runable inr file.
+!! Edit History: (latest first)
+!! 12/21/2001 - cp - modified description
+!! 10/04/2000 - cp - modified format;
+!! 01/01/1996 - bro - creation
+!!--
+
+** Assume a circular psf was just created. **
+
+$FCN ALOG EXP[_]
+DISPLAY 
+  MODIFY 1 51 1 51 ALOG  
+  MODIFY 1 51 26 51 0 0 
+  ISOMETRIC 'MODIFYING THE PSF'
+RETURN

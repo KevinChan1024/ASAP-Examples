@@ -1,0 +1,102 @@
+!!++
+!! AXIS_LOCAL_COHERENT02.INR
+!! Title: Analyizing Skewed Coherent Beams on Skewed Surfaces
+!! Category: Simple Problem
+!! Keywords: Analysis, AXIS, FIELD, CONSIDER, LOCAL, DECOMPOSE, BEAMS, XY[Z]
+!! Description: Illustrate coherent beam measurement and
+!! decomposition of a beam traveling along a skew axis, 
+!! encountering surfaces that are skewed relative to the
+!! global axes.
+!! Edit History: (latest first) 
+!! 07/25/2008 - cp - changed keyword
+!! 04/09/2007 - cp - added header
+!! 04/03/2007 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 555 NM
+
+MISSED ARROW 2
+
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6
+PARABASAL 4
+
+SURFACES
+  PLANE Z 5 RECT 5 5
+    ROTATE X -45 0 0
+  PLANE Z 15 RECT 5 5
+    ROTATE Y -60 15 0
+    ROTATE X -45 0  0
+OBJECT 
+  .2 'DET1'
+  .1 'DET2'
+
+GRID ELLIP Z 0 -4@2 11 11
+SOURCE DIRECTION 0 0 1
+ROTATE X -45 0 0
+
+PLOT FACETS 3 3 0 OVERLAY
+TRACE PLOT OVERLAY
+
+CONSIDER ONLY DET1
+
+AXIS LOCAL DET1
+
+MOVE BY 0.1
+FIELD ENERGY 0 YX PIXELS 111
+
+DISPLAY
+  PICTURE 'pre-DECOMPOSE, local axis'
+RETURN
+
+!! AXIS OFF
+!! 
+!! FIELD ENERGY 5 YX PIXELS 111
+!! 
+!! DISPLAY
+!!   PICTURE 'pre-DECOMPOSE, global axes'
+!! RETURN
+!! 
+!! CONSIDER ALL 
+
+RAYS 0
+DECOMPOSE +POSITION 0 SIN[45] COS[45] PLA
+
+AXIS LOCAL DET1
+
+
+FIELD ENERGY 0.1 YX PIXELS 111
+$COPY 9 DET1_DECOMP.DAT
+
+DISPLAY
+  PICTURE 'post-DECOMPOSE'
+RETURN
+
+CONSIDER ALL
+MOVE BY 0.2
+
+PLOT RAYS 1 COLOR 7 OVERLAY
+
+!! CONSIDER REMOVE DET1
+TRACE PLOT
+
+CONSIDER ONLY DET2
+
+AXIS LOCAL DET2
+
+FIELD ENERGY 0.1 YX PIXELS 111
+
+$COPY 9 DET2.DAT
+
+DISPLAY
+  PICTURE 'DECOMPOSEd beam traced'
+RETURN
+
+$VIEW
+&VIEW DET1_DECOMP.DAT
+&VIEW DET2.DAT
+RETURN

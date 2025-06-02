@@ -1,0 +1,53 @@
+!!++
+!! MACRO_$IF02.INR
+!! Title: $IF Predefined Macro #2
+!! Category: Isolated Command
+!! Keywords: $IF, macro, Macros_pre, $ELSEIF, $ELSE, EQ
+!! Description: Using $IF to provide typical decision
+!! branching found in most programming environments.
+!! $IF's may be nested.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 11/18/2003 - cp - removed keyword
+!! 02/28/2000 - cp - modified format; added description
+!! 01/18/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+TYPE=2    !! 1=SPHERE, 2=TUBE, OTHER=PLANE
+SHAPE=0   !! 1=CIRULAR PLANE, OTHER=RECTANGLE
+
+$IF (TYPE) EQ 1 THEN
+
+  SURFACES
+    ELLIPSOID 3@0.5 0 0 0
+    OBJECT 'SPHERE'
+      INTERFACE 0 0 AIR AIR
+
+$ELSEIF (TYPE) EQ 2 THEN
+
+  SURFACES
+    TUBE Z -0.5 2@0.5 0.5 2@0.5
+    OBJECT 'TUBE'
+      INTERFACE 0 0 AIR AIR
+
+$ELSE
+
+  SURFACES
+    $IF (SHAPE) EQ 1 THEN
+      PLANE Z 0 ELLIPSE    2@0.5
+    $ELSE
+      PLANE Z 0 RECTANGLE  2@0.5
+    $ENDIF
+      OBJECT 'PLANE'
+        INTERFACE 0 0 AIR AIR
+
+$ENDIF
+
+WINDOW Y Z
+PLOT FACETS 11 5
+$VIEW 
+
+RETURN

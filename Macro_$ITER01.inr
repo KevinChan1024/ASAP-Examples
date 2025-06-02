@@ -1,0 +1,33 @@
+!!++
+!! MACRO_$ITER01.INR
+!! Title: $ITER Predefined Macro
+!! Category: Isolated Command
+!! Keywords: $ITER, macro, Macros_pre, loop, iterate
+!! Description: Using $ITER to plot a function over
+!! a specified range (including end points).  The result
+!! for Y is found over 40 points taken in the X range of
+!! -PI to +PI. The data are stored in the display file
+!! ITER, which is graphed.
+!! Edit History: (latest first)
+!! 02/11/2000 - cp - modified format; added description
+!! 07/19/1999 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+PI=4*ATAN(1)
+
+$ITER X -(PI) (PI) -40 Y
+  {
+  A=SIN(X)
+  B=SIN(2*X)
+  Y=(A+B)/2 
+  }
+
+DISPLAY ITER
+  GRAPH 'Sum of first two harmonics'
+RETURN
+
+&REG  !! Show register contents
+RETURN

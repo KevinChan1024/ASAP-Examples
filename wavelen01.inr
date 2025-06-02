@@ -1,0 +1,28 @@
+!!++
+!! WAVELEN01.INR
+!! Title: Defining Wavelengths
+!! Category: Isolated Command
+!! Keywords: WAVELENGTHS, UNITS
+!! Description: How to define wavelengths.
+!! Three methods of defining wavelengths
+!! are given.
+!! Edit History: (latest first)
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!-- 
+
+!! Define a single wavelength, which, if the system
+!! units are inches, is equal to 0.5588 microns.
+WAVELENGTH 22E-6
+
+!! Define three wavelengths corresponding to F, d and C light.
+!! The wavelengths are entered in nanometers and are converted
+!! to meters.
+UNITS METERS
+WAVELENGTHS 486.1 587.6 656.3 NANOMETERS nanometers to meters
+
+!! Define four wavelengths in nanometers and converts to
+!! millimeters.
+WAVELENGTHS 1014 852.1 706.5 656.3 UNITS 1E-6 nanometers to mm
+
+

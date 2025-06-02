@@ -1,0 +1,118 @@
+!!++
+!! AMICI_PRISM.INR
+!! Title: Amici Roof Prism
+!! Category: Simple Problem
+!! Keywords: Geometry, POINTS, prism, COHERENT, macro, $IO PLOT, FIELD, REPLOT, SELECT, POLARIZ, INTERFACE REPEAT, psf
+!! Description: Tracing polarized beams through an
+!! Amici Roof Prism to show pupil polarization effects.
+!! Polarization is plotted at prism output and psf
+!! performed at detector.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/14/2008 - cp - added keyword
+!! 11/05/2003 - cp - fixed keyword
+!! 07/11/2001 - cp - corrected keyword
+!! 10/02/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS INCHES
+FRESNEL BOTH
+MEDIA
+  1.5 'BK7'
+  1.6 'F2'
+
+S=1  A=SQRT(2)/2*S  PP1=SQRT(S^2-(A^2))  PP2=2*S+A
+P3=-S+PP1  P4=A*S/(A+PP1)  P5=S+A P6=PP2-PP1
+
+EDGES
+  POINTS (S) (S) 0 1, -(S) (S) 0 1, -(S) (P3) 0 1, 
+        -(P4) -(S) 0 1, (P4) -(S) 0 1, (S) (P3) 0 1 
+OBJECT 'AMICI_FRONT_FACE'
+  INTERFACE COAT BARE AIR BK7
+
+EDGES
+  POINTS (S) (P5) (A) 1, (S) (P5) (P6) 1, (P4) (P5) (PP2) 1, 
+        -(P4) (P5) (PP2) 1, -(S) (P5) (P6) 1, -(S) (P5) (A) 1 
+OBJECT 'AMICI_TOP_FACE'
+  INTERFACE REPEAT
+
+EDGES
+  POINTS 0 (S) (PP2) 1, -(P4) (P5) (PP2) 1, -(S) (P5) (P6) 1,
+       -(S) (P3) 0 1, -(P4) -(S) 0 1, 0 -(S) (A) 1
+OBJECT 'AMICI_RIGHT_SIDE'
+  INTERFACE REPEAT
+
+EDGES
+  POINTS 0 (S) (PP2) 1, (P4) (P5) (PP2) 1, (S) (P5) (P6) 1,
+        (S) (P3) 0 1, (P4) -(S) 0 1, 0 -(S) (A) 1
+OBJECT 'AMICI_LEFT_SIDE'
+  INTERFACE REPEAT
+
+EDGES
+  POINTS (S) (S) 0 1, -(S) (S) 0 1, -(S) (P5) (A) 1, 
+         (S) (P5) (A) 1
+OBJECT 'AMICI_BEVEL'
+  INTERFACE REPEAT
+
+SURFACE
+  PLANE Y 3 ELLIPSE 1
+OBJECT 'LENS_SURF_1'
+  INTERFACE COAT +BARE AIR F2
+
+SURFACE
+  OPTICAL Y 3.5 -6 -2.56 ELLIPSE 1
+OBJECT 'LENS_SURF_2'
+  INTERFACE REPEAT
+
+SURFACE
+  PLANE Y 13.5 ELLIPSE 1
+OBJECT 'DETECTOR'
+
+GROUP -3
+  SHIFT Z 1.707107
+
+!! Coherent polarized psf calculations
+SPLIT 1
+SEGMENTS 2 
+
+SYSRAY { 1  !! Macro to setup and create rays 
+  PARABASALS 4
+  BEAMS COHERENT DIFFRACT
+  WAVELENGTH 587 NM
+  WIDTHS 1.6
+  POLARIZ X 0 1 
+  GRID ELLIPTIC Z -1 -4@0.75 2@#1
+    SOURCE DIR 0 0 1
+}
+ENTER NUMBER OF AXIAL RAYS>
+
+&SYSRAY 4  !! Just to create pretty picture
+CONSIDER ALL
+SELECT ALL
+WINDOW Y Z
+  PLOT FACETS 3 3 OVERLAY 'AMICI PRISM & LENS TO SHOW PUPIL POLARIZATION EFFECTS'
+  TRACE 0 LENS_SURF_1 PLOT  !! Trace up to prism output
+WINDOW Z X  
+SELECT ONLY 0.5 B  !! Isolate rays
+  PLOT POLARIZATION 'POLARIZATION STATE AT OUTPUT OF AMICI PRISM'
+SELECT ALL
+WINDOW Y Z
+  TRACE LENS_SURF_1 PLOT  !! Continue trace from prism onward
+
+RAYS 0  !! Clear previous rayset
+WINDOW Y X
+  &SYSRAY 16  !! Trace enough rays to calculate psf
+  TRACE
+CONSIDER ONLY 0.1
+WINDOW X -2@0.0006 Z 1.70711-0.0006 1.70711+0.0006
+PIXELS 71
+FIELD ENERGY
+DISPLAY
+  FORM -6
+  PLOT3D 'COHERENT POLARIZED PSF (AXIS -600 TO 600 MICRO INCHES)'
+$VIEW
+RETURN

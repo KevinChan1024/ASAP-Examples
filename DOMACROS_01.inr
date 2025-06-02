@@ -1,0 +1,52 @@
+!!++
+!! DOMACROS_01.INR
+!! Title: DOMACROS using FIRST, LAST and NEVER Options
+!! Category: Isolated Command
+!! Keywords: DOMACROS, FLUX, integral, macros-user 
+!! Description: Controlling execution of user-defined macro having 
+!! identical name to ASAP command.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 07/28/2008 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+UNITS MM
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6
+WAVELENGTH 633 NM
+GRID RECT Z 0 -4@2 4 4 
+SOURCE DIRECTION 0 0 1
+PIXELS 101  
+WINDOW Y X
+ 
+!! Following macro sets the total integral to
+!! arbitrary value passed in argument.
+FLUX {
+FIELD ENERGY   
+DISPLAY 
+RETURN
+$GRAB 'Integral' 0 1 TOTI 
+DOMACROS LAST !! Set priority so ASAP commands of identical
+              !! names come first, user-defined macros last.
+FLUX 0 #1/TOTI
+}
+
+!! Set following DOMACROS to LAST and 'FLUX 100' will set
+!! each ray to 100 and ignore previously defined user-macro.
+
+DOMACROS FIRST !! Set user-macros to be first in priority
+               !! if identical to ASAP command.
+FLUX 100 !! Set total integral to 100
+FIELD ENERGY 
+DISPLAY !! Check total integral was set properly
+STATS   !! Check incoherent flux calculation
+RETURN 
+
+DOMACROS NEVER !! Never do user-macros
+FLUX 100 !! Set each ray flux to 100, no macro performed
+STATS   !! Check incoherent flux calculation
+RETURN

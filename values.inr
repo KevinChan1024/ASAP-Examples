@@ -1,0 +1,23 @@
+!!++
+!! VALUES.INR
+!! Title: VALUES Display Command
+!! Category: Isolated Command
+!! Keywords: VALUES, DISPLAY
+!! Description: Shows functional values of
+!! current distribution data. Actual coordinates
+!! are supplied to retrieve values. Example
+!! output is shown. This is not a run-able file.
+!! Edit History: (latest first) 
+!! 02/28/2002 - cp - added to description
+!! 10/04/2000 - cp - modified format;
+!! 01/01/1996 - bro - creation
+!!--
+
+Example of output:
+
+--- VALUES 0 0 0 30 0 45 0 60
+  Vertical angle    Horizontal angle  FLUX / STERADIAN
+    0.0000000E+00     0.0000000E+00     0.9960894
+    0.0000000E+00      30.00000         0.8644138
+    0.0000000E+00      45.00000         0.7060395
+    0.0000000E+00      60.00000         0.4992301

@@ -1,0 +1,62 @@
+!!++
+!! BOUNDING_DIST.INR
+!! Title: Bounding a Distribution as Source
+!! Category: Simple Problem
+!! Keywords: Bounds, POS, Sources, apodizing, Gaussian, distribution
+!! Description: Shows how to analyze an area
+!! on a 2D distribution, as defined by an EDGE
+!! of any arbitrary shape. First the distribution 
+!! is turned into a source and the source is "clipped"
+!! to the EDGE using BOUNDS.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 02/22/2005 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM                  
+!! Default Gaussian apodization
+PI=ACOS(-1)
+U=SQRT(PI/2)*2300
+V=SQRT(PI/2)*2300
+BEAMS INCOHERENT GEOMETRIC 
+
+SURFACES
+  PLANE Z 25000 RECT 2500 2500
+  OBJECT 'DET'
+  
+WAVELENGTH 0.6328 UM      
+USERAPOD POS (U) (V) U*V  !! Same results if no arguments - this is default method
+GRID ELLIPTIC Z 0 -4@2350 2@1001  !! Since grid is in Z, 1st two params above represent
+  SOURCE DIR 0 0 1           !! X and Y semi-width scaling. The third is total flux scaling.
+FLUX TOTAL 100 
+
+WINDOW Y Z
+PLOT FACETS 3 3 OVER
+TRACE PLOT 500
+
+CONSIDER ONLY DET
+STATS
+!! At this point - could use SELECT ONLY for selecting a 
+!! rectangular or circular (using AXIS LOCAL first) area
+!! of rays for analysis.
+
+DUMP TEST1.DIS 
+EDGES !! Can be any shape, such as with POINTS
+  ELLIPSE Z 25000 -2@15 !! Could be at Z=0
+  SHIFT X 1500 !! Less flux here than at center due to
+  SHIFT Y 1500 !! Gaussian pos apod of source.
+RETURN
+ 
+!! Could also use CLIP POS here for normal square or
+!! circular clipping, instead of next two lines. 
+OBJECT 0  !! Must be done in advance of creating the source.
+  BOUNDS -.1
+  
+EMITTING DATA TEST1 !! The remaining source after bounding is created.
+WIN Y X 
+SPOTS POS ATT 0
+STATS
+RETURN

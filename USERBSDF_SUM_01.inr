@@ -1,0 +1,100 @@
+!!++
+!! USERBSDF_SUM_01.INR
+!! Title: Multi-peaked Anisotropic Scattering Function
+!! Category: Simple problem
+!! Keywords: Scatter, USERBSDF, $FCN, diffuser, SUM, anisotropic  
+!! Description: Modified USERBSDF05.INR example to demonstrate off-specular
+!! anisotropic scattering functions, and the summing of multiple simple
+!! functions to produce a useful aggregate scattering function.
+!! Edit History: (latest first)
+!! 10/10/2018 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET   
+
+XMEMORY MIN 1.1E7 !! Note: disable if you have insufficient free memory to support this
+UNITS MM
+PI=ACOS(-1)   
+
+!! Parameters
+OFFSET_ALPHA=0.10 !! Scatter peak offset in alpha direction (direction cosine space) 
+OFFSET_BETA=0.15  !! Scatter peak offset in beta direction (direction cosine space) 
+
+HW_ALPHA=0.03     !! Scatter peak size (standard deviation) in alpha direction (direction cosine space) 
+HW_BETA=0.05      !! Scatter peak size (standard deviation) in beta direction (direction cosine space) 
+
+ANGLE_INC=30      !! Angle of incidence of initial ray (in YZ (beta) plane
+
+!! Note: These expressions fail when the cone reaches a horizon. This is 
+!!       readily resolved, but we ignore here for simplicity.
+SCAT_CONE_UPPER=ASIN[SIN[ANGLE_INC]+OFFSET_BETA+3*HW_BETA]-ANGLE_INC
+SCAT_CONE_LOWER=-ASIN[SIN[ANGLE_INC]-OFFSET_BETA-3*HW_BETA]+ANGLE_INC
+SCAT_CONE_RIGHT=ASIN[OFFSET_ALPHA+3*HW_ALPHA]
+
+MAX_CONE_DEG=ABS[SCAT_CONE_UPPER]>ABS[SCAT_CONE_LOWER]>SCAT_CONE_RIGHT
+MAX_CONE_RAD=PI*MAX_CONE_DEG/180
+
+&REG SCAT_CONE_UPPER SCAT_CONE_LOWER SCAT_CONE_RIGHT MAX_CONE_DEG MAX_CONE_RAD 'Scatter cone semi-angle required '
+ 
+NORMFACT=0.3897814  !! Taken from Total Flux without normalization
+!! Need to normalize function to force energy conservation
+
+!! Create several functions for anisotropic USERBSDF, each showing a different offset 
+!! from the specular condition. Include a peak at the specular direction, and one each 
+!! for positive and negative offsets from specular in the alpha and beta directions.
+!! We will form the anisotropic scattering functions from these functions, then sum them
+!! to create one extended, multi-peaked anisotropic scattering function.
+
+$FCN CORNER_RECT RECT[-((_1-(_3+OFFSET_ALPHA)))/HW_ALPHA]*RECT[-((_2-(_4+OFFSET_BETA)))/HW_BETA] 
+
+!! We make the centered peak smaller to de-emphasize it, while retaining it as a reference 
+!! peak to clarify the behavior for general specular directions.
+$FCN CENTERED    0.5*EXP(-(4*(_1-_3)^2)/HW_ALPHA^2)*EXP(-(4*(_2-_4)^2)/HW_BETA^2)       
+$FCN ALPHA_PLUS  EXP(-((_1-(_3+OFFSET_ALPHA))^2)/HW_ALPHA^2)*EXP(-((_2-_4)^2)/HW_BETA^2)      
+$FCN BETA_PLUS   EXP(-((_2-(_4+OFFSET_BETA))^2)/HW_BETA^2)*EXP(-((_1-_3)^2)/HW_ALPHA^2)
+$FCN ALPHA_MINUS EXP(-((_1-(_3-OFFSET_ALPHA))^2)/HW_ALPHA^2)*EXP(-((_2-_4)^2)/HW_BETA^2)      
+$FCN BETA_MINUS  EXP(-((_2-(_4-OFFSET_BETA))^2)/HW_BETA^2)*EXP(-((_1-_3)^2)/HW_ALPHA^2)
+   
+MODEL
+  USERBSDF Y CORNER_RECT  !! Anisotropic scatter model
+  USERBSDF Y CENTERED     !! Anisotropic scatter model
+  USERBSDF Y ALPHA_PLUS   !! Anisotropic scatter model
+  USERBSDF Y BETA_PLUS    !! Anisotropic scatter model
+  USERBSDF Y ALPHA_MINUS  !! Anisotropic scatter model
+  USERBSDF Y BETA_MINUS   !! Anisotropic scatter model
+  SUM .1 .2 .3 .4 .5 .6
+RETURN  
+
+RAYSET Z 0
+  0 0 1
+  SOURCE DIRECTION Z (ANGLE_INC) 90   
+MOVE BY -1
+
+
+SURFACES
+  PLANE Z 0 RECTANGLE 2
+OBJECT 'DIFFUSER'
+  INTERFACE 0 1E-15 AIR AIR
+  LEVEL ALL
+  SCATTER MODEL 7
+  TOWARDS SPEC (NSCAT=1E7) (MAX_CONE_RAD) 1 !! Reduce initial cone angle to get more rays
+RETURN
+  
+WINDOW Y Z  ; WINDOW 1.2  
+MISSED ARROW 1.4
+PLOT FACETS OVERLAY 'Scatter demonstration'
+TRACE PLOT 1>INT(NSCAT/3111) COLOR 2
+
+
+!! WINDOW Y -2@SIN[25] X -2@SIN[25] 
+WINDOW Y SIN[ANGLE_INC]-OFFSET_BETA-2*HW_BETA SIN[ANGLE_INC]+OFFSET_BETA+2*HW_BETA X -2@+OFFSET_ALPHA+2*HW_ALPHA
+PIXELS 201
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+!!ANGLES
+PICTURE  
+!! $GUI CHARTS_OFF
+!! CONTOUR 10 TICS
+STATS 
+RETURN

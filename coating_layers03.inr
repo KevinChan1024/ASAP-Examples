@@ -1,0 +1,31 @@
+!!++
+!! COATING_LAYERS03.INR
+!! Title: Fabry-Perot Filter
+!! Category: Isolated Command
+!! Keywords: COATINGS LAYERS, Fabry-Perot, filter
+!! Description: COATINGS LAYERS in transmission.
+!! Fabry-Perot filter constructed from quarterwave
+!! layers of zinc sulfide (h) and magnesium
+!! fluoride (l). The layer prescription is:
+!!                  5        5 
+!!        GLASS/(HL) /HH/(LH) /GLASS 
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 08/07/2012 - cp - corrected keyword
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+FRESNEL AVERAGE !! Turn on angular dependent refl/trans coef calculation
+UNITS M     !! Meters
+WAVELENGTH 576.5 NM
+
+MEDIA
+  1.35     'MGF2'
+  1.5168   'BK7'
+  2.35     'ZNS'
+
+COATINGS LAYERS 576.5
+  0.25 ZNS 0.25 MGF2 last -2 layers replicated 5 times,
+  0.5  ZNS,
+  0.25 MGF2 0.25 ZNS last -2 layers replicated 5 times 'SPECIAL'

@@ -1,0 +1,120 @@
+!!++
+!! GHOST_PATH_SAVING_01.INR
+!! Title: Breaking up VIRTUAL.PGS for Faster Saving of Ghost PATHS
+!! Category: Simple Problem
+!! Keywords: Analysis, ghost, PATHS, SELECT, virtual, $SYS 
+!! Description: Shows how to break up virtual.pgs into chunks for
+!! faster saving of individual paths to DIN files.
+!! Edit History: (latest first)
+!! 02/11/2016 - cp - modified from SINGLET_GHOST_ANAL.INR
+!!--
+
+SYSTEM NEW
+RESET
+
+SPLIT 6 !! Makes 8 Paths. Try 10 - Makes 12 Paths
+
+
+!! Define Media 
+ MEDIA 
+   1.50678 'BK7_SIMO' 
+  
+ UNITS MM
+ WAVELENGTH 1053 NM
+
+!! Variables
+ NRAYS=110 nxn
+ STARTZ=0
+ THICKNESS=40 mm
+ RC_F=1125.126 mm
+ RC_B=-1125.126 mm
+ DIAM=20 cm
+ DIAM=DIAM*10 mm
+                      
+!! Geometry definitions begin here                      
+ ENT;SINGLET Z (STARTZ) (THICKNESS) DIAM/2 BK7_SIMO RD (RC_F) (RC_B)
+ EXPLODE                                               
+ ENTITY 
+   TUBE Z STARTZ-5 2@DIAM/2 THICKNESS+5 2@DIAM/2
+ OBJECT 'LENS_EDGE'
+   BOUNDS .3 -.2
+   
+!! Assign media
+ OBJECT 1 INTERFACE COATING BARE AIR BK7_SIMO   
+ OBJECT 2 INTERFACE COATING BARE AIR BK7_SIMO
+ OBJECT 3 INTERFACE COATING BARE AIR BK7_SIMO   
+   
+!! SOURCE DEFINITIONS BEGIN HERE
+ GRID ELLIPTIC Z STARTZ-10 -4@DIAM/2 2@(NRAYS)
+ SOURCE DIRECTION 0 0 1
+ FLUX TOTAL 100
+ 
+!! TRACE RAYS WITH OPTIONAL PLOT
+ MISSED 500
+ WINDOW Y 0 0 Z -400 400
+ PLOT FACETS 5 5 0 OVERLAY 
+ TRACE PLOT 101               
+
+$TIC
+!! Analysis
+RETURN
+ PATHS
+ $GRAB '------------------------' 1 1 PATHNUM
+
+$REG PATHNUM
+NSETS=4
+NPATHS=PATHNUM/NSETS 
+$SYS COPY "VIRTUAL.PGS" "SET_ALL.PGS" !! Store copy of initial pgs
+
+!! Macros...
+TOSET {
+ $SYS COPY "VIRTUAL.PGS" "SET#1.PGS" 
+}
+
+TOVIR {
+ RAYS 0 
+ $SYS COPY "SET#1.PGS" "VIRTUAL.PGS"
+ RAYS 
+ PATHS 
+}
+
+ADD_PATHS {
+ $DO 1 (NPATHS-1) 1; SELECT ONLY PATH #1, !! Executes once
+   OR PATH (#1+?),  !! Iterates on this row
+   RETURN
+} 
+
+NUM=1 !! Initialize NUM
+$DO 1 (PATHNUM) (NPATHS) 
+ {
+ $ADD_PATHS ?
+ SUBSET
+ !!PATHS
+ $TOSET LIT(NUM) !! Store to Set
+ RAYS 0
+ $SYS COPY "SET_ALL.PGS" "VIRTUAL.PGS" 
+ RAYS  
+ PATHS
+ NUM=NUM+1
+ }
+
+
+PWRITE {
+$DO 1 (NPATHS) 1 
+ { 
+ CONSIDER ALL
+ SELECT ONLY PATH ?
+ SPOTS POS ATT 0
+ DISPLAY
+ WRITE PATH?_SET#1 DIN
+ }   
+} 
+
+$DO 1 (NSETS) 1 
+ {
+ $TOVIR ?
+ $PWRITE ?
+ }
+
+$SYS DEL "SET*.PGS" 
+$TIC

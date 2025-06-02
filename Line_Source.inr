@@ -1,0 +1,32 @@
+!!++
+!! LINE_SOURCE.INR
+!! Title: Grid Converging to a Line
+!! Category: Simple Problem
+!! Keywords: Sources, SOURCE, LINE, REVERSE
+!! Description: Demostrates the creation of a grid source which focuses
+!! to a line. The +\- x-coordinates are made large to force the ellipsoid
+!! focii to form a line.  
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 10/31/2002 - sm - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+UNITS MM
+
+SURFACES
+  PLANE Z 60 RECTANGLE 10
+OBJECT 'BLK'
+
+GRID ELLIPTIC Z 0 -5 5 -5 5 2@100
+SOURCE LINE -1E4 0 60 1E4 0 60
+REVERSE
+
+WINDOW Y Z
+PROFILES OVERLAY
+TRACE PLOT
+WINDOW Y -2@10 X -2@10
+SPOTS POSITION
+RETURN

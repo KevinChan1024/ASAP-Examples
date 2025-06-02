@@ -1,0 +1,92 @@
+!!++
+!! COATING_MODELS01.INR
+!! Title: COATING MODELS Non-polarized
+!! Category: Simple Problem
+!! Keywords: Interfaces, COATINGS, MODELS, BSDFDATA, PRINT
+!! Description: In this file, BSDFDATA ANGLES is used to provide two
+!! models of data at different incident angles. This is a simpler
+!! case where polarization will be ignored. Each model will represent
+!! both s and p polarizations. Results are printed out at the end
+!! for the various input angles.  Note that ASAP will linearly
+!! interpolate in log amplitude space to get coefficients between
+!! the given angle data in the BSDFDATA ANGLES.
+!!
+!! The first number in the BSDFDATA ANGLES list is the angle in
+!! degrees from the surface normal.  The second is the azimuth angle.
+!! These are all 0. COATING MODELS assumes the coating behavior is
+!! independent of azimuth angle. The third number determines the flux
+!! scaling. Here, the numbers are scaled relative to normal incidence.
+!! This is not really necessary as ASAP will rescale the values
+!! to the 0 0 value for you.  This means the R and T values in
+!! the COATING MODELS statement ("0.5 0.5") are multiplied by the
+!! "0 0" value given as a starting point in the list. Other angle
+!! values will increase or decrease based on the specified relative
+!! amount to this normalized value. In this example, for reflected
+!! values, Normal incidence gives 0.5 (0.5*1), and then at 10° from
+!! Normal it will be 5% higher in reflection (1.05).
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MODELS
+  BSDFDATA ANGLES !! Reflected for both polarizations
+   0   0   1
+  10   0   1.05
+  20   0   1.10
+  30   0   1.15
+  40   0   1.20
+  50   0   1.25
+  60   0   1.30
+  70   0   1.35
+  80   0   1.40
+  90   0   1.45
+  BSDFDATA ANGLES !! Transmitted for both polarizations
+   0   0   1
+  10   0   .95
+  20   0   .90
+  30   0   .85
+  40   0   .80
+  50   0   .75
+  60   0   .70
+  70   0   .65
+  80   0   .60
+  90   0   .55
+COATINGS MODELS 1 1 2 2
+  .5 .5  'RT_DATA'  !! The behavior at normal incidence
+
+PRINT
+
+SURFACES
+  PLANE Z 0 RECTANGLE 0.5 0.5
+OBJECT 'PLANE'
+  INTERFACE COAT RT_DATA AIR AIR
+
+FRESNEL AVERAGE
+$DO 0 8
+  {
+  RAYS 0  !! Clear previous rays
+  RAY 0 0 -0.001 Z ?0 0 DIRECTION KEEP  !! Trace 1 ray and add to previous rays
+  GET 1  !! Get transmitted ray flux
+  TRAN?=F0
+  GET 2
+  REFL?=F0  !! Get reflected ray flux
+  }
+
+$ECHO NONE
+$SCR 10
+  ANGLE       R           T
+     0   \REFL0.    \ \TRAN0.    \
+    10   \REFL1.    \ \TRAN1.    \ 
+    20   \REFL2.    \ \TRAN2.    \
+    30   \REFL3.    \ \TRAN3.    \ 
+    40   \REFL4.    \ \TRAN4.    \ 
+    50   \REFL5.    \ \TRAN5.    \ 
+    60   \REFL6.    \ \TRAN6.    \ 
+    70   \REFL7.    \ \TRAN7.    \ 
+    80   \REFL8.    \ \TRAN8.    \ 
+$ECHO
+RETURN

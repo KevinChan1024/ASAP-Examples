@@ -1,0 +1,49 @@
+!!++
+!! MACRO_$ASK02.INR
+!! Title: $ASK Pausing and Prompting 
+!! Category: Isolated Command
+!! Keywords: $ASK, macro, Macros_pre, $BEEP, $IF, $DO, $LEAVE, $NEXT
+!! Description: Demonstrates the use of $ASK for
+!! pausing a script and prompting for input. Also shows
+!! A $DO loop containing a $IF...THEN structure using
+!! $NEXT to jump to top of loop and $LEAVE to prematurely
+!! exit loop.
+!! Edit History: (latest first)
+!! 07/28/2008 - cp - added $NEXT keyword
+!! 11/27/2002 - cp - added commands and keywords
+!! 10/23/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+NRAYS=100  !! Default settings
+Z9="YES"
+
+!! This is a dummy pause:
+$ASK 'Hit CR when you are ready to start'
+
+!! ASAP prompts user for the number of rays for the GRID command:
+&ASK NRAYS 'ENTER THE NUMBER OF RAYS>'
+GRID ELLIPTIC Z 0 -4@1 2@(NRAYS)
+  SOURCE DIRECTION 0 0 1
+
+!! The variable Z9 is initialized with YES. If the user enters a
+!! carriage return in response to the prompt, the value of Z9 is
+!! unchanged. Otherwise the value of Z9 is updated and the proper
+!! action is taken.
+
+$BEEP 4 .1 !! Beep 4 times with .1 seconds in between
+$DO 1 5  
+{ &ASK Z9 'YES to continue. Anything else exits(YES is default).'
+  $IF Z9" EQS YES THEN  !! Use "S" for testing strings
+    $ASK 'Some operation takes place here...'
+    $NEXT !! Go back to top of loop
+  $ELSE 
+    $ASK 'Something other than YES was entered; Exiting loop'
+    $LEAVE  !! Exit loop
+  $ENDIF 
+}  
+$ASK 'Loop has exited'
+RETURN

@@ -1,0 +1,67 @@
+!!++
+!! IMMERSE_RAYS02.INR
+!! Title: Complete Example using IMMERSE
+!! Category: Isolated Command
+!! Keywords: IMMERSE, Sources, led, Geometry
+!! Description: Using IMMERSE to start rays inside another
+!! medium other than vacuum/air. In this case, the rays
+!! must be born in plastic, since the source is inside the
+!! LED. Even though the interfaces are 100% transmissive,
+!! the rays must exit into AIR before they hit the LENS_A
+!! interface. Otherwise, wrong-side errors will stop the
+!! rays from going further.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 11/05/2003 - cp - fixed keyword 
+!! 04/08/2003 - cp - corrected source
+!! 02/16/2000 - cp - modified format; added description
+!! 03/30/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.4 'PLASTIC'
+  1.452816 'SILICA'
+  
+COATINGS PROPERTIES
+  0 1 'TRANS'
+
+IMMERSE PLASTIC  !! If commented out, wrong side errors will occur
+
+SURFACES
+  PLANE Z 0 ELLIPSE 1
+OBJECT 'LED_BOTTOM'
+  INTERFACE COAT +TRANS AIR PLASTIC
+SURFACES
+  TUBE Z 0 2@1 3 2@1 
+OBJECT 'LED_BODY'
+  INTERFACE COAT +TRANS AIR PLASTIC
+SURFACES
+  OPTICAL Z 4 -1 ELLIPSE 1
+OBJECT 'LED_DOME'
+  INTERFACE COAT +TRANS AIR PLASTIC
+SURFACES
+  OPTICAL Z 9 2.7169 -2.11074 ELLIPSE 4 
+OBJECT 'LENS_A'
+  INTERFACE COAT +TRANS AIR SILICA
+SURFACES
+  PLANE Z 12 ELLIPSE 4 
+OBJECT 'LENS_B'
+  INTERFACE COAT +TRANS AIR SILICA
+SURFACES
+  TUBE Z 9+2.069 2@4 12 2@4 
+OBJECT 'COLLIMATOR_EDGE'
+  INTERFACE COAT +TRANS AIR SILICA
+
+BEAMS INCOHERENT GEOMETRIC
+GRID POLAR X 0 0.001 0.002 65 115 1 15
+  SOURCE POSITION 0 0 0 !! To make a ray fan
+  SHIFT Z 3
+
+WINDOW Y Z
+WINDOW 1.2  !! Enlarge window 20%
+PROFILES OVERLAY 'LED COLLIMATOR OPTICAL SYSTEM'
+TRACE PLOT   
+RETURN

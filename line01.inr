@@ -1,0 +1,20 @@
+!!++
+!! LINE01.INR
+!! Title: A Line Edge
+!! Category: Isolated Command
+!! Keywords: LINE, EDGES  
+!! Description: A straight line edge.
+!! Edit History: (latest first)
+!! 10/04/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  LINE -1 0 0,  1 0 0
+WINDOW Y X
+WINDOW 1.5  !! Enlarge 50%
+PLOT EDGES 'EDGE:LINE' COLORS 11
+RETURN

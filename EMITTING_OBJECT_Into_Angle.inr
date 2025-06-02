@@ -1,0 +1,51 @@
+!!++
+!! EMITTING_OBJECT_INTO_ANGLE.INR
+!! Title: Defining Angular Direction of Emitting Object
+!! Category: Simple Problem
+!! Keywords: Sources, EMITTING OBJECT, direction, cone-angle, emission
+!! Description: Making an emitting object emit towards an angular direction.
+!! Edit History: (latest first) 
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 04/08/2008 - cp - modified keyword
+!! 03/26/2007 - cp - modified script and added header
+!! 03/22/2007 - wjd - creation
+!!--
+
+
+SYSTEM NEW
+RESET
+ 
+DISTANCE=100
+HEIGHT=5
+HALF_ANGLE=ATAN[HEIGHT/DISTANCE]
+$ASK HALF_ANGLE 'Input half angle to emit in Z direction (degrees).'
+HEIGHT=DISTANCE*TAN[HALF_ANGLE]
+
+MODEL
+  LAMBERTIAN 1
+RETURN
+
+EDGES
+  ELLIPSE Z (DISTANCE) 2@(HEIGHT)
+  SMOOTH
+  OBJECT !! May leave this as an entity to allow rays to continue
+
+SURFACES
+  ELLIPSOID 10 20 30 0 0 0
+  OBJECT
+  INTERFACE 1E-12 0 
+  SCATTER MODEL 1
+    TOWARDS EDGE 1
+    
+EMITTING OBJECT -.1 500 -.0001 
+FLUX TOTAL 100
+
+WINDOW Y Z
+PLOT FACETS 3 3 0 OVERLAY
+PLOT ENTITIES OVERLAY
+MISSED 5
+TRACE PLOT
+
+$VIEW  
+  
+RETURN

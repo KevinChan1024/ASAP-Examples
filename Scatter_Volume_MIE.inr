@@ -1,0 +1,83 @@
+!!++
+!! SCATTER_VOLUME_MIE.INR
+!! Title: Volume Scattering 
+!! Category: Simple Problem
+!! Keywords: Scatter, MIE, particles, MODELS, volume, $GO
+!! Description: Shows possible use for modeling volume scatter
+!! using multiple surfaces (to represent the volume) with MIE
+!! model applied. It is necessary to conserve flux by tracking
+!! parent ray transmission through the volume.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM
+WAVELENGTH .5 UM
+XMEMORY MIN
+
+MEDIA
+  1.49 'ACRYLIC'
+
+PIXELS 71
+
+MODEL
+  PARTICLES MIE ACRYLIC .1 .1 .1 PLOT
+$GO skip  !! This is a sample of PLOT output
+!!****************************************************
+Angle  Relative TIS  Sampling
+   0.0     0.422E-01 5000 radial
+   0.0     0.424E-01   71x  71
+  15.0     0.438E-01   71x  71
+  30.0     0.484E-01   71x  71
+  45.0     0.581E-01   71x  71
+  60.0     0.785E-01   71x  71
+  75.0     0.132       71x  71
+  89.9     0.200       71x  71
+!!****************************************************
+skip 
+
+$GRAB '30.0' 0 -2 TIS  !! Grab TIS value from output
+SURFACES
+  PLANE Z 0 ELLIPSE 1
+  OBJECT 'INTERFACE'
+    INTERFACE 0 1-(TIS)  !! Conserve flux of parent ray trans
+    SCATTER MODELS 1 1
+      TOWARDS SPEC 1000 1.57  !! Leave default t and a"
+!! Scattering is about specular direction and flux is weighted 
+!! according to number of scattered rays. Total Integrated Scatter
+!! will be accurate if enough rays are generated.
+
+SURFACES
+  OPTICAL Z 1.0001 -1.0001 ELLIPSE 1.0
+  OPTICAL Z -1.0001 1.0001 ELLIPSE 1.0
+  OBJECT; .1 'BACK'
+  OBJECT; .2 'FORWARD'
+
+GRID RECT Z -.001 -4@.01 4 4 RANDOM 1 
+  SOURCE DIRECTION Z 30
+CONSIDER ALL
+FLUX TOTAL 1
+TRACE
+STATS
+
+CONSIDER ONLY FORWARD
+WINDOW X Y
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+  AVERAGE
+  AVERAGE
+  DIRECTIONAL 'FORWARD SCATTER'
+RETURN
+
+CONSIDER ONLY BACK
+WINDOW X Y 
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+  AVERAGE
+  AVERAGE
+  DIRECTIONAL 'BACK SCATTER'
+RETURN

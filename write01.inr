@@ -1,0 +1,41 @@
+!!++
+!! WRITE01.INR
+!! Title: Saving Display Files
+!! Category: Isolated Command
+!! Keywords: WRITE, DISPLAY, output
+!! Description: Three examples of saving display
+!! files with WRITE. 
+!! Note: This is not a run-able file.
+!! Edit History: (latest first)
+!! 05/12/2003 - cp - corrected comments 
+!! 10/18/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+******************************************************* 
+!! Write current distribution data file into BRO009.DAT,
+!! thereby overwriting the data that existed in the file
+!! when DISPLAY was entered.
+
+...(other ASAP commands)...
+DISPLAY
+...(other ASAP commands)...
+WRITE
+
+******************************************************* 
+!! Write current distribution data file into BRO014.DAT.
+!! If BRO014.DAT had any data in it already, it's overwritten.
+
+...(other ASAP commands)...
+DISPLAY 
+...(other ASAP commands)...
+WRITE 14
+
+*******************************************************
+!! Read MYFILE.DIS into ASAP and write the file out into
+!! DOG.DIS (binary) and DOG.DIN (text).
+
+...(other ASAP commands)...
+DISPLAY MYFILE
+WRITE DOG
+

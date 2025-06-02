@@ -1,0 +1,52 @@
+!!++
+!! COLORS_MODIFIER.INR
+!! Title: Tracing in Different Colors
+!! Category: Isolated Command
+!! Keywords: COLORS, Analysis, Tracing, ATTRIBUTE
+!! Description: How to trace three sources in
+!! Red, Green, and Blue. ASAP automatically plots
+!! different sources using different colors, but
+!! if you want to control and specify the colors used
+!! (for example R, G, and B), this example shows you how. 
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  PLANE Z 10 RECTANGLE -2@4
+  OBJECT 'DETECTOR'
+
+GRID ELLIPTIC Z 0 -4@6.5 11 11 RANDOM 1
+  SOURCE DIRECTION 0 0 1, 0 SIN[5] COS[5], 0 SIN[-5] COS[-5] !! Makes 3 sources
+
+MISSED ARROWS 2
+
+PLOT FACETS OVERLAY
+SELECT ONLY SOURCE 1
+  TRACE PLOT COLORS 2 OVERLAY !! Order doesn't matter between COLOR
+                              !! and OVERLAY modifiers.
+SELECT ONLY SOURCE 2
+  TRACE PLOT OVERLAY COLORS 13 
+
+SELECT ONLY SOURCE 3
+  TRACE PLOT COLORS 11
+
+WINDOW Y X
+
+!! The ATTRIBUTE modifier is used here to make the
+!! low number of spots easier to see.
+SELECT ONLY SOURCE 1
+  SPOTS POSITION ATTRIBUTE 3 COLORS 2 OVERLAY
+SELECT ONLY SOURCE 2
+  SPOTS POSITION ATTRIBUTE 3 OVERLAY COLORS 13
+SELECT ONLY SOURCE 3
+  SPOTS POSITION ATTRIBUTE 3 COLORS 11
+SELECT ALL
+RETURN
+
+

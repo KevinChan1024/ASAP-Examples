@@ -1,0 +1,84 @@
+!!++
+!! ITER_FIND_LENS_RC.INR
+!! Title: Modifying Lens RC with $ITER
+!! Category: Simple Problem
+!! Keywords: Scripts, $ITER, LENSES, minimum, merit, iterate, redefining
+!! Description: The following uses the second form of $ITER to find
+!! the best Radius of Curvature of a lens to focus the rays at a
+!! specified target position. The lens is actually rebuilt with
+!! a new R of C value at each iteration (the object's associated 
+!! LENS entity is redefined) and the XY deviations of the the rays
+!! at the target are tested for minimum. When a best minimum is
+!! found, the new R of C is printed along with the Centroid Z 
+!! position, which should equal the Target Z position. It starts
+!! with a desired focus position of 60. This is where the target
+!! is placed. Change this number to view different results.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 03/12/2002 - cp - modified header, script format
+!! 12/20/2001 - cp - modified SCR syntax
+!! 02/07/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET  
+
+FOCPOS=60 !! Change this for a new desired focus (target) position
+LENSES
+  SINGLET Z 0 30 30 SCHOTT_BAK1 RD 47 0
+OBJECT 'LENS' 
+  INTERFACE 0 1 AIR AIR
+GRID ELLIPTIC Z -10 -25 25 -20 20 10 10
+  SOURCE DIRECTION 0 0 1
+WINDOW X Z 
+SURFACES
+  PLANE Z (FOCPOS) RECTANGLE 10 10
+OBJECT 'TARGET' 
+
+ITERATE {
+  $ITER RAD 10 100 0.002 MERIT  !! Uses second form - Finding the minimum
+    {
+    RAYS 0  !! Clear old rays
+    LENSES 1
+      SINGLET Z 0 30 30 SCHOTT_BAK1 RD (RAD) 0
+    OBJECT 1 'LENS' !! Redefine Object 1 with new R of C
+      INTERFACE 0 1 AIR AIR
+    GRID ELLIPTIC Z -10 -25 25 -20 20 10 10
+      SOURCE DIRECTION 0 0 1
+    TRACE
+    CONSIDER ONLY TARGET
+    STATS POSITION
+    $GRAB 'RMS Deviation' 0 1 XDEV
+    $GRAB 'RMS Deviation' 0 2 YDEV
+    MERIT=ABS(XDEV+YDEV)  !! Find minimum deviations in X and Y
+    $GRAB 'Centroid' 0 3 CENTROID
+    CONSIDER ALL
+    }
+}
+
+RAD=40  NSTEPS=30  !! RAD is starting point for radius of curvature
+$ECHO NONE  !! Turn off console echo  
+
+!! The $DO loops over the ITERATE macro NSTEPS times. Search Start Point is RAD=40
+$DO 1 (NSTEPS)
+  &ITERATE
+ 
+$ECHO      !! Turn back on console echo
+
+RAYS 0 !! Clear old rays
+GRID ELLIPTIC Z -10 -25 25 -20 20 10 10
+  SOURCE DIRECTION 0 0 1 
+  MISSED ARROWS 50
+PLOT FACETS 5 5 OVERLAY
+TRACE PLOT OVERLAY 
+CONSIDER ONLY TARGET
+SPOTS POSITION 
+
+$SCR 4  !! The following 3 lines get printed
+  For Target plane at \FOCPOS.\
+  Found minimum at \MERIT.\  
+  R of C = \RAD.    \ for a Centroid Z position of \CENTROID.  \   
+\DUMMY:? 
+!! \DUMMY:? Causes $SCR to print in a pop up window   
+     
+RETURN

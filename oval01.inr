@@ -1,0 +1,21 @@
+!!++
+!! OVAL01.INR
+!! Title: An Oval Edge
+!! Category: Isolated Command
+!! Keywords: OVAL, EDGES  
+!! Description: A partial oval edge made
+!! with OVAL and displayed with PLOT EDGES.
+!! Edit History: (latest first)
+!! 10/04/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+ 
+EDGES
+  OVAL Z 0,  1 2,  0.75,  16  45 325
+WINDOW Y X
+WINDOW 1.5  !! Enlarge 50%
+PLOT EDGES 'EDGE:OVAL' COLORS 11
+RETURN

@@ -1,0 +1,42 @@
+!!++
+!! ARRAY_BOUNDING03.INR
+!! Title: Bounding Arrays with Improved Faceting
+!! Category: Simple Problem
+!! Keywords: Geometry, ARRAY, BOUNDS, TUBE
+!! Description: Making an array of holes in a plane, 
+!! where each hole's section of the plane is 
+!! also an array element.
+!! This has the benefit of making visualization 
+!! easier, because the facet resolution is on 
+!! an element basis, rather than global.
+!! Edit History: (latest first)
+!! 01/25/2016 - cp - added -.1 note
+!! 01/13/2016 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+NX=20      !! number of elements in X
+NY=12      !! number of elements in Y
+
+SHX=1      !! hole size in X (semiwidth)
+SHY=1.2    !! hole size in Y (semiwidth)
+
+SX=3       !! spacing in X
+SY=4       !! spacing in Y
+
+SURFACE
+  PLANE Z 0 RECT SX/2 SY/2
+    ARRAY X NX-1 (SX), Y NY-1 (SY) 
+  TUBE Z -1 (SHX) (SHY), +1 (SHX) (SHY), 2@1 
+    ARRAY X NX-1 (SX), Y NY-1 (SY) BOUNDS
+OBJECT
+  .2 'PUNCHED_PLANE' 
+      BOUNDS +.1 !! For -.1 add MULTIPLE
+RETURN
+
+WINDOW Y X
+PLOT FACETS 11 11 0  OVERLAY
+PLOT SURFACES .1 COLOR 11  !! show the hole cutting entity
+$VIEW          

@@ -1,0 +1,115 @@
+!!++
+!! VAULTED_DOMED_PYRAMID_CROSSED_ROOFS.INR
+!! Title: Vaulted Domed Pyramid, crossed ROOFS
+!! Category: Simple Problem
+!! Keywords: Geometry, ROOF, RENDER, LIGHTS, VIEW, pyramid, vaulted, BOUNDS, mutual
+!! Description: Create a pyramid with a square-domed (groin-vaulted) cap replacing its apex.
+!! The pyramid is made of two crossed ROOF structures mutually bounded.
+!! The Square-base dome (vault) is made of two crossed TUBEs, mutually bounded.
+!! The vault structure is also bounded at the depth that makes its two limbs
+!! tangent to the pyramid sides, resulting in a smooth and seamless composite 
+!! surface on each pyramid side that transitions from the planar pyramid to the
+!! partial-cylindrical dome section.
+!! Note that the faceted view may show minor irregularity at the seam, but this 
+!! is just a plottng artifacts. It can be diminished by higher resolution plotting,
+!! but is not a problem in ray tracing. 
+!! If the geometry parameters are changed significantly, the RENDER view may need
+!! to be adjusted to properly capture the object view. 
+!! Setting the tube radius larger than the pyramid base will result in impossible 
+!! geometries. Difficult geometries will occur as the pyramid angle approaches 
+!! 0 or 180 degrees.
+!! Edit History: (latest first)
+!! 01/25/2018 - cp - added keyword, formatted
+!! 01/25/2018 - jh - creation
+!!-- 
+
+SYSTEM NEW
+                                                               
+UNITS MM
+
+$UNVAR ERROR
+
+!! Geometry parameters
+!! User controls
+TUBE_RAD=5          !! Tube radius of curvature
+TUBE_LEN=6          !! Tube semilength (before any bounding; should be >= radius)
+PYRA_BASE=8         !! pyramid base semi-width
+PYRA_ANGLE=75       !! pyramid apex full angle [degrees]
+
+!! Derived parameters
+VAULT_WID=TUBE_RAD*COS[PYRA_ANGLE/2]              !! semi-width of TUBE-based vault at pyramid tangency point  
+VAULT_DEP=TUBE_RAD*(1-SIN[PYRA_ANGLE/2])          !! depth of TUBE-based vault at pyramid tangency point  
+PYRA_DEP=[VAULT_WID/TAN[PYRA_ANGLE/2]]-VAULT_DEP  !! depth of pyramid at vault tangency point  
+PYRA_FHT=[PYRA_BASE/TAN[PYRA_ANGLE/2]]            !! depth of pyramid at vault tangency point  
+
+!! Plotting parameters
+TUBE_FACETS=19      !! facets used to plot TUBEs
+PYRA_FACETS=51      !! facets used to plot pyramid sides
+SHOW_CONSTRUCT=0    !! flag to show the construction geometry (1: SHOW, 0: DO NOT SHOW)
+
+!! Geometry
+!! Square dome structure from two crossed TUBEs
+SURFACES
+  TUBE X -(TUBE_LEN) 2@(TUBE_RAD), +(TUBE_LEN) 2@(TUBE_RAD), 2@0
+    SHIFT Z -(TUBE_RAD)
+  TUBE Y -(TUBE_LEN) 2@(TUBE_RAD), +(TUBE_LEN) 2@(TUBE_RAD), 2@0
+    SHIFT Z -(TUBE_RAD)
+    PLANE Z -(VAULT_DEP) RECT 2@(PYRA_BASE+VAULT_WID)/2
+OBJECT
+  .3 'VAULT_X'
+      BOUNDS -.2 +.1
+      REDEFINE COLOR 2
+      FACETS 2@(TUBE_FACETS)
+  .2 'VAULT_Y'
+      BOUNDS -.3 +.1
+      REDEFINE COLOR 3
+      FACETS 2@(TUBE_FACETS)
+RETURN
+
+!! Square pyramid structure from two crossed ROOFs
+SURFACES
+  ROOF Z 0 2@(PYRA_BASE) (PYRA_ANGLE)
+    SHIFT Z (PYRA_DEP)
+  ROOF Z 0 2@(PYRA_BASE) (PYRA_ANGLE)
+    ROTATE Z 90 0 0
+    SHIFT Z (PYRA_DEP)
+OBJECT
+  .2 'ROOF_X'
+      BOUNDS -.1 -.3
+      REDEFINE COLOR 2
+      FACETS 2@(PYRA_FACETS)
+  .1 'ROOF_Y'
+      BOUNDS -.2 -.3
+      REDEFINE COLOR 3
+      FACETS 2@(PYRA_FACETS)
+RETURN  
+
+!! Simple oblique view  
+!! WINDOW -Y -X
+!! OBLIQUE 20 10
+!! PLOT FACETS 5 5 0
+!! OBLIQUE OFF
+
+!! Plot geometry with or without the construction surface outlines, based
+!! on the setting of the SHOW_CONSTRUCT flag defined above.
+WINDOW Z Y
+$IF (SHOW_CONSTRUCT) GT 0.5 THEN
+PLOT FACETS 5 5 0 OVERLAY 'Domed pyramid with construction geometry'
+PLOT SURFACES
+$ELSE
+PLOT FACETS 5 5 0 'Domed pyramid'
+$ENDIF
+
+$VIEW
+
+!! Rendered oblique view
+VIEW 0
+WINDOW Y X
+PIXELS 501
+VIEW Y (PYRA_FHT), CENTER 0 0 -(PYRA_FHT/2), EYE -(1*PYRA_BASE) -(3*PYRA_BASE) (4*PYRA_BASE)
+VIEW ZOOM 0.6
+LIGHTS 5 3@-1/SQRT[3] , 5 -0.5 0 -0.8, -9 -(1*PYRA_BASE) -(2*PYRA_BASE) (4*PYRA_BASE)
+RENDER 
+VIEW OFF
+
+

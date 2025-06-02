@@ -1,0 +1,105 @@
+!!++
+!! TETRA_TUBE_ARRAY01.INR
+!! Title: ARRAY of Tetrahedral Prisms
+!! Category: Simple Problem
+!! Keywords: Geometry, ARRAY, SURFACE, BOUNDS, tetrahedron, prism, backlight
+!! Description: This example shows how to form tetrahedral prism
+!! structures as an arrayed surface. It involves two TUBE ARRAY 
+!! structures to form the actual prisms, and another tube that
+!! is present only to bound the object to prevent artifacts
+!! from adjacent array rows. The ridge angle is formed by a
+!! SKEW operation on the ridge tube, and the back facet angle
+!! is formed by a SKEW operation on the back tube. A SCALE
+!! operation is also used on the ridge tube to narrow it
+!! relative to the square profile of the original tube. 
+!!
+!! The array is shown in the 3D Viewer, first without
+!! the construction entities and then with them. This 
+!! illustrates how the array is formed.
+!!
+!! The ARRAY ... SEARCH option is illustrated here as a way
+!! to make raytracing of such object more efficient. It
+!! restricts the intersection search to a subset of all rows.
+!! This can be important in very large arrays, especially in
+!! light pipes and guides. It must be used with due attention
+!! to the view factor of surrounding array rows, but it is
+!! very useful.
+!! This example builds only a small array for demonstration
+!! purposes, but the technique may be extended to millions of
+!! elements. Note that the model has only three (3) objects, 
+!! regardless of the number of repetitions of the elements. 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/18/2005 - cp - modified format
+!! 08/17/2005 - jh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SPX=7
+SPY=4
+NX=2  !! May be increased as required
+NY=3  !! May be increased as required
+TX=SPX*NX
+TY=SPY*NY
+
+SURFACES
+  TUBE Z 0 2 3 5 1 1 1 1 !! Construction only -- bounds to exclude array overlap
+    SHIFT X -1
+    ARRAY (NX-1) (SPX) 0 0 (NY-1) 0 (SPY) 0 SEARCH 5 !! Restrict intersection search to surrounding n rings
+    SHIFT -(TX-SPX)/2  -(TY-SPY)/2
+  PLANE Z 0 RECTANGLE (TX/2) (TY/2) 
+  TUBE Z 0 2@2 4 2@2 1 1
+    ROTATE Z 45 0 0
+    SCALE Y 0.5
+    SKEW X 30 Z 0 
+    ARRAY (NX-1) (SPX) 0 0 (NY-1) 0 (SPY) 0 SEARCH 5 !! restrict intersection search to surrounding n rings 
+    SHIFT -(TX-SPX)/2  -(TY-SPY)/2
+  TUBE Z 0 2 1.8 3 2 1.8 1 1
+    SHIFT X -2
+    SKEW X -20  Z 0
+    ARRAY (NX-1) (SPX) 0 0 (NY-1) 0 (SPY) 0 SEARCH 5 !! restrict intersection search to surrounding n rings
+    SHIFT -(TX-SPX)/2  -(TY-SPY)/2
+
+
+OBJECT
+  .2 'SKEWTUBE' 
+      BOUNDS -.1 +.3 -.4 
+  .1 'BACKTUBE'
+      BOUNDS -.2 +.3 -.4 
+  .3 'BASE'
+      BOUNDS MULTIPLE +.1 +.2
+      FACETS 37 37
+  
+WINDOW Y -2@(TY) X -2@(TX)
+PLOT FACETS 17 17 0
+$VIEW 
+
+$SCR 7 '3D View without constuction entities'
+
+The first 3D View shows the array without 
+the entities used to build it.
+
+Select the "OK" button to generate a view
+with these construction entities shown.
+\SCRDUMMY:?
+
+!! DO NOT DISTURB THE $SCR LINES ABOVE
+
+$WAIT 4
+
+PLOT ENTITIES
+$VIEW 
+
+$SCR 7 '3D View with constuction entities'
+
+This 3D View shows the array with 
+the entities used to build it. This allows
+you to examine how the array objects were formed.
+
+Select the "OK" button to close this dialog.
+\SCRDUMMY:?
+
+!! DO NOT DISTURB THE $SCR LINES ABOVE
+

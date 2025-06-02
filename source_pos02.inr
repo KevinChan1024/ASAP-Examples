@@ -1,0 +1,42 @@
+!!++
+!! SOURCE_POS02.INR
+!! Title: SOURCE POSITION GRID Example
+!! Category: Isolated Command
+!! Keywords: SOURCE, POS, grid
+!! Description: A grid of sources are created from
+!! the information provided by two GRID commands.
+!! In this example, the first GRID tells ASAP how
+!! many rays are in each grid in XY.  Since this is
+!! an elliptical grid, the total is 12. It also determines
+!! the size of the grid (-4@1) at the starting position (Z=0).
+!! The second GRID gives the extent of the apparent origins
+!! of the entire array of grids in XY at their starting position.
+!! This would be -4@0.5 at Z=-3. The MOVE command moves the rays
+!! of all grids along their trajectories to this point, so that
+!! the raytrace will start from there. 
+!! The plot shows how the rays from each grid cross each other
+!! at the grid starting point of Z=0 so that there are 9 rays
+!! eminating from the location defined by the first GRID command.
+!! Each ray contributed by one of the 9 grids.
+!! Edit History: (latest first)
+!! 07/12/2002 - cp - added comment on ONE option
+!! 03/11/2002 - cp - reformatted
+!! 10/13/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC Z 0 -4@1 2@4  !! Each grid point here has a ray starting from
+GRID ELLIPTIC Z -3 -4@0.5 2@3  !! the source point defined by this grid.
+  SOURCE POSITION GRID  !! use the ONE option to make it all one source
+  MOVE TO Z -3  !! To see the rays eminating from their source points.
+
+!! Display rays to see result  
+WINDOW Y Z
+OBLIQUE
+PLOT RAYS 10
+$VIEW
+RETURN

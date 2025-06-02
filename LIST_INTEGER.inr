@@ -1,0 +1,44 @@
+!!++
+!! LIST_INTEGER.INR
+!! Title: LIST INTEGER output
+!! Category: Isolated Command
+!! Keywords: LIST INTEGER, GRID, Tracing 
+!! Description: Demonstration of LIST INTEGER.
+!! Some simple geometry is created, a trace is performed
+!! and the result of the command LIST INTEGER is shown.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 7/12/2005 - gg - creation
+!!--
+
+
+SYSTEM NEW
+RESET  
+
+LENSES
+  SINGLET Z 0 2 5 SCHOTT_BK7 RD 50 0
+OBJECT 'SINGLET'     
+  INTERFACE 0 1 AIR AIR
+
+SURFACES
+  PLANE Z 97.24152 RECTANGLE 5 5
+OBJECT 'DETECTOR'
+
+GRID ELLIPTIC Z -10 -4.5 4.5 -4.5 4.5 5 5
+  SOURCE DIRECTION 0 0 1
+              
+WINDOW Y Z
+PLOT FACETS OVERLAY
+
+TRACE PLOT
+
+LIST INTEGER     
+     
+!! COMMAND OUTPUT SHOULD READ
+!! --- LIST INTEGER
+!!
+!! Listing of Integer Data for 21 Rays
+!!
+!!     Ray  Media Shape Split Level #Hits  Parent Source Object(s)
+!!        1     0     1     0     0    -3        1    1    2    1    0
+

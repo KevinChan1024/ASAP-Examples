@@ -1,0 +1,34 @@
+!!++
+!! PLOTTING_MESH.INR
+!! Title: Mesh Plot Display of a Source
+!! Category: Simple Problem
+!! Keywords: Radiometry, MESH, DIMENSIONS, plot, DRAWING
+!! Description: This shows how to do a mesh plot of a source
+!! or set of rays. Two sources are created to emit in 
+!! opposite directions. A radiant distribution is made which
+!! is averaged around the X-Y plane.  The mesh plot sends data
+!! to the vector file which can be displayed in the 3-D viewer
+!! or by using the DRAWING command.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 09/24/2003 - cp - changed category name
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! The following produces 2 lobes eminating in opposite
+!! directions.
+EMITTING RECT Z 0 5 5 50000 
+EMITTING RECT -Z 0 5 5 50000
+WINDOW X Y 
+RADIANT Z !! Using default values
+DISPLAY
+  CONTOUR 5 TICS
+  AVERAGE 0 100 !! Average all pixels 360° around X-Y plane
+  GRAPH
+  MESH
+  $VIEW
+  DRAWING DIMENSIONS
+RETURN

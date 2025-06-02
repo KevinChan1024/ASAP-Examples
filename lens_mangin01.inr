@@ -1,0 +1,29 @@
+!!++
+!! LENS_MANGIN01.INR
+!! Title: Mangin Mirror by Curvature
+!! Category: Isolated Command
+!! Keywords: MANGIN, LENSES
+!! Description: A mangin mirror, using CV
+!! entries for curvature, with ray trace.
+!! Edit History: (latest first)
+!! 12/21/2001 - cp - added RETURN
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES
+  MANGIN Z 0, .4 1 BK7 CV -0.2 -0.2
+  OBJECT
+  
+WINDOW Y Z
+WINDOW 1.5
+ARROW 3
+RAY 0 -.8 -1, 0 0 1 PLOT OVERLAY 'LENS:MANGIN cv' COLORS 2
+PLOT LENS 'LENS:MANGIN cv' COLORS 11
+
+RETURN
+
+

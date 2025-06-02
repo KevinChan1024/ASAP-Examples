@@ -1,0 +1,16 @@
+!!++
+!! VERSION.INR
+!! Title: VERSION Command
+!! Category: Isolated Command
+!! Keywords: VERSION, revision 
+!! Description: Command to check ASAP version in use.
+!! Edit History: (latest first)
+!! 07/28/2008 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+VERSION  !! Prints out ASAP Kernel Version number
+
+RETURN

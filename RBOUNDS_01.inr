@@ -1,0 +1,56 @@
+!!++
+!! RBOUNDS_01.INR
+!! Title: Multiple Bounding Using RBOUNDS
+!! Category: Isolated Command
+!! Keywords: RBOUNDS, Bounds, Macros_user
+!! Description: Demonstrate RBOUNDS for bounding of
+!! a plane by a range of discrete edge entities to
+!! create a series of distinctive holes punched in
+!! the plane object.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 09/26/2011 - cp - added header
+!! 09/24/2011 - jah - creation
+!!--
+
+SYSTEM NEW
+
+!! Macro:
+!! Make a row of edge entities with distinct size, shape, and orientation
+MAKEROW { 1
+  $DO -2 2 
+    {
+    EDGES 
+      ELLIPSE Z 0 2@(2.5+ABS[#1]) ABS(?)+3 !! ELLIPSE with varied numbers of points to form triangles, squares, and pentagons 
+      ROTATE Z ?*#1*90/4 0 0 
+      SHIFT X ?*10 
+      SHIFT Y #1*10 
+    }
+}
+row number >>
+
+!! Loop to create multiple rows of punch entities 
+!!  by calling the row macro 
+$DO -2 2
+  {
+  $MAKEROW ? 
+  }
+  
+!! Result is 5x5=25 edges to punch holes in the following plane  
+
+!! Create a plane object and bound by all 25 edges to form holes
+SURFACES
+  PLANE Z 0 RECT 26
+OBJECT
+  .1 'PUNCHED_PLATE' 
+      !! Either form of entity reference works; choose one of the two following lines
+      RBOUNDS +.2 +.26  !! 25 entities relatively referenced from .2 to .26
+!!      RBOUNDS  +1  +25  !! 25 entities absolutely referenced from  1 to  25
+RETURN
+
+!! Plot with sufficient facet resolution to show holes
+WINDOW Y X; WINDOW 1.1
+PLOT FACETS 2@101 0 'A plane variously punched with holes'
+RETURN 
+ 
+  

@@ -1,0 +1,24 @@
+!!++
+!! LENS_IDEAL01.INR
+!! Title: Simple Ideal Lens
+!! Category: Isolated Command
+!! Keywords: IDEAL, LENSES
+!! Description: Defines an ideal lens with
+!! a focal length of 5 and whose vertex is
+!! located at z = 4. The lens is 2 in diameter.
+!! Edit History: (latest first)
+!! 12/21/2001 - cp - modified file structure
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES
+  IDEAL Z 4 1 
+    1 0 -1/5 1 
+
+RETURN
+
+

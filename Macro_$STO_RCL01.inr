@@ -1,0 +1,23 @@
+!!++
+!! MACRO_$STO_RCL01.INR
+!! Title: Saving and Retrieving Stored Variables 
+!! Category: Isolated Command
+!! Keywords: $STO, $RCL, macro, Macros_pre, register, variable
+!! Description: How to save and retrieve variables from 
+!! saved register files. See below for examples. This
+!! is not a runable inr file.
+!! Edit History: (latest first)
+!! 06/02/2014 - gb - replaced *.reg file name
+!! 12/21/2001 - cp - modified description
+!! 10/24/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+!! Stores the contents of variables D0 to Z9 in LASTVALS.REG.
+$STO D0 Z9
+
+!! Stores the contents of variables D0 to Z9 in MYVALUES.REG.
+$STO MYVALUES D0 Z9
+
+!! Restores the contents of variables saved in RLIB.REG.
+$RCL RLIB

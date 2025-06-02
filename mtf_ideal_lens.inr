@@ -1,0 +1,61 @@
+!!++
+!! MTF_IDEAL_LENS.INR
+!! Title: MTF from an Ideal Lens
+!! Category: Simple Problem
+!! Keywords: Wave, FIELD, mtf, IDEAL, FFT, LENSES, ENERGY, psf
+!! Description: MTF produced by an ideal lens using FFT. 
+!! First the PSF is plotted at one wavelength. Then the 
+!! spatial frequency spectrum is calculated with FFT
+!! and plotted.
+!! Edit History: (latest first) 
+!! 02/01/2012 - cp - Added DISPLAY after FFT command
+!! 11/05/2003 - cp - fixed keyword
+!! 05/19/2000 - cp - creation; modified from an earlier file
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6
+WAVELENGTH 1 UM
+
+LENSES
+  IDEAL Z 1 3
+    1 0 -1/10 1
+OBJECT 'LENS'
+
+EDGES
+  RECTANGLE Z 11 .3 .3
+OBJECT 'DET'
+
+GRID ELLIPTIC Z 0 -4@3 21 21 
+  SOURCE DIRECTION 0 0 1
+
+WINDOW Y Z
+PROFILES 0 0 -1 'TRACE OF 21 X 21 BEAMS THROUGH IDEAL LENS' OVERLAY
+TRACE PLOT
+
+CONSIDER ONLY DET
+PIXELS 121
+WINDOW X -2@.5E-2 Y -2@.5E-2
+FIELD ENERGY 11
+DISPLAY
+  ISOMETRIC 'PSF FROM IDEAL LENS' 
+  GRAPH 'PSF FROM IDEAL LENS'
+    'POSITION IN MM
+    'PSF FROM IDEAL LENS W/ F/# 1.67
+    'WAVELENGTH IS 1 UM
+
+  FFT
+DISPLAY 
+  ISOMETRIC 'MTF FROM IDEAL LENS'
+  GRAPH .5 'MTF FROM IDEAL LENS'
+    'SPATIAL FREQUENCY IN INVERSE MM
+    'MTF FROM IDEAL LENS W/ F/# 1.67
+    'WAVELENGTH IS 1 UM 
+
+RETURN
+

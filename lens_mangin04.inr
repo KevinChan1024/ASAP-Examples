@@ -1,0 +1,26 @@
+!!++
+!! LENS_MANGIN04.INR
+!! Title: Mangin Mirror FL in Detail
+!! Category: Isolated Command
+!! Keywords: MANGIN, LENSES
+!! Description: Defines a Mangin mirror whose
+!! first conicoid vertex is located at y=32.
+!! The central thickness is .75 and the aperture
+!! semi-diameter is 1.5. The focal length is 3
+!! and the bending parameter is -1, and so the
+!! first surface is flat. Medium 1 is bounded by
+!! the two conicoids.
+!! Edit History: (latest first)
+!! 12/21/2001 - cp - modified file structure
+!! 10/07/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES
+ MANGIN Y 32 .75 1.5 BK7 FL 3 -1 
+
+RETURN
+

@@ -1,0 +1,87 @@
+!!++
+!! FRESNEL_LENS02.INR
+!! Title: Fresnel Lens Using EDGE POINTS
+!! Category: Simple Problem
+!! Keywords: Edges, Fresnel, POINTS, EDGES, 2d
+!! Description: Making a Fresnel lens with EDGE POINTS
+!! in 2D form. A profile is made of one half of the 
+!! back side of the lens which is then swept about
+!! the center to make the surface. This is combined
+!! with a tube for the outer edge and a plane for the 
+!! front side.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 11/18/2003 - cp - fixed keyword
+!! 06/19/2002 - cp - added wavelength units 
+!! 12/19/2001 - cp - added BEAMS command
+!! 02/28/2000 - cp - modified syntax; added description
+!! 01/18/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM 'Watts'
+WAVELENGTH 550 NM
+
+MEDIA
+   1.5 'ACRYLIC'
+
+SURFACES
+  PLANE Z 0 ELLIPSE 2.646
+OBJECT 'FRESNEL.FRONT' 
+  INTERFACE 0 1 AIR ACRYLIC
+  REDEFINE COLOR 1
+  
+SURFACES
+  TUBE Z 0 2@2.646  0.2 2@2.646 0 0 
+OBJECT 'FRESNEL.EDGE'
+  INTERFACE 0 0 AIR ACRYLIC
+  REDEFINE COLOR 1
+  
+EDGES
+  POINTS X 0  2.646 0.2  1,
+              2.449 0.3  1,
+              2.449 0.2  1,
+              2.236 0.3  1,
+              2.236 0.2  1,
+              2.000 0.3  1,
+              2.000 0.2  1,
+              1.700 0.3  1,
+              1.700 0.2  1,
+              1.400 0.3  1,
+              1.400 0.2  1,
+              1.000 0.3  1,
+              1.000 0.2  1,
+              0.000 0.3  0
+  SWEEP AXIS 360   0 0 1   0 0 0
+OBJECT 'FRESNEL.BACK'
+  INTERFACE 0 1 AIR ACRYLIC
+  REDEFINE COLOR 1
+              
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC Z -1 -4@2.646 15 15 
+  SOURCE DIRECTION 0 0 1
+  FLUX TOTAL 5
+
+PIXELS 501
+WINDOW Y -4.4 4.4 Z -1 13
+PROFILES OVERLAY
+TRACE PLOT
+
+RAYS 0
+GRID ELLIPTIC Z -1 -4@2.646 151 151 RANDOM 1
+  SOURCE DIRECTION 0 0 1
+  FLUX TOTAL 5 
+TRACE 
+
+FOCUS MOVE
+WINDOW X -.5 .5 Y -.5 .5
+PIXELS 101
+SPOTS POSITION ATTRIBUTE 0
+
+DISPLAY
+  RADIAL 0.5
+  ISOMETRIC 'IRRADIANCE DISTRIBUTION AT BEST FOCUS'
+RETURN
+  

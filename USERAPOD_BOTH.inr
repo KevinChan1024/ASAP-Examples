@@ -1,0 +1,60 @@
+!!++
+!! USERAPOD_BOTH.INR
+!! Title: Apodizing in Position and Direction with $FCN
+!! Category: Simple Problem
+!! Keywords: Sources, USERAPOD, BOTH, apodizing, function, $FCN, EMITTING
+!! Description: Demonstrates apodizing a source in position and 
+!! direction with a user-defined function. Since the BOTH keyword 
+!! is used, the function variables _1, _2, _3 represent positional
+!! values for x, y, z, and _4, _5, _6 are the direction cosines
+!! a, b, c, respectively. See comments below.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 11/15/2002 - cp  - modified format; added description
+!! 11/13/2002 - arg - creation
+!!--
+ 
+SYSTEM NEW
+RESET
+    
+UNITS MM 'LUMENS'
+WAVELENGTH 550 NM
+
+$FCN COMBO ABS(6-ABS(_1))*(1-ABS(_5))
+!! In this function, _1 represents the x-position of each ray,
+!! and _5 represents b, the y-direction-cosine for each ray.
+
+USERAPOD BOTH COMBO !! Declare apodization before source creation.
+
+SURFACES
+  PLANE Z 0 ELLIPSE 6 3
+OBJECT 'DISK_SOURCE'
+  FACETS 5 5
+
+EMITTING OBJECT .1 -100000 ISO
+!! We use emitting object because userapod both is not allowed
+!! for an emitting disk source.  We create 100000 rays, evenly
+!! distributed across the surface (try a million rays for less
+!! noise in the data -- this will take 10-times as long!).
+!! the ISO option is used to override the default lambertian
+!! behavior of any emitting object.
+
+WINDOW Y X
+PLOT FACETS OVERLAY
+PLOT RAYS 2 50    !! Every 50th ray, ray w/most flux is 2 MM long
+$VIEW             !! Look at the rays in the 3-d viewer
+$IO VECTOR REWIND !! Rewind the 3-d viewer file
+
+WINDOW Y X
+SPOTS POSITION ATTRIBUTE 0
+!! Make a distribution of the source illuminance, or Lumens/MM^2
+DISPLAY
+  ISOMETRIC 'SPATIAL DISTRIBUTION'
+  PICTURE 'SPATIAL DISTRIBUTION'
+RETURN
+
+DUMP
+$VIEW LASTDUMP.DIS
+!! Shows the "radiant sphere" in 3-d viewer, which gives an
+!! Indication of the angular flux distribution (Lumens/Sr).
+RETURN

@@ -1,0 +1,68 @@
+!!++
+!! SPOTS_DIR_Spectral_Coloring.INR
+!! Title: SPOTS DIRECTION SOURCE COLORING
+!! Category: Simple Problem
+!! Keywords: Analysis, Sources, color, SPOTS DIRECTION
+!! Description: Show source color variation in SPOTS DIRECTION   
+!! This illustrates three ways multiple sources may be colored in SPOTS DIRECTION
+!!  1. Quasi-spectrally, when there are multiple wavelengths present 
+!!      ({reverse}rainbow order, regardless of the spectral range involved)
+!!  2. By standard color number starting with color 1, for multiple sources of 
+!!      the same wavelength
+!!  3. By overlaying each source separately by SELECT, and exerting direct color 
+!!      control on each source's plot
+!! Edit History: (latest first)
+!! 01/23/2018 - cp - added header
+!! 09/11/2017 - jah - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+UNITS MM 
+
+!! Make sources with wavelengths from 0.4 to 0.7 um wavelength, with increasing divergence with wavelength
+!!  (made the broadest first so the smaller ones will plot later, and thus be on top)
+$DO 7 4 -1
+  {
+    WAVELENGTH ?/10 UM
+    EMITTING DISK Z 0 2@2 1E5 2@15*(?-3)
+  }
+
+WINDOW Y -2@1 X -2@1
+SPOTS DIRECTION 'Rayset has multiple wavelengths - sources are colored pseudo-spectrally'
+
+RAYS 0
+!! Make sources with same wavelength, with increasing divergence as before
+!!  (made the broadest first so the smaller ones will plot later, and thus be on top)  
+WAVELENGTH 0.5 UM
+$DO 7 4 -1
+  {
+    EMITTING DISK Z 0 2@2 1E5 2@15*(?-3)
+  }
+
+WINDOW Y -2@1 X -2@1
+SPOTS DIRECTION 'Rayset has single wavelength - colored by standard color order'         
+
+RAYS 0
+!! Make sources with same wavelength, with increasing divergence as before, and coerce 
+!!  color of SPOTS using ...COLORS directive while selecing by source.
+!!  (made the broadest first so the smaller ones will plot later, and thus be on top)  
+WAVELENGTH 0.5 UM
+$DO 7 4 -1
+  {
+    EMITTING DISK Z 0 2@2 1E5 2@15*(?-3)
+  }
+
+SOURCE_COLOR_1=1  
+SOURCE_COLOR_2=2  
+SOURCE_COLOR_3=11  
+SOURCE_COLOR_4=26    
+  
+WINDOW Y -2@1 X -2@1 
+$DO 1 4 1
+  {
+    SELECT ONLY SOURCE ?
+    SPOTS DIRECTION COLOR (SOURCE_COLOR_?) 'Rayset has single wavelength - colored by direct control' OVERLAY     
+  }
+    RETURN !! necessary here to end OVERLAY; could also place last case outside $DO without an OVERLAY

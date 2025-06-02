@@ -1,0 +1,33 @@
+!!++
+!! LIST01.INR
+!! Title: LIST Command Options
+!! Category: Isolated Command
+!! Keywords: LIST, Sources, rays, Tracing 
+!! Description: Various options of the
+!! LIST command. See below for explanations.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 0.5 UM
+GRID RECT Z 0 -4@10 1 10
+  SOURCE DIRECTION 0 0 1
+  
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 0.7 UM
+GRID RECT Z 0 -4@10 1 10
+  SOURCE DIRECTION 0 SIN[30] COS[30]
+
+SELECT ONLY SOURCE 1
+
+LIST POSITION   !! Output XYZ data for all rays
+LIST DIRECTION  !! Output abc data for all rays
+LIST SOURCES    !! List all sources whether selected or not
+RETURN

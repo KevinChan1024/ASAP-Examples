@@ -1,0 +1,36 @@
+!!++
+!! OPTIMIZE03.INR
+!! Title: Optimizing a Fourier Transform Lens
+!! Category: Simple Problem
+!! Keywords: Lenses, Optimization, ABERRATIONS, VARIABLES, MINIMIZE, STORE
+!! Description:  Optimization of a multi-element telecentric
+!! lens system.  Default is 10 elements. Several field
+!! locations are used. The final result is saved as a macro
+!! and run.
+!! Edit History: (latest first)
+!! 03/14/2001 - cp - Modified format; added header
+!! 01/14/2001 - ag - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+TITLE 'Design a Fourier Transform lens (symmetric and telecentric)'
+
+UNITS MM
+WAVELENGTH .6328 UM  !! HeNe laser
+MEDIA
+  SF59  !! Highest Schott index
+N=10 $ASK N  !! Number of elements
+LENSES
+  $DO 1 (N)
+    SINGLET Z 10*? 5 25 SF59
+  COMPOSITE
+  ABERRATIONS LIST PLOT UF -.5/3 UB0 .5/3 FB 0 .5 .7 .866 1,
+    KTH0 .1 !! Force it to be telecentric
+  VARIABLES CV 2:(N) TH 1:(N) .1 !! Vary only half to maintain initial symmetry
+  MINIMIZE MULT 1000*N GLTH 2.5 25 TLEN N*25,
+    TARG !! Defaults to diffraction limit
+  STORE FTLENS.MAC
+$FTLENS
+RETURN

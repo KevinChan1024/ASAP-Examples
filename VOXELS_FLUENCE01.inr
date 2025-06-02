@@ -1,0 +1,103 @@
+!!++
+!! VOXELS_FLUENCE01.INR
+!! Title: Capturing Fluence Energy of a Focused Beam
+!! Category: Simple Problem
+!! Keywords: Interfaces, VOXELS FLUENCE, volume, emission
+!! Description:  How to capture a 3-D representation
+!! of energy fluence within any volume space along
+!! the path of a trace. The VOXELS command specifies
+!! the region of fluence capture. In this case, 
+!! a section of space at the end of a focused beam.
+!! Note when using the FLUENCE option, the traced 
+!! rays must actually travel to a point beyond the
+!! VOXELS distribution volume. This is the reason
+!! for the detector plane. The 3-D viewer is used to
+!! visualize the geometry and the volume file. 
+!! Finally, the volume fluence data was turned into
+!! a 3D volume source to show a crude example of
+!! making your own emitting cone.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/29/2012 - cp - corrected keywords
+!! 12/19/2005 - cp - modified and added comments 
+!! 10/04/2002 - cp - changed voxel filename
+!! 05/20/2001 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+!! System Settings  
+UNITS MM
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 550 NM
+
+!! Define Media
+MEDIA
+  1.55 'GLASS'
+
+!! Define Coatings
+COATINGS PROPERTIES 
+  1 0 'REFLECT'
+  0 1 'TRANSMIT'
+  0 0 'ABSORB'
+
+!! Define Geometry
+
+!! Front of Lens
+SURFACES
+  PLANE Z -4 ELLIPSE 2.5
+  OBJECT 'LENS.FRONT'
+    INTERFACE COAT TRANSMIT AIR GLASS
+    FACETS 5 5
+    
+!! Back of Lens
+SURFACES
+  OPTICAL Z -4 -5 ELLIPSE 2.5
+  OBJECT 'LENS.BACK'
+    INTERFACE 0 1 AIR GLASS
+    SHIFT Z 1
+    FACETS 5 5
+    
+!! Edge of Lens
+SURFACES
+  TUBE Z -4 2.5 2.5 -3 2.5 2.5
+  OBJECT 'LENS.EDGE'
+    INTERFACE 0 0 AIR GLASS 
+  	BOUNDS -.2
+  	FACETS 5 5 
+SURFACES
+  PLANE Z 4.5 RECTANGLE 2@1.5
+  OBJECT 'DETECTOR'
+  
+!! Define Source
+BEAMS INCOHERENT GEOMETRIC
+EMITTING DISK Z -5.5 2.3 2.3 10000 1 1 
+FLUX TOTAL 100.0 
+!! Select out the volume exactly for VOXELS distribution
+!! Otherwise, can use PIXELS, WINDOW and Local Box of objects
+!! Note that absorption may be over-estimated due to small number
+!! of voxels and rays used here. See Procedural Note "Using VOXELS in ASAP"
+VOXELS FLUENCE -4@1.0 1 3.95 39 39 100
+
+!! Show geometry and trace
+WINDOW Y Z 
+PLOT FACETS OVERLAY
+ARROWS OFF 
+TRACE PLOT 200
+$COPY 9 VOL_FLUX.DIS !! Copy default bro009.dat to named file
+STATS
+$VIEW 
+&VIEW VOL_FLUX.DIS  !! Add volume fluence file
+!! Use 8 and 9 keys to move selected planes or Shift-Drag.
+RETURN 
+
+!! Create an emitting cone and display
+RAYS 0
+$IO VECTOR REWIND
+WINDOW Y Z
+WINDOW 1.4
+EMITTING DATA VOL_FLUX 20000
+SPOTS POSITION
+$VIEW
+RETURN

@@ -1,0 +1,42 @@
+!!++
+!! OUTPUT_FORMATTED01.INR
+!! Title: Writing Formatted Output #1
+!! Category: Simple Problem
+!! Keywords: Macros_pre, output, formatting, $SCR, $IO, GET
+!! Description: Demonstrates the use of $IO to redirect data,
+!! and $SCR to write out lines of formatted output.  In 
+!! this example the data are written to RAYDATA.TXT.
+!! Four values are written by $SCR each time through the loop.  
+!! The "1" after $SCR tells ASAP to expect one line of 
+!! formatting information after the commmand (120 chars max).
+!! The width of each field is indicated by the distance between
+!! the / / delimiters.  The .9 tells ASAP to write a floating-
+!! point number with nine places after the decimal point.
+!! FILE(10) tells ASAP to use a file unit number of 10 or
+!! higher.
+!! Edit History: (latest first)
+!! 02/27/2003 - cp - modified description
+!! 02/28/2000 - cp - modified format; added description
+!! 01/18/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM
+WAVELENGTH 632.8 NM
+
+EMITTING DISK Z 0 1 1 10
+
+$ECHO NONE
+$IO OUTPUT RAYDATA.TXT FILE(10)
+$DO 1 10
+  {
+  GET ?  !! Load registers with currrent ray data
+
+  $SCR 1
+  \X0.9        \ \Y0.9        \ \C0.9        \ \W0.1 \
+  }
+$IO OUTPUT CLOSE
+$ECHO
+RETURN

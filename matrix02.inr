@@ -1,0 +1,32 @@
+!!++
+!! MATRIX02.INR
+!! Title: MATRIX PREVIOUS Option
+!! Category: Isolated Command
+!! Keywords: MATRIX, PREVIOUS, Manipulating
+!! Description: Example of a MATRIX command 
+!! option: PREVIOUS.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 12/21/2001 - cp - modified file structure
+!! 10/09/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  OPTICAL Z 4 35 -2 ELLIPSE 2
+    ROTATE X 45 deg about y 0 z 5
+  PLANE Z 16 ELLIPSE 5 2
+    MATRIX PREVIOUS
+
+!! Is equivalent to:
+
+SURFACES
+  OPTICAL Z 4 35 -2 ELLIPSE 2
+    ROTATE X 45 deg about y 0 z 5
+  PLANE Z 16 ELLIPSE 5 2
+    ROTATE X 45 deg about y 0 z 5
+
+RETURN

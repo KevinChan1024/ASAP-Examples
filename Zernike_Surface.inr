@@ -1,0 +1,123 @@
+!!++
+!! ZERNIKE_SURFACE.INR
+!! Title: Making a Zernike Surface
+!! Category: Simple Problem
+!! Keywords: Geometry, ZERNIKE, Twyman-Green, deformation, diffraction, PICTURE
+!! Description: Demonstrates the use of ZERNIKE surface in
+!! a Twyman-Green interferometer. Coefficients are applied 
+!! that deform the surface with Piston, Defocus and Spherical
+!! deformations combined.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2000 - cp - modified format; added description
+!! 01/18/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CENTIMETERS
+WAVELENGTH 632.8 NANOMETERS
+
+WL=632.8E-7
+
+COATINGS PROPERTIES
+  0.0  0.0  'ABSORB'
+  0.0  1.0  'TRANSMIT'
+  1.0  0.0  'REFLECT'
+  0.5  0.5  'BEAM_SPLITTER' 
+
+PL=100  !! Path length
+DIA=50  !! Diameter
+
+!! Cast Zernike coefficients in wavelength units
+!! so that a value of 1.0 implies a wave of
+!! sag at the outer edge of the reflector.  The 
+!! division by two accounts for the resulting
+!! deformations being observed in reflection.
+!! These defaults produce a pure rho^4 deformation
+!! by combining Piston, Defocus and Spherical.
+
+Z0=1.6        !! Piston
+Z1=0.0        !! X-tilt
+Z2=0.0        !! Y-tilt
+Z3=2.4        !! Defocus
+Z4=0.0        !! X-astigmatism
+Z5=0.0        !! Y-astigmatism
+Z6=0.0        !! X-coma
+Z7=0.0        !! Y-coma
+Z8=0.8        !! Spherial
+
+A0=Z0*WL/2        !! Piston
+A1=Z1*WL/2        !! X-tilt
+A2=Z2*WL/2        !! Y-tilt
+A3=Z3*WL/2        !! Defocus
+A4=Z4*WL/2        !! X-astigmatism
+A5=Z5*WL/2        !! Y-astigmatism
+A6=Z6*WL/2        !! X-coma
+A7=Z7*WL/2        !! Y-coma
+A8=Z8*WL/2        !! Spherial
+
+!! Pellicle beam splitter
+SURFACES
+  PLANE Z 0 ELLIPSE (DIA/2) (1.414*DIA/2) 0 0 0
+  OBJECT 'PELLICLE'
+    INTERFACE COAT "BEAM_SPLITTER" AIR AIR
+    FACETS 4 4
+    REDEFINE COLOR 1
+    ROTATE X 45
+
+!! Retro Reflector 1
+SURFACES
+  PLANE Z 0 ELLIPSE 2@(DIA/2)
+  OBJECT 'RETRO1_FRONT'
+    INTERFACE COAT REFLECT AIR SCHOTT_BK7
+    FACETS 4 4
+    REDEFINE COLOR 1
+    ROTATE X -90
+    SHIFT Y (PL)
+
+!! Retro Reflector 2
+SURFACES
+  ZERNIKE Z 0 (A0) (A1) (A2) (A3) (A4),
+              (A5) (A6) (A7) (A8),
+              ELLIPSE 1 1
+
+    SCALE (DIA/2) (DIA/2) 1
+  OBJECT 'RETRO2_FRONT'
+    INTERFACE COAT REFLECT AIR SCHOTT_BK7
+    FACETS 4 4
+    REDEFINE COLOR 1
+    SHIFT Z (PL)
+
+!! Detector
+SURFACE
+  PLANE Z 0 ELLIPSE 2@(DIA/2)
+  OBJECT 'DETECTOR'
+    INTERFACE COAT ABSORB AIR SCHOTT_BK7
+    FACETS 4 4
+    REDEFINE COLOR 1
+    ROTATE X 90
+    SHIFT Y -(PL)
+
+!! Define source
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 6328 ANGSTROMS
+WIDTHS 1.6
+
+GRID ELLIPTIC Z -100 -4@(DIA/2) 2@11
+  SOURCE DIRECTION Z
+
+PIXELS 101
+PLOT FACETS OVERLAY
+TRACE PLOT 
+
+CONSIDER ONLY DETECTOR
+WINDOW Z -2@(DIA/2) X -2@(DIA/2)
+WINDOW 1.2  !! Expand window by 20%
+SPREAD NORMAL
+
+DISPLAY
+  PICTURE  !! Show interference pattern using Window and Pixel settings
+RETURN

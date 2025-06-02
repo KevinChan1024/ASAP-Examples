@@ -1,0 +1,33 @@
+!!++
+!! MEDIA01.INR
+!! Title: Defining Non-dispersive Media
+!! Category: Isolated Command
+!! Keywords: MEDIA, ABSORB
+!! Description: Defining non-dispersive media.
+!! Three examples of using the MEDIA command
+!! are given.
+!! Edit History: (latest first)
+!! 12/21/2001 - cp - modified file structure
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Define common optical glasses BK7 and F2.
+MEDIA
+  1.5168  'SCHOTT_BK7'
+  1.62004 'HOYA_F2'
+
+!! Define an unnamed material with a refractive
+!! index equal to 4.
+MEDIA
+  4
+
+!! Define radiation hardened Schott SF6G5 with
+!! absorption.
+MEDIA
+  1.79117 ABSORB .017163 inverse centimeters 'SCHOTT_SF6G5'
+
+RETURN

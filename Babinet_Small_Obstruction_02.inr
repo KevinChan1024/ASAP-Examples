@@ -1,0 +1,102 @@
+!!++
+!! BABINET_SMALL_OBSTRUCTION_02.INR
+!! Title: Babinet's Principle for Small Obstructions using Phase Offset
+!! Category: Simple Problem
+!! Keywords: Wave, Babinet, Gaussian, diffraction, FIELD, CLIP, DECOMPOSE, SHAPE MODE, phase
+!! Description: The obstruction effect is subtracted from the unobstructed
+!! beam by capturing its field information using FIELD CLIP,
+!! DECOMPOSE-ing this to produce another source, and then reversing
+!! amplitude to effect the Babinet half-wave phase shift.
+!! Edit History: (latest first)
+!! 03/09/2016 - cp - formatted 
+!! 03/08/2016 - jah - change to offset obstruction phase using SHAPE MODE
+!! 07/27/2007 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 660 NM
+
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6
+PARABASAL 8
+
+!! Edges defining obscurations 
+EDGE
+  ELLIPSE Z 0 0.020 0.010 256
+    SHIFT X -0.5
+  ELLIPSE Z 0 0.050 0.020 256
+    SHIFT X 1.0
+RETURN
+
+SURFACE 
+  PLANE Z 100 RECT 10 10
+  PLANE Z 1  ELLIP 5 5
+OBJECT
+  .2 'OBSERVE'
+!!  .1 'OBSCURE_1'      !! Obscuration does not need to be physically modeled
+!!      BOUNDS -1
+!!  .1 'OBSCURE_2'      !! Obscuration does not need to be physically modeled
+!!      BOUNDS -2
+  .1 'OBSCURE_DUMMY'
+      INTERFACE 0 1 AIR AIR
+      SHIFT Z -0.01
+RETURN
+
+GAUSSIAN Z 0 0 0 211 131 0 0 2.0 1.0
+
+FIELD ENERGY 0 YX -2@1.3 -2@2.6 PIXELS 111
+DISPLAY
+  PICTURE 'SOURCE'
+RETURN
+
+!! Get total energy and normalize 
+$GRAB 'Integral' 0 1 SOURCE_ENERGY
+&REG SOURCE_ENERGY
+FLUX 0 1/SOURCE_ENERGY
+
+!! PLOT FACETS 5 5 0 OVERLAY
+!! TRACE PLOT
+
+!! Trace to dummy plane at obscuration location
+TRACE 0 OBSCURE_DUMMY
+
+!! Measure field clipped by obscuration
+CONSIDER ONLY OBSCURE_DUMMY
+FIELD ENERGY 1.0 CLIP -1 YX -2@0.025 -0.5-0.05 -0.5+0.05 PIXELS 51
+DISPLAY
+  PICTURE 'CLIPPED OBSCURATION 1'
+RETURN
+$COPY 29 OBSCURATION_1
+FIELD ENERGY 1.0 CLIP -2 YX -2@0.05 1.0-0.1 1.0+0.1 PIXELS 51
+DISPLAY
+  PICTURE 'CLIPPED OBSCURATION 2'
+RETURN
+$COPY 29 OBSCURATION_2
+
+CONSIDER ALL 
+
+!! Create new beam sets to describe the obscurations
+DECOMPOSE OBSCURATION_1.DAT +POSITION
+DECOMPOSE OBSCURATION_2.DAT +POSITION
+!! Impart a PI phase shift to the obscuration beam by amplitude reversal
+SELECT ONLY SOURCE .1 OR SOURCE .2 
+SHAPE MODE 1 -1  !! (1: the Gaussians are preserved, fundamental model only; -1: negate amplitude)
+RETURN
+
+SELECT ALL
+CONSIDER ALL
+
+!! Finish with trace to observation plane
+TRACE
+CONSIDER ONLY OBSERVE
+!! SELECT ONLY SOURCE .1  !! To see obstruction effect alone
+!! SELECT ONLY SOURCE .2  !! To see obstruction effect alone
+FIELD ENERGY 100 YX -2@2.0 -2@3.0  PIXELS 211
+DISPLAY
+  PICTURE 'perturbed Gaussian'
+RETURN
+
+

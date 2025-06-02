@@ -1,0 +1,114 @@
+!!++
+!! DIFFSHEET.INR
+!! Title: Using Pre-defined diffuser Sheets
+!! Category: Simple Problem
+!! Keywords: Scatter, SCATTER, MODELS, diffuser, SEARCH, SUM
+!! Description: This is a similar file to that shown in the 
+!! Feature Note called "Predefined Diffuser Models in ASAP."
+!! Please refer to this note for full description.  This 
+!! basically shows how to use SEARCH to apply a diffuser sheet
+!! that has different reflective and transmissive properties.
+!! This particular file goes a step further to compare calculated  
+!! results with the model plots (at 60°).
+!! Edit History: (latest first)
+!! 12/12/2013 - cp - corrected keyword 
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 04/09/2007 - cp - corrected keywords
+!! 08/04/2005 - cp - modified format; added description
+!! 03/23/2005 - js - creation
+!!--
+
+SYSTEM NEW
+RESET
+NSCAT=5000  !! For best calculated results
+PIXELS 1501 !! For good model PLOT accuracy
+
+*************************************************************** 
+!! POC LSD30 DIFFUSER SHEET
+MODEL    !! REFLECTIVE DIFFUSE SIDE
+BINOMIAL 1 6 PLOT 5 30 60  'POC LSD30 RD' 
+  -1.159     0.3616E-01 -2.527     -.2571      4.543     -1.657     -.3881 ,
+   1.744     -.6808     -4.477      10.92     -2.925     -2.753     0.7497
+RETURN
+$GRAB '60.0' 0 1 MD1
+
+MODEL    !! REFLECTIVE GLOSSY SIDE
+	HARVEY 12.5500 -2.4500 5.00E-3 
+	HARVEY 0.6640 -0.2310 7.13E-6 
+	SUM .1 .2   PLOT 5 30 60  'POC LSD30 RG'
+RETURN
+$GRAB '60.0' 0 1 MD2
+
+MODEL    !! TRANSMISSIVE DIFFUSE SIDE
+BINOMIAL 1 6 PLOT 0 30 60  'POC LSD30 TD' 
+  0.5858     -1.753      4.814     -26.69      34.94     -15.41      1.755 ,
+  -.8584     -1.789      19.98     -49.15      58.52     -30.55      5.347
+RETURN
+$GRAB '60.0' 0 1 MD3 
+
+MODEL    !! TRANSMISSIVE GLOSSY SIDE
+BINOMIAL 1 4 PLOT 0 30 60  'POC LSD30 TG' 
+  0.3223      1.497     -14.02      15.20     -4.501     -.6775      2.523 ,
+  -4.821      7.447     -2.916
+RETURN 
+$GRAB '60.0' 0 1 MD4
+
+*************************************************************** 
+
+SURFACES
+  PLANE Z 1 RECTANGLE 10
+OBJECT 'DUMMY1'
+  INTERFACE 0 1 AIR AIR
+
+SURFACES
+  PLANE Z .5 RECT 10
+OBJECT 'UPPER_SHEET_GLOSSY'
+  INTERFACE 2@1.E-12 AIR AIR
+  SCATTER MODELS 4 6
+  TOWARDS SPEC (NSCAT) 90*ACOS(-1)/180 0
+
+SURFACES
+  PLANE Z 0 RECTANGLE 10
+OBJECT 'LOWER_SHEET_NON_GLOSSY'
+  INTERFACE 2@1.E-12 AIR AIR
+  SCATTER MODELS 1 5
+  TOWARDS SPEC (NSCAT) 90*ACOS(-1)/180 0
+
+SURFACES
+  PLANE Z -0.5 RECTANGLE 10
+OBJECT 'DUMMY2'
+  INTERFACE 0 1 AIR AIR
+
+SEARCH
+    2 1 4 3
+    3 1 4 3
+RETURN
+
+!! Check Glossy Side
+EMITTING DISK -Z 1 0.01 0.01 1 0
+  ROTATE X -60 0 0
+  MOVE TO Z +5
+  FLUX TOTAL 1 0
+
+WINDOW Z Y; PROFILES OVERLAY; TRACE PLOT
+STATS
+$GRAB 'Object' 1 3 CD2
+$GRAB 'Object' 3 3 CD4
+DF2=100*ABS(CD2-MD2)/MD2
+DF4=100*ABS(CD4-MD4)/MD4
+&REG MD2 CD2 MD4 CD4 !! Compare Model with Calculated flux
+
+!! Check Non-Glossy Side
+EMITTING DISK Z 0 0.01 0.01 1 0
+    ROTATE X -60 0 0
+    MOVE TO Z -5
+    FLUX TOTAL 1 0
+
+WINDOW Z Y; PROFILES OVERLAY; TRACE PLOT
+STATS
+$GRAB 'Object' 1 3 CD3
+$GRAB 'Object' 3 3 CD1
+DF1=100*ABS(CD1-MD1)/MD1
+DF3=100*ABS(CD3-MD3)/MD3
+&REG MD1 CD1 MD3 CD3 !! Compare Model with Calculated flux
+RETURN

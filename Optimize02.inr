@@ -1,0 +1,44 @@
+!!++
+!! OPTIMIZE02.INR
+!! Title: Optimizing a Maksutov Telescope
+!! Category: Simple Problem
+!! Keywords: Lenses, Optimization, ABERRATIONS, VARIABLES, MINIMIZE
+!! Description:  Optimization of a telescope mirror system,
+!! within specified constraints.  Uses a fast algorithm
+!! that finds the minimum rms spot size at a single on-axis
+!! field.
+!! Edit History: (latest first)
+!! 03/14/2001 - cp - Modified format; added header
+!! 01/14/2001 - ag - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+TITLE 'Maksutov telescope'
+
+UNITS IN
+D=10 aperture diameter
+R3=-40 primary radius
+S=40/3 mirror separation
+T=D/10 corrector thickness
+N=1.5 corrector index
+
+!! Start concentric
+R1=R3+S+T corrector front radius
+R2=R3+S corrector back radius
+
+WAVELENGTH .55 UM
+MEDIA
+  (N) 'GLASS'
+
+LENSES
+  SEQUENCE DIAM RADI; 5@0,
+  1 (D) (R1) GLASS
+  (T) (D) (R2)
+  (S) (D) (R3) REFL
+  -(S) D/3 (R2) REFL
+    ABERRATIONS LIST PLOT TARG
+      VARIABLES CV 1 TH 1
+      MINIMIZE 'Make diffraction-limited on-axis'
+RETURN

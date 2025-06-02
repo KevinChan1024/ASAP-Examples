@@ -1,0 +1,40 @@
+!!++
+!! EDGE_PATCHES.INR
+!! Title: The PATCHES Command
+!! Category: Isolated Command
+!! Keywords: PATCHES, EDGES, POINTS
+!! Description: This example shows how to use the
+!! PATCHES command to determine surface meshing.
+!! Edit History: (latest first)
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  POINTS,
+  0 0 0 1, 1 0 0 1, 2 0 0 1, 3 0 0 1 , 4 0 0 1
+  0 1 0 1, 1 1 1 2, 2 1 0 1, 3 1 -1 2, 4 1 0 1
+  0 2 0 1, 1 2 0 1, 2 2 0 1, 3 2 0 1 , 4 2 0 1
+  PATCHES order 2 2, columns 2 rows 1 
+
+!! 1st patch:  0 0 0, 1 0 0, 2 0 0
+!!             0 1 0, 1 1 1, 2 1 0
+!!             0 2 0, 1 2 0, 2 2 0
+!! weights are 1, except for middle with weight 2
+!! bows outward plus Z at center
+
+!! 2nd patch:  2 0 0, 3 0 0 , 4 0 0
+!!             2 1 0, 3 1 -1, 4 1 0
+!!             2 2 0, 3 2 0 , 4 2 0
+!! weights are 1, except for middle with weight 2
+!! bows outward neg Z at center
+OBJECT
+  REDEFINE COLOR 3
+OBLIQUE
+SEGMENTS 100
+PLOT CURVES
+PLOT FACETS 7 7
+$VIEW
+RETURN

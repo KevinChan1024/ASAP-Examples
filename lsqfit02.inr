@@ -1,0 +1,32 @@
+!!++
+!! LSQFIT02.INR
+!! Title: LSQFIT Output
+!! Category: Isolated Command
+!! Keywords: LSQFIT
+!! Description: Example output from LSQFIT
+!! command.
+!! Note: This is not a runable inr file.
+!! Edit History: (latest first)
+!! 12/21/2001 - cp - modified description
+!! 10/09/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+   -   REVO(98/100) 98/100,
+ ---   REVO(99/100) 99/100
+  FIT DEPARTURES:
+   MIN= -2.6797062E-08  MAX=  2.9792826E-08  RMS=  8.8931609E-09
+  SINGULAR VALUE   VARIABLE
+   11.56001     -1.9392150E-05
+   5.726953      7.4939118E-05
+   1.699500      1.3202832E-04
+  0.5680613      7.1606296E-03
+  0.3061007      7.4976712E-02
+  4.8083864E-02  0.3287797
+  7.6561109E-03  1.2318264E-03
+  1.4637034E-04 -2.6929067E-02
+  1.4129027E-05  0.2466272
+  8.5374424E-08 -0.9081186
+ ---   LOCAL -4@0.5 -2@1 Z 0.25
+ ---   OBJECT 'SURF_OF_REV_1'
+

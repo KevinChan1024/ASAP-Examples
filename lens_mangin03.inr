@@ -1,0 +1,26 @@
+!!++
+!! LENS_MANGIN03.INR
+!! Title: Mangin Mirror by Radii
+!! Category: Isolated Command
+!! Keywords: MANGIN, LENSES
+!! Description: A mangin mirror, using
+!! RD entries for radii of curvature, with
+!! ray trace.
+!! Edit History: (latest first)
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES
+  MANGIN Z 0, .4 1 BK7 RD -5 -5
+  OBJECT
+  
+WINDOW Y Z
+WINDOW 1.5
+ARROW 3
+RAY 0 -.8 -1, 0 0 1 PLOT OVERLAY 'LENS:MANGIN rd' COLORS 2
+PLOT LENS 'LENS:MANGIN rd' COLORS 11
+RETURN

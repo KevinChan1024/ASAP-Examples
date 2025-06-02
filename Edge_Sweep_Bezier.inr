@@ -1,0 +1,49 @@
+!!++
+!! EDGE_SWEEP_BEZIER.INR
+!! Title: Swept Bezier Edge
+!! Category: Simple Problem
+!! Keywords: Edges, EDGES, POINTS, Bezier, SWEEP, AXIS, OPTICAL
+!! Description: A Bezier edge is created with EDGE POINTS and
+!! swept 360° into a conic section. It is then compared with
+!! a standard OPTICAL surface using the same parameters.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 10/01/2008 - cp - fixed variable assignment
+!! 02/15/2000 - cp - modified format; added description
+!! 03/31/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+EFL=20
+RAD=2*EFL
+RHO=20
+K=-0.5
+
+A=RHO/(1+SQRT(1-(1+K)*((RHO/RAD)^2)))
+W1=SQRT(0.5+0.5*SQRT(1-(1+K)*((RHO/RAD)^2)))
+Z2=RHO^2/RAD/(1+SQRT(1-(1+K)*((RHO/RAD)^2)))
+ 
+X0=0 Y0=0   Z0=0
+X1=0 Y1=A   Z1=0
+X2=0 Y2=(RHO) 
+
+EDGES
+  POINTS (X0) (Y0) (Z0) 2,
+         (X1) (Y1) (Z1) (W1),
+         (X2) (Y2) (Z2) 0
+    SWEEP AXIS total angle of 360, about vector 0 0 1,
+      about point 0 0 0
+  OBJECT 'BEZIER_CONIC'
+
+SURFACES
+  OPTICAL Z 0 (RAD) (K) ELLIPSE (RHO)
+  OBJECT 'BEZIER_TEST'
+
+WINDOW Y Z
+PLOT FACETS 5 5
+$VIEW   
+RETURN

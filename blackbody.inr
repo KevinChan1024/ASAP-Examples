@@ -1,0 +1,27 @@
+!!++
+!! BLACKBODY.INR
+!! Title: Emitting Object as Blackbody
+!! Category: Isolated Command
+!! Keywords: FBI, LPW, EMITTING OBJECT, blackbody, THERMAL, Sources 
+!! Description: Simulating the thermal emission
+!! from an object of a given temperature.
+!! Edit History: (latest first)
+!! 04/08/2008 - cp - modified keyword
+!! 03/06/2003 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+!! Note - This is not a complete file.
+UNITS CM
+:
+WAVELENGTH1=.4   !! Microns
+WAVELENGTH2=.7   !! Microns
+TEMPERATURE=300  !! Degrees kelvin
+EMISSIVITY=.5    !! Normally same as absorption ratio
+SIGMA=5.672E-12  !! Stefan-Boltzmann constant for CM units
+FRACTION=FBI(WAVELENGTH2*TEMPERATURE)-FBI(WAVELENGTH1*TEMPERATURE)  !! For watts
+FRACTION=LPW(TEMPERATURE)  !! For lumens
+
+EMITTING  !! First expression represents flux weighting factor
+  FRACTION*EMISSIVITY*SIGMA*TEMPERATURE^4  OBJECT ... !! No ISO option
+RETURN

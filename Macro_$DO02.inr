@@ -1,0 +1,66 @@
+!!++
+!! MACRO_$DO02.INR
+!! Title: Arrays with $DO & Macros 
+!! Category: Simple Problem
+!! Keywords: Macros_user, $DO, macro, Arrays, lenslet
+!! Description: Making an array by calling a macro
+!! containing a $DO loop from another $DO loop.
+!! In this case, the other $DO loop is in a
+!! second macro which calls a third macro to
+!! create the geometry. See explanations in the 
+!! body below.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/07/2003 - cp - changed category and keyword
+!! 12/21/2001 - cp - added keyword
+!! 10/23/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+!! Suppose you want to create a lenslet array composed
+!! of an 8x5 grid of circular lenses.
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.5 'GLASS'
+COATINGS PROPERTIES 
+  0 1 'TRANS'
+
+ARRAY {   !! Create the entire ARRAY from nested macros
+  $DO 1 5
+    $ROW ?
+}
+
+ROW {     !! Create a row of LENSLETs
+  $DO 1 8
+    $LENSLET ? #1
+}
+
+LENSLET { !! Create a single circular LENSLET at (x,y) 
+SURFACES
+  OPTICAL Z 0 1 ELLIPSE 0.4
+  OBJECT 'LENS_SURF_FRONT_X#1_Y#2'
+    INTERFACE COAT +TRANS AIR GLASS
+
+SURFACES
+  PLANE Z 0.25 1 ELLIPSE 0.4
+  OBJECT 'LENS_SURF_BACK_X#1_Y#2'
+    INTERFACE COAT +TRANS AIR GLASS
+  GROUP -2
+    SHIFT X #1
+    SHIFT Y #2
+}
+
+$ARRAY
+!! The LENSLET macro actually creates the ASAP
+!! input for the individual lens elements. The
+!! ARRAY macro passes the row number to the ROW
+!! macro which in turn calls LENSLET. Note that
+!! the ? on the record ROW ? becomes the #1 on
+!! the record LENSLET ? #1.
+
+WINDOW Y Z
+OBLIQUE
+PLOT FACETS 3 3
+RETURN

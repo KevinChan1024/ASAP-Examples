@@ -1,0 +1,37 @@
+!!++
+!! LENS_TELESCOPE_PARABOLIC.INR
+!! Title: Parabolic Telescope
+!! Category: Simple Problem
+!! Keywords: Lenses, LENSES, TELESCOPE, parabolic, mirror
+!! Description: A one mirror telescope using a simple
+!! parabolic mirror. The TELESCOPE command is programmed
+!! to design telescopes that are always corrected for
+!! third order spherical aberration. The one mirror
+!! telescope has a 40 mm radius of curvature (2xFL). The
+!! mirror conic constant is automatically set to -1 for
+!! a parabola that corrects spherical aberration.
+!! From the Lenses chapter.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 02/10/2000 - cp - modified format; added description
+!! 02/22/1999 - mc - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES 
+  TELESCOPE Z 0 10 FL 20  !! Only Focal Length option is used
+  OBJECT 'PARABOLA'
+  PRINT
+
+GRID RECT Z 0 -4@10 1 5
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -25
+
+ARROWS OFF 
+WINDOW Y Z
+WINDOW 1.5  !! Enlarge window 50%
+PROFILES OVERLAY
+TRACE PLOT 
+RETURN

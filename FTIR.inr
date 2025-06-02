@@ -1,0 +1,111 @@
+!!++
+!! FTIR.INR
+!! Title: Frustrated Total Internal Reflectance
+!! Category: Simple Problem
+!! Keywords: Tracing, tir, COATINGS, LAYERS, $ITER, PATHS, $SCR
+!! Description: Simulates the reflectance at a thin airgap interface
+!! between two BK7 prisms. Air gap is defined as a COATING LAYER.
+!! The second syntax of the $ITER command is used to find the gap
+!! for a desired reflectance. Edit file for different glass types.
+!! Edit History: (latest first) 
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 08/10/2006 - cp - added Cancel button to first SCR
+!! 11/18/2003 - cp - fixed keyword
+!! 11/05/2003 - cp - fixed keyword 
+!! 11/25/2002 - sam - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WVL=500
+SCR_CANCEL=1
+$SCR 2
+    Enter a wavelength
+     \WVL. ?  nanometers 
+     
+$IF (SCR_CANCEL) EQ 1; $GO usercancel
+WAVELENGTH (WVL) NM
+FRESNEL AVERAGE
+
+PRFL=50
+
+$SCR 2
+    Pick a reflectance
+     \PRFL. ? % 
+ 
+SURFACES
+  PLANE Z 0 RECTANGLE 0.5*SQRT[2] 0.5
+  ROTATE Y 45 0 0
+OBJECT
+  .1 'CUT' COLOR 1
+
+EDGES
+  RECTANGLE Z -0.5 2@0.5
+  RECTANGLE Z  0.5 2@0.5
+OBJECT
+  .1 .2 'CUBE_S1' COLOR 2 
+  INTERFACE COAT +BARE AIR SCHOTT_BK7
+  BOUNDS -.3
+OBJECT
+  .2 'CUBE_F' COLOR 2
+  INTERFACE COAT +BARE AIR SCHOTT_BK7
+
+EDGES
+  RECTANGLE Z -0.5 2@0.5
+  RECTANGLE Z  0.5 2@0.5
+OBJECT
+  .1 .2 'CUBE_S2' COLOR 2 
+  INTERFACE COAT +BARE AIR SCHOTT_BK7
+  BOUNDS .5
+OBJECT 
+  .1 'CUBE_B' COLOR 2  
+  INTERFACE COAT +BARE AIR SCHOTT_BK7
+
+$ECHO NONE
+$ITER THK 0.01 2 -100 RPCT
+  {
+  RAYS 0
+  COATINGS 1 LAYERS 500
+    (THK) 0  'LAYER'
+  OBJECT CUT
+    INTERFACE COAT 1 SCHOTT_BK7 SCHOTT_BK7 
+
+  GRID ELLIPTIC Z -1 -4@1 2@1
+    SOURCE DIRECTION 0 0 1
+
+  TRACE
+  PATHS
+  $GRAB 'Path' 2 4 RPCT
+  }
+$ECHO ALL
+
+ITERATE {
+  $ITER AIRGAP 0.02 1.9 0.005 MERIT
+    {
+    VALUE (AIRGAP) 0 RFL
+    MERIT=(RFL-(#1))^2
+    }
+}
+
+AIRGAP=0.12  NSTEPS=30
+
+TITLE 'REFLECTANCE FOR FRUSTRATED TIR'
+DISPLAY ITER
+  RANGE 0 100
+  GRAPH
+    'AIR GAP IN WAVES AT 500 NM'
+$ECHO NONE
+$DO 1 (NSTEPS)
+  &ITERATE PRFL
+$ECHO  !! Turn back on console echo
+
+$SCR 4 !! The following 4 lines get printed
+   Frustrated Total Internal Reflection
+  in BK7 prism pair at \WVL.1\ nanometers
+ Airgap for \RFL.2\% reflection = \AIRGAP.2\ waves
+\DUMMY:?
+
+usercancel
+RETURN

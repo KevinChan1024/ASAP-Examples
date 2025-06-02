@@ -1,0 +1,26 @@
+!!++
+!! LENS_PENTA01.INR
+!! Title: Penta-Prism Lens
+!! Category: Isolated Command
+!! Keywords: PENTA, LENSES, prism
+!! Description: PENTA makes a 90° deviation
+!! penta-prism with 4 circular surfaces. 
+!! PLOT FACETS are needed to see the surfaces.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 10/07/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES
+  PENTA Z 0  1 BK7  Y
+  OBJECT
+WINDOW Y Z
+WINDOW 1.5
+ARROW 3
+RAY 0 0 -1, 0 0 1 PLOT OVERLAY 'LENS:PENTA' COLORS 2
+PLOT LENSES 'LENS:PENTA' COLORS 11
+RETURN

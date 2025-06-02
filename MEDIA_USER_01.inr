@@ -1,0 +1,90 @@
+!!++
+!! MEDIA_USER_01.INR
+!! Title: Diffuser using MEDIA USER
+!! Category: Isolated Command
+!! Keywords: MEDIA USER, diffuser, Scatter, volume
+!! Description:  Using MEDIA USER with the new USERPROG.DLL for ASAP 2014. 
+!! Allows the user to define a phase function for volumetric scattering
+!! calculations using the subroutine USERSCAT in the USERPROG.DLL.
+!! See Help under MEDIA USER for more details on usage.
+!! To run this file, first copy DIFFUSER.TXT from the ASAP Examples folder
+!! to your Working Directory.
+!! Edit History: (latest first)
+!! 1/15/2014 - gb - replaced command abbreviations with proper form
+!! 12/12/2013 - cp - added header
+!! 12/12/2013 - kg - creation
+!!--
+
+SYSTEM NEW 
+RESET
+
+UNITS MM
+WAVELENGTH 633 NM
+
+SPLIT 1000 MONTECARLO 
+LEVEL 1000
+FRESNEL AVERAGE  
+
+SEED 
+
+THICK=4  
+THICK_GLASS=3
+
+REF_PC=1.59 !! refractive index PC
+MEDIA 
+  (REF_PC) USER 1~1000000 0 1   'DIFFUSER'  !! defines scattering model
+                                           !! and reads data from file 
+                                           !! DIFFUSER.txt  
+  1.51 'GLASS'
+                                       
+!! GEOMETRY  
+SURFACES
+  PLANE Z 0 ELLIPSE 5 5 
+OBJECT 'SAMPLE1.FRONT'
+  INTERFACE COAT BARE AIR DIFFUSER
+    
+!!
+SURFACES
+  PLANE Z (THICK) ELLIPSE 5 5 
+OBJECT 'SAMPLE1.BACK'
+  INTERFACE COAT BARE AIR DIFFUSER
+ 
+SURFACES
+  TUBE Z 0  5 5  (THICK)  5 5 
+OBJECT 'SAMPLE1.SIDE'
+  INTERFACE COAT BARE AIR DIFFUSER  
+                 
+BEAMS INCOHERENT           
+GRID ELLIPTIC Z -1 -4@0.5 11 11
+  SOURCE DIRECTION 0 0 1   
+  FLUX TOTAL 1  
+
+TITLE 'RAY TRACE'
+MISSED ARROWS 10
+WINDOW X Z
+PLOT FACETS 7 7 OVERLAY
+TRACE PLOT     
+
+STATS  
+$VIEW
+
+TITLE 'INTENSITY'
+CONSIDER ONLY SAMPLE1.BACK
+STATS
+WINDOW X -2@1 Y -2@1 
+SPOTS DIRECTION 
+DISPLAY
+  PICTURE
+RETURN
+
+
+    
+ 
+ 
+
+                      
+                      
+
+
+
+

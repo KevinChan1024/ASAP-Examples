@@ -1,0 +1,51 @@
+!!++
+!! RANDOM_NUMBER04.INR
+!! Title: Automated Random Number Distributions
+!! Category: Simple Problem
+!! Keywords: Scripts, math, random, RAN, $RAN, HISTOGRAM, $ITER, $DO 
+!! Description: Probability distributions automated over the full range 
+!! of types, using a random seed sequence. The RAN operator generates a  
+!! new random number within a distribution determined by the 
+!! value for the distribution "type." The $RAN function generates a new 
+!! random seed sequence for each run. The HISTOGRAM plots show the 
+!! changes using the different values. The actual probability
+!! distribution output is in random floating point numbers.
+!! Edit History: (latest first)
+!! 04/16/2003 - cp - modified structure and comments
+!! 04/15/2003 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+POP=10000  !! Population size (the step limit of a 1-dimensional $ITER) 
+$ECHO NONE  
+
+!! The following function generates a starting seed for the RAN operation below.
+
+$RAN BEST  !! BEST generates a new seed sequence for each run, based on 
+           !! DEC generator option. If a starting seed value is given
+           !! instead, the distribution below will not change from run to run. 
+
+!! The following macro uses $ITER to iterate over enough steps (POP)
+!! to generate a smooth probability distribution (stored in ITERIT.DIS).
+!! The range is not important in this case. A lower POP value
+!! will show more noise in the plots.
+ITERIT {
+$ITER NSTEP 0 1 (POP) PROB 
+    PROB=RAN(#1)  !! Generates new random number based on the TYPE transferred
+                  !! from the $DO (in ?) for each iteration.
+}
+
+HISTOGRAMIT {  !! Show probability distribution
+DISPLAY ITERIT  
+  HISTOGRAM 25 'HISTOGRAM FOR RANDOM TYPE #1' !! Number of values per interval
+}
+
+$DO -15 15  !! Loop through all distribution types. Two-deltas through Gaussian.
+{           !! See Help under Mathematical Functions Supported - RAN, for full listing.
+$ITERIT ?                     
+$HISTOGRAMIT LIT(?)  !! Pass the type # into the histogram plot title
+ }
+
+RETURN

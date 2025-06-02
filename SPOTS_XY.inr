@@ -1,0 +1,43 @@
+!!++
+!! SPOTS_XY.INR
+!! Title: Using the XY[Z] option
+!! Category: Isolated Command
+!! Keywords: AXIS, LOCAL, SPOTS, XY[X]
+!! Description: Demonstrates use of the XY[Z] option on SPOTS POSITION
+!! for calculating spot diagram on arbitrarily oriented plane.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/25/2008 - cp - changed keyword
+!! 07/14/2003 - sam - creation
+!!--
+
+SYSTEM NEW
+RESET
+UNITS MM
+
+$DO 0 6
+ {
+SURFACES
+  PLANE Z 10 RECTANGLE .5
+    ROTATE Y (?*10)-30 0 0
+OBJECT 'P_?'
+EMITTING RECT Z 0 2@.1 10000 4 4 ISO
+  ROTATE Y (?*10)-30 0 0
+ }
+
+SURFACES
+  ELLIPSOID 3@15 3@0 +Z
+OBJECT 'S1'
+
+WINDOW X Z
+PLOT FACETS OVERLAY
+TRACE PLOT 10
+
+$DO 0 6
+ {
+ UW=?+1
+ CONSIDER ONLY P_?
+ AXIS LOCAL (UW)
+ SPOTS POSITION YX -4@.5
+ }
+RETURN

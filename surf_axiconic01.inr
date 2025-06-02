@@ -1,0 +1,25 @@
+!!++
+!! SURF_AXICONIC01.INR
+!! Title: Axiconic Surface
+!! Category: Isolated Command
+!! Keywords: AXICONIC, SURFACE, PROFILES
+!! Description: AXICONIC surface with PROFILES
+!! plot.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/11/2002 - cp - reformatted
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  AXICONIC Z 0 1 0 0.5 1 3 .25
+  LOCAL -4@1.5 -.5 3.5 Z
+OBJECT
+WINDOW Y Z
+PIXELS 201  !! To increase resolution of profile
+PROFILES 'SURF:AXICON' COLORS 11  !! Default profile in blue
+RETURN

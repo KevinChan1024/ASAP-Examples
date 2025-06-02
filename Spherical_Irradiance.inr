@@ -1,0 +1,69 @@
+!!++
+!! SPHERICAL_IRRADIANCE.INR
+!! Title: Irradiance on a Spherical Detector
+!! Category: Simple Problem
+!! Keywords: Analysis, spherical, RADIANT, NORMALIZE, irradiance
+!! Description: This expects a source located somewhere inside a
+!! 'sphere,' of which a section of it is the detector surface.  
+!! First, set up a sphere to match the detector surface and apply
+!! transmissive scattering so that only child rays get
+!! through, leaving Normal to the surface. The PROFILE
+!! command shows clearly how this works using the following
+!! code.  The result is that the original directional
+!! information is lost and your left with essentially the
+!! positions along the spherical surface with directions
+!! relative to the sphere center. RADIANT then creates a 
+!! distribution file which gives the far-field flux per
+!! spherical angles relative to the center of the sphere.
+!! By dividing this by the sphere radius squared, the
+!! steradian factor is removed, and your left with flux per
+!! surface area or Irradiance.  Key elements are highlighted.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 04/24/2006 - cp - reformatted
+!! 10/01/2001 - cp - modified format; added header
+!! 05/20/1998 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+SPHERERADIUS=40
+
+MODELS 
+  LAMBERTIAN  1/.000001 
+  !! Scatter model used to send rays normal to spherical surface.
+  !! 0.000001 is the scatter cone half-angle (.001) in radians squared
+
+EMITTING SPHEROID 5 10 20 3@1 20000  !! Can be moved around
+STATS  !! Initial rayset
+
+SURFACES
+  ELLIPSOID 3@(SPHERERADIUS) 0 0 0
+OBJECT 'SPHERE'
+  INTERFACE 0 1E-15 AIR AIR  !! Only allows scattered child rays through
+  SCATTER MODEL 1 
+    TOWARDS SPEC 1 0.001 0   
+  !! Puts scattered rays along normal direction with cone half-angle of 0.001 radians
+
+MISSED ARROWS 10
+PROFILES OVERLAY
+TRACE PLOT 200  !! To show child rays at normal to sphere surface
+STATS  !!Check for flux conservation
+RADIANT Z 90-28 90+28 14 -115 115 23 !! Creates Dist. File of ray positions on surface
+			  !! relative to center of sphere within the angular
+			  !! window specified.
+
+DISPLAY
+  !!CONTOUR 5 GRID 10 10 'Data in flux per steradian relative to center'
+  NORMALIZE (SPHERERADIUS^2) !! Convert to mm^2
+  CONTOUR 5 GRID 10 10 'Data transformed to flux/mm^2'
+  TEXTFILE SPHEREFLUX; DATA; EOF  !! Puts data out to file if needed
+RETURN
+
+WINDOW Z X
+PLOT FACETS 9 9 OVERLAY
+SPOTS POSITION EVERY 20  !! Not really necessary 
+RETURN

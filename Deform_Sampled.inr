@@ -1,0 +1,95 @@
+!!++
+!! DEFORM_SAMPLED.INR
+!! Title: Deforming using Sampled Surface
+!! Category: Simple Problem
+!! Keywords: Geometry, DEFORM, SAMPLED, deforming, $ITER, POLAR, WIDTHS
+!! Description: Deforming a plane surface with a sampled
+!! surface made with a $ITER. Using a beam splitter,
+!! rays reflected from the deformed surface interfere with
+!! rays from a reference surface and the fringe pattern is
+!! examined.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 02/16/2000 - cp - modified format and content; added description
+!! 03/31/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 0.5 UM
+
+SPLIT 2
+
+COATINGS
+  1 0     'REFL'
+  0.5 0.5 'BS'
+
+SURFACES
+  PLANE Z 0 RECTANGLE 2@5
+  OBJECT 'TEST'
+    INTERFACE COAT REFL
+
+SURFPERT {  2  !! Creates the sampled surface
+  $ITER X -5 5 -10 Y -5 5 -10 Z
+    { 
+    RHO=SQRT(X^2+Y^2)
+    Z=RHO^2/#1/(1+SQRT(1-(1+0)*(RHO/#1)^2))+(-#2~#2)
+    }
+  DISPLAY SURFPERT  !! Plot the iteration data file
+  PLOT 'PLOT OF SURFACE PERTURBATION'
+  SURFACES 
+    SAMPLED SURFPERT  !! Create sampled surface
+}
+ENTER GROSS SAG AS A LARGE RADIUS>
+ENTER ROUGHNESS IN MM>
+
+$SURFPERT 100000 .00004  !! Numbers that work as an example
+OBJECT TEST  !! Call up the TEST object
+  DEFORM 0.1  !! Deform it with the previous sampled surface - short form
+ !! DEFORM 0 0 0 0 1/10000  !! Use instead for example of long form
+
+SURFACES
+  PLANE Z 10 RECTANGLE 15
+  OBJECT 'BEAMSPLITTER'
+    INTERFACE COAT BS AIR AIR
+    ROTATE X -45 0 10
+
+SURFACES
+  PLANE Y 10 RECTANGLE 15
+  OBJECT 'REFERENCE'
+    INTERFACE COAT REFL
+    SHIFT Z 10
+
+SURFACES 
+  PLANE Y -10 RECTANGLE 15
+  OBJECT 'DETECTOR'
+    SHIFT Z 10
+
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 0.5
+WIDTHS 1.6  !! Minimum recommended overlap
+
+!! Show plot of geometry and rays
+GRID POLAR Z 20 0 4 0 360 3 6
+  SOURCE DIRECTION 0 0 -1 
+WINDOW Z Y
+PLOT FACETS 3 3 OVERLAY
+TRACE PLOT
+
+!! Show fringe pattern
+RAYS 0  !! Clear old rays
+GRID POLAR Z 20 0 4 0 360 21 6  !! Use more rays this time
+  SOURCE DIRECTION 0 0 -1
+TRACE STATS
+
+CONSIDER ONLY DETECTOR
+WINDOW Z 10-5 10+5 X -2@5
+PIXELS 151
+SPREAD NORMAL
+DISPLAY
+  ISOMETRIC 3 'FRINGE PATTERN'
+  PICTURE
+RETURN

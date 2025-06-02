@@ -1,0 +1,71 @@
+!!++
+!! ALLOWED02.INR
+!! Title: Simple Demo of ALLOWED command
+!! Category: Isolated Command
+!! Keywords: ALLOWED, Tracing
+!! Description: ALLOWED determines what object rays can
+!! hit from each object. This requires a direct intersection
+!! with no intervening objects. Thus, if 'c' is allowed 
+!! from 'a', but 'b' is between them and not allowed, 
+!! then rays will stop at 'a'. 
+!! This contrasts with SEARCH, which can let rays "skip"
+!! an intervening object.
+!! Edit History: (latest first) 
+!! 11/21/2013 - gb - replaced command abbreviations with proper form
+!! 06/06/2012 - cp - added header!! 12/21/2007 - cp - reformatted
+!! 12/10/2007 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  PLANE Z 1 RECT 2
+  PLANE Z 2 RECT 1 
+    SHIFT Y 0.8
+  PLANE Z 3 RECT 1
+    SHIFT Y -0.7
+  PLANE Z 4 RECT 1
+    SHIFT Y +0.4
+  PLANE Z 5 RECT 1
+    SHIFT Y -0.4
+  PLANE Z 6 RECT 1
+    SHIFT Y +1
+  PLANE Z 6.5 RECT 1
+    SHIFT Y -1
+OBJECT
+  .7 'P1'
+      INTERFACE 0 1 AIR AIR  
+  .6 'P2'
+      INTERFACE 0 1 AIR AIR  
+  .5 'P3'
+      INTERFACE 0 1 AIR AIR  
+  .4 'P4'
+      INTERFACE 0 1 AIR AIR  
+  .3 'P5'
+      INTERFACE 0 1 AIR AIR  
+  .2 'P6'
+      INTERFACE 0 1 AIR AIR  
+  .1 'P7'
+      INTERFACE 0 1 AIR AIR  
+RETURN
+
+
+ALLOWED
+1 2 6 1  !! Rays from 1 allowed to hit 2 thru 6 by 1
+2 3 4 1  !! Rays from 2 allowed to hit 3 thru 4 by 1
+3 3 5 2  !! Rays from 3 allowed to hit 3 thru 5 by 2
+4 5 6 1  !! Rays from 4 allowed to hit 5 thru 6 by 1
+5 6 7 1  !! Rays from 5 allowed to hit 6 thru 6 by 1
+6 6 7 1  !! Rays from 6 allowed to hit 6 thru 7 by 1
+ALLOWED LIST
+
+GRID RECT Z 0 -2@1 -2@2 1 17
+SOURCE DIRECTION 0 0 1
+
+MISSED ARROW 0.4
+PLOT FACETS 3 3 0 OVERLAY
+TRACE PLOT COLOR 7
+RETURN
+
+

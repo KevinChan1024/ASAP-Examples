@@ -1,0 +1,84 @@
+!!++
+!! EDGE_SWEEP_POINTS.INR
+!! Title: Making a Lens Cell
+!! Category: Simple Problem
+!! Keywords: Edges, EDGES, POINTS, 3d, SWEEP, AXIS, lens, cell
+!! Description: A lens cell is created with EDGE POINTS 
+!! describing the local cross section. Using SWEEP
+!! AXIS, it is swept into a 3-dimensional holder for
+!! a lens.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 11/18/2003 - cp - fixed keyword
+!! 03/16/2000 - cp - Reformatted; added header
+!! 03/02/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! System Settings
+UNITS CM
+WAVELENGTH 550 NM
+
+!! Define Media
+MEDIA
+  1.55 'GLASS'
+
+!! Define Coatings
+COATINGS PROPERTIES 
+  1 0 'REFLECT'
+  0 1 'TRANSMIT'
+  0 0 'ABSORB'
+
+!! Define Geometry
+
+!! Front of Lens
+SURFACES
+  PLANE Z 0 ELLIPSE 2.5
+OBJECT 'LENS.FRONT'
+  INTERFACE COAT TRANSMIT AIR GLASS
+  REDEFINE COLOR 1
+
+!! Back of Lens
+SURFACES
+  OPTICAL Z 1 -5 ELLIPSE 2.5
+OBJECT 'LENS.BACK'
+  INTERFACE 0 1 AIR GLASS
+  REDEFINE COLOR 1
+
+!! Edge of Lens
+SURFACES
+  TUBE Z 0 2.5 2.5 1.0 2.5 2.5
+OBJECT 'LENS.EDGE'
+  INTERFACE 0 0 AIR GLASS 
+  BOUNDS -.2
+  REDEFINE COLOR 1
+	
+EDGES
+  POINTS  0  2.51  -0.01 1,
+          0  2.51   1.00 1,
+          0  3.00   1.00 1,
+          0  3.00  -0.50 1,
+          0  2.00  -0.50 1,
+          0  2.00  -0.01 1
+    SWEEP AXIS 360  0 0 1   0 0 0
+OBJECT 'LENS_CELL'
+  INTERFACE 0 0 AIR AIR
+  REDEFINE COLOR 3
+
+PIXELS 901              
+WINDOW Y 1.5 3.5 Z -1 1.5
+PROFILES 'Lens cell cross section'
+
+WINDOW Y Z
+PROFILES
+
+$IO VECTOR REWIND  !! Clear vector file
+WINDOW Y Z
+PLOT FACETS 11 11
+$VIEW 
+RETURN
+
+
+ 

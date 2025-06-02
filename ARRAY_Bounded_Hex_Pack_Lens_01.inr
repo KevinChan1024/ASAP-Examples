@@ -1,0 +1,99 @@
+!!++
+!! ARRAY_BOUNDED_HEX_PACK_LENS_01.INR
+!! Title: Close-Packed Hexagonal Lens Array Bounded
+!! Category: Simple Problem
+!! Keywords: Bounds, lens, ARRAY, hex, OPTICAL 
+!! Description: A closely packed array of biconvex lenses
+!! bounded by a tube to form the sides.  The arrays must be 
+!! made oversized in order for the bounding to work.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 02/25/2009 - cp - added header
+!! 02/25/2009 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$UNVAR ERROR  !! force error for undefined variables
+
+UNITS MM
+
+MEDIA
+  1.5 'POLY'
+
+SSAG {
+$LOC RC RAD R2R K
+RAD=#1
+RC=#2
+K=#3
+R2R=(RAD^2)/RC
+SSAG=R2R/[1+SQRT[1-[(1+K)*(R2R/RC)]]]
+}
+
+
+Z1=0                         !! position of first lenslet vertex
+Z2=14                        !! position of second lenslet vertex
+ZMIN=Z1                      !! minimum sagged first lenslet
+ZMAX=Z2                      !! minimum sagged second lenslet
+RC1=20                       !! 1st radius of curvature 
+RC2=-30                      !! 2nd radius of curvature 
+XSIZE=10                     !! hexagon radius at a "corner" point
+$SSAG (XSIZE) (RC1) 0
+SAG1=SSAG                    !! 1st "corner" sag
+$SSAG (XSIZE) (RC2) 0
+SAG2=SSAG                    !! 2nd "corner" sag
+XSPACING=2*XSIZE*(1+SIN[30]) !! ARRAY spacing in first direction (X)
+YSPACING=XSIZE*COS[30]       !! ARRAY spacing in second direction
+NY=16                        !! number of array "periods" in Y
+NAX=10                       !! number of array "periods" in X
+NX=NAX+INT[NY/4]  !! compensate for 30-degree diagonal "drift" of arrayed entity
+
+$IF (SAG1) LT 0 
+  ZMIN=Z1+SAG1
+$IF (SAG2) GT 0 
+  ZMAX=Z2+SAG2
+
+&REG XSIZE RC1 SAG1 RC2 SAG2 XSPACING YSPACING NX NY
+
+SURFACES 
+  TUBE Z (ZMIN-5) (XSIZE*NAX/2) (YSPACING*(NY-1)/2) (ZMAX+5) (XSIZE*NAX/2) (YSPACING*(NY-1)/2) 1 1
+  SOLID MINUS NOHOLE
+  
+SURFACES
+  OPTICAL Z (Z1) (RC1) HEX (XSIZE)
+  ARRAY NX-1 (XSPACING) 0 0 (NY) (XSPACING/2) (YSPACING) 0  !! ARRAY oversized, then bounded
+  SHIFT X -3*XSPACING*NX/4 
+  SHIFT Y -YSPACING*NY/2
+RETURN
+
+SURFACES
+  OPTICAL Z (Z2) (RC2) HEX (XSIZE)
+  ARRAY NX-1 (XSPACING) 0 0 (NY) (XSPACING/2) (YSPACING) 0  !! ARRAY oversized, then bounded
+  SHIFT X -3*XSPACING*NX/4 
+  SHIFT Y -YSPACING*NY/2
+RETURN
+
+OBJECT
+  .2 'HEX_LENS.1'            
+      BOUNDS -.3
+      INTERFACE 0 1 POLY AIR
+      REDEFINE COLOR 2 
+  .1 'HEX_LENS.2'            
+      BOUNDS -.3
+      INTERFACE 0 1 POLY AIR 
+      REDEFINE COLOR 1 
+  .3 'SIDES'
+      BOUNDS +.2 -.1
+      FACETS 23 23
+      REDEFINE COLOR 3
+       
+!! plot it
+WINDOW Y -2@(YSPACING*(NY-1)/2) X -2@(XSIZE*NAX/2)
+WINDOW 2 
+PLOT FACETS 3 3 0 OVERLAY
+PLOT SURFACES 2 OVERLAY      !! shows how array is constructed
+PLOT SURFACES 3 COLOR 1      !! shows how array is constructed
+$VIEW
+RETURN 
+

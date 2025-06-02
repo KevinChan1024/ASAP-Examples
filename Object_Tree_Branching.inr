@@ -1,0 +1,53 @@
+!!++
+!! OBJECT_TREE_BRANCHING.INR
+!! Title: Making an Object Tree
+!! Category: Simple Problem
+!! Keywords: Scripts, BRANCH, TREE, OBJECT, $DO, NUMBERS
+!! Description: The following demonstrates the use of the 
+!! BRANCH command to assign common names to a group of
+!! objects that have a common theme. The individual objects
+!! of the branch are sequentially numbered using a $DO loop.
+!! The branch name is given just before each common group
+!! of objects is created. New branch names may be tacked on
+!! to the last one by using a period (.) before the name.
+!! New branch names could also be attached to previous levels
+!! by using the caret (^) symbol before the name. This 
+!! moves the assignment up one level (for each caret). 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+BRANCH BAFFLE
+BRANCH .SUBSYSTEM_1
+
+$DO 1 5  !! Makes objects belonging to BAFFLE.SUBSYSTEM_1.PART_?
+  {
+  SURFACES
+    PLANE Z ?*2 RECTANGLE 5
+    OBJECT 'PART_?'
+  }
+
+BRANCH ^.SUBSYSTEM_2
+
+$DO 6 10  !! Makes objects belonging to BAFFLE.SUBSYSTEM_2.PART_?
+  {
+  SURFACES
+    PLANE Z ?*2 RECTANGLE 5
+    OBJECT 'PART_?'
+  }
+
+PRINT 1  !! Print object 1 info
+PRINT 6  !! Print object 6 info
+
+NUMBERS NAMES !! List all objects names and their numbers
+NUMBERS SUMMARY
+
+TREE  !! Show objects in tree form
+
+CONSIDER ONLY BAFFLE.SUBSYSTEM_1.?
+CONSIDER  !! Show what objects are considered
+RETURN

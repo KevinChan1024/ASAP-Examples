@@ -1,0 +1,65 @@
+!!++
+!! OUTPUT_FORMATTED05.INR
+!! Title: Writing Variable Filename with Date stamp
+!! Category: Simple Problem
+!! Keywords: Macros_pre, output, formatting, $SCR, $IO, $GRAB, literal, append, $FF
+!! Description: This file shows how to enter an arbitrary filename to be
+!! used as an output file and put the current date in the title. It continues
+!! to append output data to a file with formatting using $SCR.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/07/2007 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$FF  !! Prints Current Date and Time
+
+&GRAB '$FF' 1 1 D1  !! Store in D1 literal variable
+!!$REG D1
+
+F1="TEST1"  !! Initialize file name
+$ASK 'Enter Filename:' F1
+
+!! Title Macro...
+MYOUT1 { 
+$ECHO NONE  !! Prevents echoing except for STATS below
+AA=FILE(12)  !! Finds an available output unit number above 12
+$IO OUTPUT #1 -(AA)  !! Opens unit number AA & rewinds to beginning
+$SCR 1  !! Prints out anything on the next line
+Parameter             Flux         #2
+$IO OUTPUT CLOSE   !! Closes file
+}
+
+!! Data line out macro...
+MYOUT2 {
+$IO OUTPUT #1 +(AA)
+}
+
+$MYOUT1 F1" D1" !! Writes title line with date
+
+SURFACES
+  PLANE Z 10 RECTANGLE 10 10
+  OBJECT 'DETECTOR'
+
+$DO 1 10 1
+  {
+  RAYS 0  !! Clear previous rays
+  CONSIDER ALL
+  EMITTING RECT Z 0 5 5 10*? 60 60  !! Just to generate some flux
+  TRACE
+  CONSIDER ONLY DETECTOR
+  STATS
+  $GRAB 'DETECTOR' 0 -3 FLUX_VAL  !! Grab 3rd number from left on same line
+  INC=?   !!  Assign current ? to INC
+  $MYOUT2 F1" !! Open file again and this time append data, using + sign
+
+  $SCR 1  !! Line that follows is outputted to file
+\INC\                \FLUX_VAL.\
+
+  $IO OUTPUT CLOSE  !!  Close file
+  }
+
+$ECHO ALL  !! Turn echoing back on
+RETURN

@@ -1,0 +1,24 @@
+!!++
+!! COATING_LAYERS02.INR
+!! Title: Coating Layers in Reflection
+!! Category: Isolated Command
+!! Keywords: COATINGS LAYERS
+!! Description: COATINGS LAYERS in reflection.
+!! Note: This is not a complete file.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 08/07/2012 - cp - corrected keyword
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+UNITS IN
+WAVELENGTHS,
+  400        500        600        700         800 NM
+
+MEDIA
+  1.38       1.38       1.38       1.38        1.38      'MGF2'
+  0.75`1.93  0.05`2.87  0.06`3.75  0.075`4.62  0.09`5.45 'SILVER'
+
+COATINGS LAYERS 600
+  0.25 MGF2 10 SILVER 'SCOAT' 

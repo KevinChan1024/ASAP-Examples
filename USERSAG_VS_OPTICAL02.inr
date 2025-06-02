@@ -1,0 +1,168 @@
+!!++
+!! USERSAG_VS_OPTICAL02.INR
+!! Title: Comparing USERSAG with OPTICAL...EXPAND
+!! Category: Simple Problem
+!! Keywords: Geometry, USERSAG, OPTICAL, $FCN, $ITER, EXPAND 
+!! Description: Example examining OPTICAL, OPTICAL ... EXPAND,
+!! and USERSAG representations of an aspheric surface above 10th order.
+!! Surface maps and their cross-sections are used to compare   
+!! the representations. A user-calculated sag table, and
+!! the sag table created by the OPTICAL command for surfaces 
+!! above 10th order, are stored in a file called SAGTABLE.TXT.
+!! Coefficients were chosen to make an interesting,
+!! though not necessarily useful, surface.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/08/2007 - cp - formatted
+!! 11/17/2006 - jh - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+!! define a difference function for use in DISPLAY COMBINE
+!!  to compare functions
+$FCN DIFF (_1-_2)
+
+CAR=10        !! clear semi-aperture
+RC=47         !! radius of curvature
+CONC=-6       !! conic constant
+A04=-3E-04    !!  4th order aspheric coefficient
+A06=-7E-07    !!  6th order aspheric coefficient
+A08=-8E-09    !!  8th order aspheric coefficient
+A10=+5E-10    !! 10th order aspheric coefficient
+A12=-4E-12    !! 12th order aspheric coefficient
+A14=-3E-14    !! 14th order aspheric coefficient
+A16=+3E-16    !! 16th order aspheric coefficient
+A18=+4E-18    !! 18th order aspheric coefficient
+A20=-3E-20    !! 20th order aspheric coefficient
+
+!! Checksum non-zero aspheric terms above 10th order
+GT10=(ABS[A12]+ABS[A14]+ABS[A16]+ABS[A18]+ABS[A20])
+
+!! evaluate the sag "by hand"
+$ITER PRAD 0 (CAR) -51 PSAG
+  {
+  SSAG=((PRAD^2)/RC)/(1+SQRT[1-((PRAD/RC)^2)])
+  PCSAG=((PRAD^2)/RC)/(1+SQRT[(1-((1+CONC)*((PRAD/RC)^2)))])
+  PSAG=PCSAG+(A04*PRAD^4)+(A06*PRAD^6)+(A08*PRAD^8)+(A10*PRAD^10)+(A12*PRAD^12)+(A14*PRAD^14)+(A16*PRAD^16)+(A18*PRAD^18)+(A20*PRAD^20)
+  PASAG=PSAG-SSAG
+  }
+
+!! plot sag function and output to a file
+DISPLAY ITER
+  GRAPH 'User-calculated aspheric sag '
+  TEXTFILE SAGTABLE.TXT 
+  USER CALCULATED SAG VALUES
+  -
+  RADIAL             
+  COORDINATE             SAG
+  -------------------------------------------------------------------
+  DATA -2 'G14.6'
+  -------------------------------------------------------------------
+  -
+  EOF
+RETURN
+
+!! Do not output to file if there are no terms above 10th order
+$IF (GT10) NE 0 THEN
+  !! Output the OPTICAL command output to a file
+  !! If a sag table is printed as a result of having 
+  !!  terms > 10th order, it will be captured.
+  $ECHO NONE  
+  $IO OUTPUT SAGTABLE.TXT +FILE(10)
+  
+  $SCR 6
+   
+  output from OPTICAL command
+  
+  A sag table is included if aspheric terms 
+  > 10th order are present
+  
+  
+$ENDIF
+
+!! Create SURFACES entities for aspheres
+!! Make them slightly larger than desired clear aperture to avoid
+!!  abrupt edges on the surface maps.
+SURFACES
+  OPTICAL Z 0 (RC) (CONC) (A04) (A06) (A08) (A10) (A12) (A14) (A16) (A18) (A20) ELLIP 2@(CAR*1.001)
+  OPTICAL Z 0 (RC) (CONC) (A04) (A06) (A08) (A10) (A12) (A14) (A16) (A18) (A20) EXPAND ELLIP 2@(CAR*1.001)
+  USERSAG Z 0 1/RC (CONC) 0 0 0 (A04) 0 (A06) 0 (A08) 0 (A10) 0 (A12) 0 (A14) 0 (A16) 0 (A18) 0 (A20)  ELLIP 2@(CAR*1.001) 
+RETURN 
+
+!! Do not output to file if there are no terms above 10th order
+$IF (GT10) NE 0 THEN
+  $SCR 3
+  -------------------------------------------------------------------
+  Output of OPTICAL command completed
+  -------------------------------------------------------------------
+  
+  $IO OUTPUT CLOSE
+  $ECHO
+  !! end capture of output from surface definitions
+$ENDIF
+
+OBJECT
+  .3 'OPT_ASPHERE'
+  .2 'OPT_EXPAND_ASPHERE'
+  .1 'USAG_ASPHERE'
+RETURN
+
+!! set window for surface mapping operations
+PIXELS (NPIX=211)
+WINDOW Y -2@(CAR*1.0005) X -2@(CAR*1.0005)
+
+!! map the surfaces
+CONSIDER ONLY OPT_ASPHERE
+MAP SURF1
+CONSIDER ONLY OPT_EXPAND_ASPHERE
+MAP SURF2 
+CONSIDER ONLY USAG_ASPHERE
+MAP SURF3 
+
+!! read offset of each surface map at reference point
+!!  and adjust to zero.
+DISPLAY SURF1
+VALUES 0.0 0.0 SURF1REF
+$REG SURF1REF
+OFFSET 0 0 -(SURF1REF)
+WRITE 
+DISPLAY SURF2
+VALUES 0.0 0.0 SURF2REF
+$REG SURF2REF
+OFFSET 0 0 -(SURF2REF)
+WRITE 
+RETURN
+DISPLAY SURF3
+VALUES 0.0 0.0 SURF3REF
+$REG SURF3REF
+OFFSET 0 0 -(SURF3REF)
+WRITE 
+RETURN
+
+!! show basic OPTICAL asphere surface map and cross section graph
+DISPLAY SURF1
+  PICTURE 'basic OPTICAL asphere'
+  GRAPH 0.5  'basic OPTICAL asphere'
+
+
+!! show USERSAG asphere surface map and cross section graph
+DISPLAY SURF3  
+  PICTURE 'USERSAG asphere'
+  GRAPH 0.5 'USERSAG asphere'
+!! show USERSAG asphere - OPTICAL asphere difference map
+  COMBINE SURF2 DIFF
+  PICTURE 'USERSAG-OPTICAL EXPAND difference'
+  GRAPH 0.5 'USERSAG-OPTICAL EXPAND difference'
+RETURN 
+
+!! show OPTICAL EXPANDed asphere surface map and cross section graph
+DISPLAY SURF2  
+  PICTURE 'OPTICAL EXPAND asphere'
+  GRAPH 0.5 'OPTICAL EXPAND asphere'
+!! show OPTICAL EXPANDed asphere - OPTICAL asphere difference map
+  COMBINE SURF1 DIFF
+  PICTURE 'OPTICAL-EXPAND difference'
+  GRAPH 0.5 'OPTICAL-EXPAND difference'
+RETURN 

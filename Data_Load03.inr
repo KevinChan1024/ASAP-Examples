@@ -1,0 +1,54 @@
+!!++
+!! DATA_LOAD03.INR
+!! Title: Importing Data files into ASAP and assigning to Variables
+!! Category: Simple Problem
+!! Keywords: Scripts, input, SECTION, DISPLAY, data, variable, external, import, $READ 
+!! Description: How to input external data to be assigned to individual
+!! variables in ASAP.  The "DISPLAY -9" tells ASAP to rewind the BRO009.DAT
+!! file and begin writing with the following format and data. An external matrix of data
+!! is read in with $READ. 
+!! The formatting of the display file regarding window orientation and range
+!! is strictly arbitrary.  What is important is the number of pixels specified. This
+!! should match the data in the external file.  The first window
+!! dimension gives the number of rows and the second is columns. 
+!! Essentially, you now have a display file containing your numbers as pixels values.
+!! The command SECTION is used to extract each "pixel" value that is stored in
+!! distribution file and assign it to a variable name. For example
+!! "VAR25" would equal the number from the 2nd row, 5th column of data.
+!! NOTE: Must have ATEST.TXT available in path to be able to run - Found
+!! in the Examples folder.
+!! Edit History: (latest first)
+!! 06/02/2011 - cp - creation
+!!--
+
+SYSTEM NEW  
+RESET 
+
+ROWS=5
+COLS=6
+DISPLAY -9  !! Create new display file with data from external file
+  C 0 SPOTS A -1 1 (ROWS) B -1 1 (COLS) 
+  $READ ATEST.TXT  !! Contains 5 records of 6 data points
+
+RETURN
+
+WINDOW Y X
+
+DISPLAY  !! Brings up new BRO009.DAT created above 
+!!SECTION 1 (COLS) 1 (ROWS) GET !! Quick way to fill internal registers
+
+!! To get one value at a time and store in a named variable:
+MAC1 {
+  $DO 1 (COLS)
+  { 
+  SECTION ? ?  #1 #1 !!GET
+  $GRAB 'SECTION' 2 2 VAR#1? !! For higher resolution use VAR#1?=A0 with GET above.
+  }
+} 
+
+$DO 1 (ROWS)
+  $MAC1 ?
+  
+&REG  !! Verify variable assignments
+RETURN
+ 

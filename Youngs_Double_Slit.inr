@@ -1,0 +1,93 @@
+!!++
+!! YOUNGS_DOUBLE_SLIT.INR
+!! Title: Young's Double-slit Diffraction
+!! Category: Simple Problem
+!! Keywords: Wave, Young, diffraction, slit, FIELD, ENERGY, DECOMPOSE, CLIP, SUBSET, FTSIZE
+!! Description: Typical Young's double slit diffraction experiment with no lenses,
+!! viewed in the far field.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/30/2004 - cp - reformatted 
+!! 07/07/2003 - cp - lowered FTSIZE and PIXELS to work with ASAP/Basic
+!! 02/28/2002 - cp - increased FTSIZE (must use 7.1 or above)
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+SW=.05 !! Slit width
+SH=.4  !! Slit height
+SS=.2  !! Slit spacing
+WL=.5  !! Source wavelength in microns
+DEPTH=SH^2*2500/WL
+
+EDGES
+  RECTANGLE Z 0 (SW/2) (SH/2)
+    SHIFT X -(SS/2)     
+  RECTANGLE Z 0 (SW/2) (SH/2)
+    SHIFT X (SS/2) 
+
+SURFACES
+  PLANE Z 0 RECTANGLE 1.2*(SS/2+SW/2)+SH/2
+OBJECT 'APERTURE PLANE'
+  BOUNDS .2 .3
+
+WINDOW Y X
+PLOT ENTITIES 'APERTURE PLANE'
+
+SURFACES
+  PLANE Z -.001 RECTANGLE 1.2*(SS/2+SW/2)+SH/2
+OBJECT 'DUMMY_PLANE'
+  INTERFACE 0 1 AIR AIR
+
+SURFACES
+  PLANE Z (DEPTH) 5*(SH^2/WL) RECTANGLE (DEPTH)
+OBJECT 'DETECTOR'
+
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6
+WAVELENGTH (WL) UM
+
+GRID RECT Z -.05 -4@1.2*(SS/2+SW/2) 21 21
+  SOURCE DIRECTION 0 0 1
+
+FTSIZE 9  !! Try 12 if running ASAP/Pro
+TRACE 0 DUMMY_PLANE  !! Trace from source to dummy plane and stop
+
+WINDOW X (1.5*-SW/2)-SS/2 (1.5*SW/2)-SS/2 Y -2@1.2*SH/2 
+PIXELS 51  !! Try 201 with ASAP/Pro
+FIELD ENERGY -.001 CLIP -1  !! Clips off energy outside of edge #1
+DISPLAY
+  ISOMETRIC 'FIELD AT SLIT 1'
+RETURN
+DECOMPOSE DIRECTION .9 45
+
+SELECT ONLY SOURCE 1
+WINDOW X (1.5*-SW/2)+SS/2 (1.5*SW/2)+SS/2 Y -2@1.2*SH/2 
+FIELD ENERGY -.001 CLIP -2  !! Clips off energy outside of edge #2
+DISPLAY
+  ISOMETRIC 'FIELD AT SLIT 2'
+RETURN 
+
+DECOMPOSE DIRECTION .9 45
+
+LIST SOURCE
+SELECT ONLY SOURCE 2 OR SOURCE 3
+  SUBSET  !! Eliminate all rays except those selected above
+TRACE
+
+XWIN=(3*WL*DEPTH)/(1000*SW)
+CONSIDER ONLY DETECTOR
+WINDOW X -2@(XWIN) Y -2@XWIN*SW/SH
+PIXELS 201 !! This part may take a long time to run
+FIELD ENERGY (DEPTH)
+DISPLAY
+  ISOMETRIC 'FAR FIELD PATTERN'
+  GRAPH
+  TRANSPOSE
+  GRAPH
+RETURN

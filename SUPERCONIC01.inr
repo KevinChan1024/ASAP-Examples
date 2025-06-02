@@ -1,0 +1,70 @@
+!!++
+!! SUPERCONIC01.INR
+!! Title: Use of the SUPERCONIC Surface
+!! Category: Isolated Command
+!! Keywords: SUPERCONIC, parabola
+!! Description: Choose parameter values from the special cases.
+!! This example does a parabola.
+!! The SUPERCONIC does not mesh, but the rays trace.
+!! Try different cases and watch the SPOTS POS on the detector.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/22/2007 - cp - reformatted
+!! 04/17/2007 - bf - creation
+!!--
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.6 'STUFF'
+
+D=1
+C=.5
+C1=0
+C2=0
+A=-.5
+B1=0
+B2=0
+
+!! Some special cases are:
+!! Case	                Non-zero Coefficients
+!! 
+!! Plane	              None
+!! Parabola	            c
+!! Parabola	            d=1, a=-c
+!! Sphere	              d=1, c
+!! Sphere	              c,   a=c
+!! Conic (constant k)	  d=1, c, a=ck
+!! Conic (constant k)	  c,   a=c(1+k)
+!! Cartesian Oval	      d=1, c, c', a, b'
+!! Rational Polynomial  All but d and a
+
+SURFACES
+  SUPERCONIC Z  (D)  (C)  (C1)  (C2)  (A)  (B1)  (B2)  ELLIPSE 100 100
+OBJECT 'SUPERC'
+  INTERFACE 0 1 AIR STUFF
+
+SURFACES
+  PLANE Z 25 ELLIPSE 25 25
+OBJECT 'DETECTOR'
+
+GRID ELLIPTIC Z -6 -4@16 301 301  RANDOM 1
+  SOURCE DIRECTION 0 0 1
+  FLUX TOTAL 100
+
+!!PLOT FACETS 5 5 0  OVERLAY
+!! The SUPERCONIC will not mesh.
+TRACE PLOT 777
+STATS
+RETURN
+
+CONSIDER ONLY DETECTOR
+WINDOW X Y
+PIXELS 201
+
+SPOTS POSITION
+
+DISPLAY
+  AVERAGE
+  PICTURE
+RETURN  

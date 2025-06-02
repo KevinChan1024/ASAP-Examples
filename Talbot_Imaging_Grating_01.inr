@@ -1,0 +1,104 @@
+!!++
+!! TALBOT_IMAGING_GRATING_01.INR
+!! Title: Talbot Imaging Grating
+!! Category: Simple Problem
+!! Keywords: Wave, Talbot, grating, imaging, beams, FIELD, periodic
+!! Description: Talbot images are formed by gratings at multiples of
+!! a regular distance known as the Talbot length. An 
+!! image is also formed at half the Talbot length, but 
+!! phase-shifted by a half-period. The Talbot length, 
+!! ZT=2*GP^2/WL, where 
+!!    GP is is the grating pitch, and 
+!!    WL is the wavelength
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/04/2009 - cp - added header
+!! 07/20/2009 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS UM
+WAVELENGTH (WL=1.1) UM 
+
+!! Grating parameters: 50% duty cycle ruling 
+GPITCH=11                       !! grating pitch [um]
+GNPERIODS=7                     !! grating number of periods
+GWIDTH=GPITCH*(GNPERIODS-1/2)   !! grating total width [um]
+ZT=2*(GPITCH^2)/WL              !! Talbot distance [um]
+
+&REG GPITCH GNPERIODS GWIDTH ZT 'Talbot imaging grating parameters'
+
+!! geometry creation
+
+SURFACES
+  PLANE Z 0 RECT GWIDTH/2 GPITCH/4 
+    ARRAY (GNPERIODS-1) 0 (GPITCH) 0
+      SHIFT Y -((GWIDTH/2)-(GPITCH/4))
+OBJECT 'RULING' 
+
+SURFACES
+  PLANE Z (0.999*ZT/2) RECT 2@(GWIDTH/1.6)
+OBJECT 'DET'
+  REDEFINE COLOR 16  
+RETURN
+
+!! source creation
+
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6    
+PARABASALS 8
+
+!! !! rectangular grid source (plane wave)
+!! GRID  RECT Z 0 -4@(GWIDTH/1.8) 5 7*2*2/1.8
+!! SOURCE DIRECTION 0 0 1 
+!! MOVE BY -1
+
+!! Gaussian beam source
+GAUSSIAN Z -5 0 0, 11 7*20*2/3, 0 0, 2@GWIDTH/3
+
+!! get total number of rays for later use
+$CLEAR
+RAYS
+$GRAB 'rays defined' 0 -1 TRAYS
+&REG TRAYS 'Total rays defined: '
+
+!! plot geometry with ray trace
+WINDOW Y Z
+WINDOW 1.4               
+MISSED ARROW ZT/3
+PLOT FACETS 5 5 0 OVERLAY 'Talbot imaging demonstration'
+TRACE PLOT 1>INT(TRAYS/57) COLOR 2
+
+!! examine optical field results
+
+CONSIDER ONLY DET
+
+FIELD ENERGY (ZT/100) YX -4@(GWIDTH/2) PIXELS 201
+$COPY 9 TALBOT_NEAR.DIS
+
+DISPLAY
+  PICTURE 'image: near ruling'
+RETURN 
+
+FIELD ENERGY (ZT/2) YX -4@(GWIDTH/2) PIXELS 201
+$COPY 9 TALBOT_HALF.DIS
+
+DISPLAY
+  PICTURE 'image: 1/2 Talbot length'
+RETURN
+
+FIELD ENERGY (ZT) YX -4@(GWIDTH/2) PIXELS 201
+$COPY 9 TALBOT_FULL.DIS
+
+DISPLAY
+  PICTURE 'image: Talbot length'
+RETURN
+
+!! View geometry, ray trace, and field energy results in 3D Viewer
+  
+$VIEW
+&VIEW TALBOT_NEAR.DIS
+&VIEW TALBOT_HALF.DIS
+&VIEW TALBOT_FULL.DIS

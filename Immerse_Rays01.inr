@@ -1,0 +1,31 @@
+!!++
+!! IMMERSE_RAYS01.INR
+!! Title: Sources born in Different Media
+!! Category: Isolated Command
+!! Keywords: IMMERSE, Sources, MEDIA
+!! Description: Starting a source in a media other than
+!! vacuum/air, using the IMMERSE command.
+!! Edit History: (latest first)
+!! 02/16/2000 - cp - modified format; added description
+!! 03/29/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA 
+  1.49  'PLASTIC'
+  1.5   'GLASS'
+  1.6   'GLASS2'
+ 
+IMMERSE PLASTIC  !! Changes will be reflected in M0 below
+
+BEAMS INCOHERENT GEOMETRIC
+RAYSET Z 0
+  0 0 1
+  SOURCE DIRECTION 0 0 1
+
+GET 1 !! Load registers with info on ray 1
+$REG M0 'Ray is in Media' !! M0 contains the current medium
+PRINT MEDIA
+RETURN

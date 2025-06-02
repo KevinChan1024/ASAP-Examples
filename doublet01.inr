@@ -1,0 +1,21 @@
+!!++
+!! DOUBLET01.INR
+!! Title: DOUBLET Lens
+!! Category: Isolated Command
+!! Keywords: DOUBLET, LENSES
+!! Description: A simple doublet lens.
+!! Edit History: (latest first)
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES
+  DOUBLET Z 0, .4 1 BK7 SCHOTTNEW_F2, 8 0
+  
+WINDOW Y Z
+WINDOW 1.5
+PLOT LENS 'LENS:DOUBLET' COLORS 11
+RETURN

@@ -1,0 +1,56 @@
+!!++
+!! USERBSDF03.INR
+!! Title: Angle-Dependent Harvey Model
+!! Category: Simple problem
+!! Keywords: Scatter, USERBSDF, $FCN, Harvey  
+!! Description: Define a Harvey function where the b and l
+!! parameters are a function of incident angle. the s parameter
+!! could also depend upon angle. Note: This example does not
+!! correspond to any real material.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 09/08/2004 - cp - modified and added header
+!! 09/01/2004 - gp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+S=-1.8
+HWHM=10
+BO1=1.625
+BO2=1.75
+BO3=4.0
+
+$FCN STEEL_0_4,
+  THETAO=ABS(ASIN[SQRT(ABS(_3))]),
+  BO=BO1+BO2*SIN[THETAO]^BO3,     
+  SLOPE=S,                      
+  L=SIN[HWHM],                  
+  BO*(1+(_1-2*_2+_3)/(L^2))^(SLOPE/2)
+    
+!!Define model
+PIXELS 501
+MODEL
+ USERBSDF STEEL_0_4 PLOT 0 15 45 75 89
+
+SURFACES
+  PLANE Z 0 ELLIPSE 1
+OBJECT 'SCATTER_MIRROR'
+INTERFACE 1E-15 0
+  SCATTER MODEL 1
+   TOWARDS SPEC 10000 3.14159/2 0
+RETURN
+  
+GRID ELLIPTIC Z 5 -4@0.1 1 1
+  SOURCE DIRECTION 0 0 -1
+  FLUX TOTAL 1
+  ROTATE 30 ABOUT 0 1 0  0 0 0
+RETURN
+
+WINDOW Z -.5 4 X -3 3
+PLOT FACETS OVERLAY
+TRACE  
+PLOT RAYS 4  !! Show scatter intensity on surface. Max = length of 4.
+!!$VIEW
+RETURN 

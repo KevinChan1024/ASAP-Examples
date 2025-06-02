@@ -1,0 +1,108 @@
+!!++
+!! BOUNDED_ANNULAR_ARRAY_01.INR
+!! Title: Annular Array by Bounding Entities to a Plane  
+!! Category: Simple Problem
+!! Keywords: Geometry, Arrays, BOUNDS, TUBE, annular
+!! Description: An annular array of 5 rings is made with 
+!! TUBE entities and then Bounded to a plane.  The resulting
+!! holes become an annular array that is a single Object. This
+!! minimizes Object count while sacrificing Entity count,
+!! which has a much higher limit.
+!! Edit History: (latest first)
+!! 10/15/2014 - mt - change NUM NAMES to NUMBER NAMES
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 08/17/2012 - cp - added header
+!! 08/16/2012 - wjd - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Create an array of tubes that will cut up a larger elliptical plane.
+ 
+ALPHA=24
+ELEMENT_RADIUS=2
+OUTER_RADIUS=20 
+COUNT=0
+
+$DO (ALPHA-ALPHA) 360 (ALPHA)
+  { 
+  SURFACES 
+    TUBE Z -1 2@(ELEMENT_RADIUS) 1 2@(ELEMENT_RADIUS)
+    SHIFT X (OUTER_RADIUS)
+    ROTATE (?) ABOUT 0 0 1
+    COUNT=COUNT+1
+  }         
+
+******
+ALPHA=12
+ELEMENT_RADIUS=2
+OUTER_RADIUS=30
+
+$DO (ALPHA) 360 (ALPHA)
+  { 
+  SURFACES 
+    TUBE Z -1 2@(ELEMENT_RADIUS) 1 2@(ELEMENT_RADIUS)
+    SHIFT X (OUTER_RADIUS)
+    ROTATE (?) ABOUT 0 0 1
+    COUNT=COUNT+1
+  }
+
+******
+ALPHA=10
+ELEMENT_RADIUS=2
+OUTER_RADIUS=40
+
+$DO (ALPHA) 360 (ALPHA)
+  { 
+  SURFACES 
+    TUBE Z -1 2@(ELEMENT_RADIUS) 1 2@(ELEMENT_RADIUS)
+    SHIFT X (OUTER_RADIUS)
+    ROTATE (?) ABOUT 0 0 1
+    COUNT=COUNT+1
+  }
+ 
+**********     
+
+ALPHA=8
+ELEMENT_RADIUS=2
+OUTER_RADIUS=50
+
+$DO (ALPHA) 360 (ALPHA)
+  { 
+  SURFACES 
+    TUBE Z -1 2@(ELEMENT_RADIUS) 1 2@(ELEMENT_RADIUS)
+    SHIFT X (OUTER_RADIUS)
+    ROTATE (?) ABOUT 0 0 1
+    COUNT=COUNT+1
+  }
+ 
+**********   
+ALPHA=6
+ELEMENT_RADIUS=2
+OUTER_RADIUS=60
+
+$DO (ALPHA) 360 (ALPHA)
+  { 
+  SURFACE 
+    TUBE Z -1 2@(ELEMENT_RADIUS) 1 2@(ELEMENT_RADIUS)
+    SHIFT X (OUTER_RADIUS)
+    ROTATE (?) ABOUT 0 0 1
+    COUNT=COUNT+1
+  }
+ 
+**********
+  
+SURFACES
+  PLANE Z 0 ELLIPSE 2@OUTER_RADIUS+10 
+OBJECT 'ANNULAR_ARRAY' 
+                                 !! BOUND ELLIPTIC OBJECT PLANE WITH TUBES.
+$DO 2 (COUNT); BOUNDS MULTIPLE,
+  -0.?,
+
+FLAG=0
+WINDOW Y X 
+
+PLOT FACETS 2@35 0
+NUMBER NAMES
+RETURN

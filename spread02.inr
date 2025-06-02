@@ -1,0 +1,29 @@
+!!++
+!! SPREAD02.INR
+!! Title: Two-Beam Interference
+!! Category: Isolated Command
+!! Keywords: SPREAD, beams, interference
+!! Description: ASAP model of 2 beam interference.
+!! Edit History: (latest first)
+!! 10/18/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS IN 
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 546.1 NM
+WIDTHS 1.6
+GRID POLAR Y 5 0 1 0 360 5 6
+  SOURCE DIRECTION 0 -1 .00005, 0 -1 -.00005
+  MOVE TO Y 0 
+  
+WINDOW Z -1 1 X -1 1
+PIXELS 255
+SPREAD NORMAL DOWN 0.5 0.5  !! For 1D profile of energy at center of window
+DISPLAY 
+  PLOT3D 'TWO BEAM INTERFERENCE (angle between beams = 100 microradians)'
+RETURN

@@ -1,0 +1,85 @@
+!!++
+!! OUTPUT_FORMATTED04.INR
+!! Title: Writing EXTREMES POSITION Data to File
+!! Category: Simple Problem
+!! Keywords: Macros_pre, $SCR, EXTREMES, $GRAB, $IO, output, formatting
+!! Description: Demonstration of grabbing console output of 
+!! EXTREMES POSITION, slightly reformatting the data format,
+!! and writing data to a text file. Note: $SCR ouput has a maximum of 120
+!! characters per line.
+!! Edit History: (latest first) 
+!! 03/25/2003 - cp - modified description
+!! 11/27/2002 - cp - corrected keyword
+!! 03/28/2002 - cp - corrected creation date
+!! 02/07/2002 - cp - reformatted
+!! 03/06/2002 - cl - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+**************************************************
+!! Create a simple source
+EMITTING DISK Z 0 1 1 100
+WINDOW Y X   !! Examine the source (not needed for EXTREMES to work)
+WINDOW 1.2   !! Increase window 20%
+SPOTS POSITION ATTRIBUTE 2  !! Create plot of ray positions
+
+**************************************************
+!! Data analysis
+EXTREMES POSITION  !! Finds the rays with minimum and maximum X,Y,Z
+                   !! coordinates.  Prints the ray data to console.
+
+!! Grab console output to output variables, for writing to file later
+$GRAB 'Ray with MINIMUM X component' 0 1 MNX1 
+$GRAB 'Ray with MINIMUM X component' 1 1 MNX2 MNX3 MNX4 MNX5 MNX6
+$GRAB 'Ray with MINIMUM X component' 2 1 MNX7 MNX8 MNX9 MNX0
+$GRAB 'Ray with MAXIMUM X component' 0 1 MXX1 
+$GRAB 'Ray with MAXIMUM X component' 1 1 MXX2 MXX3 MXX4 MXX5 MXX6
+$GRAB 'Ray with MAXIMUM X component' 2 1 MXX7 MXX8 MXX9 MXX0
+
+$GRAB 'Ray with MINIMUM Y component' 0 1 MNY1 
+$GRAB 'Ray with MINIMUM Y component' 1 1 MNY2 MNY3 MNY4 MNY5 MNY6
+$GRAB 'Ray with MINIMUM Y component' 2 1 MNY7 MNY8 MNY9 MNY0
+$GRAB 'Ray with MAXIMUM Y component' 0 1 MXY1 
+$GRAB 'Ray with MAXIMUM Y component' 1 1 MXY2 MXY3 MXY4 MXY5 MXY6
+$GRAB 'Ray with MAXIMUM Y component' 2 1 MXY7 MXY8 MXY9 MXY0
+
+$GRAB 'Ray with MINIMUM Z component' 0 1 MNZ1 
+$GRAB 'Ray with MINIMUM Z component' 1 1 MNZ2 MNZ3 MNZ4 MNZ5 MNZ6
+$GRAB 'Ray with MINIMUM Z component' 2 1 MNZ7 MNZ8 MNZ9 MNZ0
+$GRAB 'Ray with MAXIMUM Z component' 0 1 MXZ1 
+$GRAB 'Ray with MAXIMUM Z component' 1 1 MXZ2 MXZ3 MXZ4 MXZ5 MXZ6
+$GRAB 'Ray with MAXIMUM Z component' 2 1 MXZ7 MXZ8 MXZ9 MXZ0
+
+
+!! Check that variables got loaded properly
+$REG MNX1 MNX2 MNX3 MNX4 MNX5 MNX6 MNX7 MNX8 MNX9 MNX0 
+$REG MXX1 MXX2 MXX3 MXX4 MXX5 MXX6 MXX7 MXX8 MXX9 MXX0 
+$REG MNY1 MNY2 MNY3 MNY4 MNY5 MNY6 MNY7 MNY8 MNY9 MNY0 
+$REG MXY1 MXY2 MXY3 MXY4 MXY5 MXY6 MXY7 MXY8 MXY9 MXY0 
+$REG MNZ1 MNZ2 MNZ3 MNZ4 MNZ5 MNZ6 MNZ7 MNZ8 MNZ9 MNZ0 
+$REG MXZ1 MXZ2 MXZ3 MXZ4 MXZ5 MXZ6 MXZ7 MXZ8 MXZ9 MXZ0 
+
+$ECHO NONE  !! Prevent console output writing to file 
+        
+$IO OUTPUT EXTREME_RAYDATA.TXT FILE(10)  !! Open up file for output data
+
+$SCR 1  !! Format output variables to have 3 significant figures to right of decimal point
+  \MNX1.3 \ \MNX2.3 \ \MNX3.3 \ \MNX4.3 \ \MNX5.3 \ \MNX6.3 \ \MNX7.3 \ \MNX8.3 \ \MNX9.3 \ \MNX0.3 \
+$SCR 1
+  \MXX1.3 \ \MXX2.3 \ \MXX3.3 \ \MXX4.3 \ \MXX5.3 \ \MXX6.3 \ \MXX7.3 \ \MXX8.3 \ \MXX9.3 \ \MXX0.3 \
+$SCR 1
+  \MNY1.3 \ \MNY2.3 \ \MNY3.3 \ \MNY4.3 \ \MNY5.3 \ \MNY6.3 \ \MNY7.3 \ \MNY8.3 \ \MNY9.3 \ \MNY0.3 \
+$SCR 1
+  \MXY1.3 \ \MXY2.3 \ \MXY3.3 \ \MXY4.3 \ \MXY5.3 \ \MXY6.3 \ \MXY7.3 \ \MXY8.3 \ \MXY9.3 \ \MXY0.3 \
+$SCR 1
+  \MNZ1.3 \ \MNZ2.3 \ \MNZ3.3 \ \MNZ4.3 \ \MNZ5.3 \ \MNZ6.3 \ \MNZ7.3 \ \MNZ8.3 \ \MNZ9.3 \ \MNZ0.3 \
+$SCR 1
+  \MXZ1.3 \ \MXZ2.3 \ \MXZ3.3 \ \MXZ4.3 \ \MXZ5.3 \ \MXZ6.3 \ \MXZ7.3 \ \MXZ8.3 \ \MXZ9.3 \ \MXZ0.3 \
+
+$IO OUTPUT CLOSE  !! Always remember to close the file!
+$ECHO             !! Turn console output back on
+  
+RETURN
+         

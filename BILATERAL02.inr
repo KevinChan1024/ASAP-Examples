@@ -1,0 +1,36 @@
+!!++
+!! BILATERAL02.INR
+!! Title: Using BILATERAL to Mirror a Rayset
+!! Category: Isolated Command
+!! Keywords: BILATERAL, RAYSET, rays, mirroring, flip
+!! Description: A simple example to show a BILATERAL flip of
+!! half a rayset about an axis using BILATERAL.  Source and
+!! mirrored rays were shifted to show operation clearer in 3D
+!! viewer.
+!! Edit History: (latest first)
+!! 05/23/2011 - cp - corrected title, added keyword
+!! 01/14/2009 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+WINDOW Y X 
+WINDOW 2.0
+!! EMITTING DISK Z 0 1 2 17
+
+GRID RECT Z 0 -2@3 -2@2  15 11 !! Easier to see using GRID
+  SOURCE POS -2 0 -5
+  ROTATE Z 5
+
+PLOT RAYS 1.0 1 OVERLAY 
+STATS
+     
+RAYSET
+  BILATERAL POS Y 
+  SHIFT X 0.2
+
+PLOT RAYS 1.0 1 COLOR 2
+STATS 
+
+$VIEW

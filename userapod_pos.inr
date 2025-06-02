@@ -1,0 +1,67 @@
+!!++
+!! USERAPOD_POS.INR
+!! Title: Positional Source Apodization
+!! Category: Isolated Command
+!! Keywords: APODIZE, USERAPOD, POSITION, Sources, apodizing, Gaussian
+!! Description: Apodizing in position using an 
+!! in-line expression or a table of data. In this
+!! example, both methods demonstrate an identical
+!! Gaussian-type apodization. The source without
+!! apodization is shown first.
+!! Edit History: (latest first)
+!! 11/11/2013 - gb - added APODIZE to the keywords
+!! 01/14/2002 - cp - corrected comments
+!! 10/18/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! No apodization
+UNITS CM                    !! System units
+BEAMS INCOHERENT GEOMETRIC  !! Define coherency
+WAVELENGTH 0.6328 UM        !! Ray wavelength units
+GRID ELLIPTIC Z 0 -4@1 2@15 !! Spatial definition
+  SOURCE DIRECTION 0 0 1          !! Angular definition
+
+WINDOW Y Z
+PLOT RAYS 1
+
+!! Default Gaussian apodization
+RAYS 0  !! Clear previous example 
+PI=3.1416
+U=SQRT(PI/2)*0.75
+V=SQRT(PI/2)*0.75
+BEAMS INCOHERENT GEOMETRIC 
+WAVELENGTH 0.6328 UM      
+USERAPOD POSITION (U) (V) U*V  !! Same results if no arguments - this is default method
+GRID ELLIPTIC Z 0 -4@1 2@15  !! Since grid is in Z, 1st two params above represent
+  SOURCE DIRECTION 0 0 1           !! X and Y semi-width scaling. The third is total flux scaling.
+
+WINDOW Y Z
+PLOT RAYS 1
+
+!! Table apodization
+RAYS 0  !! Clear previous example
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 0.6328 UM      
+USERAPOD POSITION 1 1  !! Flux scaling at 100%
+  GAUS[-1/U]   -1   GAUS[-1/V]   !! ASAP interpolates linearly between
+  GAUS[-0.8/U] -0.8 GAUS[-0.8/V] !! values listed.
+  GAUS[-0.6/U] -0.6 GAUS[-0.6/V]
+  GAUS[-0.4/U] -0.4 GAUS[-0.4/V]
+  GAUS[-0.2/U] -0.2 GAUS[-0.2/V]
+  GAUS[0/U]     0   GAUS[0/V]
+  GAUS[0.2/U]   0.2 GAUS[0.2/V]
+  GAUS[0.4/U]   0.4 GAUS[0.4/V]
+  GAUS[0.6/U]   0.6 GAUS[0.6/V]
+  GAUS[0.8/U]   0.8 GAUS[0.8/V]
+  GAUS[1/U]     1   GAUS[1/V]
+GRID ELLIPTIC Z 0 -4@1 2@15  !! Since grid is in Z, left column shows values of
+  SOURCE DIRECTION 0 0 1           !! flux for X between -1 and 1. Right column is Y
+                             !! values from -1 to 1. 
+$IO VECTOR REWIND
+WINDOW Y Z
+PLOT RAYS 1
+RETURN

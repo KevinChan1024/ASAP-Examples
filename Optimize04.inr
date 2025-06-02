@@ -1,0 +1,73 @@
+!!++
+!! Optimize04.INR
+!! Title: Optimizing a three-lens imaging system
+!! Category: Simple Problem
+!! Keywords: Lenses, Optimization, ABERRATIONS, VARIABLES, MINIMIZE, STORE
+!! Description:  An attempt at optimizing a three-lens system.
+!! The result can be compared to the "Cooke Triplet" design
+!! included in William Smith's book, "Modern Lens Design". 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 05/14/2001 - rh - cleaned up, and added more comments
+!! 03/14/2001 - cp - Modified format; added header
+!! 01/14/2001 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+MEDIA 
+  1.613 'SK4'
+  1.606 'F15'
+
+!! The initial system is specified only as six uniformly 
+!! spaced spherical surfaces.  The glass choices were per
+!! Smith.
+
+LENSES
+  SEQUENCE CV
+     0 0 0   0 0 1  16.9  1E-2 0 0  SK4
+     5              16.9  0 0 0  AIR
+     5              16.9  0 0 0  F15
+     5              16.9  0 0 0  AIR
+     5              16.9  0 0 0  SK4
+     5              16.9  0 0 0  AIR
+
+!! ABERRATIONS lists and plots aberations, and establishes
+!! the first order properties of the optical system
+
+ABERRATIONS LIST PLOT,
+  FB 0 0.5,          !! Fractional field points
+  UB0 TAN[22.98],    !! Half field of view
+  H0 12.4,           !! Marginal Ray height at Conic 1
+  UF -1/8,           !! f/4 expressed as slope
+  KTH0 4             !! Conic number of aperture stop
+  
+!! VARIABLES establishes the free parameters  
+  
+VARIABLES TH 1:5, !! Vary thicknesses
+          CV 1:6  !! Vary curvatures
+          
+!! MINIMIZE starts minimization, with constrains listed
+          
+MINIMIZE MULT 1000,   !! This controls max trys
+         TLEN 30,     !! Total length of lens system
+         GLTH 1.5 6   !! Min and max thicknesses allowed
+
+!! Save the result to a macro, and run it to see results
+         
+STORE COOKE.MAC
+$COOKE
+RETURN
+
+!! Solution from Smith's "Modern Lens Design":
+!!
+!!LENSES
+!!  SEQUENCE RADI
+!!     0 0 0   0 0 1  16.9    44.55 0 0  SK4
+!!     5              16.9  -436.60 0 0  AIR
+!!     10.31          16.9   -38.61 0 0  F15
+!!     1.60           16.9    42.62 0 0  AIR
+!!     8.04           16.9   250.97 0 0  SK4
+!!     5              16.9   -32.67 0 0  AIR  

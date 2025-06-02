@@ -1,0 +1,80 @@
+!!++
+!! GAUSSIAN_PHASE_HAND.INR
+!! Title: Hand-made Complex Field
+!! Category: Simple Problem
+!! Keywords: Wave, Gaussian, FIELD, DECOMPOSE, phase, complex, DISPLAY, hand
+!! Description: Make a complex field "by hand" by placing the
+!! amplitude and phase values into BRO029.DAT.  In
+!! this case we want the amplitude to be one (1) so
+!! we can multiply one field by another without
+!! changing the amplitude.  We only want to 
+!! offset the phase.  For this example, the phase
+!! offset is a constant stored in the variable
+!! named "P".  The second line after the DISPLAY command
+!! sets up the data format.  Since Z is first, the FIELD
+!! (at Z=0) will be in the plane (Window) of X-Y.  $READ
+!! may be used to import data from a file rather than being
+!! in line.
+!! Edit History: (latest first) 
+!! 04/10/2008 - cp - removed $READ keyword
+!! 04/24/2006 - cp - corrected spelling
+!! 03/23/2006 - cp - modified format; added description
+!! 02/08/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 1.0 UM
+WIDTHS 1.6
+
+P=57.3  !! Offset phase by 1 radian = 57.3 degrees
+
+DISPLAY -29  !! Rewind BRO029.DAT and set up to write data
+Z 0 FIELD X -10 10 11 Y -10 10 11  !! Can use $READ to import a large file - X rows, Y columns
+1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 
+1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P)
+1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P)
+1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P)
+1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P)
+1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P)
+1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P)
+1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P)
+1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P)
+1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P)
+1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P) 1'(P)
+RETURN
+
+!! Make a set of rays that represent this field.  This is done to
+!! obtain the same pixel sampling as will be used in the field to 
+!! which this phase is added.
+
+DECOMPOSE POSITION
+WINDOW Y -12 12  X -12 12
+PIXELS 39
+FIELD ENERGY 0  !! This is the complex field to be multiplied
+
+!! Next, make a new field.  In this case it is a spherical wave
+!! front.  By changing the variable P above, we can offset this
+!! curvature by an arbitrary amount by multiplying it by the
+!! field defined above.
+
+RAYS 0  !! Get rid of old beams.  We only need the stored field.
+
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 1.0 UM
+WIDTHS 1.6
+GRID RECT Z 0  -10 10 -10 10 21 21  !! Make the new source
+  SOURCE POSITION 0 0 -500000       !! Point source at -500000 mm
+WINDOW Y -12 12 X -12 12
+PIXELS 39
+FIELD ENERGY 0 MULTIPLY
+DISPLAY 
+  ISOMETRIC 'New Amplitude'
+  DISPLAY 29 PHASE
+  GRAPH 0.5 'New Phase'
+RETURN

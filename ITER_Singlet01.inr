@@ -1,0 +1,70 @@
+!!++
+!! ITER_SINGLET01.INR
+!! Title: $ITER for bending, first form
+!! Category: Isolated Command
+!! Keywords: $ITER, iterate, SINGLET, bending, $UNVAR
+!! Description: Optimize singlet bending with the first
+!! form of $ITER.  This is the simpler form of $ITER.  It
+!! only does a grid search to find the minimum value of the 
+!! specified function within a user-specified range. 
+!! The function minimized here is the RMS blur diameter as 
+!! a function of bending.
+!! See also "ITER_SINGLET02.INR" for comparison with the 
+!! second form of $ITER, and "OPTIMIZE_SINGLET.INR"
+!! for a comparison using MINIMIZE for conic sequences.
+!! Edit History: (latest first) 
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 10/07/2003 - cp - changed category
+!! 08/08/2001 - cp - modified file nameS
+!! 03/29/2001 - rh - creation
+!!--
+
+
+SYSTEM NEW
+RESET
+
+$UNVAR ERROR  !! Generate an error on uninitialized variables
+
+!! Iterate over values of the variable BN ranging from
+!! -1.0 to 1.0 in 21 steps.  The minus sign in front of
+!! the number of iterations (-21) tells ASAP to include
+!! the end points of the range, rather than finding the
+!! values in the center of 21 "cells" spanning the range.
+!! For the answer to three decimal places try narrowing
+!! the range around the expected answer by substituting
+!! $ITER BN 0.7 0.75 -51 RMSB.
+
+$ITER BN -1.0 1.0 -21 RMSB
+ {
+  SYSTEM NEW
+  RESET
+  
+  LENSES
+    SINGLET Z 0  1 5 SCHOTT_BK7 FL 100 (BN)
+  OBJECT 'L1'
+    INTERFACE 0 1 AIR AIR
+  
+  GRID ELLIPTIC Z -1  -4@5  101 101
+  SOURCE DIRECTION Z
+  
+  TRACE
+  FOCUS
+  $GRAB 'RMS Blur Diameter =' 0 1 RMSB
+ }
+
+
+!! The results are placed in a file named ITER.DIS
+!! that can be viewed and a analyzed with the DISPLAY
+!! tools.
+  
+DISPLAY ITER
+  GRAPH 'RMS Blur diameter vs. Bending factor'
+RETURN
+
+!! $ITER evaluates the function one extra time at the minimum 
+!! found so that all relevant register values will contain
+!! the optimum values.  In this case, BN contains the 
+!! best bending factor for this singlet.  It is printed with
+
+&REG BN 'Optimum bending: '
+

@@ -1,0 +1,42 @@
+!!++
+!! LENS_IMAGE03.INR
+!! Title: IMAGE as a Lens & Edge Modifier
+!! Category: Simple Problem
+!! Keywords: Geometry, IMAGE, LENSES, EDGES
+!! Description: Using IMAGE as a LENS and an EDGE modifier.
+!! Edit History: (latest first)
+!! 02/16/2000 - cp - modified format; added description
+!! 03/29/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.5 'GLASS'
+
+!! The following uses IMAGE to image a global point through
+!! the lens entity. The imaging transformation is stigmatic
+!! (points go into points), but not necessarily collinear
+!! (lines go into lines). Therefore, it is only an
+!! approximation since in any real optical system, the image
+!! will be aberrated (not a perfect point focus).
+LENSES
+ SINGLET Z 0 2 5 GLASS FL 20 0
+   IMAGE 1 (X=5) (Y=5) (Z=-30) 3
+
+!! Image as an edge modifier
+EDGES
+  RECTANGLE Z (Z) (X) (Y)
+
+!! In this case IMAGE is an edge modifier that images
+!! the entity through the lens.
+EDGES
+  REPEAT 0.1
+    IMAGE 1 1 3  !! Through lens 1
+
+PRINT EDGES 0.1
+
+WINDOW Y Z
+PLOT ENTITIES 'PLOT OF LENS AND IMAGED EDGE'
+RETURN

@@ -1,0 +1,51 @@
+!!++
+!! LENS_INTERFACE.INR
+!! Title: Lens Interfaces
+!! Category: Isolated Command
+!! Keywords: LENSES, Interfaces, properties
+!! Description: A singlet lens and a prism
+!! lens made from different materials. See
+!! explanations below.
+!! Edit History: (latest first) 
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 08/07/2012 - cp - corrected keyword
+!! 12/21/2001 - cp - modified file structure; added keywords
+!! 10/07/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+**************************************************
+!! A singlet made of Schott SK16 glass with radii
+!! of 6 and -9 in. The central thickness is 0.54
+!! and the diameter 3 inches.  Each surface has a
+!! transmission of 87 percent.  Therefore a ray
+!! passing through this element would retain only
+!! 75.7 percent of its initial flux.
+UNITS IN
+WAVELENGTHS   486     587     656 NM
+COATINGS PROPERTIES
+  0 0.87  0 0.87  0 0.87  'TRANS'
+
+LENSES
+  SINGLET Y 25 0.54 1.5 SCHOTT_SK16 RD 6 -9
+  OBJECT 'DA_SINGLET'
+    INTERFACE COAT TRANS AIR AIR
+
+**************************************************
+!! The prism material is ZnSe.  The reflecting
+!! surface are 98 percent reflecting.  The refracting
+!! surfaces are 95 percent transmissive.
+MEDIA
+  2.4   'ZNSE'
+COATINGS PROPERTIES
+  0.98  0.95  'PENTA'
+
+LENSES
+  PENTA X 0 2 1 Y
+  OBJECT 'PENTA_PRISM'
+    INTERFACE COAT PENTA AIR AIR
+**************************************************
+RETURN

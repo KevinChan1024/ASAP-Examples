@@ -1,0 +1,115 @@
+!!++
+!! TRIPLET_GHOST_ANAL.INR
+!! Title: Ghost Analysis with Triplet Lens
+!! Category: Simple Problem
+!! Keywords: Lenses, ghost, LENSES, SEQUENCE, triplet, CUTOFF, PATHS 
+!! Description: A Triplet lens system is used to demonstrate
+!! real ghost image analysis. Initially a plot of the lens system
+!! is shown with an on-axis and off-axis source. Then SPLIT
+!! is set to 2 and a single source is traced, while saving 
+!! the history of the ray intersections along the way.
+!! Children and grandchildren rays are produced and generate
+!! alternate paths to the target.  Finally, the 1st six paths
+!! are plotted (in order of flux contribution), from historical
+!! data saved.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 02/15/2000 - cp - modified format; added description
+!! 04/01/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS IN
+FRESNEL AVERAGE
+LENSES
+  SEQUENCE RADI
+    0 0 0, 0 0 1, 11 36.203 0 0 SK16
+    4.5 11 -3521.1268 0 0 0
+    8.7512 7 -57.9878 0 0 SCHOTTNEW_F4
+    2.5 7 36.2056 0 0 0
+    9.6205 11 161.2383 0 0 SK16
+    6 11 -45.4752 0 0 0
+OBJECT 'TRIPLET'
+  INTERFACE COAT BARE AIR AIR 
+  
+EXPLODE 0.1 !! Break up into component surfaces
+ 
+SURFACES
+  PLANE Z 115.0809 ELLIPSE 30
+OBJECT 'IMAGE_PLANE' 
+  
+CONSIDER EXCEPT 1
+ 
+!! Create picture of system
+TITLE 'TRIPLET SYSTEM TO DEMONSTRATE GHOST IMAGING'
+XMEMORY OFF
+SPLIT OFF
+CUTOFF 1E-6  !! Raise cutoff from default value to speed raytrace
+
+PARABASAL 4
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 0.55 UM
+GRID ELLIPTIC Z 14.3876 -4@7.9365 1 5 
+  SOURCE DIRECTION 0 0 1, 0 TAN[10] 1  !! Two sources created
+  MOVE TO Z -5
+
+WINDOW Y Z
+WINDOW 1.2  !! Enlarge by 20%
+PROFILES OVERLAY
+TRACE PLOT 
+
+!! Create picture of ghosted system
+TITLE 'GHOST IMAGING ANALYSIS OF TRIPLET LENS SYSTEM'
+RAYS 0  !! Clear old rays
+GRID ELLIPTIC Z 14.3876 -4@7.9365 1 5
+SOURCE DIRECTION  0 0 1
+  MOVE TO Z -5
+  SPLIT 2
+PROFILES OVERLAY
+TRACE PLOT
+ 
+!! Perform actual ghost image analysis
+SAVE !! Save history of ray intersections for later PATHS and HISTORY 
+RAYS 0  !! Clear old rays
+
+CUTOFF 1E-6  !! Kill off beams with lower energy than this value
+SPLIT 2
+PARABASAL 4
+BEAMS COHERENT DIFFRACT 
+WIDTHS 1.6
+WAVELENGTH 0.55 
+GRID ELLIPTIC Z 14.3876 -4@7.9365 15 15
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -5
+TRACE GRAPH  !! Graph ray trace progress
+
+CONSIDER ONLY .1
+WINDOW Y 0 5 X -2.5 2.5
+PIXELS 361
+SPREAD NORMAL -39 DOWN 0.5 0.5 COLENGTH 1
+DISPLAY 39
+  NORMALIZE MAX
+  FORM -5
+  GRAPH 'SPREAD FUNCTION FROM IMAGED & GHOST RAYS'
+    'RADIAL DISTANCE'
+    'CALCULATED WITH SPREAD NORMAL...COLENGTH'
+RETURN
+
+$DO 1 6  !! Plot 1st 6 paths
+  { 
+  CONSIDER ONLY IMAGE_PLANE
+  PATHS
+  SELECT ONLY PATH ?
+  CONSIDER EXCEPT 1
+  WINDOW Y Z
+  TITLE 'RAY TRACE FOR PATH ?'
+  PROFILES OVERLAY
+  HISTORY 0 PLOT
+  SELECT ALL
+  }
+
+RETURN
+ 

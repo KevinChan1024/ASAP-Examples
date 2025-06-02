@@ -1,0 +1,45 @@
+!!++
+!! MESH_OBJECT.INR
+!! Title: Mesh Object from Edges
+!! Category: Simple Problem
+!! Keywords: Edges, MESH, REPEAT, PLOT
+!! Description: A mesh object formed from edges.
+!! Edit History: (latest first)
+!! 10/09/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+A=1 B=1.25 R=0.25
+MEDIA
+  1.5  'GLASS'
+COATINGS PROPERTIES
+  0 1  'TRANS'
+
+EDGES
+  POINTS, 
+   -(A) B-R 0 2, control point -(A) (B) 0 COS[45], -A+R (B) 0 1,
+    A-R (B) 0 2, control point  (A) (B) 0 COS[45], (A)  B-R 0 0
+  REPEAT
+    ROTATE X 45 B-R 0
+  REPEAT
+    ROTATE X 45 B-R 0
+  REPEAT
+    SHIFT Y 2*(-B+R)
+  REPEAT
+    ROTATE X 45 -B+R 0
+  REPEAT
+    ROTATE X 45 -B+R 0
+  OBJECT
+    0.6 2, 0.5 COS[45], 0.4 1, 0.3 2, 0.2 COS[45], 0.1 1 'PILLOW_LENS'
+      INTERFACE COAT +TRANS AIR GLASS
+
+WINDOW Z X
+WINDOW 1.1
+OBLIQUE 
+PLOT EDGES 'EDGES USED TO CONSTRUCT PILLOW LENS'
+PLOT MESH 'PILLOW LENS (OBLIQUE VIEW) WITH PLOT MESH'
+PLOT FACETS 5 5 'PILLOW LENS (OBLIQUE VIEW) WITH PLOT FACETS' 
+RETURN

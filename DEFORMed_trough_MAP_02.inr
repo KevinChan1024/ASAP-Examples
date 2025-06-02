@@ -1,0 +1,102 @@
+!!++
+!! DEFORMED_TROUGH_MAP_02.INR
+!! Title: Complex Deformation of a Parabolic Trough Reflector
+!! Category: Simple Problem
+!! Keywords: Geometry, DEFORM, MAP, trough, reflector
+!! Description: This example shows relatively small 
+!! deformations that are not easily seen in
+!! PLOT FACETS and the 3D Viewer. Therefore, MAP is
+!! used to show the base surface, perturbed
+!! surface, and the calculated difference 
+!! between them as a check on the deformation process. 
+!! The deformation is sinusoidal across the figured
+!! direction, and exponential along the trough's length.
+!! Similar to DEFORMED_TROUGH_MAP01.INR but more complex
+!! deformation is applied.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 06/02/2008 - cp - added header
+!! 05/29/2008 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+UNITS M
+
+PI=4*ATAN(1)
+
+!! difference function to remove base surface from perturbed surface for comparison
+$FCN DIFF (_1-_2)
+
+!! reflector optical properties
+COATINGS PROPERTIES
+  0.94 0 'REFL'
+RETURN
+
+MODELS
+  HARVEY 0.2 -1.6 0.3 !! PLOT
+RETURN
+  
+!! reflector geometrical parameters
+LREFL=3         !! reflector trough length
+WREFL=2         !! reflector trough width
+FREFL=0.6       !! reflector trough focal length
+RREFL=2*FREFL   !! reflector trough base radius of curvature
+
+!! calculate parabolic edge sag of trough
+SAGREFL=(((WREFL/2)^2)/RREFL)/(1+SQRT[1-(((WREFL/2)/RREFL)^2)])
+&REG SAGREFL
+
+!! define a perturbation function for the reflector
+!!  > sinusoidal across the figured (width) direction
+!!  > exponential along the length direction
+$FCN SINEXP 0.001*RREFL*COS(50*_1/WREFL)*EXP(-4E-1*ABS(_2)/LREFL)
+$EVAL _1 -2@(WREFL/2) INT(201*WREFL/LREFL) _2 -2@(LREFL/2) 201 SINEXP
+
+DISPLAY EVAL.DIS
+  TRANSPOSE
+  PICTURE 'raw perturbation $FCN'
+RETURN
+
+!! define the trough reflector
+SURFACES
+  USERFUNC EXPLICIT 0 0 0 SINEXP                  !! perturbation function
+  OPTICAL Z 0 (RREFL) -1 RECT (WREFL/2) (LREFL/2) !! base paraboloid 
+  ASYM 1 0                                        !! make it a surface of extrusion rather than revolution
+OBJECT
+  .1 'REFLECTOR'                                  !! make it an object
+      INTERFACE COAT REFL AIR AIR                 !! give it reflectance
+       SCATTER MODEL 1                            !! assign scattering behavior
+         TOWARDS SPEC 11 PI/3 0 
+      REDEFINE COLOR 25
+RETURN
+
+!! configure window to MAP object surface
+WINDOW Y -2@(LREFL/2) X -2@(WREFL/2)
+PIXELS 201
+
+!! create a map of the base surface 
+MAP BASE
+
+
+OBJECT .1    !! recall the reflector object definition
+  DEFORM .2  !! perturb by deformation
+RETURN
+
+!! create a map of the perturbed surface 
+MAP PERTURBED
+
+!! plot it to show that small deformations are not distinguished
+PLOT FACETS 31 5 0 ZX 0 (SAGREFL) 2@0 'Reflector cross section view'
+$VIEW  
+PLOT FACETS 31 5 0 ZY 0 (SAGREFL) 2@0 'Reflector side view'
+
+!! show maps of surfaces
+DISPLAY BASE.DIS                 !! base surface
+  PICTURE 'Base surface'
+DISPLAY PERTURBED.DIS            !! deformed surface
+  PICTURE 'Perturbed surface'
+COMBINE BASE.DIS DIFF            !! difference (should give back perturbation function)
+  PICTURE 'Perturbation alone'
+RETURN

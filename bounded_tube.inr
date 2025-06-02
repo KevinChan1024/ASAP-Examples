@@ -1,0 +1,47 @@
+!!++
+!! BOUNDED_TUBE.INR
+!! Title: Bounding Long Tube with Opticals
+!! Category: Simple Problem
+!! Keywords: Bounds, BOUNDS, EXPAND
+!! Description: Shows solution to bounding a
+!! long tube at both ends with an optical
+!! surface. There can be a problem when the
+!! radius of curvature is such that there are
+!! alternate surfaces bounding to the tube.
+!! This can appear in the form of a shortened tube.
+!! The fix is to use the EXPAND option on the
+!! OPTICAL command. This changes the surface from
+!! implicit to explicit which makes a cleaner bounds
+!! by removing the alternate branch. The number of
+!! 0's before hand determines the accuracy. Using 
+!! EXPAND will slow raytrace time somewhat.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 11/02/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES 
+!! EXPAND not really necessary for 1st surface in this case
+  OPTICAL Z 1 10 ELLIPSE 1.5 1.5
+!! Remove following EXPAND to see difference
+  OPTICAL Z 9 -3 0 EXPAND ELLIPSE 1.5 1.5
+  TUBE Z 0 1 1 10 1 1
+    
+OBJECT
+  .3 'LENS_FRONT'
+    BOUNDS -.1
+OBJECT
+  .2 'LENS_BACK'
+    BOUNDS -.1
+OBJECT
+  .1 'LENS_EDGE'
+    BOUNDS .3 -.2 
+    
+WINDOW Y Z
+PLOT SURFACES OVERLAY !! Show surfaces used for bounding
+PLOT FACETS 5 5  !! Show resulting objects after bounding
+$VIEW
+RETURN

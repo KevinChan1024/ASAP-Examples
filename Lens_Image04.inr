@@ -1,0 +1,55 @@
+!!++
+!! LENS_IMAGE04.INR
+!! Title: IMAGE Command used as Source modifier
+!! Category: Simple Problem
+!! Keywords: Sources, IMAGE, LENSES, EMITTING HELIX
+!! Description: Uses IMAGE as a source modifier. The
+!! modified source, placed at the image position, is 
+!! compared to the original in the final plot.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 05/01/2006 - cp - corrected keyword
+!! 02/16/2000 - cp - modified format; added description
+!! 04/01/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+COATINGS PROPERTIES
+  1 0 'REFL'
+
+LENSES
+  MIRROR Z 0 40 (EFL=-20) -1
+    ROTATE X 10 0 0
+  EXPLODE 0.1
+OBJECT 'MIRROR'
+    INTERFACE COAT REFL AIR AIR
+
+EXTENDS { 1
+XMEMORY MIN
+EMITTING HELIX Y -2 2 5 0.5 0.01 #1
+  SHIFT Z -1*EFL+15
+}
+
+$EXTENDS 100  !! Source at object position
+$EXTENDS 100  !! Source at image position
+
+!! IMAGE is used here to image rays through the lens.
+SELECT ONLY SOURCE 2
+  IMAGE 1 1 2  !! Puts source at image position
+SELECT ALL
+
+$DO 1 2 
+  {
+  SELECT ONLY SOURCE ?
+    STATS POSITION
+  }
+SELECT ALL
+
+WINDOW Y -2@40 Z -10 150
+PLOT LENSES OVERLAY
+SPOTS POSITION
+RETURN

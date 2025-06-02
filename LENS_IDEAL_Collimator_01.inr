@@ -1,0 +1,69 @@
+!!++
+!! LENS_IDEAL_COLLIMATOR_01.INR
+!! Title: Ideal Lens Collimator Analyzed with SPREAD
+!! Category: Isolated Command
+!! Keywords: IDEAL, LENSES, SPREAD, &VIEW, Wave, collimator, PLOT MESHES, MOVE TO, FOCUS, STATS DIRECTION
+!! Description: An ideal lens collimating a spherical wave
+!! evaluated using wave optics, displaying its energy density
+!! graphically. The extra parameter for the object distance is
+!! added to the usual IDEAL ABCD matrix elements definition to 
+!! allow the phase to be properly calculated in wave optics mode.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 08/02/2012 - cp - added header
+!! 07/29/2012 - jah - converted to collimating wave optics config. -based on LENS_IDEAL03.INR
+!! 10/06/2000 - cp  - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM
+WAVELENGTH 670 NM
+
+!! Specify an ideal lens by its two principal plane locations and 
+!! pupil sizes, its ABCD matrix elements, and the directed object 
+!! distance from the first principal plane.
+LENSES
+  IDEAL Z 0,  1 0.4 1; 
+  1 0 -1/4 1,      -4   !! ABCD matrix elements, Object directed distance to determine output phase
+OBJECT 
+  .1 'COLLIMATOR'
+
+SURFACES
+  PLANE Z 2 RECTANGLE 2@1.1
+OBJECT 'TARGET'
+
+!! coherent point source at front focal point
+BEAMS COHERENT DIFFRACT
+PARABASAL 4
+WIDTHS 1.6
+
+GRID ELLIPTIC Z 0 -4@1 2@51 !! create at lens first principal plane
+  SOURCE POSITION 0 0 -4   !! point source from front focal point
+  MOVE TO Z -4             !! move to point source location
+  
+WINDOW Y -2@1.1 Z -4 2
+WINDOW 1.02
+!! use PLOT MESHES to just show simpified form of objects
+PLOT MESHES OVERLAY 'LENS:IDEAL in collimator configuration' COLORS 3 25
+TRACE PLOT 23 COLORS 2
+RETURN
+
+!! analyze output collimated beam
+
+CONSIDER ONLY TARGET 
+
+SPREAD NORMAL YX 1.1 PIXELS 101
+
+DISPLAY
+  PICTURE 'Collimator energy density'
+RETURN 
+
+!! check state of collimation
+FOCUS             !! see Maximum Ray Angle from Mean = 0.0000 degrees
+STATS DIRECTION   !! see C direction with no variation
+
+!! show geometry & trace in 3D Viewer; add energy plot
+$VIEW; &VIEW BRO009.DAT

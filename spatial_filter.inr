@@ -1,0 +1,163 @@
+!!++
+!! SPATIAL_FILTER.INR
+!! Title: Spatial Filter Model
+!! Category: Simple Problem
+!! Keywords: Wave, SPREAD, DECOMPOSE, FIELD, CLIP, filter, diffraction, Fourier
+!! Description: This lens system models spatial filtering
+!! in the Fourier transform plane. The POINTS model of
+!! the letter "F" is projected through a spatial filter 
+!! which truncates some of the spatial frequencies. It is 
+!! then analyzed at the image plane. This is a somewhat
+!! sophisticated script dealing with decomposing beams
+!! in position and direction and should be used in caution
+!! by those already familiar with these techniques.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/11/2002 - cp - reformatted
+!! 10/17/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+SEGMENTS 20
+EFL=100 RAD=25
+
+COATINGS PROPERTIES
+  0 1  'TRANS' 
+ 
+SURFACES
+  PLANE Z 0 RECTANGLE 15
+EDGES
+  POINTS 0 0 0 0,  !! F
+    -15 6 0 1, -10 6 0 1, -10 4 0 1, -13 4 0 1, -13 2 0 1
+    -10 2 0 1, -10 0 0 1, -13 0 0 1, -13 -6 0 1, -15 -6 0 1
+    -15 6 0 0
+     SHIFT X 12.5
+OBJECT
+  0.2 'LETTER_F'
+  BOUNDS -0.1
+ 
+SURFACES
+  PLANE Z 0.001 RECTANGLE 15
+OBJECT 'FTLP_1'
+  INTERFACE COAT TRANS AIR AIR
+ 
+LENSES
+  IDEAL Z (EFL) (RAD)
+    1 0 -1/EFL 1
+OBJECT 'FTL_1'
+  INTERFACE COAT TRANS AIR AIR
+ 
+SURFACES
+  PLANE Z 2*EFL
+    LOCAL -4@(RAD-15) -2@1
+OBJECT 'FTP'
+  INTERFACE COAT TRANS AIR AIR
+ 
+SURFACES
+  PLANE Z (SPFL=2*EFL+0.001) RECTANGLE 1
+EDGES
+  ELLIPSE Z (SPFL) 2@0.03
+OBJECT
+  0.2 'SPATIAL_FILTER'
+  INTERFACE COAT TRANS AIR AIR
+  BOUNDS -0.1 
+ 
+LENSES
+  IDEAL Z 3*EFL (RAD)
+    1 0 -1/EFL 1 -(EFL)
+OBJECT 'FTL_2'
+  INTERFACE REPEAT
+
+SURFACES
+  PLANE Z 4*EFL RECTANGLE RAD+10
+OBJECT 'DETECTOR'
+ 
+SYSRAY { 1 'input beam'
+  PARABASALS 4
+  BEAMS COHERENT DIFFRACT
+  WAVELENGTHS 0.6328E-3
+  WIDTHS 1.6
+  GRID ELLIPTIC Z -0.1 -4@8 2@#1
+    SOURCE DIRECTION 0 0 1
+}
+ENTER NUMBER OF AXIAL RAYS> 
+
+!! Create a vector file for final replot
+&SYSRAY 3
+  SHIFT Z 1
+WINDOW Y X
+OBLIQUE
+PIXELS 71
+CONSIDER ONLY 2 4 7
+  PLOT LIMITS OVERLAY
+CONSIDER ONLY 1
+  PLOT EDGES OVERLAY
+CONSIDER ALL
+  PLOT LENSES OVERLAY
+  TRACE PLOT
+OBLIQUE OFF
+RAYS 0
+$IO PLOT REWIND
+ 
+!! Trace beams to aperture and use decompose position
+&SYSRAY 25
+WINDOW Y 8 -8 X 8 -8
+TRACE STEP 1
+FIELD ENERGY 0 CLIP 1
+DISPLAY
+  ISOMETRIC 0.5 'INPUT IRRADIANCE DISTRIBUTION'
+RAYS 0
+HALT 1E-10
+PARABASALS 4 
+BEAMS COHERENT DIFFRACT
+WAVELENGTHS 0.6328E-3
+WIDTHS 1.6
+
+DECOMPOSE POSITION
+
+!! Trace rays to focal plane and spatially filter with decompose direction
+TRACE STEP 3
+STATS POSITION
+WINDOW Y -2@75E-3 X -2@75E-3
+TITLE 'IRRADIANCE DISTRIBUTION AT FOCAL PLANE'
+SPREAD NORMAL
+DISPLAY
+  AVERAGE
+  ISOMETRIC
+RETURN
+WINDOW Y -2@30E-3 X -2@30E-3
+FIELD ENERGY (SPFL) CLIP 5
+DISPLAY
+  ISOMETRIC 'SPATIALLY FILTERED DIFFRACTION PATTERN'
+RAYS 0
+CONSIDER ALL
+PARABASALS 4 
+BEAMS COHERENT DIFFRACT
+WAVELENGTHS 0.6328E-3
+WIDTHS 1.6
+DECOMPOSE DIRECTION 5000 2@15
+
+!! Verify newly created beam set
+SPREAD NORMAL
+DISPLAY
+  ISOMETRIC 'DECOMPOSED SPATIALLY FILTERED PATTERN'
+
+!! Trace spatially filtered beams to detector
+TRACE
+CONSIDER ONLY DETECTOR
+WINDOW Y -2@8 X -2@8
+SPREAD NORMAL
+DISPLAY
+  AVERAGE
+  ISOMETRIC 0.5 'SPATIALLY FILTERED OUTPUT'
+  CONTOUR 3 VECTOR
+CONSIDER ALL
+WINDOW Y X
+PIXELS 71 FILL
+OBLIQUE 
+REPLOT 'FOURIER TRANSFORM LENS SYSTEM'
+RETURN

@@ -1,0 +1,189 @@
+!!++
+!! LENS_PROGRESSIVE_01.INR
+!! Title: Four Zone Progressive Optometric Lens
+!! Category: Simple Problem
+!! Keywords: Lenses, LENSES, SINGLET, EXPLODE, BOUNDS, progressive, optometric, ophthalmic lens, eye, ahem
+!! Description: A  four-zone  optometric lens made by exploded
+!! convex-plano or concave-plano singlets using the FL (Focal Length)
+!! option and bounding. 
+!! Power of zones 1 - 4 add to Zone 0 power controlled by curvature and index.
+!! Connected points compose the zonal outlines.
+!! Cross-hatched profiles are overlain on faceting to show the points grid.
+!! This lens can be used with AHEM if lines are commented out as noted below.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 03/16/2009 - wjd - modified to work with AHEM
+!! 03/08/2009 - wjd - corrected interfaces 
+!! 03/06/2009 - cp - added header
+!! 03/06/2009 - wjd - creation
+!!--
+
+SYSTEM NEW                                  !! Comment out these lines for AHEM use.
+RESET                                       !! Comment out these lines for AHEM use.
+                                            !! Comment out these lines for AHEM use.
+!! Define system units and wavelengths      !! Comment out these lines for AHEM use.
+                                            !! Comment out these lines for AHEM use.
+UNITS MILLIMETERS 'Watts'                   !! Comment out these lines for AHEM use.
+WAVELENGTH 550 NM                           !! Comment out these lines for AHEM use.
+FRESNEL AVE                                 !! Comment out these lines for AHEM use.
+SPLIT 1                                     !! Comment out these lines for AHEM use.
+!! Define coatings                          !! Comment out these lines for AHEM use.
+                                            !! Comment out these lines for AHEM use.
+COATINGS PROPERTIES                          !! Comment out these lines for AHEM use.
+  0 1 'TRANSMIT'                            !! Comment out these lines for AHEM use.
+  1 0 'REFLECT'                             !! Comment out these lines for AHEM use.
+  0 0 'ABSORB'                              !! Comment out these lines for AHEM use.
+***************************************************************************************
+
+!! Define Media
+
+MEDIA
+  1.493 'PMMA'  
+PMMA=1.493  
+
+NRAYS=11
+LENSTHK=2mm
+SPECSEMI_HEIGHT=20mm
+PS=2    !! Points scaling factor.
+ZONE0_FRONTRAD=120mm
+ZONE0_BACKRAD=92.3mm 
+
+CURV1=1/ZONE0_FRONTRAD
+CURV2=1/ZONE0_BACKRAD
+
+ZONE0_POWER=(PMMA-1)*(CURV1-CURV2)*1000   !! Thin lens equation for base (Zone0) power.
+  
+!! Set up progressive zones. Dioptric power to focal length (mm) conversion and added base (Zone0) power.
+ZONE1_POWER=0.5 diopters
+ZONE1_FL=1/(ZONE1_POWER+ZONE0_POWER)*1000  
+
+ZONE2_POWER=1.0 diopters
+ZONE2_FL=1/(ZONE2_POWER+ZONE0_POWER)*1000
+
+ZONE3_POWER=1.5 diopters
+ZONE3_FL=1/(ZONE3_POWER+ZONE0_POWER)*1000    
+
+ZONE4_POWER=2 diopters
+ZONE4_FL=1/(ZONE4_POWER+ZONE0_POWER)*1000
+
+!! GEOMETRY DEFINITIONS BEGIN HERE  
+LENSES             
+  SINGLET Z 0  (LENSTHK) (SPECSEMI_HEIGHT) (PMMA) FL (ZONE1_FL) 1               
+  SINGLET Z 0  (LENSTHK) (SPECSEMI_HEIGHT) (PMMA) FL (ZONE2_FL) 1            
+  SINGLET Z 0  (LENSTHK) (SPECSEMI_HEIGHT) (PMMA) FL (ZONE3_FL) 1            
+  SINGLET Z 0  (LENSTHK) (SPECSEMI_HEIGHT) (PMMA) FL (ZONE4_FL) 1   
+  EXPLODE ALL  
+
+OBJECT .8; REDEFINE 'PROGLENS1.ZONE1.FRONT' ; INTERFACE COATING BARE PMMA AIR;     
+OBJECT .7; REDEFINE 'PROGLENS1.ZONE1.BACK'  ; INTERFACE REPEAT 
+OBJECT .6; REDEFINE 'PROGLENS1.ZONE2.FRONT' ; INTERFACE REPEAT   
+OBJECT .5; REDEFINE 'PROGLENS1.ZONE2.BACK'  ; INTERFACE REPEAT
+OBJECT .4; REDEFINE 'PROGLENS1.ZONE3.FRONT' ; INTERFACE REPEAT   
+OBJECT .3; REDEFINE 'PROGLENS1.ZONE3.BACK'  ; INTERFACE REPEAT
+OBJECT .2; REDEFINE 'PROGLENS1.ZONE4.FRONT' ; INTERFACE REPEAT   
+OBJECT .1; REDEFINE 'PROGLENS1.ZONE4.BACK'  ; INTERFACE REPEAT
+
+SURFACES
+  OPTICAL Z 0 (ZONE0_FRONTRAD) ELLIPSE (SPECSEMI_HEIGHT) 
+  
+EDGES
+  POINTS Z -3; 9*PS  1*PS 1  !! ZONE 1
+               9*PS -1*PS 1
+              -9*PS -1*PS 1
+              -9*PS  1*PS 1
+              SWEEP DIR 5 0 0 1
+              OBJECT 'PROGLENS1.ZONE1.EDGE'
+              INTERFACE REPEAT !!COATING BARE AIR PMMA
+              BOUNDS .10 -.2
+EDGES
+  POINTS Z -3; 8*PS -1*PS 1  !! ZONE 2
+               8*PS -2*PS 1
+              -8*PS -2*PS 1
+              -8*PS -1*PS 1
+              SWEEP DIR 5 0 0 1
+              OBJECT 'PROGLENS1.ZONE2.EDGE'
+              INTERFACE REPEAT
+              BOUNDS .9 -.3
+EDGES
+  POINTS Z -3; 7*PS -2*PS 1  !! ZONE 3
+               7*PS -4*PS 1
+               4*PS -4*PS 1
+               4*PS -3*PS 1
+              -4*PS -3*PS 1
+              -4*PS -4*PS 1
+              -7*PS -4*PS 1
+              -7*PS -2*PS 1 
+              SWEEP DIR 5 0 0 1
+              OBJECT 'PROGLENS1.ZONE3.EDGE' 
+              INTERFACE REPEAT
+              BOUNDS .8 -.4
+EDGES
+  POINTS Z -3; 4*PS -3*PS 1  !! ZONE 4
+               4*PS -4*PS 1
+               6*PS -4*PS 1
+               6*PS -7*PS 1
+               5*PS -7*PS 1
+               5*PS -8*PS 1
+              -5*PS -8*PS 1
+              -5*PS -7*PS 1
+              -6*PS -7*PS 1
+              -6*PS -4*PS 1
+              -4*PS -4*PS 1
+              -4*PS -3*PS 1 
+              SWEEP DIR 5 0 0 1
+              OBJECT 'PROGLENS1.ZONE4.EDGE'
+              INTERFACE REPEAT
+              BOUNDS .7 -.5 
+SURFACES
+  OPTICAL Z (0+LENSTHK) (ZONE0_BACKRAD) ELLIPSE (SPECSEMI_HEIGHT) 
+OBJECT 'PROGLENS1.ZONE0.BACK' 
+  INTERFACE REPEAT                              
+
+OBJECT PROGLENS1.ZONE1.FRONT; REDEFINE COLOR 1   !! ZONE 1
+  BOUNDS -.5
+
+OBJECT PROGLENS1.ZONE2.FRONT; REDEFINE COLOR 2   !! ZONE 2  
+  BOUNDS -.4  
+
+OBJECT PROGLENS1.ZONE3.FRONT; REDEFINE COLOR 3   !! ZONE 3                                         
+  BOUNDS -.3 
+
+OBJECT PROGLENS1.ZONE4.FRONT; REDEFINE COLOR 4   !! ZONE 4
+  BOUNDS -.2 
+
+OBJECT
+ .6 'PROGLENS1.ZONE0.FRONT'
+  INTERFACE REPEAT 
+  BOUNDS .5 .4 .3 .2
+
+SURFACES
+  TUBE Z (0-LENSTHK) 2@(SPECSEMI_HEIGHT) (LENSTHK*2) 2@(SPECSEMI_HEIGHT)
+OBJECT 'PROGLENS1.ZONE0.EDGE'
+  INTERFACE 0 0      !! BLACKED EDGE
+  BOUNDS .7 -.2 
+
+!! Remove redundant backs left over from explode.  
+OBJECT PROGLENS1.ZONE1.BACK; BOUNDS .1 
+OBJECT PROGLENS1.ZONE2.BACK; BOUNDS .1
+OBJECT PROGLENS1.ZONE3.BACK; BOUNDS .1
+OBJECT PROGLENS1.ZONE4.BACK; BOUNDS .1
+           
+RETURN
+GROUP PROGLENS1.ZONE?
+
+************************************************************************************************
+!! SOURCE DEFINITIONS BEGIN HERE                         !! Comment out these lines for AHEM use.
+GRID ELLIPTIC Z -10 -4@(SPECSEMI_HEIGHT-.1) 2@(NRAYS)    !! Comment out these lines for AHEM use.
+SOURCE DIRECTION 0 0 1                                   !! Comment out these lines for AHEM use.
+$PLOT OFF                                                !! Comment out these lines for AHEM use.
+WINDOW Y Z                                               !! Comment out these lines for AHEM use.
+PROFILES 0 0 21                                          !! Comment out these lines for AHEM use.
+MISSED 100                                               !! Comment out these lines for AHEM use.
+WINDOW Z X                                               !! Comment out these lines for AHEM use.
+PROFILES 0 0 21                                          !! Comment out these lines for AHEM use.
+PLOT FACETS 2@21 0 OVERLAY                               !! Comment out these lines for AHEM use.
+TRACE PLOT                                               !! Comment out these lines for AHEM use.
+$PLOT NORM                                               !! Comment out these lines for AHEM use.
+$VIEW                                                    !! Comment out these lines for AHEM use.
+RETURN                                                   !! Comment out these lines for AHEM use.
+STATS                                                    !! Comment out these lines for AHEM use.

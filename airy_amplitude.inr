@@ -1,0 +1,49 @@
+!!++
+!! AIRY_AMPLITUDE.INR
+!! Title: Airy Rings in Amplitude
+!! Category: Simple Problem
+!! Keywords: Wave, SPREAD, Airy, diffraction
+!! Description: The Airy disk plotted in amplitude.
+!! A SPREAD NORMAL is performed on a Gaussian plane
+!! wave after passing through an ideal lens to simulate
+!! a circular aperture.
+!! Edit History: (latest first)
+!! 03/16/2000 - cp - Reformatted; added header
+!! 03/02/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 1 UM
+WIDTHS 1.6
+
+LENS
+  IDEAL Z 0 0.5
+    1 0 -1/5 1
+  OBJECT 'LENS'
+
+SURFACE
+  PLANE Z 5 ELLIPSE 2@0.25 
+  OBJECT 'DETECTOR'
+    INTERFACE 0 0 AIR AIR
+
+GRID RECT Z -1 -4@.5 21 21
+  SOURCE DIRECTION 0 0 1
+
+TRACE
+
+CONSIDER ONLY DETECTOR
+WINDOW X -2@.30E-2 Y -2@.3E-2 
+PIXELS 105
+SPREAD NORMAL
+
+DISPLAY
+  FORM .5 
+  ISOMETRIC 'Airy Rings in Amplitude'
+  GRAPH 0.5 'Airy Rings in Amplitude'
+RETURN
+

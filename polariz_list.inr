@@ -1,0 +1,46 @@
+!!++
+!! POLARIZ_LIST.INR
+!! Title: Numerical Analysis of Polarization
+!! Category: Simple Problem
+!! Keywords: Polarization, PLOT, POLARIZ, POLAR, LIST ELLIPSE
+!! Description: Using LIST ELLIPSE for numerical
+!! analysis of polarization. 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/30/2004 - cp - modified keyword
+!! 03/16/2000 - cp - reformatted; added header
+!! 03/02/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SEGMENTS 2
+ARROWS 2
+
+LENSES
+  IDEAL Z 0 1
+  1 0 0 1
+  COS[45]`SIN[45] 0 0 SIN[45]`-COS[45]
+  ROTATE Z 25
+  OBJECT 'QUARTER_WAVE'
+    INTERFACE 0 1 AIR AIR
+  
+SURFACES
+  PLANE Z 1 RECTANGLE  1 1
+  OBJECT 'DETECTOR'
+    INTERFACE 0 0 AIR AIR
+
+ALPHA=45  
+POLARIZ X COS[ALPHA] SIN[ALPHA]
+GRID RECT Z -1 -4@1  2 2
+  SOURCE DIRECTION 0 0 1
+
+PROFILES OVERLAY
+TRACE PLOT
+
+CONSIDER ONLY DETECTOR
+WINDOW Y X
+PLOT POLAR
+LIST ELLIPSE !! See command console output
+RETURN

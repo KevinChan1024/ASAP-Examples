@@ -1,0 +1,54 @@
+!!++
+!! DATA_LOAD02.INR
+!! Title: Importing Large Arrays of Data into Variables using SECTION
+!! Category: Simple Problem
+!! Keywords: Scripts, input, SECTION, DISPLAY, data, variable, external, import 
+!! Description: How to input external data to be assigned to individual
+!! variables in ASAP.  The "DISPLAY -9" tells ASAP to rewind the BRO009.DAT
+!! file and begin writing with the following format and data. This can be read
+!! in with $READ instead of in line as shown here. See comments below.
+!! The formatting of the display file regarding window orientation and range
+!! is strictly arbitrary.  What is important is the number of pixels specified. This
+!! should match the data given below or in the external file.  The first window
+!! dimension gives the number of rows and the second is columns. 
+!! The command SECTION is used to extract each "pixel" value that is stored in
+!! distribution file and assign it to a variable name.
+!! Edit History: (latest first)
+!! 07/01/2010 - cp - corrected mispelled word
+!! 04/10/2008 - cp - removed $READ keyword
+!! 04/21/2006 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+ROWS=6
+COLS=5
+!! Hand-made display file follows
+DISPLAY -9  !! Create your own distribution file - gets saved in BRO009.DAT
+X 0 SPOTS Y 0 1 (ROWS) Z 0 1 (COLS)  !! X position (0) and WINDOW range not important
+0.7 0.8 0.6 0.5 0.4  !! SPOTS POS is assumed due to XYZ letters used
+0.9 1.0 0.9 0.8 0.5  !! as opposed to ABC for SPOTS DIR. Y rows, Z columns.
+0.6 0.6 0.5 0.4 0.2  !! Data shown here can be brought in with $READ using external .txt file.
+0.5 0.4 0.3 0.5 0.7  !! Use "$FAST n m" in first line of external file
+0.3 0.2 0.1 0.3 0.5  !! to exceed 344 char limit, if necessary (n cols and m rows).
+0.5 0.6 0.8 0.6 0.4 
+
+DISPLAY  !! Brings up new BRO009.DAT created above 
+!!SECTION 1 (COLS) 1 (ROWS) GET !! Quick way to fill internal registers
+
+!! To get one value at a time and store in a named variable:
+MAC1 {
+  $DO 1 (COLS)
+  { 
+  SECTION ? ?  #1 #1 !!GET
+  $GRAB 'SECTION' 2 2 VAR#1? !! for higher resolution use VAR#1?=A0 with GET above.
+  }
+} 
+
+$DO 1 (ROWS)
+  $MAC1 ?
+  
+&REG  !! To verify variable assignments
+RETURN
+ 

@@ -1,0 +1,64 @@
+!!++
+!! ARRAY_SQUARE_HOLES.INR
+!! Title: Cutting an Array of Square Holes
+!! Category: Simple Problem
+!! Keywords: Geometry, ARRAY, SOLID, holes, pipe, BOUNDS, backlight
+!! Description: Cutting out an array of square holes using ARRAY
+!! and BOUNDS MULTIPLE. Based on the Prisms and Peens example
+!! from LCDbacklight project.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 06/22/2005 - cp - updated code
+!! 02/08/2000 - cp - modified format; added description
+!! 01/08/1998 - rh - creation
+!!--
+  
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+MEDIA 
+  1.50 'PLASTIC'
+FRESNEL
+
+COATINGS PROPERTIES
+  1 0  'REFLECT'
+  0 1  'TRANSMIT'
+  0 0  'ABSORB'
+
+!! System geometry parameters
+
+!! Peen dimensions 
+PSIZE=0.15       !! Peen width at surface
+CCSPACE=0.5      !! Center-to-center peen spacing
+SAG=0.07         !! Depth of peen
+
+ALPHA=ATAN[(PSIZE/2)/SAG] !! Base angle in the isosceles
+                          !! Triangle
+PHI=180-2*ALPHA           !! Remaining angle of triangle
+                          !! with vertex at center of curve
+RAD=(PSIZE/2)/SIN[PHI]    !! Radius of curvature of peen
+
+!! Start geometry
+
+SURFACES
+  TUBE X -5 2@(PSIZE/2) 5 2@(PSIZE/2) 1 1
+  ARRAY 2 0 0.5 0 2 0 0 0.5
+    SHIFT 0 -(CCSPACE) -(CCSPACE)
+SURFACES
+  PLANE X 0 RECTANGLE 0.75 0.75
+OBJECT 'TOP'
+  BOUNDS MULTIPLE .2
+  INTERFACE COAT BARE PLASTIC AIR
+  REDEFINE COLOR 2
+  FACETS 51 51  !! Lots of facets to show square holes
+
+WINDOW X Y  !! Autoscale
+WINDOW 1.5  !! Then make the window 50% larger
+            !! to make room for the bigger 
+            !! OBLIQUE view. 
+PROFILES 'Profile view of microlenses, a.k.a. "peens"'
+OBLIQUE
+PLOT FACETS 'Oblique view of peened surface'
+RETURN
