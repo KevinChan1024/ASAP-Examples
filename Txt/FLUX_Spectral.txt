@@ -1,0 +1,44 @@
+!!++
+!! FLUX_SPECTRAL.INR
+!! Title: Spectral Weighting of Flux
+!! Category: Isolated Command
+!! Keywords: FLUX, Sources, spectral, INCOHERENT  
+!! Description: Setting the flux of sources
+!! at different wavelengths to match a spectral
+!! curve. This uses the method of setting
+!! flux on a per-ray basis. FLUX TOTAL may
+!! be used as an alternative.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 03/02/2002 - cp - changed title
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS IN
+
+BEAMS INCOHERENT GEOMETRIC
+
+WAVELENGTH 0.460 UM
+GRID RECT Z 0 -4@5 2@15
+  SOURCE DIRECTION 0 0 1
+  FLUX 0 0.580 SOURCE 1
+
+WAVELENGTH 0.500 UM
+GRID RECT Z 0 -4@5 2@15
+  SOURCE DIRECTION 0 0 1
+  FLUX 0 1.0 SOURCE 2
+
+WAVELENGTH 0.540 UM
+GRID RECT Z 0 -4@5 2@15
+  SOURCE DIRECTION 0 0 1
+  FLUX 0 0.671 SOURCE 3
+
+WAVELENGTH 0.580 UM
+GRID RECT Z 0 -4@5 2@15
+  SOURCE DIRECTION 0 0 1
+  FLUX 0 0.122 SOURCE 4
+RETURN

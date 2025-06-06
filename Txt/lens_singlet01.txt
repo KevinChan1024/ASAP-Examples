@@ -1,0 +1,23 @@
+!!++
+!! LENS_SINGLET01.INR
+!! Title: Singlet Lens by Curvature
+!! Category: Isolated Command
+!! Keywords: SINGLET, LENSES
+!! Description: A Singlet lens using the
+!! curvature 'CV' parameters c and c'.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 10/07/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES
+  SINGLET Z 0 .4 1 BK7 CV .2 -.2 
+  
+WINDOW Y Z
+WINDOW 1.5  !! Enlarge 50%
+PLOT LENSES 'LENS:SINGLET cv' COLORS 11
+RETURN

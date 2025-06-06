@@ -1,0 +1,28 @@
+!!++
+!! SURF_REVOLUTION01.INR
+!! Title: REVOLUTION Surface
+!! Category: Isolated Command
+!! Keywords: REVOLUTION, SURFACE
+!! Description: A surface created by a 2D curve
+!! spun around an axis. The 2D coefficients are
+!! given after specifying the axis starting position.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  REVOLUTION Z 0  0 0  -1 1
+  LOCAL -4@1.25 -.1 1
+OBJECT
+  
+WINDOW Y Z  !! To view object
+WINDOW 1.5
+OBLIQUE
+PLOT FACETS 5 5 'SURF:REVOLUTION' COLORS 11
+RETURN

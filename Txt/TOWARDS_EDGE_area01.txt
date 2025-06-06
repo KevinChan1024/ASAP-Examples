@@ -1,0 +1,63 @@
+!!++
+!! TOWARDS_EDGE_AREA01.INR
+!! Title: Emitting Towards a Ringed Region
+!! Category: Simple Problem
+!! Keywords: Scatter, MODELS, SCATTER, TOWARDS EDGE, ring, EDGES, baffle, vanes
+!! Description: Using a diffuser to scatter towards an
+!! elliptical edge region within a ring. An emitter is defined
+!! which emits along the optical axis through a diffuser.  The 
+!! diffuser kills off the specular rays and continues equivalent
+!! scatter rays towards a ring defined by the f and t parameters.
+!! This ring may define a region of baffles or vanes that need
+!! illuminated for study, this way avoiding tracing unwanted rays.
+!! It is shown how to temporarily stop the raytrace at the diffuser
+!! to re-establish the total flux at 100 in case that's required. 
+!! Otherwise, ASAP will calculate the appropriate flux for that region
+!! based on the initial flux.
+!! Edit History: (latest first)
+!! 09/10/2014 - gb - reformatted comment about objects to be illuminated
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/27/2009 - cp - corrected keyword
+!! 04/03/2008 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+FRESNEL AVERAGE
+BEAMS INCOHERENT GEOMETRIC
+
+MODELS
+  LAMBERTIAN 1  
+
+LEVEL 1 !! Increase if illuminating other scattering objects
+EDGES  
+  ELLIPSE Z 20 20 20 
+    SMOOTH
+OBJECT 'DET'  !! Only to check plot of spots at the end
+
+SURFACES
+  PLANE Z 3 ELLIPSE 20 20
+OBJECT 'DIFFUSER'
+  INTERFACE 0 1E-20
+  LEVEL ALL
+  SCATTER MODEL 1  !! Calls Lambertian model
+    TOWARDS EDGE 1 5 0.8 1 !! Outer 20% region !!this may be where objects need to be illuminated.
+EMITTING DISK Z 0 2@19 500 0 0  !!              
+  FLUX TOTAL 100
+
+MISSED ARROWS 25
+WINDOW X Z 
+PLOT EDGES OVER
+PLOT FACETS 5 5 OVERLAY
+TRACE 0 1 PLOT OVER
+FLUX TOTAL 100  !! Reset flux to 100
+TRACE PLOT
+CONSIDER ONLY DET
+WIN Y X
+$IO VECTOR REWIND
+PLOT EDGES OVER !! To show region illuminated
+SPOTS POSITION 
+STATS  !! Scatter rays only
+$VIEW
+RETURN

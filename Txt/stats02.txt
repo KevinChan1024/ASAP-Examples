@@ -1,0 +1,41 @@
+!!++
+!! STATS02.INR
+!! Title: STATS Command Output
+!! Category: Isolated Command
+!! Keywords: STATS, POS, DIR, Analysis
+!! Description: Example output of the STATS  
+!! command, using the three available options.
+!! Note: Not a run-able script file.
+!! Edit History: (latest first)
+!! 03/11/2002 - cp - added note
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+ --- STATS
+ 
+ Object  Rays    Flux
+    0      10  400.000
+ ------------------------
+ TOTAL     10  400.000
+ 
+ --- STATS POSITION
+ 
+ Current Statistics for Object   0 -
+  Total Flux = 400.000     from     10 rays ( 50.00%)
+                      X            Y            Z
+        Centroid: 0.000000     0.000000     0.000000
+   RMS Deviation: 0.000000      5.74456     0.000000
+  Maximum Spread: 0.000000     -9.00000     0.000000
+
+               to 0.000000      9.00000     0.000000
+ 
+ --- STATS DIRECTION
+ 
+ Current Statistics for Object   0 -
+  Total Flux = 400.000     from     10 rays ( 50.00%)
+                      A            B            C
+        Centroid: 0.000000     0.000000      1.00000
+   RMS Deviation: 0.000000     0.000000     0.000000
+  Maximum Spread: 0.000000     0.000000     0.000000
+               to 0.000000     0.000000     0.000000

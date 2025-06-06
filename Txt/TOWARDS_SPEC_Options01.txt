@@ -1,0 +1,65 @@
+!!++
+!! TOWARDS_SPEC_OPTIONS01.INR
+!! Title: Towards Spec Options
+!! Category: Simple Problem
+!! Keywords: Scatter, TOWARDS SPEC, COLOR, PATHS 
+!! Description: Shows various options for entering scatter
+!! cone angle and direction. Selects each PATH for display
+!! by an assigned color.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 06/12/2008 - cp - added header
+!! 06/04/2008 - jh - creation
+!!--
+
+SYSTEM NEW
+RESET
+ 
+!! Define a scatter model
+
+MODEL
+  LAMBERTIAN .1
+
+!! Create a diffuser and detector
+
+SURFACES
+  PLANE Z 0 RECTANGLE 1
+OBJECT 'DIFFUSER'
+  INTERFACE 0 0 AIR AIR
+  SCATTER MODEL 1
+    TOWARDS SPEC 200 15D 1    !! cone about specular
+    TOWARDS SPEC  90 10D 0    !! cone about normal
+    TOWARDS SPEC  30  5D -0.7 !! cone near counter-incident
+    TOWARDS SPEC   9  2D -1   !! cone about counter-incident
+
+!! SURFACES
+!!   ELLIPSOID 10 10 10 0 0 0 Z
+!! OBJECT 'DETECTOR'
+
+!!Define and Trace one ray
+
+LEVEL 1
+GRID ELLIPTIC Z 4  -1 1  -1 1  1 1
+  SOURCE DIRECTION 0 0 -1
+  ROTATE Y -45 0 0 
+  FLUX TOTAL 1
+
+MISSED ARROW 3
+ARROWS 3
+WINDOW Z -.5 4.5 X -5 -5
+CONSIDER ONLY DIFFUSER
+!! PROFILES OVERLAY 'Towards example'
+PLOT FACETS 3 3 0 OVERLAY 'Towards example'
+CONSIDER ALL
+TRACE 0 DIFFUSER PLOT OVERLAY 
+PATHS
+SELECT ONLY PATH 2
+TRACE PLOT COLOR 2  OVERLAY
+SELECT ONLY PATH 3
+TRACE PLOT COLOR 11 OVERLAY
+SELECT ONLY PATH 4
+TRACE PLOT COLOR 17 OVERLAY
+SELECT ONLY PATH 5
+TRACE PLOT COLOR 6
+
+$VIEW

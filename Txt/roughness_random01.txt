@@ -1,0 +1,51 @@
+!!++
+!! ROUGHNESS_RANDOM01.INR
+!! Title: Applying Random Surface Roughness
+!! Category: Isolated Command
+!! Keywords: ROUGHNESS, Scatter, random, $DO, XMEMORY MIN, ACCURACY  
+!! Description: A random roughness is applied to
+!! a surface and hit with a random emitting source
+!! where all rays are parallel to Z axis. The 
+!! reflected intensity distribution is analyzed
+!! for each of the RANDOM probability distributions
+!! (m) allowed - Two Deltas, Lambertian, Ramp, Uniform,
+!! Triangular, Gaussian-like, Cosine, Near-Gaussian, Gaussian.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/27/2009 - cp - modified keyword
+!! 11/19/2002 - cp - additional probability distributions
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+XMEMORY MIN  !! OK for incoherent - makes smallest virtual.pgs 
+ACCURACY LOW  !! Speeds up ray trace - OK for incoherent
+COATINGS PROPERTIES
+  1 0  'REFL'
+
+SURFACES
+  PLANE Z 0 RECTANGLE 1
+OBJECT 'ROUGHENED_OBJECT'
+  INTERFACE COAT -REFL
+
+WINDOW Y -2@0.75 X -2@0.75
+$DO -3 5
+  { OBJECT 1
+      ROUGHNESS RANDOM 0 0.1 ?
+    EMITTING RECT Z -1 2@1 10000 0 0  !! Random emitter - all rays at 0°
+    TRACE
+    TITLE 'INTENSITY DISTRIBUTIONS (BSDF) OF ROUGHNESS LAWS'
+    SPOTS DIRECTION ATTRIBUTE 0
+    DISPLAY
+      RADIAL 0.5 0.5
+      FORM -3.5
+      $IF ? EQ 5
+        $IO PLOT REWIND
+      GRAPH 0.5 APPEND
+        '1=TWO DELTAS 2=LAMERTIAN 3=RAMP 4=UNIFORM 5=TRIANGLE' 
+        '6=GAUSSIAN-LIKE 7=COSINE 8=NEAR-GAUSSIAN 9=GAUSSIAN'
+    RETURN }
+RETURN

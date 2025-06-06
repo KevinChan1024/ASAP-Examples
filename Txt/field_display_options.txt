@@ -1,0 +1,72 @@
+!!++
+!! FIELD_DISPLAY_OPTIONS.INR
+!! Title: FIELD Display Options
+!! Category: Simple Problem
+!! Keywords: Wave, FIELD, DISPLAY, ENERGY
+!! Description: Shows all options available for
+!! displaying FIELD generated distribution data.
+!! Various DISPLAY options allow extraction of the 
+!! different complex field components.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 03/16/2000 - cp - Reformatted; added header
+!! 03/02/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 1 UM
+WIDTHS 1.6
+
+LENSES
+  SINGLET Z 0 0.1 0.5 SCHOTT_BK7 FL 20
+  OBJECT 'LENS'
+
+SURFACES
+  PLANE Z 20 ELLIPSE 2@0.25 
+  OBJECT 'DETECTOR'
+    INTERFACE 0 0 AIR AIR
+
+GRID RECT Z -1 -4@.5 21 21
+  SOURCE DIRECTION 0 0 1
+
+TRACE 
+
+CONSIDER ONLY DETECTOR
+FOCUS MOVE
+
+$GRAB 'Centroid Point' 0 3 ZPOS
+
+WINDOW X -2@1.0E-2 Y -2@1.0E-2  
+PIXELS 301
+FIELD ENERGY (ZPOS)
+
+DISPLAY
+  GRAPH 0.5 'AIRY ENERGY' !! The default
+  
+  DISPLAY 29 REAL
+    GRAPH 0.5 'AIRY REAL'
+    
+  DISPLAY 29 IMAGINARY
+    GRAPH 0.5 'AIRY IMAGINARY'
+       
+  DISPLAY 29 AMPLITUDE
+    GRAPH 0.5 'AIRY AMPLITUDE'
+  
+  DISPLAY 29 PHASE
+    GRAPH 0.5 'AIRY PHASE'
+  
+  DISPLAY 29 WAVEFRONT
+    GRAPH 0.5 'AIRY WAVEFRONT'
+    
+  DISPLAY 29 MODULUS
+    GRAPH 0.5 'AIRY MODULUS'  
+RETURN 
+
+
+
+

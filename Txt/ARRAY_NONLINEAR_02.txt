@@ -1,0 +1,39 @@
+!!++
+!! ARRAY_NONLINEAR_02.INR
+!! Title: Nonlinear Array using DOT_SPACING and TABLE Options
+!! Category: Isolated Command
+!! Keywords: ARRAY NONLINEAR, Arrays, $FCN, backlight, dots
+!! Description: A non-linear dot pattern using an equation
+!! and table to compute the spacing.
+!! Edit History: (latest first) 
+!! 02/27/2012 - cp - added header
+!! 02/27/2012 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+A=1.5
+B=-0.5
+$FCN DOT_SPACING_X A*(DOT_NUMBER)^B
+$EVAL DOT_NUMBER 1 (NSTEPS=20) -(NSTEPS) DOT_SPACING_X  
+DISPLAY EVAL
+ GRAPH 'DOT SPACING FUNCTION'
+  'ELEMENT NUMBER
+  'A*(DOT_NUMBER)^B
+  'A=1.5 B=-0.5
+RETURN  
+
+$FCN DOT_SPACING_X A*(_)^B
+$FCN DOT_SPACING_Y 0.5
+SURFACE
+ PLANE Z 0 ELLIPSE 0.1
+  ARRAY NONLINEAR X DOT_SPACING_X INT(NSTEPS) Y TABLE 5 
+   1 2 3 4 5
+OBJECT
+ 0.1 'FIRST'
+ FACETS 2 2
+
+TITLE 'DOT PATTERN | SPACING'
+WINDOW Y X 
+PLOT FACETS     

@@ -1,0 +1,69 @@
+!!++
+!! TWYMAN_GREEN.INR
+!! Title: Twyman-Green Interferometer Analysis
+!! Category: Simple Problem
+!! Keywords: Wave, Twyman-Green, diffraction, Gaussian, SHAPE
+!! Description: Single beam analysis of a Twyman-
+!! Green interferometer. Uses a single Gaussian
+!! beam to analyze a system. In this case the
+!! analysis is repeated by altering the beam shape
+!! from TEM00 to TEM10.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  0.5 0.5 'BSCOAT'
+  1 0     'REFL'
+SURFACES
+  PLANE Z 0 RECTANGLE 1
+    ROTATE X 45 0 0
+OBJECT 'BEAMSPLITTER'
+  INTERFACE COAT BSCOAT
+
+SURFACES
+  PLANE Z 5 RECTANGLE 1
+OBJECT 'RETRO_MIRROR'
+  INTERFACE COAT REFL
+
+SURFACES
+  PLANE Y 5 RECTANGLE 1
+    ROTATE X .01 5 0
+OBJECT 'TILT_MIRROR'
+  INTERFACE COAT REFL
+
+SURFACES
+  PLANE Y -5 RECTANGLE 1
+OBJECT 'DETECTOR'
+ 
+SPLIT 2
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTHS 0.6328E-4
+WIDTHS 1.6
+RAYS Z -2; 0 0 1 1 1 MODE 1
+SOURCE DIRECTION 0 0 1
+
+TITLE 'TWYMAN-GREEN INTERFEROMETER W/SINGLE GAUSSIAN BEAM'
+WINDOW Y Z
+PIXELS 71
+PROFILES OVERLAY
+TRACE PLOT
+ 
+CONSIDER ONLY DETECTOR
+WINDOW Z -1 1 X -1 1
+SPREAD NORMAL
+DISPLAY
+  PLOT3D 'TWYMAN-GREEN INTERFEROMETER FRINGE PATTERN (TEM 00)'
+
+SHAPE MODE 1 0 1 !! TEM 1 0 - change shape of traced beam
+SPREAD NORMAL
+DISPLAY
+  PLOT3D 'TWYMAN-GREEN INTERFEROMETER FRINGE PATTERN (TEM 10)'
+RETURN

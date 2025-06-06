@@ -1,0 +1,76 @@
+!!++
+!! APERTURE_SAMPLING02.INR
+!! Title: A Spatial Filter
+!! Category: Simple Problem
+!! Keywords: Wave, psf, aperture, beams, SPREAD, filter, sampling
+!! Description: Simulating a spatial filter by sampling
+!! an aperture using gaussian beams.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 11/05/2003 - cp - fixed keyword
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS IN
+
+EDGES
+  ELLIPSE Z -.1 8 8 16
+  RECTANGLE Z -.1 6 2.5 16
+OBJECT
+  .1 .2 'APERTURE PLATE'
+
+LENSES
+  IDEAL Z 0 8 
+    1  0 -1/160 1
+OBJECT 'PERFECT LENS'
+
+SURFACES
+  PLANE Z 160  ELLIPSE .2  .2
+OBJECT 'DETECTOR'
+
+!! Define 10 x 10 grid of rays 
+WAVELENGTHS .6328  UM
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6
+GRID ELLIPTIC Z -2 -4@7 2@10
+  SOURCE DIRECTION 0 0 1
+
+!! Do analysis for 10x10 grid of rays
+TRACE
+CONSIDER ONLY 1
+WINDOW Y X
+PLOT FACETS 1 1 REMOVE OVERLAY 'GAUSSIAN BEAM SAMPLING OF APERTURE: 10 X 10 SET OF RAYS '
+PLOT BEAMS
+CONSIDER ONLY 3
+WINDOW Y -2@3E-3 X -2@3E-3
+PIXELS 61
+SPREAD NORMAL
+DISPLAY
+  FORM -9
+  ISOMETRIC 'PSF OF RECTANGULAR APERTURE SYSTEM ( 10 X 10 SET OF RAYS )'
+RETURN
+
+!! Do analysis for 20x20 grid of rays
+CONSIDER ALL
+RAYS 0
+GRID ELLIPTIC Z -2 -4@7 2@20
+  SOURCE DIRECTION 0 0 1
+TRACE
+CONSIDER ONLY 1
+WINDOW Y X
+PLOT FACETS 1 1 REMOVE OVER 'GAUSSIAN BEAM SAMPLING OF APERTURE: 20 X 20 SET OF RAYS '
+PLOT BEAMS
+
+CONSIDER ONLY 3
+WINDOW Y -2@3E-3 X -2@3E-3
+PIXELS 61
+SPREAD NORMAL
+DISPLAY
+  FORM -9
+  ISOMETRIC 'PSF OF RECTANGULAR APERTURE SYSTEM ( 20 X 20 SET OF RAYS )'
+RETURN

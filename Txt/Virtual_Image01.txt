@@ -1,0 +1,61 @@
+!!++
+!! VIRTUAL_IMAGE01.INR
+!! Title: Finding Virtual Image of Extended Source
+!! Category: Simple Problem
+!! Keywords: Tracing, Sources, virtual, image
+!! Description: How to find a virtual image of an
+!! extended source. A virtual image is found by first
+!! tracing a point source from the object (source) 
+!! plane to locate the image, then the image is
+!! produced by tracing the extended object (source)
+!! itself, then moving the rays to the image location
+!! found using the point source trace. 
+!! The virtual image is shown as a spot diagram
+!! in the 3D Viewer, along with the geometry and
+!! extended-source trace. 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 12/05/2007 - cp - modified format, added header
+!! 12/03/2007 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Make a simple  magnifier
+LENSES
+  SINGLET Z 0 8 30 SCHOTT_BK7 FL 300 0
+OBJECT 'LT'
+
+!! Source inside front focus produces virtual image
+EMITTING RECT Z -80 2 4 11111 10 10 RECT ISO
+
+!! Point source to locate virtual image
+EMITTING DISK Z -80 0 0 111 5 5
+
+!! Trace the the point source tofind image location
+SELECT ONLY SOURCE 2
+TRACE
+CONSIDER ONLY LT     !! keep only rays on lens 
+
+!! Find and save image location
+FOCUS
+$GRAB 'Centroid Point' 0 3 Z_IMAGE
+&REG Z_IMAGE
+
+!! Now trace only the extended source
+CONSIDER ALL
+SELECT ONLY SOURCE 1
+
+PLOT FACETS 15 15 0 OVERLAY 'Extended source trace'
+TRACE PLOT 77
+
+!! Move the image rays to the virtual image location
+CONSIDER ONLY LT
+MOVE TO Z (Z_IMAGE)
+
+!! Create a spot diagram of the virtual image
+SPOTS POSITION YX COLOR 7 'spot diagram of source virtual image'
+
+$VIEW !! The virtual image is shown in green in the 3D Viewer
+

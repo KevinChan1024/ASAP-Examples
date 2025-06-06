@@ -1,0 +1,55 @@
+!!++
+!! BMP_TO_SOURCE01.INR
+!! Title: Converting a BMP to Source
+!! Category: Simple Problem
+!! Keywords: Sources, Tracing, BMP2DIS, Macros_user, $SYS
+!! Description: This is a simple example using a macro
+!! that converts a normal 24 bit 3-color BMP file to MONO
+!! and uses it to create a single source. This could be 
+!! modified to use R, G and B (instead of MONO) to create
+!! three sources at RGB wavelengths.
+!! NOTE: Before running this file, please save the HAPPY_COWBOY.BMP
+!! to your Working Directory (found in Examples folder inside
+!! happy_cowboy.zip).
+!! Edit History: (latest first)
+!! 12/21/2007 - cp - creation
+!!--
+
+SYSTEM NEW 
+RESET
+
+UNITS INCHES
+
+BMPCONVERT { 4
+  !!$SYS "BMP2DIS #1 MONO" !! Alternate (older) method
+  !!DISPLAY #1 
+  DISPLAY HAPPY_COWBOY.BMP MONO
+  RETURN
+  $GRAB 'Statistics' VPIXELS HPIXELS
+  DISPLAY #1MONO !! MONO is added to filename
+   NORMALIZE 1 (VPIXELS/(#3)) (HPIXELS/(#2)) 'FLUX/AREA 0'
+   $IF #4 EQS Y ; TRANSPOSE; NORMALIZE 1 1 1 'FLUX/AREA 1'
+   WRITE #1 DIS !! Write filename now without MONO
+  RETURN
+} 
+BMP Filename>
+Width>
+Height>
+Transpose Horizontal/Vertical Axes>  
+
+
+$BMPCONVERT HAPPY_COWBOY 11 8.5 N
+
+DISPLAY HAPPY_COWBOY .DIS
+PICTURE
+RETURN 
+
+WAVELENGTH 600 NM
+
+EMITTING DATA HAPPY_COWBOY 1000000
+WINDOW Y X 
+PIXELS 640
+SPOTS POS ATT 0
+DISPLAY
+PICTURE
+RETURN

@@ -1,0 +1,56 @@
+!!++
+!! USERBSDF04.INR
+!! Title: Dual-Peaked Henyey-Greenstein Scatter
+!! Category: Simple Problem
+!! Keywords: Scatter, USERBSDF, $FCN, MODELS 
+!! Description:  Shows a scatter model based on a 
+!! Henyey-Greenstein function that peaks in both the 
+!! specular and Normal directions. The $FCN is not based
+!! on any real data, but is loosely based on reported  
+!! human reflectance behavior.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 09/08/2004 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!!Heyney-Greenstein Function
+$FCN H_G K=ASIN(_2/SQRT(_3)),
+ M=ASIN(SQRT(_3)),
+ C=COS(K-M),
+ D=COS(K),
+ E=0.36/((1.64-(1.6*C))^1.5),
+ F=0.324/((1.64-(1.6*D))^1.5),
+ 0.0173913*(E+F) 
+    
+PIXELS 501
+MODEL
+ USERBSDF H_G PLOT 30
+
+SURFACES
+  PLANE Z 0 ELLIPSE 1
+OBJECT 'SCATTER_MIRROR'
+INTERFACE 1E-15 0
+  SCATTER MODEL 1
+    TOWARDS SPEC 100 3.14159/2 0
+RETURN
+  
+GRID ELLIPTIC Z 5 -4@0.1 101 101
+  SOURCE DIRECTION 0 0 -1
+  FLUX TOTAL 1
+  ROTATE 30 ABOUT 0 1 0  0 0 0
+RETURN
+TRACE
+
+WINDOW Y -SIN[85.5] SIN[85.5] X -SIN[85.5] SIN[85.5]
+PIXELS 71 !! For 1 pixel per degree 
+
+CONSIDER ONLY 1
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+  ANGLES
+  GRAPH 0.5
+  PICTURE 'AT ANGLE OF 30'
+RETURN 

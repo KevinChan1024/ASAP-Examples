@@ -1,0 +1,47 @@
+!!++
+!! OUTPUT_FORMATTED02.INR
+!! Title: Writing Formatted Output #2
+!! Category: Simple Problem
+!! Keywords: Macros_pre, output, formatting, $SCR, $IO
+!! Description: Demonstrates the use of $IO to redirect data,
+!! and $SCR to write out lines of formatted output.  In 
+!! this example the data are written to a file named TEST.
+!! Three values are written each time $SCR is encountered.  
+!! The "1" after $SCR tells ASAP to expect one line of 
+!! formatting information after the commmand.  The width
+!! of each field is indicated by the distance between the
+!! / / delimiters.  The .9 tells ASAP to write a floating-
+!! point number with nine places after the decimal point.
+!! To append more data to the file TEST (in a DO loop, for
+!! example), use +FILE(21) on subsequent output
+!! redirection, as shown at the bottom.
+!! Edit History: (latest first)
+!! 04/11/2011 - cp - removed unused keyword
+!! 02/08/2000 - cp - creation; modified from rh
+!!--
+
+SYSTEM NEW
+RESET
+
+X=1
+Y=2
+Z=3
+
+$ECHO NONE                !! Turn off command echoing
+$IO OUTPUT TEST FILE(21)  !! Redirect output to "TEST.OUT"
+  $SCR 1
+ \X.9        \ \Y.9        \ \Z.9        \
+$IO OUTPUT CLOSE
+$ECHO
+
+X=4
+Y=5
+Z=6
+
+$ECHO NONE                 !! Turn off command echoing
+$IO OUTPUT TEST +FILE(21)  !! Append to "TEST.OUT"
+  $SCR 1
+ \X.9        \ \Y.9        \ \Z.9        \
+$IO OUTPUT CLOSE
+$ECHO 
+RETURN

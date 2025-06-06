@@ -1,0 +1,73 @@
+!!++
+!! APOD_DIR02.INR
+!! Title: Apodizing in Direction with PROD
+!! Category: Simple Problem
+!! Keywords: Sources, apodizing, APODIZE, USERAPOD, DIRECTION, PROD, EMITTING
+!! Description: A more advanced look at USERAPOD DIR
+!! using the PROD modifier. In this example, no rotational
+!! symmetry is performed by ASAP, since different flux
+!! values are given for each quadrant of the hemisphere.
+!! Note that PROD is used when both sides are asymmetrical,
+!! but it is still only optional.  Without PROD, ASAP will
+!! interpolate along an arc between the two orthogonal axis
+!! values at each dir-cosine given.
+!! Edit History: (latest first)
+!! 11/11/2013 - gb - Added APODIZE to keywords; changed DIR to DIRECTION in header; changed EMITTING RECTANGLE TO EMITTING RECT
+!! 10/30/2013 - cp - corrected spelling
+!! 02/08/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! With Z being the direction of flux energy (as specified by the
+!! emitting rectangle below), the left side is the A projection
+!! (in X) and the right side is the B projection (in Y).  The
+!! center in this case is direction sine to Z (normally dir-cosine
+!! to both).
+
+USERAPOD DIRECTION 1 1  !! Keep flux weighting at 1 1 here - best to weight flux after the apodization.
+  0    SIN[-90] 0  PROD  !! ASAP uses PRODuct of both A and B slices to calculate apodization.
+  .002 SIN[-60] 0	!! instead of the weighted sum (default). PROD used when both sides are 
+  .004 SIN[-55] 0   !! asymmetrical. If A slice and B slice cross sections are identical, the right 
+  .1   SIN[-50] 0   !! side can be left out. ASAP will assume orthogonal slices are symmetrical.
+  .2   SIN[-45] 0
+  .4   SIN[-40] 0
+  .6   SIN[-35] 0
+  .8   SIN[-30] 0.01
+  1.2  SIN[-25] .05
+  1.6  SIN[-20] 0.1
+  1.9  SIN[-15] 0.2
+  2.1  SIN[-10] .5
+  2.15 SIN[-5]  1.5
+  2.15 SIN[-3]  1.8
+  2.15 SIN[-1]  2.15
+  2.15 SIN[1]   2.15
+  2.15 SIN[3]   1.8
+  2.15 SIN[5]   1.5
+  2.1  SIN[10]  .5
+  1.9  SIN[15]  0.2
+  1.6  SIN[20]  0.1
+  1.2  SIN[25]  0.05
+  .8   SIN[30]  0.01
+  .6   SIN[35]  0
+  .4   SIN[40]  0
+  .2   SIN[45]  0
+  .1   SIN[50]  0
+  .04  SIN[55]  0
+  .02  SIN[60]  0
+  0    SIN[90]  0  !! PROD can go here instead, just not on command line itself
+
+EMITTING RECT Z 0 5 5 50000 ISO  !! ISO is needed to apodize properly
+
+WINDOW X Y 
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+  ANGLES
+  NORMALIZE MAX
+  ISOMETRIC
+  GRAPH 0.5  !! First slice
+  TRANSPOSE
+  GRAPH 0.5  !! Second slice
+CONTOUR 21 
+RETURN

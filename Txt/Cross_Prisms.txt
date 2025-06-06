@@ -1,0 +1,90 @@
+!!++
+!! CROSS_PRISMS.INR
+!! Title: Array of Crossed Prisms
+!! Category: Simple Problem
+!! Keywords: Geometry, Arrays, prism, OBJECT, EDGES, diffuser
+!! Description: The following example shows a simple method of
+!! creating the geometry of a cross striped prism film of similar
+!! material using the second form of the second syntax of the
+!! OBJECT command which lets you combine a large number of edge
+!! entities. This way the object number is kept low for a large
+!! matrix. The entities are extruded together according to the
+!! switches given on the command line.  In this case, -n 1 0 0
+!! which means n = number of entities total, 1 = Odd number
+!! entities are connected to Even number entities in the order
+!! created. 0 = Even to Odd entity connections are NOT made.
+!! 0 = Last entity to First entity are NOT connected.  See Help
+!! for details.
+!!
+!! The edges were all created with points to make the example
+!! simple.  One could create one edge and angle them properly
+!! with the SHIFT and ROTATE commands.
+!! The distance of the edges in the triangles below = 5.
+!! This could be designated as a variable, of course.
+!!
+!! The bottom of the prisms are left open in order to sit on
+!! a plane surface of same material. With this method, there
+!! should be no "wrong side" errors, due to intersections
+!! of refractive material inside other refractive material.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 03/11/2004 - cp - changed keyword
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.49 'PLASTIC'
+
+FRESNEL AVERAGE
+
+NUMP_XY=10 !! Number of Hor and Vert rows (+1 for open borders)
+SPACEH=25  !! Spacing in Z (HOR) dir
+SPACEV=25  !! Spacing in X (VERT) dir
+
+MAKEX_Y {  !! Make cross stripes matrix of prisms
+  $DO 0 (NUMP_XY-1)
+  {
+  EDGES
+    POINTS -5 0 5 1, 0 5 0 1, 5 0 5 0
+      SHIFT Z ((SPACEH)*?)  !! Make sets of edges in Z
+      SHIFT X (SPACEV)*(#1)
+  EDGES
+    POINTS -5 0 (SPACEH-5) 1, 0 5 (SPACEH) 1, 5 0 (SPACEH-5) 0
+      SHIFT Z ((SPACEH)*?)  !! Make sets of edges in Z
+      SHIFT X (SPACEV)*(#1)
+
+!! Second set of edges for cross prism
+  EDGES
+    POINTS 5 0 5 1, 0 5 0 1, 5 0 -5 0
+  
+!! Rotate for x axis cross prism
+      SHIFT X ((SPACEV)*?)  !! Make sets of edges in X
+      SHIFT Z (SPACEH)*(#1)
+  EDGES
+    POINTS (SPACEV-5) 0 5 1, (SPACEV) 5 0 1, (SPACEV-5) 0 -5 0
+      SHIFT X ((SPACEV)*?)  !! Make sets of edges in X
+      SHIFT Z (SPACEH)*(#1)
+  }
+
+    OBJECT; -(NUMP_XY*4) 1 0 0 'PRISM#1' !! Last (NUMP_XY*4) edges, connect odd to odd numbered only
+      INTERFACE COAT BARE AIR PLASTIC
+      REDEFINE COLOR 25
+}
+
+$DO 1 (NUMP_XY-1)
+  MAKEX_Y (?)
+
+SURFACES
+  PLANE Y 0 RECTANGLE (NUMP_XY*SPACEH)/2 (NUMP_XY*SPACEV)/2
+    SHIFT Z (NUMP_XY*SPACEH)/2
+    SHIFT X (NUMP_XY*SPACEV)/2
+  OBJECT 'PLANE'
+    INTERFACE COAT BARE AIR PLASTIC
+    REDEFINE COLOR 21
+WINDOW X Z 
+PLOT FACETS 4 4
+$VIEW
+RETURN

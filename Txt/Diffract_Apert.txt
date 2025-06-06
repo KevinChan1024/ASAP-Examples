@@ -1,0 +1,51 @@
+!!++
+!! DIFFRACT_APERT.INR
+!! Title: Aperture Diffraction
+!! Category: Simple Problem
+!! Keywords: Wave, diffraction, aperture, FIELD, phase, PARABASAL
+!! Description: Aperture diffraction using
+!! a plane wave front.
+!! Edit History: (latest first)
+!! 07/25/2008 - cp - added keyword
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.5 'GLASS'
+
+UNITS MM 
+
+EDGES
+  RECT Z -5.0 -2@.025
+SURFACES
+  PLANE Z -5.0 RECTANGLE 5 5 
+  OBJECT 'APERTURE'
+    BOUNDS .2
+SURFACES
+  PLANE Z 10 RECTANGLE 5 5   
+  OBJECT 'DETECTOR'
+
+PARABASAL 4   
+BEAMS COHERENT DIFFRACT 
+WAVELENGTH .55 UM
+WIDTHS 1.6 
+GRID RECT Z -10 -4@.1 20 20  
+  SOURCE DIRECTION 0 0 1
+WINDOW Y Z
+PLOT FACETS 5 5 OVERLAY
+TRACE PLOT
+ 
+WINDOW Y X 
+WINDOW 0.5  !! Reduce window size 50%
+PIXELS 101 
+CONSIDER ONLY DETECTOR
+PLOT BEAMS
+FIELD ENERGY
+DISPLAY
+  ISOMETRIC
+DISPLAY 29 PHASE
+  GRAPH
+RETURN

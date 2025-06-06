@@ -1,0 +1,54 @@
+!!++
+!! PLOT_TEXT03.INR
+!! Title: Passing Variables to Plot Labels
+!! Category: Simple Problem
+!! Keywords: Scripts, plot, TEXT, variables, literal, macro, string
+!! Description: Labeling a plot using numbers or strings
+!! contained in variables. The PLOT command is contained 
+!! within a macro to allow passing of variables into plot
+!! labels using the TEXT option. Numeric data is passed using
+!! the LIT operator and strings are passed by using one double
+!! quote on the right side.  Be sure to set the coordinate
+!! position (spacing) of labels to allow for length of variables.
+!! Edit History: (latest first)
+!! 12/01/2014 - mt - corrected misspelling of "default" in C=1 line
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/30/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+S=1  !! Size of characters
+C=1  !! Color of characters (1=default)
+$DO 1 5
+ {
+ SURFACES
+   PLANE Z 0 RECTANGLE 5 5
+ OBJECT 'RECT?'
+   SHIFT X (X?=?*12)
+ }
+
+WINDOW Y X
+WINDOW 1.5
+!! Define some variables
+A1=55
+A2=2.56
+A3="NO"  !! Use double quotes for strings
+A4="YES"
+A5=1.234E-4
+
+TEXTPLOT {
+PLOT FACETS 3 3 TEXT  !! See "TEXT" in Help for details
+  X1+13  7   0, 1.5 0 0, 0 1.5 0, (C) 'PRINTING VARIABLES'
+  X1-1  -6.5 0, (S) 0 0, 0 (S) 0, (C) '#1' !! X size=S, Y size=S
+  X2-1  -6.5 0, (S) 0 0, 0 (S) 0, (C) '#2'
+  X3-1  -6.5 0, (S) 0 0, 0 (S) 0, (C) '#3'
+  X4-1  -6.5 0, (S) 0 0, 0 (S) 0, (C) '#4'
+  X5-4  -6.5 0, (S) 0 0, 0 (S) 0, (C) '#5'
+}
+$TEXTPLOT LIT(A1) LIT(A2) A3" A4" LIT(A5) !! Use one double quote on right of
+                                          !! variables containing strings.
+RETURN                                    
+$VIEW
+RETURN

@@ -1,0 +1,22 @@
+!!++
+!! LENS_MIRROR_01.INR
+!! Title: Parabolic Mirror Lens
+!! Category: Isolated Command
+!! Keywords: MIRROR, LENSES
+!! Description: A simple parabolic mirror using
+!! the LENSES command.
+!! Edit History: (latest first)
+!! 10/07/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES
+  MIRROR Z 0  1  -2
+  
+WINDOW Y Z
+WINDOW 1.5  !! Enlarge 50%
+PLOT LENS 'LENS:MIRROR' COLORS 11
+RETURN

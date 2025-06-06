@@ -1,0 +1,58 @@
+!!++
+!! SURF_ARRAY03.INR
+!! Title: Two-Dimensional Array
+!! Category: Isolated Command
+!! Keywords: ARRAY, SURFACE, $DO, lenslet
+!! Description: A 2-dimensional ARRAY of lenslet
+!! surfaces made with OPTICAL. A back is added so 
+!! that the silica media may be assigned and rays
+!! traced through the 9 elements.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/11/2002 - cp - reformatted
+!! 10/18/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.45277 'SILICA'
+  
+COATINGS PROPERTIES
+  0 1 'TRANS'
+
+SURFACES
+  OPTICAL Z 0 2.5 RECTANGLE 0.5
+    SHIFT -1 -1 0  !! To start from corner
+    ARRAY 2 1 0 0 2 0 1 0  !! 2-D array in XY
+OBJECT 'ARRAY_FACE' 
+  INTERFACE COAT +TRANS AIR SILICA
+
+SURFACES
+  PLANE Z 0.5 RECTANGLE 1.5
+OBJECT 'ARRAY_BACK' 
+  INTERFACE COAT +TRANS AIR SILICA
+ 
+SYSRAY {  !! Creates ray grid to test each lenslet
+  $DO -1 1  !! Y increment
+  {BEAMS INCOHERENT GEOMETRIC
+  GRID ELLIPTIC Z -1 -4@0.5 2@3
+    SOURCE DIRECTION 0 0 1
+  SELECT ONLY SOURCE 0.1
+    SHIFT #1 ? 0 }
+}
+
+$DO -1 1  !! X increment - to create 9 ray grids total
+ &SYSRAY ?
+
+TITLE 'LINEAR LENSLET ARRAY'
+SELECT ALL
+WINDOW X -2@4 Z -2.2 6
+OBLIQUE
+PLOT FACETS 5 5 OVERLAY
+MISSED ARROWS 7  !! To see missed rays in 3D viewer
+TRACE PLOT
+$VIEW
+RETURN

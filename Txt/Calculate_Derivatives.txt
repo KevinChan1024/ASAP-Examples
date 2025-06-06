@@ -1,0 +1,56 @@
+!!++
+!! CALCULATE_DERIVATIVES.INR
+!! Title: Extracting derivatives 
+!! Category: Simple Problem
+!! Keywords: Analysis, DISPLAY, derivative, gradiant, SAMPLED, WRITE, MAP, SLOPES
+!! Description: Extracting derivatives information from DIS files using a SAMPLED surface
+!! Uses SURFACE; SAMPLED on the data in a DIS file to create a map of the data.
+!! MAP <name> SLOPES calculates the slope data in the first WINDOW direction as the 2ND page
+!! and the slope data in the second WINDOW coordinate as the 3RD page of the name.DIS file.
+!! WRITE can be used to generate an ASCII file of the data
+!! Edit History: (latest first)
+!! 12/18/2014 - cp - modified header
+!! 12/02/2014 - mgt - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Just to create information for DIS file
+$FCN GRAD 1-ABS(_1)
+
+
+EMITTING RECT Z 0 1 1 1000000 ISO
+APODIZE POSITION GRAD
+FLUX TOTAL 1 SOU 0.1
+
+WINDOW Y -1 1 X -1 1
+PIXELS 10
+SPOTS POSITION ATTRIBUTE 0
+
+!! WRITE data for verification
+DISPLAY
+  AVERAGE
+  PICTURE
+  WRITE TESTSURF DIS
+RETURN  
+
+
+!! Create a surface based on the DIS file data
+SURFACE
+  SAMPLED TESTSURF.DIS 
+OBJECT
+  .1 'SAMPLED_THING'
+RETURN 
+
+!! Stores three pages of data in file THING.DIS
+
+MAP THING SLOPES
+
+!! WRITEs ASCII file of Y (2ND) and X (3RD) derivatives
+DISPLAY THING 2ND
+  WRITE FOR_SLOPES_Y DIN
+DISPLAY THING 3RD
+  WRITE FOR_SLOPES_X DIN
+RETURN
+

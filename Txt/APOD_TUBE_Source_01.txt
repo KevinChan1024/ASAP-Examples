@@ -1,0 +1,69 @@
+!!++
+!! APOD_TUBE_SOURCE_01.INR
+!! Title: Apodized Tube Source With List Data
+!! Category: Simple Problem
+!! Keywords: Sources,  apodizing, APODIZE, POSITION, arc source, plasma
+!! Description: Apodizing an emitting tube source
+!! in position using in-line data, to simulate the
+!! actual intensity variation in the plasma arc of an
+!! HID source. The effect is a fireball at the cathode
+!! end which quickly drops off along Z.
+!! Edit History: (latest first)
+!! 11/11/2013 - gb - changed POS to POSITION and SURFACE to SURFACES
+!! 08/06/2010 - cp - added comments
+!! 08/03/2010 - res - creation
+!!--
+
+!! create new system and set units and wavelengths
+SYSTEM NEW
+RESET
+
+UNITS MM 'WATTS'
+WAVELENGTHS .550 UM
+
+!! define variables
+W=100  !! watts
+A=1    !! a constant
+NR=1E6 !! no of rays created
+
+!! allocate contiguous memory for ray storage
+XMEMORY MIN (NR)
+
+!! create tube object
+SURFACES
+  TUBE Z -.5 2@.01 .5 2@.01
+OBJECT 'SOURCE1'
+  
+!! make tube emitting surface 
+!! note: must use proper sign for NR to emit rays relative the whole surface, not the facets
+EMITTING ENTITY .1 -(NR) ISO
+
+!! define apodization function for emitting tube
+!! in this case, x,y apodization values must be the same
+APODIZE POSITION 1 1 1  !! scale factors, only z-axis factor effects result, so can't make asymmetrical
+!!  x-apodization    z-axis        y-apodization
+       .01            -.49            .01      
+       .40            -.47            .40      
+       .85            -.45            .85      
+       1.0            -.43            1.0      
+       .95            -.40            .95      
+       .50            -.30            .50      
+       .20            -.20            .20      
+       .10            -.10            .10      
+       .06             .00            .06      
+       .05             .10            .05      
+       .04             .20            .04      
+       .03             .30            .03      
+       .02             .40            .02      
+       .01             .50            .01      
+RETURN
+
+!! set total flux for apodized source
+FLUX TOTAL (A*W)   
+
+!! plot tube geometry and view ray location and flux
+WINDOW Y Z
+PLOT FACETS OVERLAY
+PLOT RAYS .25 51
+$VIEW 
+RETURN

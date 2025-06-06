@@ -1,0 +1,78 @@
+!!++
+!! SURF_REDEFINE01.INR
+!! Title: Segmented Mirror using REDEFINE
+!! Category: Isolated Command
+!! Keywords: REDEFINE, SURFACE, alternate, mirror  
+!! Description: A Segmented mirror system as an alternate
+!! surface with REDEFINE. Note: Warnings will result due
+!! to combining edges with different number of segments.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style, added note
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  1 0 'REFL'
+
+HEXMIR {  !! Creates a single hexagonal mirror
+  X0=#1 Y0=#2
+  EDGES
+    POINTS (X0) (Y0) C*(X0^2+Y0^2) 1
+    POINTS (X9=X1+X0) (Y9=Y1+Y0) C*(X9^2+Y9^2) 1,
+           (X9=X2+X0) (Y9=Y2+Y0) C*(X9^2+Y9^2) 1,
+           (X9=X3+X0) (Y9=Y3+Y0) C*(X9^2+Y9^2) 1,
+           (X9=X4+X0) (Y9=Y4+Y0) C*(X9^2+Y9^2) 1,
+           (X9=X5+X0) (Y9=Y5+Y0) C*(X9^2+Y9^2) 1,
+           (X9=X6+X0) (Y9=Y6+Y0) C*(X9^2+Y9^2) 1
+  SURFACES
+    OPTICAL Z 0 -20 -1
+  OBJECT 
+    0.2 0.3 
+    REDEFINE SURFACE 0.1 'HEX_MIRROR_#3' !! Ray intersection Normals at the Edge
+    INTERFACE COAT -REFL              !! object are replaced with the alternate
+}                                        !! Optical surface normal.
+
+!! Create group of hexagonal mirrors:
+R=-20 C=1/(2*R) X1=0.5 Y1=0.866 X2=-0.5 Y2=0.866 X3=-1 Y3=0 
+X4=-0.5 Y4=-0.866 X5=0.5 Y5=-0.866 X6=1 Y6=0 I=0
+&HEXMIR  0     1.9052  1
+&HEXMIR  1.65   .952   2
+&HEXMIR -1.65   .952   3
+&HEXMIR  1.65  -.952   4
+&HEXMIR -1.65  -.952   5
+&HEXMIR  0    -1.9052  6
+&HEXMIR  0     0       7 
+
+!! Put a hole in the middle segment of the last OBJECT with a LIMITS box
+OBJECT 0.1
+  LIMITS -4@1.9052 -2@1 Z 0.25/1.9052
+
+EDGES
+  ELLIPSE Z -7.5 2@.8
+SURFACES
+  OPTICAL Z -7.5 -6.6666 -2.7777
+OBJECT
+  0.2 
+  REDEFINE SURFACE 0.1 'SECONDARY_MIRROR' 
+  INTERFACE COAT -REFL
+
+EDGES
+  ELLIPSE Z 2.5003 2@0.25
+  OBJECT 'DETECTOR'
+
+PRINT 1
+BEAMS INCOHERENT GEOMETRIC
+GRID POLAR Z -10 0.85 2.77 0 360 3 6
+  SOURCE DIRECTION 0 0 1
+
+WINDOW Y Z
+OBLIQUE
+PLOT FACETS 3 3 'SYNTHETIC APERTURE SYSTEM' OVERLAY
+TRACE PLOT
+$VIEW
+RETURN

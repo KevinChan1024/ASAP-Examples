@@ -1,0 +1,57 @@
+!!++
+!! OBJECT02.INR
+!! Title: Slicing Irradiance with SPREAD
+!! Category: Isolated Command
+!! Keywords: OBJECT, Geometry, RENDER 
+!! Description: Solid object formed from a collection
+!! of surfaces. This uses the second form of the 
+!! OBJECT command.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+TITLE 'SOLID OBJECTS FORMED FROM A COLLECTION OF SURFACES'
+ 
+MEDIA
+  1.5 'GLASS'
+COATINGS PROPERTIES
+  0 1 'TRANS'
+ 
+SURFACES
+  $DO -1 1 2
+    PLANE X ?; PLANE Y ?; PLANE Z ?
+  OBJECT 
+    i 1 q 1, 2 1, 3 1, 4 -1, 5 -1, 6 -1 'CUBE'
+    INTERFACE COAT +TRANS AIR GLASS
+
+SURFACES
+  PLANE Z 2
+  TUBE Z 2 2@1 3 2@1
+  OPTICAL Z 3 -1.5
+  OBJECT
+    0.3 1 0.2 -1 0.1 -1 'LENS'
+    INTERFACE COAT +TRANS AIR GLASS
+
+SURFACES
+  PLANE Z -10.1
+    LOCAL -6@10
+  OBJECT 'DETECTOR'
+
+SAVE  !! This must be executed to see rendered rays
+
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC Z 5 -4@1 2@3
+  SOURCE DIRECTION -Z
+TRACE 
+
+WINDOW Y -2@2 Z -1 5
+WINDOW 2     !! Double window size for oblique render
+OBLIQUE
+PIXELS 200   !! Determines resolution of rendering
+RENDER RAYS  !! Include raytrace in rendering
+RETURN

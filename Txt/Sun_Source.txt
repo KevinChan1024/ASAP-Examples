@@ -1,0 +1,89 @@
+!!++
+!! SUN_SOURCE.INR
+!! Title: Modeling the Sun's Rays
+!! Category: Simple Problem
+!! Keywords: Sources, aperture, SCATTER, USERBSDF, TOWARDS, SPEC, solar, sun, REVERSE
+!! Description: Models the sun as a set of rays in a
+!! circular aperture that appear to come from a source
+!! at a specified coordinate of the celestial sphere
+!! (in spherical coordinates phi and theta), and
+!! which appear to have a specified angular size in
+!! the sky.  This is done with a grid of rays 
+!! initially created parallel to one another (i.e., a
+!! point source) from the specified point in the
+!! "sky". Then they are given a finite angle by using
+!! ASAP scatter models that allow us to scatter into
+!! a specified circular cone centered in the specular
+!! direction. Careful normalization of the BSDF has
+!! been done to recover the desired COS (Zenith Distance)
+!! dependence.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 01/16/2007 - cp - corrected Solar diameter
+!! 12/09/2004 - cp - removed default parameters from TOWARDS
+!! 03/11/2002 - cp - reformatted
+!! 02/09/2000 - cp - modified format; added description
+!! 02/09/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+PI=4*ATAN(1)
+PHI=40          !! Zenith distance
+THETA=45        !! Azimuth
+SUN=0.5         !! Solar angular size (full diameter)
+SUNR=SUN*PI/360 !! Half-angle in radians
+DEL=1E-4        !! Plane separations
+
+!! Direction cosines from spherical coordinates
+A=-COS[THETA]*SIN[PHI]
+B=-SIN[THETA]*SIN[PHI]
+C=-COS[PHI]
+
+$FCN FLAT 1/(PI*SUNR*SUNR)
+MODELS 
+  USERBSDF FLAT 
+
+SURFACES
+  ELLIPSOID 1 1 1 0 0 0  !! To match unit sphere used by SPOTS DIRECTION 
+OBJECT 'UNIT_SPHERE'
+  FACETS 19 3
+ 
+PLOT FACETS
+
+SURFACES
+  PLANE Z (DEL) ELLIPSE 2@0.5
+OBJECT 'SCATTER_SURF'
+  INTERFACE 0 1E-20 AIR AIR
+  SCATTER MODEL 1
+    TOWARDS SPEC 10 (SUNR) 
+
+SURFACES
+  PLANE Z 0 ELLIPSE 2@0.5
+OBJECT 'SOURCE_SURF'
+  INTERFACE 0 0 AIR AIR
+
+GRID ELLIPTIC Z 2*DEL -4@0.5 2@10
+  SOURCE DIRECTION (A) (B) (C) 
+  FLUX TOTAL 1
+STATS
+
+TRACE  !! Rays now reside on "source surface"
+!! At this point the rays may be saved or continued
+!! in the same direction toward the object you intend 
+!! to illuminate, such as the primary mirror of a 
+!! telescope. It is intended that the diameters of the 
+!! two surfaces and grid are made just big enough to
+!! cover the mirror and is placed right above it.
+
+!! The following is only for visualizing the virtual
+!! origin of the suns disk.
+REVERSE  !! To get spots on the unit sphere
+
+CONSIDER ONLY SOURCE_SURF 
+STATS
+WINDOW X Y
+SPOTS DIRECTION COLOR 2  !! Spots represent origin point of rays
+$VIEW 
+RETURN

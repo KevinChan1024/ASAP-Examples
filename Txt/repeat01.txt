@@ -1,0 +1,75 @@
+!!++
+!! REPEAT01.INR
+!! Title: REPEAT for Entities
+!! Category: Isolated Command
+!! Keywords: REPEAT, Geometry
+!! Description: Using REPEAT to duplicate
+!! previously defined entities. Note that any
+!! transformations made to those entities
+!! will also be included.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/11/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES 
+  TUBE X -4 2@3 10 2@7
+    ROTATE Z 45 3 0
+  OBJECT 'BAFFLE_TUBE_1'
+
+SURFACES 
+  REPEAT  !! Repeats last entity by default (0.1)
+    SHIFT X -30 
+  OBJECT 'BAFFLE_TUBE_2'
+
+!! Equivalent to:
+
+SURFACES
+  TUBE X -4 2@3 10 2@7
+    ROTATE Z 45 3 0
+  OBJECT 'BAFFLE_TUBE_1'
+
+SURFACES 
+  TUBE X -4 2@3 10 2@7
+    ROTATE Z 45 3 0
+    SHIFT X -30 
+  OBJECT 'BAFFLE_TUBE_2'
+
+!! For EDGES:
+
+EDGES 
+  ELLIPSE X -4 2@3 
+  RECTANGLE X 10 2@7 16  !! Segments set to equal ellipse
+    ROTATE Z 45 3 0
+  OBJECT
+    0.1 0.2 'BAFFLE_TUBE_3'
+
+EDGES  
+  REPEAT 0.2  !! Repeats the ELLIPSE
+  REPEAT 0.2  !! Repeats the RECT
+    SHIFT X -30  
+  OBJECT
+    0.1 0.2 'BAFFLE_TUBE_4'  
+
+!! Equivalent to:
+
+EDGES
+  ELLIPSE X -4 2@3 
+  RECTANGLE X 10 2@7 16
+    ROTATE Z 45 3 0
+  OBJECT
+    0.1 0.2 'BAFFLE_TUBE_3'
+
+EDGES 
+  ELLIPSE X -4 2@3 
+  RECTANGLE X 10 2@7
+    ROTATE Z 45 3 0
+    SHIFT X -30
+  OBJECT
+    0.1 0.2 'BAFFLE_TUBE_4'  
+
+RETURN

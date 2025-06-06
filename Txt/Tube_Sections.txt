@@ -1,0 +1,34 @@
+!!++
+!! TUBE_SECTIONS.INR
+!! Title: Multiple Tube Sections as One Object
+!! Category: Simple Problem
+!! Keywords: Edges, tube, slices, AXIS, $DO, SWEEP, EDGES, POINTS
+!! Description: This shows how to make multiple longitudinal sections
+!! of a tube in one $DO loop.  The $DO creates one straight line
+!! parallel to an axis and then repeats this line 6 times revolved
+!! around that axis, so that they are at 60° intervals. Once the loop
+!! is finished, a 5° SWEEP AXIS is performed on the edges around the same 
+!! axis to produce the tube sections. This becomes only one object.
+!! Edit History: (latest first)
+!! 02/28/2002 - cp - corrected style
+!! 02/04/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+RADIUS=0.1
+TUBE_LEN=.1
+
+!! The following $DO uses the feature of processing whatever is on the 
+!! same line once, and then looping on the second line only.
+$DO 1 6; EDGES; POINTS 0 0 0 ABS,
+  RADIUS*COS[?*60] RADIUS*SIN[?*60] 0 1, RADIUS*COS[?*60] RADIUS*SIN[?*60] (TUBE_LEN) 0
+
+  SWEEP AXIS 5 0 0 1 0 0 0 !! 5 degree sweep around Z
+OBJECT  !! One object created
+
+OBLIQUE
+PLOT FACETS 3 3   
+$VIEW
+RETURN

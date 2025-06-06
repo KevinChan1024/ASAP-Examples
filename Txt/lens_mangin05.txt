@@ -1,0 +1,24 @@
+!!++
+!! LENS_MANGIN05.INR
+!! Title: Mangin Mirror RD
+!! Category: Isolated Command
+!! Keywords: MANGIN, LENSES
+!! Description: A Mangin mirror lens using RD
+!! with an absorptive interface.
+!! Edit History: (latest first)
+!! 12/21/2001 - cp - modified file structure
+!! 10/07/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.620 ABSORB 0.001 'SK16'
+  
+LENSES
+  MANGIN X 0 0.5 1 SK16 RD -3
+  OBJECT 'MANGIN_MIRROR'
+
+RETURN

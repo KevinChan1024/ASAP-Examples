@@ -1,0 +1,38 @@
+!!++
+!! BOUNDING_SOURCES.INR
+!! Title: Bounding a Volume Source
+!! Category: Simple Problem
+!! Keywords: Sources, BOUNDS, SPHEROID
+!! Description: An emitting spheroid is bounded with three
+!! planes and a tube. The tube is a positive bounder,
+!! so all rays created outside the tube are kept.
+!! The planes are multiple bounded in a positive way
+!! so that all rays are kept outside the intersection
+!! of all three planes.  In other words, the corner of
+!! the spheroid at that intersection is removed. 
+!! Note: When bounding sources, the bounding must be 
+!! specified BEFORE the creation of the source. "OBJECT 0"
+!! always refers to the source in ASAP.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 07/09/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  TUBE X 0 0.25 0.25 2 0.25 0.25
+    SHIFT 0 -0.5 -0.5
+  PLANE X 0 RECTANGLE 3 3 
+  PLANE Y 0 RECTANGLE 3 3
+  PLANE Z 0 RECTANGLE 3 3
+
+OBJECT 0  !! Reserved for the source - to be created
+  BOUNDS .4 MULTIPLE .1 .2 .3
+EMITTING SPHEROID 0 0 0 1 1 1.5 10000
+
+!!PLOT SURFACES OVERLAY !! Put in to see bounding entities
+SPOTS POSITION
+$VIEW
+RETURN

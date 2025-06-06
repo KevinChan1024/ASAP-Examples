@@ -1,0 +1,76 @@
+!!++
+!! CROSSED_GRATINGS.INR
+!! Title: Crossed Gratings using MULTIPLE and DIFFRACT
+!! Category: Simple Problem
+!! Keywords: Gratings, MULTIPLE, DIFFRACT, linear, crossed
+!! Description: Crossed gratings made with MULTIPLE and DIFFRACT modifiers.
+!! Two parallel planes are made very close together in the same axis.
+!! Each one is assigned a coating with diffractive components orthogonal
+!! to each other.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 02/08/2000 - cp - creation; modified from rh
+!!--
+
+SYSTEM NEW
+RESET 
+
+UNITS MM
+
+MISSED AFTER 1
+SPLIT 2
+
+COATINGS PROPERTIES
+  1 0  'REF'
+  0 1  'TRANS'
+
+
+GSPACE=0.0052  !! mm
+
+SURFACES
+  PLANE Y 0                          !! Grating line generating surface
+    MULTIPLE 1, (GSPACE), 0 0 0      !! Grating spacing 0.1, point 0 0 0
+  PLANE Z 0 RECTANGLE 2                   !! Grating base surface
+  OBJECT 'LINEAR_GRATING.1'
+    INTERFACE COAT TRANS AIR AIR DIFFRACT 0.2 -3d 0.05 -2d 0.1 -1st order 0.25,
+      0th 0.8, 1st 0.25 2d 0.1 3d 0.05 
+
+
+SURFACES
+  PLANE X 0                          !! Grating line generating surface  
+    MULTIPLE 1, (GSPACE), 0 0 0      !! Grating spacing 0.1, point 0 0 0 
+  PLANE Z 0.1 RECTANGLE 2                 !! Grating base surface             
+  OBJECT 'LINEAR_GRATING.2'
+    INTERFACE COAT REF AIR AIR DIFFRACT 0.2 -3d 0.05 -2d 0.1 -1st order 0.25,
+      0th 0.8, 1st 0.25 2d 0.1 3d 0.05
+
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 550  NM
+GRID ELLIPTIC Z -3 -4@1 15 15
+  SOURCE DIRECTION 0 0 1
+
+SEARCH
+  0 2 2 1
+
+SURFACES
+  PLANE Z -20 RECTANGLE 12 detector plane
+  OBJECT 'DETECTOR'
+
+WINDOW Y Z
+WINDOW 1.4  !! Enlarge window by 40%
+TITLE 'GRATING W/-1,0,1st ORDERS IN REFLECTION AND TRANSMISSION'
+PLOT FACETS 4 4 OVERLAY
+TRACE PLOT
+
+PIXELS 101
+WINDOW X Y
+CONSIDER ONLY DETECTOR
+SPOTS POSITION
+
+DISPLAY
+  AVERAGE
+  AVERAGE
+  FORM -2
+  PICTURE 
+RETURN 
+

@@ -1,0 +1,24 @@
+!!++
+!! SWEEP_AXIS.INR
+!! Title: Partial Toroid by Swept Arc
+!! Category: Simple Problem
+!! Keywords: Edges, SWEEP, AXIS, EDGES, ARC, toroid
+!! Description: An EDGE ARC swept into a partial
+!! toroid with SWEEP AXIS.
+!! Edit History: (latest first) 
+!! 02/28/00 - cp - Modified syntax; added description
+!! 01/18/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  ARC X 0, 2 0, 1.5 0, 360
+  SWEEP AXIS  270  0 0 1  0 0 0
+OBJECT 'SWEPT_ARC'
+
+WINDOW Y Z
+PLOT FACETS 11 11
+$VIEW 
+RETURN

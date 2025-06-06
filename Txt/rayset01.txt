@@ -1,0 +1,20 @@
+!!++
+!! RAYSET01.INR
+!! Title: RAYSET Command
+!! Category: Isolated Command
+!! Keywords: RAYSET, Sources
+!! Description: RAYSET command example. 
+!! Note that this command only defines
+!! the spatial properties of the rayset
+!! and not the angular properties, i.e.,
+!! propagation direction.
+!! Edit History: (latest first)
+!! 10/11/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+!! Define 9 rays in the xy plane at Z 3.
+RAYSET Z 3
+0 0; 0 1; 0 -1; -1 0; 1 0; 0 2; 0 -2; 2 0; -2 0
+
+

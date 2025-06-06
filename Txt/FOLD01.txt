@@ -1,0 +1,66 @@
+!!++
+!! FOLD01.INR
+!! Title: Use of the FOLD command
+!! Category: Isolated Command
+!! Keywords: FOLD, DISPLAY, flip, mirroring 
+!! Description: Using FOLD command to flip a distribution about an axis.
+!! The lens is tilted to get most of data in the upper half of window.
+!! The distribution is then flipped in X about the center (0 point)
+!! of the distribution.  This adds a mirrored image in the lower
+!! section. Any overlap near the center is added together. 
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 05/23/2011 - cp - modified to make clearer, added keywords 
+!! 09/04/2007 - cp - reformatted
+!! 04/12/2007 - bf - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+MEDIA
+  1.613  'SK4'
+
+SURFACES
+  OPTICAL Z 0 44.55 ELLIPSE 16.9 16.9
+OBJECT 'L1.FRONT'    
+  INTERFACE 0 1 AIR SK4
+  
+SURFACES
+  OPTICAL Z 5 -436.6 ELLIPSE 16.9 16.9
+OBJECT 'L1.BACK'    
+  INTERFACE 0 1 AIR SK4
+
+SURFACES
+  TUBE Z 0 16.9 16.9   5 16.9 16.9
+OBJECT 'L1.EDGE'
+  BOUNDS  +.3  -.2
+GROUP
+ROTATE Y 7 
+
+SURFACES
+  PLANE Z  65.82 RECT 10 5
+OBJECT 'DETECTOR'  
+
+GRID ELLIPTIC Z -1 -4@16 101  101
+SOURCE DIRECTION 0 0 1
+
+FLUX TOTAL 100
+
+WINDOW Y Z
+PLOT FACETS 7 7 0   OVERLAY
+TRACE PLOT  111
+
+CONSIDER ONLY DETECTOR
+WINDOW X Y  
+PIXELS 101
+
+SPOTS POSITION
+
+DISPLAY
+FOLD FIRST !! Folding about X axis at midpoint of WINDOW
+AVERAGE    !! Comment out the above to compare difference 
+PICTURE
+RETURN

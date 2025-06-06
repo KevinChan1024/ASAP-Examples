@@ -1,0 +1,42 @@
+!!++
+!! TUBES_INTERSECTING.INR
+!! Title: Intersecting Tubes
+!! Category: Simple Problem
+!! Keywords: Geometry, BOUNDS, TUBE, telescope, LOCAL, SOLID
+!! Description: This makes a main tube with a smaller tube
+!! intersecting at 90° making something similar to an eyepiece
+!! port on a Newtonian telescope. A tube entity
+!! representing the real side tube uses SOLID MINUS to
+!! punch out the hole in the main tube, when bounded to it.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 04/27/2012 - cp - improved faceting 
+!! 02/28/2002 - cp - corrected style
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  TUBE Y -10 2@3 3 2@3 0 0  !! Same dia as side tube
+    LOCAL -3.1 3.1 -10.1 3.1 -3.1 3.1 !! Box around tube surface
+    SOLID MINUS  !! Makes it solid based on local box
+    SHIFT Z 5
+ 
+SURFACES 
+  TUBE Z -5 2@4 40 2@4
+OBJECT 'MAIN_TUBE'   
+  BOUNDS .2   !! Positive bounding - keeping outside of 1st tube entity   
+                                  
+SURFACES
+  TUBE Y -15 2@3 1 2@3 0 0  !! The real side tube
+    SHIFT Z 5
+OBJECT 'SIDE_TUBE'
+  BOUNDS .2   !! Positive bounding - keeping outside of main tube
+
+WINDOW Z X
+OBLIQUE
+PLOT FACETS 31 21 0
+$VIEW 
+RETURN

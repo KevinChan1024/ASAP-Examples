@@ -1,0 +1,29 @@
+!!++
+!! RHOMBOID.INR
+!! Title: Rhomboid Made with Edges
+!! Category: Simple Problem
+!! Keywords: Geometry, extrude, OBJECT, EDGES, REPEAT, rhombus, rhomboid
+!! Description: Making a rhomboid with EDGE rectangles and the second
+!! form of the OBJECT command.  The exit face and the entrance face are
+!! extruded to make the outer wall or tube portion of the rhomboid.
+!! Edit History: (latest first)
+!! 02/08/2000 - cp - creation; modified from rh
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  RECTANGLE Z 0 1 1
+  REPEAT
+    SHIFT Z  3.73979
+    SHIFT Y -2.65773
+  OBJECT; .1 'ENTER_FACE'     !! Make the end faces
+  OBJECT; .2 'EXIT_FACE'
+  OBJECT; .1 .2 'RHOMB_WALL'  !! Extrude edges to make the walls
+
+WINDOW Y Z
+PLOT FACETS 
+$VIEW 
+RETURN
+

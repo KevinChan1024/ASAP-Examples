@@ -1,0 +1,70 @@
+!!++
+!! CAD01.INR
+!! Title: Exporting Geometry in IGES
+!! Category: Isolated Command
+!! Keywords: CADEXPORT, iges, Geometry, output
+!! Description: Create 8 ASAP objects and export 
+!! them to an IGES format file for use in a CAD
+!! program.
+!! Edit History: (latest first)
+!! 10/14/2008 - cp - corrected keyword spelling
+!! 07/25/2008 - cp - corrected command name
+!! 10/18/2000 - cp - modified format and header
+!! 03/31/2000 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+SURFACE
+  PLANE X 0 RECTANGLE 5
+    SHIFT 20 0 0
+  OBJECT 'PLANE'
+
+SURFACE
+  TORUS X 0 5 1 2 0.5
+    ROTATE Z 45 0 0
+    SHIFT -20 0 0
+  OBJECT 'TORUS'
+
+SURFACE
+  ELLIPSOID 2 4 2
+    SHIFT 0 20 0
+  OBJECT 'ELLIPSOID'
+
+SURFACE
+  TUBE X -4 2@3 4 4 8
+    SHIFT 0 -20 0
+  OBJECT 'TUBE'
+
+SURFACE
+  OPTICAL X 0 40 -1 ELLIPSE 6
+  OBJECT 'OPTICAL'
+
+SURFACE
+  BICONIC X 0 20 30 -0.5 -0.5 ELLIPSE 6 12 0.25
+    ROTATE X 45 0 0
+    SHIFT 20 20 0
+  OBJECT 'BICONIC' 
+
+SURFACE
+  OPTICAL Y 0 4 -1 ELLIPSE 2
+    SHIFT -25 -20 0
+  ARRAY 2 4 0 0
+  OBJECT 'OPTICAL_ARRAY'
+
+SURFACE
+  OPTICAL Y 0 5 0 -1E-2 5E-3 ELLIPSE 2 2
+    SHIFT 20 -20 0
+  OBJECT 'ASPHERIC_OPTICAL'
+
+WINDOW Y X
+PLOT FACETS 
+$VIEW
+
+CADEXPORT IGS CADSURFS  !! Exports to cadsurfs.igs file in working directory
+
+RETURN
+

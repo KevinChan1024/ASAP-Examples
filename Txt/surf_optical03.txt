@@ -1,0 +1,43 @@
+!!++
+!! SURF_OPTICAL03.INR
+!! Title: Mangin Mirror using OPTICAL
+!! Category: Isolated Command
+!! Keywords: OPTICAL, SURFACE, Mangin
+!! Description: A Mangin mirror constructed with
+!! OPTICAL surfaces and a TUBE.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 10/17/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.620 ABSORB 0.001 'SK16' 
+  
+COATINGS PROPERTIES
+  0 1 'TRANS'
+  1 0 'REFL' 
+  
+SURFACES
+  OPTICAL X 0 -3 ELLIPSE 1.0
+OBJECT 'MANGIN_SURF_1'
+  INTERFACE COAT +TRANS AIR SK16
+
+SURFACES
+  OPTICAL X .5 -10 ELLIPSE 1.0
+OBJECT 'MANGIN_SURF_2'
+  INTERFACE COAT -REFL
+
+SURFACES
+  TUBE X -.172 2@1 .45 2@1
+OBJECT 'MANGIN_EDGE'
+  INTERFACE COAT +TRANS AIR SK16
+    
+WINDOW Y Z
+OBLIQUE 
+PLOT FACETS 5 5
+RETURN

@@ -1,0 +1,43 @@
+!!++
+!! GRIN_DISPERSIVE.INR
+!! Title: Dispersive GRIN Systems
+!! Category: Isolated Command
+!! Keywords: GRIN, MEDIA, FUNCTION, GENERAL
+!! Description: Modeling a dispersive GRIN
+!! system.  In this case, it's a gradient index
+!! photographic lens (polychromatic version). This
+!! is only a partial file.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 10/09/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+!! Coefficients at wavelength #1
+N00=1.8080 N1=(N00)  N10=-7.778E-4   N20=2.9543E-7
+FUNCTION
+  GENERAL
+  C 1; Y2 N10/N00; Z2 N10/N00 
+  Y4 N20/N00; Y2Z2 2*N20/N00; Z4 N20/N00
+
+!! Coefficients at wavelength #2
+N00=1.7870 N2=(N00)  N10=-6.4352E-4   N20=1.7658E-7
+FUNCTION
+  GENERAL
+  C 1; Y2 N10/N00; Z2 N10/N00 
+  Y4 N20/N00; Y2Z2 2*N20/N00; Z4 N20/N00
+
+MEDIA   
+  (N1) GRIN function 1  exponent 2  stepsize 0.1 'GRINW1'
+  (N2) GRIN function 2  exponent 2  stepsize 0.1 'GRINW2'
+
+COATINGS PROPERTIES
+  0 1 'TRANS'
+
+...(other ASAP commands to define system using GRINW1)...
+...(ray tracing and analysis at wavelength #1)...
+
+$DO 1 6  !! Update the media of the six objects
+  OBJECT ?; INTERFACE COAT +TRANS AIR GRINW2
+
+...(ray tracing and analysis at wavelength #2)...

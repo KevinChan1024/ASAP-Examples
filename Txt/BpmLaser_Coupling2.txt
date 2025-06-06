@@ -1,0 +1,202 @@
+!!++
+!! BPMLASER_COUPLING2.INR
+!! Title: Laser Coupling with BPM II
+!! Category: Simple Problem
+!! Keywords: Wave, laser, coupling, bpm, FIELD, COUPLE, DECOMPOSE
+!! Description: This file demonstrates the use of
+!! ASAP for calculating the coupling efficiency
+!! of a laser diode to a single-mode fiber.  It propagates
+!! laser diode output through a hemispherical lens
+!! attached to the fiber entrance, and a short distance
+!! along the fiber using the beam propagation method (BPM).
+!! It then projects the field onto the fiber mode to 
+!! determine the overall coupling efficiency.
+!! Note: Requires ASAP Optical module to run.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 11/10/2004 - cp - added note
+!! 10/07/2003 - cp - changed category
+!! 12/19/2002 - cp - fixed title
+!! 04/11/2002 - cp - modified format, added comments
+!! 12/21/2000 - DCS - Created
+!!--
+
+
+!! Initialization commands
+SYSTEM NEW    !! Clear out any existing geometry
+RESET         !! Clear out any existing sources/rays
+$UNVAR ERROR  !! Stop when undefined variables are encountered
+
+UNITS MICRONS !! Set system units
+
+PI=ACOS(-1)
+
+
+!! Geometry parameters
+D1=10           !! Source-to-lens distance
+
+
+!! Fiber parameters
+WAVEL=1.55      !! Wavelength (in microns)
+NCORE=1.456427  !! Core index of refraction
+NCLAD=1.449679  !! Cladding index of refraction
+NLENS=3.2       !! index of lens on fiber front
+RCORE=5.9/2     !! Core radius
+RCLAD=75/2      !! Cladding radius
+
+
+!! Laser parameters
+W0X=2*0.886  !! Waist X halfwidth (0.886 is for converting to ASAP width def)
+W0Y=1*0.886  !! Waist Y halfwidth (0.886 is for converting to ASAP width def)
+
+
+!! Misc parameters
+RES=250       !! Vertical resolution for BPM calculation
+EPS=0.01      !! = epsilon (a small distance)
+PROP_DIST=20  !! Distance to propagate in the fiber
+NPLANES=20    !! Number of planes to save the field at in the fiber
+
+
+!! Calculated parameters
+WINDO=RCLAD+EPS        !! Window size for BPM calculation
+FSTART=D1+RCLAD        !! Location of fiber's entrance, after lens
+FEND=FSTART+PROP_DIST  !! End of fiber location
+
+
+!! Calculate (and display) the numerical aperture and V number 
+!! of the fiber
+NA=SQRT(NCORE*NCORE-NCLAD*NCLAD)
+VN=2*PI*RCORE*NA/WAVEL
+$SCR 3 !! 
+Fiber characteristics:
+  Numerical Aperture = \NA.3\
+  V Number = \VN.3\
+
+
+!! Set the wavelength
+WAVELENGTH (WAVEL) MICRONS
+
+!! Define media
+MEDIA
+  (NCORE) 'CORE_MED'
+  (NCLAD) 'CLAD_MED'
+  (NLENS) 'LENS_MED'
+
+!! Define the fiber and lens geometry
+SURFACES
+  ELLIPSOID 3@(RCLAD) 0 0 (FSTART) -Z
+OBJECT 'FIBER.LENS_FRONT'
+  INTERFACE 0 1 AIR LENS_MED
+  FACETS 8 8
+
+SURFACES  
+  PLANE Z (FSTART) ELLIPSE 2@(RCLAD)
+    
+SURFACES    
+  TUBE Z (FSTART) 2@(RCLAD) (FEND+EPS) 2@(RCLAD) 0 0
+OBJECT 'FIBER.CLADDING.EDGE'
+  INTERFACE 0 1 AIR CLAD_MED
+  FACETS 1 9
+
+SURFACES    
+  TUBE Z (FSTART) 2@(RCORE) (FEND) 2@(RCORE) 0 0
+OBJECT 'FIBER.CORE.EDGE'
+  BOUNDS +.3
+  INTERFACE 0 1 CORE_MED CLAD_MED
+  FACETS 1 9
+
+OBJECT; .3 'FIBER.CORE.FACE'
+  BOUNDS -.1
+  INTERFACE 0 1 LENS_MED CORE_MED
+  FACETS 2 4
+
+OBJECT; .3 'FIBER.CLADDING.FACE'
+  BOUNDS -.2 +.1
+  INTERFACE 0 1 LENS_MED CLAD_MED
+  FACETS 2 4
+
+SURFACES
+  PLANE Z (FEND) ELLIPSE 2@(RCORE)
+OBJECT 'FIBER.CORE.END'
+  INTERFACE 0 1 CORE_MED CLAD_MED
+  FACETS 2 4
+!! Define a single gaussian beam
+WIDTHS 1.6
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+GAUSSIAN Z 0 0 0  1 1  0 0  (W0X) (W0Y)
+
+!! Create an input field from this beam
+WINDOW Y 0 (WINDO) X 0 (WINDO) !! bilateral symmetry across x and y
+PIXELS (RES) 1.0
+FIELD ENERGY 0
+$COPY 29 FIBER_INPUT_29.DIS
+$COPY 9 FIBER_INPUT.DIS
+ 
+!! Grab the input field's energy
+$CLEAR
+DISPLAY
+  $GRAB 'Integral' E0
+  PICTURE
+RETURN
+
+!! Propagate the input into, and along, the fiber using BPM method.
+ACCURACY HIGH  !! Use highest-order BPM approximation
+FIELD FIBER_INPUT_29.DIS ENERGY 0 (FEND+EPS) (NPLANES) BC 1 1
+$COPY 9 FIBER_PROP.DIS
+$COPY 29 FIBER_PROP_29.DIS
+
+!! Grab total energy in last plane
+$CLEAR
+DISPLAY 9 (NPLANES+1)
+  $GRAB 'Integral' E1
+RETURN      
+
+!! View the results in 3d viewer
+VUFACETS              !! plot geometry in viewer
+&VIEW FIBER_PROP.DIS  !! add propagation results to view
+ 
+!! Next define the fiber mode as if it
+!! were a new source, and compute the
+!! overlap with FIELD COUPLE.
+
+RAYS 0  !! delete all previous rays/sources
+IMMERSE CLAD_MED
+RAYSET Z (FEND+EPS); 0 0 1 2@(RCORE) -FIBR (VN)
+  SOURCE DIRECTION Z
+FIELD ENERGY (FEND+EPS) 
+
+!! The expected fiber mode is now in the BRO029.DAT (field components) 
+!! and BRO009.DAT (energy) files.  Next, couple the results of
+!! our propagation to this mode.
+
+!! The following command line is from Syntax #2 (BPM mode) of the FIELD command.
+!! Since no distance is specified for propagating the named field, it defaults
+!! to 0.  In this case, ASAP simply couples the named file to the field
+!! already in the BRO029.DAT file (from the previous FIELD ENERGY command).
+FIELD FIBER_PROP_29.DIS ENERGY COUPLE  !! This couples the named field with 
+                                       !! what's currently in BRO029.DAT.  The
+                                       !! mode in BRO029.DAT is then rescaled by
+                                       !! the projection of the named field
+                                       !! onto it.  The corresponding rescaled 
+                                       !! energy profile is written to BRO009.DAT.
+
+!! Grab total energy that made it into the fiber mode
+$CLEAR
+DISPLAY
+  $GRAB 'Integral' E2
+RETURN      
+
+!! Calculate and display the overall coupling efficiency
+OCE=(E2/E0)*100
+
+$SCR 5
+Energy:
+  at source                    = \E0.3\
+  after propagation down fiber = \E1.3\
+  coupled to fiber mode        = \E2.3\
+Overall Efficiency = \OCE.1\%
+
+RETURN
+
+

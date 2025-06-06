@@ -1,0 +1,80 @@
+!!++
+!! TOLERANCING01.INR
+!! Title: Tolerancing with Scripts
+!! Category: Simple Problem
+!! Keywords: Radiometry, $ITER, tolerancing, $FCN
+!! Description: Lens with Gaussian variations of radius of curvature and
+!! position of one of the surfaces. 
+!! NOTE: As the number of varied parameters gets large (as it will for
+!! any realistic system), the script approach can become tedious and error
+!! prone. 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/29/2004 - cp - added header and formatted
+!! 07/22/2004 - bm - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+TWOPI=8.*ATAN(1.)
+!! Gaussian random number with mean 0 and standard deviation passed in "_"    
+*****************************************************            
+$FCN GAUSS_RAND  _*SQRT(-2*LOG(0~1))*COS(0~TWOPI)   
+*****************************************************
+          
+FIRST_RUN=1          
+$ITER NTOL 1 100 -100 DEVIATION
+ {
+   SYSTEM NEW 
+   RESET        
+           
+   COATINGS PROPERTIES
+     0. 0. 'ABSORB'
+     0. 1. 'TRANSMIT'                     
+     
+   MEDIA
+     1.51 'GLASS'  
+           
+   SURFACES  
+   !! Ideal surface         
+   !!  OPTICAL Z 0   20  ELLIPSE 8  
+   !! "non-ideal" surface - variation in position and location    
+   *******************************************************************
+     OPTICAL Z GAUSS_RAND(0.04)   20+GAUSS_RAND(0.1) ELLIPSE 8                  
+   ******************************************************************  
+     OBJECT 'LENS.FRONT'
+     INTERFACE COAT +TRANSMIT AIR GLASS 
+     
+   SURFACES           
+     PLANE Z 3 ELLIPSE 8
+     OBJECT 'LENS.BACK'
+     INTERFACE COAT +TRANSMIT AIR GLASS  
+     
+   GRID ELLIPTIC Z -5 -4@8 2@11
+   SOURCE DIRECTION 0 0 1
+   
+   $IF (FIRST_RUN) EQ 1 THEN
+    WINDOW X Z 
+    PLOT FACETS 7 7 OVERLAY
+    TRACE PLOT
+    FIRST_RUN=0
+   $ELSE
+    TRACE
+   $ENDIF
+   
+   FOCUS
+   $GRAB 'Centroid Point' 0 3 FLEN
+   DEVIATION=FLEN-38.94769
+   &REG DEVIATION ' Deviation from ideal focal position'   
+   }
+   
+DISPLAY ITER
+  GRAPH  
+  'Position of best focus  '
+  'Random variation of radius of curvature of position of left surface'
+RETURN   
+
+  
+  
+

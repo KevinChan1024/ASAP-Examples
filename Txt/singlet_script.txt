@@ -1,0 +1,83 @@
+!!++
+!! SINGLET_SCRIPT.INR
+!! Title: Finding Best Focus of a Lens
+!! Category: Simple Problem
+!! Keywords: Scripts, singlet, lens, Analysis, Geometry, FOCUS, PICTURE
+!! Description: A complete sample script creating a
+!! plano-convex lens, tracing a few rays and finding
+!! best focus. Shows the four-step process - Build system;
+!! Create source; Trace rays; Perform analysis.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/11/2002 - cp - reformatted
+!! 02/29/2000 - cp - modified syntax; added description
+!! 01/18/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+!! System Settings
+UNITS MM
+WAVELENGTH 550 NM
+
+!! Define Media
+MEDIA
+  1.55 'GLASS'
+
+!! Define Coatings
+COATINGS PROPERTIES 
+  1 0 'REFLECT'
+  0 1 'TRANSMIT'
+  0 0 'ABSORB'
+
+!! Define Geometry
+
+!! Front of Lens
+SURFACES
+  PLANE Z 0 ELLIPSE 2.5
+OBJECT 'LENS.FRONT'
+  INTERFACE COAT TRANSMIT AIR GLASS
+
+!! Back of Lens
+SURFACES
+  OPTICAL Z 0 -5 ELLIPSE 2.5
+OBJECT 'LENS.BACK'
+  INTERFACE 0 1 AIR GLASS
+  SHIFT Z 1
+
+!! Edge of Lens
+SURFACES
+  TUBE Z 0 2.5 2.5 1.0 2.5 2.5
+OBJECT 'LENS.EDGE'
+  INTERFACE 0 0 AIR GLASS 
+  BOUNDS -.2 
+	
+SURFACES
+  PLANE Z 9 ELLIPSE 1
+OBJECT 'DETECTOR'
+  INTERFACE 0 0 AIR AIR 
+	
+!! Define Source
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC Z -2 -2.5 2.5 -2.5 2.5 99 99
+  SOURCE DIRECTION 0 0 1
+
+!! Trace Rays
+WINDOW Y -3 3 Z -1 11
+PROFILES 0 0 -1 OVERLAY 'SINGLET RAY TRACE'
+TRACE PLOT 100
+
+!! Analysis
+CONSIDER ONLY DETECTOR
+FOCUS MOVE !! Move rays from detector to best focus
+
+WINDOW Y -0.5 0.5 X -0.5 0.5
+PIXELS 101
+SPOTS POSITION  'SPOT DIAGRAM AT BEST FOCUS'
+
+DISPLAY
+  AVERAGE
+  AVERAGE
+  PICTURE  !! Show 2D picture based on Window and Pixel values
+RETURN 

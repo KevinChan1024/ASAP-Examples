@@ -1,0 +1,22 @@
+!!++
+!! GRID_POLAR02.INR
+!! Title: Polar Grid of Rays
+!! Category: Isolated Command
+!! Keywords: GRID, POLAR
+!! Description: Defines a polar grid of
+!! rays in the xz plane at y=1. The extent
+!! of the grid in the radial direction is 0 to 5.
+!! The extent in the azimuthal direction 0 to
+!! 360 degrees. There are 10 rays in the radial
+!! direction and 15 rays in the first ring about
+!! the center. One hundred and fifty-one rays
+!! are generated. This is the long form of the
+!! command which gives a straight spoked pattern.
+!! Edit History: (latest first)
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+GRID POLAR Y 1 0 5 0 360 10 15 0.5  !! Long form
+
+

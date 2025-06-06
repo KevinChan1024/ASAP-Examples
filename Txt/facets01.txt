@@ -1,0 +1,32 @@
+!!++
+!! FACETS01.INR
+!! Title: FACETS Object Modifier
+!! Category: Isolated Command
+!! Keywords: FACETS, OBJECT  
+!! Description: The FACETS command as an OBJECT
+!! modifier.
+!! Edit History: (latest first)
+!! 10/04/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  ARC Z 0 2 0 1 1 180 
+    SWEEP DIRECTION 10 0 SIN[45] COS[45]
+  OBJECT 'SWEPT_ARC_1'
+    FACETS 5 6
+
+EDGES
+  REPEAT 0.1
+    SHIFT Y -10
+  OBJECT 'SWEPT_ARC_2'
+    FACETS 2 3
+
+WINDOW Y -X
+OBLIQUE 
+PLOT MESH 1 'MESH PATCH BOUNDARIES'
+PLOT FACETS 'DIFFERENCE BETWEEN FACET SUBDIVISIONS' 
+RETURN

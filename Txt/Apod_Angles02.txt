@@ -1,0 +1,47 @@
+!!++
+!! APOD_ANGLES02.INR
+!! Title: Apodizing a Spheroid by Angles
+!! Category: Simple Problem
+!! Keywords: Sources, apodizing, APODIZE, ANGLES, $FCN, CLIP
+!! Description: Modifying an isotropic source by apodizing
+!! it in angle space using a function. An emitting spheroid
+!! is created using CLIP DIRECTION to keep rays on the +Z side,
+!! and then apodized. The emitter is isotropic by default.
+!! Ray directions for both the original isotropic source
+!! and the Lambertian apodized source are plotted.  No
+!! tracing is performed.
+!! Edit History: (latest first)
+!! 11/11/2013 - gb - changed CLIP DIR to CLIP DIRECTION in header; changed SURFACE to SURFACES in example
+!! 07/12/2001 - cp - changed to unique title
+!! 03/28/2000 - cp - modified format; added description
+!! 02/28/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$FCN LAMBERT COS(_1)
+
+CLIP DIRECTION -1 1  -1 1  0 1  !! Create rays only on +Z side
+EMITTING SPHEROID 0 0 0 0.1 0.1 0  1000
+
+SURFACES
+  PLANE Z 0 ELLIPSE 0.1 
+  OBJECT
+    REDEFINE COLOR 4
+  
+WINDOW Y -2@1 Z -2@1
+PLOT FACETS 11 11 OVERLAY  'Original isotropic source'
+PLOT RAYS 1
+$VIEW
+
+$ASK 'Now apply Lambertian apodization'
+
+$IO VECTOR REWIND
+APODIZE ANGLES Z LAMBERT
+
+WINDOW Y -2@1 Z -2@1
+PLOT FACETS 11 11 OVERLAY 'Lambertian Apodized'
+PLOT RAYS 1
+$VIEW 
+RETURN

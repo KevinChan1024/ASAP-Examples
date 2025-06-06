@@ -1,0 +1,78 @@
+!!++
+!! OVERLAY04.INR
+!! Title: Quadrant Plot of Two Spatial Filters
+!! Category: Simple Problem
+!! Keywords: Analysis, PLOT, OVERLAY, plot
+!! Description: Multiple overlays performed to show two
+!! spatial filters in one plot. Taken from Aperture_Sampling02.inr.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 04/02/2008 - wjd - modified for complex quadrant overlays
+!! 11/05/2003 - cp - fixed keyword
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS IN
+
+EDGES
+  ELLIPSE Z -.1 8 8 16
+  RECTANGLE Z -.1 6 2.5 16
+OBJECT
+  .1 .2 'APERTURE PLATE'
+
+LENSES
+  IDEAL Z 0 8 
+    1  0 -1/160 1
+OBJECT 'PERFECT LENS'
+
+SURFACES
+  PLANE Z 160  ELLIPSE .2  .2
+OBJECT 'DETECTOR'
+
+!! Define 10 x 10 grid of rays 
+WAVELENGTHS .6328  UM
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6
+GRID ELLIPTIC Z -2 -4@7 2@10
+  SOURCE DIRECTION 0 0 1
+
+!! Do analysis for 10x10 grid of rays
+TRACE
+CONSIDER ONLY 1
+WINDOW Y X
+PLOT FACETS 1 1 OVERLAY 1 
+PLOT BEAMS OVERLAY 1
+CONSIDER ONLY 3
+WINDOW Y -2@3E-3 X -2@3E-3
+PIXELS 61
+SPREAD NORMAL
+DISPLAY
+  FORM -9
+  GRAPH OVERLAY 2 
+RETURN
+
+!! Do analysis for 20x20 grid of rays
+CONSIDER ALL
+RAYS 0
+GRID ELLIPTIC Z -2 -4@7 2@20
+  SOURCE DIRECTION 0 0 1
+TRACE
+CONSIDER ONLY 1
+WINDOW Y X
+PLOT FACETS 1 1 OVERLAY 3 'GAUSSIAN BEAM SAMPLING OF APERTURE: 20 X 20 SET OF RAYS ' 
+PLOT BEAMS OVERLAY 3
+
+CONSIDER ONLY 3
+WINDOW Y -2@3E-3 X -2@3E-3
+PIXELS 61
+SPREAD NORMAL
+DISPLAY
+  FORM -9
+  !!ISOMETRIC 'PSF OF RECTANGULAR APERTURE SYSTEM ( 20 X 20 SET OF RAYS )' 
+  GRAPH  'PSF OF RECTANGULAR APERTURE SYSTEM (20 X 20 SET OF RAYS)'
+RETURN 

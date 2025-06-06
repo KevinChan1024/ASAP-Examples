@@ -1,0 +1,53 @@
+!!++
+!! MOVE_TO_PLANE.INR
+!! Title: Moving a Source to a Plane
+!! Category: Isolated Command
+!! Keywords: MOVE TO PLANE, GRID, Sources
+!! Description: Demonstration of MOVE TO PLANE.
+!! Some simple geometry is created and the source is 
+!! moved to a different location (plane).  
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 7/12/2005 - gg - creation
+!!--
+    
+SYSTEM NEW
+RESET   
+
+!! Create geometry
+SURFACES
+  PLANE Z 10 RECTANGLE 4 4
+OBJECT 'PLANE
+
+!! Create source
+GRID RECT Z 3 -4 4 -4 4 1 12
+SOURCE POSITION 0 0 0
+
+!! Show the geometry
+WINDOW Y Z 
+WINDOW 3
+PLOT FACETS OVERLAY
+
+!! Trace and plot the rays
+TRACE PLOT
+
+!! Clear the rayset
+RAYS 0    
+
+!! Create the source again - moved to a plane
+GRID RECT Z 3 -4 4 -4 4 1 12
+  SOURCE POSITION 0 0 0
+  MOVE TO PLANE 0 0 -5 0 0.17365 0.98481 
+
+!! Plot the geometry
+WINDOW Y Z 
+WINDOW 3
+PLOT FACETS OVERLAY
+
+!! Plot the rays
+TRACE PLOT
+
+!! Compare the two plots to see the purpose of the 
+!! 'MOVE TO PLANE' command
+
+RETURN

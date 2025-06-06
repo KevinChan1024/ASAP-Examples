@@ -1,0 +1,98 @@
+!!++
+!! SCATTER_CHANGE_01.INR
+!! Title: Changing Scatter on an Object
+!! Category: Simple Problem
+!! Keywords: Scatter, MODELS, redefining, OBJECT, INTERFACE 
+!! Description: Shows how to essentially clear a scatter model
+!! applied to an existing object and then add a different one later.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 09/30/2010 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET   
+CUTOFF 1E-10 !! To prevent any specular flux from getting through
+             !! when scatter is removed in step 2
+ANAL {  
+  CONSIDER ALL
+  WIN Y Z 
+  MISSED ARROWS 10
+  PLOT FACETS 5 5 OVERLAY
+  PLOT EDGES OVERLAY
+  **********************************************
+  !! Create sources
+  GRID RECT Z -10 -2 2 -2 2 201 201  
+    SOURCE DIRECTION 0 0 1 
+  
+  **********************************************
+  !! Trace rays
+  TRACE PLOT 51  
+                            
+  **********************************************
+  !! Perform analysis 
+  CONSIDER ONLY DETECTOR
+  PIXELS 101
+  WINDOW Y  X  
+  SPOTS DIRECTION ATT 0 
+  $ERR end
+  DISPLAY
+  AVE
+    PICTURE 
+    GRAPH
+  RETURN 
+end
+}
+   
+PIXELS 301 !! For Harvey plot if used below
+MODELS 
+  LAMBERTIAN .99 
+  HARVEY 0.1 -1 .02 !!PLOT 0 
+                          
+**********************************************
+!! Create geometry
+EDGES !! Edge used for Lambertian model - 1  
+  RECTANGLE Z 20 20 20    
+    SHIFT Z 10
+  OBJECT 'DETECTOR' !!  Also acts as Detector  
+
+EDGES  !! Edge used for Harvey - 2. Just to show that a diff. edge may be used
+  RECT Z 15 3 3 
+  SHIFT X -5
+  
+SURFACES
+  PLANE Z 0 RECTANGLE 5 5 
+OBJECT 'DIFFUSER'     !! Simple diffuser
+  INTERFACE 0 1E-12 AIR AIR  !! Keep specular rays at below CUTOFF setting
+    SCATTER MODEL 1
+    TOWARDS EDGE 1 1  !! Scatter towards edge number 1, 1 ray  Lambertian
+
+
+!! Trace and Verify
+$ANAL
+
+**********************************************
+!! Create sources 
+RAYS 0  !! Clear any previous sources
+$IO VECTOR REWIND !! For new plots
+
+***********************
+!! APPLY ZERO SCATTER RAYS TO DIFFUSER
+OBJECT DIFFUSER     !! Redefine diffuser with new model and TOWARDS
+  INTERFACE 0 1E-12 AIR AIR  !! Keep specular rays at below CUTOFF setting
+    SCATTER MODEL 1
+    TOWARDS EDGE 1 0  !! Scatter towards edge number 1, but NO RAYS generated
+PRINT OBJECT 1
+$ANAL  !! Error is generated because no rays exist
+
+RAYS 0
+$IO VECTOR REWIND 
+
+OBJECT DIFFUSER     !! Redefine diffuser with new model and TOWARDS
+ INTERFACE 0 1E-12 AIR AIR  !! Keep specular rays at below CUTOFF setting
+   SCATTER MODEL 2 !! Harvey
+   TOWARDS EDGE 2 5  !! Scatter towards edge number 2, Harvey model applied
+
+$ANAL
+
+RETURN 

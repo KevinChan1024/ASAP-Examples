@@ -1,0 +1,125 @@
+!!++
+!! ABSORBING_MEDIA04.INR
+!! Title: Polychromatic Inhomogenous Absorption
+!! Category: Simple Problem
+!! Keywords: Interfaces, MEDIA, ABSORB, VOXELS, $VIEW, inhomogeneous, absorption
+!! Description: A demonstration of using MEDIA...ABSORB to 
+!! define absorption at multiple wavelengths.  This uses the
+!! long form of the command.
+!! Edit History: (latest first)
+!! 12/15/2014 - mt - add $VIEW to Keywords
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 06/06/2012 - cp - added header
+!! 05/14/2012 - jh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+XMEMORY MIN 
+
+PI=4*ATAN(1)  
+NRAYS=1E5         !! initial number of rays
+
+UNITS MILLIMETERS 'Microwatts'
+ACCURACY HIGH
+MISSED LINE 11
+CUTOFF 1E-32 1000
+HALT 1E-18
+SPLIT 1 MONTECARLO
+
+
+!! Define Media
+
+!! define a dummy function for absorption variation that
+!! actually exhibits no variation. It is traced and solved 
+!! as if it were an inhomogeneous absorption medium.
+$FCN CONSTANT 1 
+FUNCTION
+USERFUNC 0 0 0 CONSTANT
+RETURN 
+
+!! alternate definition using long form of MEDIA ABSORB
+WAVELENGTHS 0.2 0.3 0.4 MICRONS
+MEDIA 
+!! 1.651`5.497E-6 'ABS_GLASS'   !! regular homogeneous absorption medium
+!! 1.651`5.497E-6 ABSORB 0 .1 1 10.0 1000  'ABS_GLASS'
+1.722`2.145E-6 1.651`5.497E-6 1.578`2.497E-6 ABSORB 0 .1 1 10.0 1000  'ABS_GLASS'
+                                                    !! dummy zero for absorption coefficient calculated from index, 
+                                                    !! surface designation for dummy constant "inhomogeneity", 
+                                                    !! function exponent (constant, but use 1 to be safe),
+                                                    !! step length in system units,
+                                                    !! maximum number of steps.
+RETURN
+
+        !! WAVELENGTH 0.4 UM
+        !! PRINT MEDIA ABS_GLASS
+
+        !! !! test MEDIA ABS
+        !! SURFACES 
+        !!   PLANE Z 0  RECT 1
+        !!   PLANE Z 10 RECT 1 
+        !! OBJECT
+        !!   .2 'CHECK_MEDIA_2.1'
+        !!       INTERFACE 0 1 AIR ABS_GLASS
+        !!   .1 'CHECK_MEDIA_2.2'
+        !!       INTERFACE 0 1 AIR ABS_GLASS 
+        !! RETURN
+        !! IMMERSE AIR
+        !! BEAMS INCOHERENT GEOMETRIC
+        !! WAVELENGTH 0.30 UM
+        !! RAYSET Z -1
+        !! 0 0 1
+        !! SOURCE DIRECTION 0 0 1
+        !! SPLIT 1
+        !! FRESNEL OFF
+        !! STATS
+        !! TRACE
+        !! STATS
+        !! $IO !! verify 10% T in 1cm @ 0.30um
+              
+
+!! geometry
+
+SURFACES
+  PLANE Z 0   RECT 20
+  PLANE Z 10 RECT 20
+  TUBE  Z 0 2@20, 10 2@20, 2@1
+OBJECT
+  .3 'SLAB.FRONT'
+      INTERFACE 0 1 AIR ABS_GLASS
+  .2 'SLAB.BACK'
+      INTERFACE 0 1 AIR ABS_GLASS
+  .1 'SLAB.EDGE'
+      INTERFACE 0 0 AIR ABS_GLASS  
+RETURN
+
+!! source
+
+RAYS 0
+WAVELENGTH 0.3 MICRON      
+
+!! GRID RECTANGLE Z 0 -4@10 1 17 !! 1D ray fan
+GRID RECTANGLE Z 0 -4@10 157 157 RANDOM 0.99
+SOURCE POSITION 0 0 -10
+MOVE TO Z -10 
+FLUX TOTAL 100
+$CLEAR
+RAYSET   
+$GRAB 'rays defined' 0 -1 NRAYS
+&REG NRAYS 'Total number of rays: '
+
+!! trace 
+
+!!VOXELS ABSORBED -2@2 -2@20 0 20 1 25 51  !! for a 1D ray fan demonstration
+VOXELS ABSORBED -4@20 0 10 51 51 151 
+
+PLOT FACETS 3 3 0 OVERLAY 'Trace in a bulk absorbing slab'  
+TRACE PLOT 1>INT(NRAYS/117) COLOR 17   
+$VIEW
+&VIEW BRO009.DAT
+RETURN
+
+
+
+

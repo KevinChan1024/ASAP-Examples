@@ -1,0 +1,78 @@
+!!++
+!! TEXTFILE04.INR
+!! Title: Writing Out Display Data #4
+!! Category: Isolated Command
+!! Keywords: TEXTFILE, output, data, spreadsheet, file, formatting, REDUCE
+!! Description: A modified version of example TEXTFILE02.INR illustrating
+!! both the output of DISPLAY flux data with spatial coordinates 
+!! (file SPOTS4.TXT) and slices of the same flux data arranged in columnar 
+!! form corresponding to cuts along each physical dimension of the 
+!! measurement (files SPOTS4X.TXT and SPOTS4Y.TXT).
+!! Edit History: (latest first)
+!! 10/30/2013 - cp - corrected syntax
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/22/2004 - jh - modified version with plot slices
+!! 02/03/2000 - cp - creation (as TEXTFILE02.INR)
+!!--
+
+SYSTEM NEW
+RESET
+
+NPIX=10   !! number of pixels in Y direction
+PIX_ASPECT=1.5
+
+EMITTING DISK Z 0 2@3 1111 
+  FLUX TOTAL 100
+SURFACES 
+  PLANE Z 10 RECTANGLE 2@8
+OBJECT 'DETECTOR'
+
+TRACE
+CONSIDER ONLY DETECTOR
+STATS
+WINDOW Y X
+PIXELS (NPIX) (PIX_ASPECT)  !! Creates (PIX_ASPECT*NPIX^2) total pixels for display File
+SPOTS POSITION ATTRIBUTE 0
+
+!! Output one line per pixel, each line containing X, Y, Z, and flux 
+DISPLAY
+  PICTURE
+  TEXTFILE SPOTS4.TXT  !! Look at this file to check output
+_____X______________Y_______________Z____________FLUX_________  !! Header
+  DATA -4 'G15.7'  !! For X Y Z and Flux output
+  EOF  !! Close the file
+ 
+RETURN
+
+$GRAB 'Minimum' 0 1 FMIN 
+$GRAB 'Maximum' 0 1 FMAX 
+
+!! find approximate center slice pixel in each coordinate direction
+
+XMID=INT[NPIX*(PIX_ASPECT)/2]
+YMID=INT[NPIX/2]
+
+!! Output Y coordinate and flux only of one X slice of pixels
+DISPLAY
+  REDUCE 1 (NPIX) 1 2@(XMID) 1    !! output only an X slice
+  PICTURE 'Slice along Y'
+  TEXTFILE SPOTS4Y.TXT  !! Look at this file to check output
+  RANGE Y (XMIN) (XMAX) IN (NUMX) SAMPLES
+__________________________________________
+_____Y_____________FLUX_________  !! Header
+  DATA -2 'G15.7' !! one coordinate and flux output only 
+  EOF  !! Close the file
+RETURN
+
+!! Output X coordinate and flux only of one Y slice of pixels
+DISPLAY
+  REDUCE 2@(YMID) 1 1 INT[NPIX*(PIX_ASPECT)] 1 !! output only a Y slice
+  PICTURE 'Slice along X'
+  TRANSPOSE    !! swap X and Y 
+  TEXTFILE SPOTS4X.TXT  !! Look at this file to check output
+  RANGE X (XMIN) (XMAX) in (NUMX) SAMPLES
+__________________________________________
+_____X_____________FLUX_________  !! Header
+  DATA -2 'G15.7' !! one coordinate and flux output only  
+  EOF  !! Close the file
+RETURN

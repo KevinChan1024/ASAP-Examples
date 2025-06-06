@@ -1,0 +1,49 @@
+!!++
+!! SELECT01.INR
+!! Title: Isolating Ray Data
+!! Category: Isolated Command
+!! Keywords: SELECT, rays
+!! Description: Isolating ray data using the SELECT
+!! command. Three cases are shown.
+!! Note: This is not a run-able script file.
+!! Edit History: (latest first)
+!! 02/19/2014 - mt - change "with" to "and" in "Selects only rays 1 through 10 and 20 through 25, inclusively."
+!! 03/11/2002 - cp - added note
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+*************************************
+BEAMS INCOHERENT GEOMETRIC
+GRID POLAR Z 6 0 2 0 360 10 3
+  SOURCE POSITION 0 0 -10
+:
+SELECT ONLY rays 1 10 OR rays 20 25
+
+Selects only rays 1 through 10 and 20 through 25, inclusively.
+
+************************************* 
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC X 1 -2 4 -8 0 10 15
+  SOURCE POSITION 1 0 0
+:
+!! ASAP ray trace here
+:
+SELECT ONLY OBJECT 13 AND 0 C
+
+!! Selects only those rays that intersected OBJECT 13
+!! immediately prior to intersecting the OBJECT on
+!! which they currently reside and also have z direction
+!! cosines greater than 0. 
+
+*************************************
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC X 1 -2 4 -8 0 10 15
+  SOURCE POSITION 1 -1 0, 1 0 0, 1 1 0
+SELECT ONLY SOURCE 1 OR SOURCE 3
+
+!! Source 1 along with source 3 are selected for
+!! analysis or ray tracing.  If a ray trace was
+!! performed and plotted the user would see sources
+!! 1 and 3 ray tracing but not source 2.
+SELECT EXCEPT SOURCE 2 would have a similar effect on ray selection.

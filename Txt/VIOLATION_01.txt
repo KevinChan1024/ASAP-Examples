@@ -1,0 +1,36 @@
+!!++
+!! VIOLATION_01.INR
+!! Title: Setting Paraxial Departure Levels with VIOLATION  
+!! Category: Isolated Command
+!! Keywords: VIOLATION, paraxial departure, FIELD 
+!! Description: Setting paraxial departure warnings to
+!! other than default .1 waves with 1 wave termination. 
+!! Source is set up to force paraxial invariant errors when
+!! calcualting a FIELD in order to demonstrate VIOLATION options.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/28/2008 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+UNITS MM
+PARABASAL 4
+WIDTHS 1.6
+BEAMS COHERENT DIFFRACT 
+WAVELENGTH 633 NM
+GRID RECT Z 0 -4@1 11 11 
+SOURCE POSITION 0 0 -1
+
+PIXELS 101  
+WINDOW Y X 
+VIOLATION .3 1 !! Warnings generated only above .3 waves paraxial departure
+FIELD ENERGY   
+
+VIOLATION .2 1 !! Warnings generated above .2 waves paraxial departure
+FIELD ENERGY   
+
+VIOLATION .1 1  !! Back to default settings
+FIELD ENERGY   
+RETURN

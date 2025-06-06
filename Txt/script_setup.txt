@@ -1,0 +1,79 @@
+!!++
+!! SCRIPT_SETUP.INR
+!! Title: Setting up a Script File
+!! Category: Simple Problem
+!! Keywords: Scripts, MEDIA, FRESNEL, SPLIT, RETURN, SYSTEM, RESET, pipe 
+!! Description: The following shows example system and 
+!! data-base settings for a script that will perform
+!! a light pipe analysis. Explanations of various
+!! commands appear below. Note: This is not a complete file.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/30/2000 - cp - modified format; added description
+!! 06/08/2000 - gp - creation
+!!--
+
+!! The following two command lines should always appear
+!! at the head of a script file:
+SYSTEM NEW  !! Resets geometry and vector and plot files
+RESET       !! Resets rays and other system settings
+
+UNITS MM
+
+!! Note: The absorption coefficient is in the form of <percentage
+!! absorption>/<system unit>. Indices and absorption coefficients
+!! vary with wavelength and manufacturer. These values are an
+!! example only.
+MEDIA
+  1.489 ABSORB 0.0008 'ACRYLIC'  !! 2 percent per inch absorption
+  1.586 ABSORB 0.0033 'POLYCARB' !! 8 percent per inch absorption
+
+
+
+COATINGS PROPERTIES
+  reflect   transmit  !! Lower case may be used as comments
+   .05         0      'WHITE_PLASTIC'
+
+!! Note: The following describes the result of using a BARE
+!! coating with FRESNEL AVE:  The BARE command signals ASAP to
+!! take into account the variation of the reflection and
+!! transmission coefficients with incidence angle at each
+!! interface and adjust the flux accordingly. It does this by
+!! evaluating the media on either side of the interface and then
+!! applying Fresnel's formulae. This command must be used whenever
+!! you desire a recalculation of the reflection/transmission
+!! coefficients for each ray during a ray trace.  
+FRESNEL AVERAGE
+ 
+!! Use the following ONLY when visually tracking the rays
+!! through the system: 
+SPLIT 1 0.5
+
+!! When visually tracking rays through a light pipe design,
+!! the rays must transmit through the entrance and exit faces
+!! but also reflect off the inside pipe surface. For ASAP to
+!! allow TIR, the SPLIT command must be turned on. However,
+!! since a transmitted and reflected ray are created at each
+!! incidence, this can clutter up the system with unwanted rays.
+!! To overcome this problem, ASAP can split the ray, but only
+!! continue tracing a ray that has at least 50 percent of the
+!! flux before the split. This means that only transmitted rays
+!! will continue through the entrance and exit faces while only
+!! reflected rays will continue through the sides.
+
+!! Geometry section:
+!! For defining material properties for objects:
+!! Most light pipe surfaces have a coating similar to the following:
+INTERFACE COAT BARE AIR POLYCARB
+
+!!White plastic reflectors might be defined as follows:
+SCATTER RANDOM 0.9 1
+INTERFACE WHITE_PLASTIC 
+
+!! Create sources...
+!! Trace rays...
+!! Analysis...
+
+RETURN  !! Use this command to end a script file. Try not to use the
+        !! END command as that prevents further analysis if needed.
+        !! RETURN puts ASAP back to top-level mode.

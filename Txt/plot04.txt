@@ -1,0 +1,78 @@
+!!++
+!! PLOT04.INR
+!! Title: Graphical Analysis of Polarization
+!! Category: Isolated Command
+!! Keywords: PLOT, Polarization
+!! Description: Plotting polarization using PLOT POLAR
+!! and PLOT RAYS. 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/10/2000 - cp - updated header info
+!! 03/16/2000 - cp - Reformatted; added header
+!! 03/02/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+FRESNEL BOTH 
+XMEMORY NORM  !! Minimum setting to track polarization
+
+WINDOW Y Z
+WINDOW 0.8
+
+OBLIQUE
+ARROWS 2
+SEGMENTS 2
+
+BEAMS INCOHERENT GEOMETRIC
+POLARIZ X 0 1
+GRID RECT Z 0 -4@1 2@3
+  SOURCE DIRECTION 0 0 1
+  PLOT POLAR 'LINEAR VERTICAL POLARIZATION' OVERLAY
+  PLOT RAYS 0.5
+
+RAYS 0  !! Clear rays
+POLARIZ X 1 0
+GRID RECT Z 0 -4@1 2@3
+  SOURCE DIRECTION 0 0 1
+  PLOT POLAR  'LINEAR HORIZONTAL POLARIZATION' OVERLAY
+  PLOT RAYS 0.5
+
+RAYS 0
+POLARIZ X 1 1 
+GRID RECT Z 0 -4@1 2@3
+  SOURCE DIRECTION 0 0 1
+  PLOT POLAR  'LINEAR +45 DEGREES POLARIZATION' OVERLAY
+  PLOT RAYS 0.5
+
+RAYS 0
+POLARIZ X 1 -1
+GRID RECT Z 0 -4@1 2@3
+  SOURCE DIRECTION 0 0 1
+  PLOT POLAR  'LINEAR -45 DEGREES POLARIZATION' OVERLAY
+  PLOT RAYS 0.5
+ 
+RAYS 0
+POLARIZ X 1`0 0`-1
+GRID RECT Z 0 -4@1 2@3
+  SOURCE DIRECTION 0 0 1
+  PLOT POLAR  'RIGHT HAND CIRCULAR POLARIZATION' OVERLAY
+  PLOT RAYS 0.5
+
+RAYS 0
+POLARIZ X 1`0 0`1
+GRID RECT Z 0 -4@1 2@3
+  SOURCE DIRECTION 0 0 1
+  PLOT POLAR  'LEFT HAND CIRCULAR POLARIZATION' OVERLAY
+  PLOT RAYS 0.5
+  
+RETURN
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

@@ -1,0 +1,40 @@
+!!++
+!! HELIX01.INR
+!! Title: Use of the HELIX command
+!! Category: Isolated Command
+!! Keywords: EDGES, HELIX, EMITTING ENTITY, EMITTING OBJECT 
+!! Description: Create an EDGE HELIX and make it into an
+!! EMITTING ENTITY and an EMITTING OBJECT. 
+!! Edit History: (latest first) 
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 07/25/2008 - cp - changed category
+!! 09/04/2007 - cp - reformatted
+!! 04/12/2007 - bf - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+EDGES
+  HELIX Z 0 3 6  20 3 5  10  !!100
+!! HELIX: begin Z-position, size, end position and size, 
+!! number of turns, and number of segments
+!! Run again with the last number (of segments) in the above line commented back in.
+!! This is the number of segments.  Compare the 2 results
+OBJECT 'HELIX'
+
+PLOT FACETS 7 7 0 OVERLAY
+PLOT EDGES OVERLAY
+
+EMITTING ENTITY .1 100  
+PLOT RAYS 1  COLOR 2  OVERLAY
+EMITTING OBJECT .1 100  
+SELECT ONLY SOURCE .1 
+PLOT RAYS 1  COLOR 3
+
+!! Change the sign before the number of rays for both ENTITY and OBJECT.
+!! Note that the number of rays created is not the same
+!! for ENTITY and OBJECT when a - sign precedes the number of rays.
+$VIEW
+
+RETURN

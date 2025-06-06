@@ -1,0 +1,44 @@
+!!++
+!! SAWTOOTH_CIRCLE.INR
+!! Title: Grooved Tube made by Functions
+!! Category: Simple Problem
+!! Keywords: Edges, sawtooth, EDGES, function, POINTS, circle, SWEEP, $FCN, groove, tube
+!! Description: This makes a sawtooth circle using several
+!! function commands, which is then extruded into a tube.
+!! The end result is a linearly grooved tube. Tube radius,
+!! teeth height, and number are adjustable.
+!! Edit History: (latest first) 
+!! 09/24/2003 - cp - modified category name
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+RADIUS=10  !! RADIUS OF CIRCLE
+NUM=3141   !! NUMBER OF TEETH  
+PEAK=.02   !! HIGH POINT OF TOOTH
+UNITS MM
+
+$FCN XFUNC1 (RADIUS)*SIN[(360/NUM)*_] 
+$FCN YFUNC1 (RADIUS)*COS[(360/NUM)*_]
+$FCN XFUNC2 (RADIUS+PEAK)*SIN[((360/NUM*_)+(360/NUM)/2)]
+$FCN YFUNC2 (RADIUS+PEAK)*COS[((360/NUM*_)+(360/NUM)/2)] 
+$ECHO NONE  !! Turns off output to speed it up drawing sawtooth  
+
+!! The following $DO executes following commands (on same line) only once,
+!! then iterates on second line and completes with a single execution of 3rd line.
+!! This makes the sawtooth circle.
+$DO 1 (NUM); EDGES; POINTS 0 0 0 ABS, 
+  XFUNC1(?) YFUNC1(?) 0 1 XFUNC2(?) YFUNC2(?) 0 1
+  XFUNC1(NUM+1) YFUNC1(NUM+1) 0 0  
+
+$ECHO  !! Turns console output back on 
+  SWEEP DIRECTION 50 0 0 1  !! Make into tube
+  OBJECT 'TUBE'
+
+WINDOW X Y
+PLOT EDGES
+PLOT FACETS 11 11
+$VIEW
+RETURN

@@ -1,0 +1,142 @@
+!!++
+!! RRM_POLAR_QTR_WAVE.INR
+!! Title: Quarter Wave Plate using RRM
+!! Category: Simple Problem
+!! Keywords: Polarization, RRM, realistic, retarder, quarter, waveplate, POLARIZ K, POLARIZ TREF, FIELD, REAL, DELTA, LIST ELLIPSE, LIST RAYS POLARIZATION JONES
+!! Description: An example of birefringence through a quarter-wave  
+!! plate. Shows how polarized light changes after propagating
+!! through a quarter wave plate made using the Realistic Retarder 
+!! Model (RRM).   
+!! PLOT POLARIZATION plots the ray resolved polarization
+!! states. The LIST ELLIPSE and LIST RAYS POLARIZATION JONES
+!! shows numerical measures of polarization state. The 
+!! FIELD...DELTA command also shows the field-based 
+!! polarization.
+!! Edit History: (latest first)
+!! 09/07/2016 - jah - changed CRYSTAL device to RRM device to resolve ray states
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/08/2000 - cp - Modified syntax; added description
+!! 03/02/2000 - js - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+UNITS MILLIMETERS
+WAVELENGTH 1 UM 
+
+FRESNEL BOTH
+
+!! Input number of beams in x and y
+NX=3
+NY=3
+
+SPLIT 1 
+
+MEDIA
+  (N_ORD=1.50100)       'ORD'
+  (N_EXTRAORD=1.50102)  CRYSTAL COS[45] COS[45] 0 ORD 'QWP1' 
+RETURN
+
+COATINGS PROPERTIES 
+  1 0 'REFL'
+RETURN
+
+!! RRM (Realistic Retarder Model) definition
+RRM 0.25 1.000 12500 1.0 (N_ORD) (N_EXTRAORD) 0.0 0.0 'QWP_RRM'
+
+!! Verify the RRM model
+PRINT MODELS RRM
+
+!! Quarter Waveplate
+!! RRM is represented as a device on one surface,
+!!  rather than a bulk medium between two surfaces as with CRYSTAL
+SURFACES
+  PLANE Z 15 ELLIPSE 75 
+  OBJECT 'QWP_S1'                                    
+    INTERFACE POLARIZATION RETARDER QWP_RRM 0 45 AIR AIR
+
+SURFACES
+  PLANE Z 0 RECTANGLE 100  
+  OBJECT 'DUMMY_PLANE_1'
+    INTERFACE COAT +BARE AIR AIR 
+ 
+
+SURFACES
+  PLANE Z -5 RECTANGLE 100  
+  OBJECT 'DUMMY_PLANE_2'
+    INTERFACE COAT BARE AIR AIR 
+
+
+SURFACES
+  PLANE Z -10 RECTANGLE 100  
+  OBJECT 'FLAT_MIRROR'
+    INTERFACE COAT -REFL 
+
+SURFACES
+  PLANE Z 50 RECTANGLE 100  
+  OBJECT 'FINAL_PLANE'
+
+!! Source
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6
+   
+!! Set ray polarization using reference ray construct
+POLARIZ K Z
+POLARIZ TREF Y
+POLARIZ 1 0 
+
+GRID RECT Z 20 -4@1 (NX) (NY)
+  SOURCE DIRECTION 0 0 -1
+
+!! Verify source
+ARROWS 3
+SEGMENTS 2
+WINDOW Y X
+PLOT POLARIZATION 'Input polarization'
+PIXELS 101
+FIELD ENERGY 20
+DISPLAY
+  ISOMETRIC 'INPUT FIELD' 
+  
+TITLE 'Field polarization: initial'
+FIELD REAL 20 DELTA PIXELS 7
+
+!! Trace past wave plate - before mirror
+TRACE 0 DUMMY_PLANE_2
+CONSIDER ONLY DUMMY_PLANE_2
+WINDOW Y X
+
+TITLE 'Field polarization: after waveplate 1st pass'
+FIELD REAL -5 DELTA PIXELS 7   
+
+PLOT POLARIZATION 'Ray polarization states after first pass through quarter-wave plate'
+LIST ELLIPSE 
+LIST RAYS POLARIZATION JONES
+CONSIDER ALL
+
+!! After mirror - before second pass through wave plate
+TRACE DUMMY_PLANE_2 DUMMY_PLANE_1
+CONSIDER ONLY DUMMY_PLANE_1
+WINDOW Y X
+
+TITLE 'Field polarization: after mirror'
+FIELD REAL 0 DELTA PIXELS 7
+CONSIDER ALL 
+
+
+!! After second pass through wave plate
+TRACE
+CONSIDER ONLY FINAL_PLANE
+WINDOW Y X
+
+TITLE 'Field polarization: after waveplate 2nd pass'
+FIELD REAL 50 DELTA PIXELS 7 
+!! After second pass through wave plate
+PLOT POLARIZATION 'Ray polarization states after second pass through quarter-wave plate'
+LIST ELLIPSE 
+LIST RAYS POLARIZATION JONES
+
+
+RETURN

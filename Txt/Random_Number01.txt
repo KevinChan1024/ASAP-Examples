@@ -1,0 +1,23 @@
+!!++
+!! RANDOM_NUMBER01.INR
+!! Title: Random Number Generator
+!! Category: Simple Problem
+!! Keywords: Scripts, math, random 
+!! Description: The following generates a random
+!! number sequence from 1 through 100. Output is
+!! a random floating point number.
+!! Edit History: (latest first)
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$ECHO NONE
+$DO 0 50
+  {
+  B=1~100  !! Can be any number to any number
+  $REG B   !! Outputs to command window
+  }
+
+RETURN

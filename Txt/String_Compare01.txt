@@ -1,0 +1,24 @@
+!!++
+!! STRING_COMPARE01.INR
+!! Title: Comparing Strings with $IF
+!! Category: Isolated Command      
+!! Keywords: $IF, literal, Macros_pre, string
+!! Description: Comparing two literals using $IF. Note, literal
+!! strings may be assigned to any of the registers between A0 and Z9.
+!! Edit History: (latest first)
+!! 08/25/2004 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+A1="10ABC" !! Use double quotes on both sides to distinguish
+           !! all char's in the comparison following. This will
+           !! also avoid problems when using 2 char's beginning
+           !! with a letter and ending with a number.
+U=0           
+$IF A1" EQ 10ABC" !! Truncations not allowed
+U=7
+&REG U
+
+RETURN

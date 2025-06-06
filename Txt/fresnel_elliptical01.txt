@@ -1,0 +1,91 @@
+!!++
+!! FRESNEL_ELLIPTICAL01.INR
+!! Title: Multi-Object Elliptical Fresnel
+!! Category: Simple Problem
+!! Keywords: Edges, Fresnel, ELLIPSE, EDGES, SMOOTH, OBJECT
+!! Description: An elliptical Fresnel lens made with EDGE
+!! ELLIPSE's and the first form of the OBJECT command
+!! which extrudes two edges together. This makes the ring
+!! surfaces and walls seen in the 3D viewer as separate
+!! objects.  A center ellipse is made separately
+!! with a SWEEP POSITION in order to get the final cone in the
+!! center. See Fresnel_Elliptical02 for a better way to
+!! to make this using only two objects.
+!! Edit History: (latest first) 
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 07/13/2000 - cp - Modified syntax; added description
+!! 07/13/2000 - arg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.5 'GLASS'
+
+EDGES
+  ELLIPSE Z 0.0  2.646*1.5  2.646
+    SMOOTH
+  ELLIPSE Z 0.1  2.449*1.5  2.449
+    SMOOTH
+  ELLIPSE Z 0.0  2.449*1.5  2.449
+    SMOOTH
+  ELLIPSE Z 0.1  2.236*1.5  2.236
+    SMOOTH
+  ELLIPSE Z 0.0  2.236*1.5  2.236
+    SMOOTH
+  ELLIPSE Z 0.1  2.0*1.5    2.0
+    SMOOTH
+  ELLIPSE Z 0.0  2.0*1.5    2.0
+    SMOOTH
+  ELLIPSE Z 0.1  1.7*1.5    1.7
+    SMOOTH
+  ELLIPSE Z 0.0  1.7*1.5    1.7
+    SMOOTH
+  ELLIPSE Z 0.1  1.4*1.5    1.4 
+    SMOOTH
+  ELLIPSE Z 0.0  1.4*1.5    1.4
+    SMOOTH
+  ELLIPSE Z 0.1  1.0*1.5    1.0
+    SMOOTH
+  ELLIPSE Z 0.0  1.0*1.5    1.0
+    SMOOTH
+
+OBJECT; .13 .12 'RING_01'
+  INTERFACE 0 1 AIR GLASS
+OBJECT; .12 .11 'FLAT_01'
+  INTERFACE 0 1 AIR GLASS
+OBJECT; .11 .10 'RING_02'
+  INTERFACE 0 1 AIR GLASS
+OBJECT; .10 .9  'FLAT_02'
+  INTERFACE 0 1 AIR GLASS
+OBJECT; .9 .8 'RING_03'
+  INTERFACE 0 1 AIR GLASS
+OBJECT; .8 .7 'FLAT_03'
+  INTERFACE 0 1 AIR GLASS
+OBJECT; .7 .6 'RING_04'
+  INTERFACE 0 1 AIR GLASS
+OBJECT; .6 .5 'FLAT_04'
+  INTERFACE 0 1 AIR GLASS
+OBJECT; .5 .4 'RING_05'
+  INTERFACE 0 1 AIR GLASS
+OBJECT; .4 .3 'FLAT_05'
+  INTERFACE 0 1 AIR GLASS
+OBJECT; .3 .2 'RING_06'
+  INTERFACE 0 1 AIR GLASS
+OBJECT; .2 .1 'FLAT_06'
+  INTERFACE 0 1 AIR GLASS
+
+EDGES
+  ELLIPSE Z 0.0  1.0*1.5  1.0
+    SMOOTH
+    SWEEP POSITION 1.0  0.0 0.0 0.1
+
+  OBJECT 'RING_CENTER'
+    INTERFACE 0 1 AIR GLASS
+
+WINDOW Y X
+!!PLOT EDGES
+PLOT FACETS 9 9
+$VIEW
+RETURN

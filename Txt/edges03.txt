@@ -1,0 +1,25 @@
+!!++
+!! EDGES03.INR
+!! Title: Flat Ring Baffle
+!! Category: Isolated Command
+!! Keywords: EDGES, ring, baffle, OBJECT
+!! Description: Two elliptical edges extruded together
+!! using second folrm of OBJECT command.
+!! Edit History: (latest first)
+!! 03/22/2006 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  ELLIPSE Z 1 5 5
+    SMOOTH   !! Needed to make smooth edges 
+  ELLIPSE Z 1 4.5 4.5   
+    SMOOTH
+OBJECT   !! Extrude edges together
+  1 2 'RECTANGULAR_APERTURE'
+   
+WINDOW Y X
+PLOT FACETS 15 15 0
+RETURN

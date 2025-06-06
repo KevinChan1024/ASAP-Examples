@@ -1,0 +1,74 @@
+!!++
+!! COMBINING_DISTRIB02.INR
+!! Title: Combining Angular Distributions
+!! Category: Simple Problem
+!! Keywords: Analysis, DISPLAY, COMBINE, MODIFY, CONTOUR
+!! Description: Combine two different SPOTS DIR
+!! distributions with different averaging applied.
+!! Each distribution is converted to angles and then the
+!! appropriate areas in each are cleared so that there will
+!! be no overlap when they are added together. MODIFY is
+!! used to clear specific pixel ranges to zero so that
+!! COMBINE can add the two cleanly. The overall WINDOW must
+!! remain the same between the two.
+!! Edit History: (latest first)
+!! 03/16/2012 - cp - corrected MODIFY syntax
+!! 04/04/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Construct some geometry to trace rays through
+EDGES 
+  R=1    !! Vertex radius of curvature
+  K=-1   !! Conic constant
+  H=1.5  !! Outer aperture height
+  O=0    !! Inner obscuration height
+  CONIC X 0, 0 0 -2*R 1 0 K+1, Y (O) (H)
+    SWEEP AXIS 360 Z
+OBJECT
+  INTERFACE 1 0 AIR AIR
+       
+SURFACES
+  PLANE Z 2 RECTANGLE 2 
+OBJECT 'DETECTOR'
+  INTERFACE 0 0 AIR AIR
+
+!! Create source and trace rays
+EMITTING SPHEROID 0 0 1 .1 .1 .1 100000 Z
+PLOT FACETS 5 5 OVERLAY
+TRACE PLOT 1000
+
+!! Analysis     
+CONSIDER ONLY DETECTOR
+PIXELS 80
+WINDOW  X -2@.7 Y -2@.7  !! Specify a fixed window range. X will be plotted vertical
+SPOTS DIRECTION ATTRIBUTE 0    !! Supress the spots plot
+
+DISPLAY
+  AVERAGE 1 1            !! Boxcar average in X and Y on entire distribution before
+  ANGLES                 !! angles conversion.
+  MODIFY 1 40 1 40 0 0  !! Replace lower left corner with 0's. Pixels 1 to
+                         !! 40 vertical and 1 to 40 horizontal.
+                         !! Note that if a non-square window is used,
+                         !! the horizontal pixel range will need adjusting.
+  WRITE AVE2 DIS         !! Write to temporary file AVE2
+  CONTOUR 10 TICS        !! Show contour
+
+WINDOW  X -2@.7 Y -2@.7  !! Keep window range the same
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+  
+  AVERAGE 0 4            !! Average 4 pixels in Y only on entire distribution before 
+  ANGLES                 !! angles conversion.
+  MODIFY 41 80 1 80 0 0  !! Clear upper half - from pix 41 to 80 vertical
+                         !! and 1 to 80 horizontal
+  MODIFY 1 40 41 80 0 0  !! Clear lower right corner - from pix 0 to 40
+                         !! vertical and 41 to 80 horizontal      
+  CONTOUR 10 TICS        !! Show contour
+  COMBINE AVE2 1         !! Add the two display files
+  CONTOUR 10 TICS        !! Show combined result. Lower left corner is a
+                         !! 0x4 average and the remainder is 1x1.
+RETURN
+

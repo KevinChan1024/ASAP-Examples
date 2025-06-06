@@ -1,0 +1,140 @@
+!!++
+!! FLUORESCENCE_TRANS01.INR
+!! Title: Modeling Fluorescence in Transmission
+!! Category: Simple Problem
+!! Keywords: Interfaces, MEDIA, CLIP, VOXELS, ABSORBED, COMBINE, fluorescence
+!! Description: A model of a fluorescent slab that fluoresces
+!! in transmission.  The voxel region is set up to match the 
+!! size of the slab.  The slab is illuminated by a Lambertian
+!! source at one wavelength, and then re-emits isotropically at 
+!! a new wavelength, where there is less or no absorption. Some
+!! of the initial rays survive the transit through the material 
+!! and this distribution is stored.  Only the +Z rays of the new 
+!! source are created for tracing.  The result of this fluorescent 
+!! source is added to the previous trace to show the combined 
+!! result at the output of the slab.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 12/19/2005 - cp - modified and added comments 
+!! 11/21/2002 - cp - added keyword
+!! 10/01/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+UNITS MM 
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTHS 450 633 NM  !! Wavelength range
+
+MEDIA
+  1.5`.245E-2  1.2 'TEST' !! Absorption at 450nm
+
+MODEL
+  LAMBERTIAN 1 
+
+FRESNEL TIR  !! Force TIR rays to edges of material
+CEFF=.60 !! Conversion efficiency of fluorescent material
+    
+!! Fluorescent slab
+SURFACES
+  PLANE Z 4.4 RECTANGLE 1.5 1.5
+OBJECT 'SLAB.FRONT'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 1
+    
+SURFACES
+  PLANE Z 4.6 RECT 1.5 1.5
+OBJECT 'SLAB.BACK' 
+  INTERFACE 0 1 TEST AIR
+  REDEFINE COLOR 1
+     
+EDGES
+  RECT Z  4.4  1.5 1.5
+  RECT Z  4.6  1.5 1.5
+OBJECT; .1 .2 'SLAB.EDGE
+  REDEFINE COLOR 1  
+
+!! Outer box
+SURFACES 
+  PLANE Z 0 RECTANGLE 1.5 1.5 
+OBJECT 'BASE'
+SURFACES
+  PLANE X -1.5 RECT 1.5 2.2
+  PLANE X  1.5 RECT 1.5 2.2
+  PLANE Y -1.5 RECT 2.2 1.5
+  PLANE Y  1.5 RECT 2.2 1.5
+OBJECT; .4 1, .3 -1, .2 1, .1 -1 'BOX'
+  SHIFT Z 2.2
+  INTERFACE 1 0 AIR AIR
+  REDEFINE COLOR 14 
+
+EDGES
+  RECTANGLE X  1.5 1.5 2.2  
+    SHIFT Z 2.2
+  RECTANGLE X -1.5 1.5 2.2 
+    SHIFT Z 2.2
+    
+!! Source 
+WAVELENGTH 450
+EMITTING RECT +Z .2 1 1 50000 50 50 RECT 
+  FLUX TOTAL 100.0 
+
+!! Select the exact volume for VOXEL distribution
+!! Otherwise, can use PIXELS, WINDOW and Local Box of objects
+!! Note that absorption may be over-estimated due to small number
+!! of voxels and rays used here. See Procedural Note "Using VOXELS in ASAP"
+VOXELS ABSORBED -4@1.5 4.4 4.6 100 100 100
+ARROWS .5  !! Half-size arrow heads
+MISSED ARROWS .2  !! Show absorbed rays in voxel area
+WINDOW Y -2@1.8 Z -.2 5
+PLOT FACETS 7 7 OVERLAY
+PLOT EDGES COLOR 1 OVERLAY  !! Show edge of cube
+SPOTS POSITION EVERY 5 COLOR 2 OVERLAY  !! Show source
+TRACE PLOT 400 COLOR 2 OVERLAY
+$GRAB 'VOXELS' FLUX_ABSORBED  !! Grab total flux absorbed
+$REG FLUX_ABSORBED  !! Print to console
+$COPY 9 VOXEL.DIS  !! Copy default bro009.dat to named file
+STATS
+
+PIXELS 101
+CONSIDER ONLY SLAB.BACK
+WINDOW Y -2@1.6 X -2@1.6
+SPOTS POSITION ATTRIBUTE 0  !! Rays that survived absorption
+STATS 
+
+DISPLAY
+  AVERAGE
+  PICTURE 'FIRST TRACE'
+  WRITE TRACE1 DIS  !! Store distribution
+RETURN
+CONSIDER ALL
+
+RAYS 0  !! Clear previous source rays
+
+!! Define new source
+WAVELENGTH 633 NM  !! New wavelength for fluorescence
+IMMERSE TEST  !! Start rays in TEST media
+CLIP DIRECTION -1 1 -1 1 0 1  !! Create forward +Z rays only
+EMITTING DATA VOXEL 50000  !! Make emission source from Voxel data
+  FLUX TOTAL FLUX_ABSORBED*CEFF  !! Set new flux
+
+MISSED ARROWS .5  !! Show directions of fluorescent rays
+WINDOW Y -2@1.8 Z -.2 5
+VOXELS OFF !!  Save time - no need to capture voxels now
+TRACE PLOT 20  COLOR 13
+ 
+CONSIDER ONLY SLAB.BACK
+WINDOW Y -2@1.6 X -2@1.6
+SPOTS POSITION ATTRIBUTE 0  !! Fluorescent rays
+
+DISPLAY
+  AVERAGE
+  PICTURE 'SECOND TRACE'
+  COMBINE TRACE1 1  !! Add original source leakage
+  PICTURE 'BOTH TRACES' !! Show combined result
+!! WRITE BOTH DIS
+$VIEW
+&VIEW VOXEL.DIS
+!! &VIEW BOTH.DIS 
+RETURN

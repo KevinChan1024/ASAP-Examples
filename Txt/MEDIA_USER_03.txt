@@ -1,0 +1,119 @@
+!!++
+!! MEDIA_USER_03.INR
+!! Title: Volumetric Scatter using MEDIA USER
+!! Category: Isolated Command
+!! Keywords: MEDIA USER, Scatter, volume
+!! Description:  Using MEDIA USER with the new USERPROG.DLL for ASAP 2014. 
+!! Allows the user to define a phase function for volumetric scattering
+!! calculations using the subroutine USERSCAT in the USERPROG.DLL.
+!! See Help under MEDIA USER for more details on usage.
+!! To run this file, first copy CC1320.txt from the ASAP Examples folder
+!! to your Working Directory. This uses the alternate data format vs. DIFFUSER.txt.
+!! Edit History: (latest first)
+!! 1/15/2014 - gb - replaced command abbreviations with proper form
+!! 12/13/2013 - cp - added header
+!! 12/12/2013 - kg - creation
+!!--
+
+SYSTEM NEW 
+RESET 
+ 
+PI=ACOS(1)
+
+!! Macro to compute angular distribution and write
+!! to named .CSV file for using Excel.    
+ANGULAR_DISTRIBUTION { 1   
+  PI=ACOS(-1)
+
+  $ECHO NONE
+  $IO OUTPUT "#1.CSV" -FILE(99) 
+  $SCR 1
+  Angle 1; Angle 2; Intens; Nrays;  
+  $IO OUTPUT CLOSE
+  $ECHO                          
+    
+  NANG=180        
+  DANG=90/(NANG*2)
+  $ITER ANG 0  90  (NANG) INTENS  NOMIN
+   {   
+     
+   ANG1=ANG-DANG
+   ANG2=ANG+DANG     
+   OMEGA=2*PI*(COS[ANG1]-COS[ANG2])    !! solid angle
+   SELECT ONLY COS[ANG2] C AND  C COS[ANG1]  
+   STATS
+   $GRAB 'TOTAL' NR  FLX 
+   &REG OMEGA FLX  ANG1 ANG2
+   INTENS=FLX/OMEGA
+  
+   $ECHO NONE
+   $IO OUTPUT "#1.CSV" +FILE(99) 
+   $SCR 1
+   \ANG1.4    \;  \ANG2.4    \; \INTENS^5   \;  \NR    \
+   $IO OUTPUT CLOSE
+   $ECHO                          
+  }    
+  
+  DISPLAY ANGULAR_DISTRIBUTION  
+  GRAPH 'Angular distribution'
+  RETURN
+}  
+1 - NAME
+
+    
+$UNVAR ERROR
+
+UNITS MM
+WAVELENGTH 633 NM
+
+SPLIT 1000 MONTECARLO 
+LEVEL 1000
+FRESNEL AVERAGE  
+
+SEED 
+
+THICK=4  
+THICK_GLASS=3
+
+REF_PC=1.59 !! refractive index PC
+MEDIA 
+  (REF_PC) USER 1~1000000 0 1   'CC1320' !! defines scattering model
+                                         !! and reads data from file 
+                                         !! CC1320.txt  
+  1.51 'GLASS'
+                                       
+!! GEOMETRY  
+SURFACES
+  PLANE Z 0 ELLIPSE 5 5 
+OBJECT 'SAMPLE1.FRONT'
+  INTERFACE COAT BARE AIR CC1320   
+
+!!
+SURFACES
+  PLANE Z (THICK) ELLIPSE 5 5 
+OBJECT 'SAMPLE1.BACK'
+  INTERFACE COAT BARE AIR CC1320
+
+SURFACES
+  TUBE Z 0  5 5  (THICK)  5 5 
+OBJECT 'SAMPLE1.SIDE'
+  INTERFACE COAT BARE AIR CC1320  
+                 
+BEAMS INCOHERENT           
+GRID ELLIPTIC Z -1 -4@0.5 500 500
+SOURCE DIRECTION 0 0 1   
+FLUX TOTAL 1  
+
+TITLE 'RAY TRACE'
+MISSED ARROWS 10
+WINDOW X Z 
+PLOT FACETS 7 7 OVERLAY
+TRACE PLOT 4234     
+
+STATS 
+!!$VIEW
+
+CONSIDER ONLY SAMPLE1.BACK
+
+$ANGULAR_DISTRIBUTION ANG_CC1320  !!  CREATE CSV FILE
+RETURN

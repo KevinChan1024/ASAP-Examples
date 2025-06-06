@@ -1,0 +1,18 @@
+!!++
+!! GRID_RECT02.INR
+!! Title: Rectangular Grid: Non-equally Spaced
+!! Category: Isolated Command
+!! Keywords: GRID, RECT
+!! Description: Defines a grid of rays in
+!! the yz plane at x=10. The extent of the
+!! grid in the y direction is -2 to 2; the
+!! extent in the z direction is -5 to 5.
+!! Two hundred rays are generated. This is
+!! a non-equally spaced grid.
+!! Edit History: (latest first)
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+GRID RECT X 10 -2 2 -5 5 5 40
+

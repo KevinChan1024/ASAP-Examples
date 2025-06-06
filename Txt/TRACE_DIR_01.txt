@@ -1,0 +1,81 @@
+!!++
+!! TRACE_DIR_01.INR
+!! Title: TRACE DIR Output
+!! Category: Isolated Command
+!! Keywords: TRACE DIR, Tracing, output, LIST RAYS, EMITTING RAYS
+!! Description: A test of TRACE DIRECTION output. 
+!! All surfaces are AIR AIR, so no refraction, but we can still
+!! observe many aspects of TRACE DIR behavior.
+!! The objects are all lossy, so we see flux decrease.
+!! The plane objects have varying tilts so we observe varying
+!! incidence. A parabolic object exhibits the curvature output,
+!! and its variation from the base curvature for off-axis rays.
+!! Following is a description of all output values for each
+!! intersected object (except fully absorbing ones, which only
+!! provide the first line):
+!! 
+!! First line (ray information at/just before object)
+!! Object       X             Y             Z          Size                Flux in
+!! 
+!! Second line (information about the object geometry at the ray intersection)
+!! Nrm(fixed)   A(normal)     B(normal)     C(normal)  Ave. curvature      Angle INC(fixed)
+!! 
+!! Third line (ray information just after object)
+!! Dir(fixed)   A(ray)        B(ray)        C(ray)     Divergence          Flux out
+!!
+!! Edit History: (latest first)
+!! 11/13/2015 - cp - added description
+!! 11/13/2015 - jah - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 555 NM  
+
+MEDIA
+  1.001 'HEAVY'
+RETURN
+
+SURFACE
+  PLANE Z 0.0 RECT 1                !! 
+    ROTATE X +30                    !! show tilt effect
+  PLANE Z 1.5 RECT 1                !! 
+    ROTATE X -30                    !! show tilt effect
+  PLANE Z 2.5 RECT 1                !! 
+    ROTATE X -45                    !! show tilt effect
+  PLANE Z 4.0 RECT 1                !! 
+    ROTATE X +45                    !! show tilt effect
+  PLANE Z 5.5 RECT 1                !! 
+    ROTATE Y -30                    !! show tilt effect
+  USERSAG Z 7.0 0.01875 -1 ELLIP 1  !! show curvature, with variation because it is parabolic
+  PLANE Z 9.0 RECT 2
+OBJECT
+  .7  'PLAN.1'
+      INTERFACE 0 0.9 AIR AIR  
+  .6  'PLAN.2'
+      INTERFACE 0 0.9 AIR AIR  
+  .5  'PLAN.3'
+      INTERFACE 0 0.9 AIR AIR  
+  .4  'PLAN.4'
+      INTERFACE 0 0.9 AIR AIR  
+  .3  'PLAN.5'
+      INTERFACE 0 0.9 AIR AIR    
+  .2  'SPH.6'
+      INTERFACE 0 0.9 AIR AIR    
+  .1  'TARGET'
+RETURN
+
+EMITTING RAYS
+0  0   0, 0  0  1, 1 0.123 0.01357   
+0 +0.2 0, Z +5 90, 1 0.111 0.0222
+0 -0.2 0, Z -5 90, 1 0.222 0.0111
+RETURN  
+
+MOVE BY -0.5
+
+PLOT FACETS 3 3 0 OVERLAY
+TRACE DIR PLOT COLOR 2
+
+LIST RAYS                  

@@ -1,0 +1,57 @@
+!!++
+!! CYLINDRICAL_LENS.INR
+!! Title: Various Cylindrical Lens Methods
+!! Category: Simple Problem
+!! Keywords: Geometry, cylindrical, lens, USERSAG, OPTICAL, POINTS, TUBE, SWEEP
+!! Description: Creates an identical cylindrical lens using
+!! some of the many methods available.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/18/2002 - cp - added PARAMETERIZE
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  TUBE Y -10 10 10 10 10 10
+    SHIFT Z -10
+SURFACES
+  PLANE Z -10
+OBJECT; .2 'LENS1_TUBE_BOUNDED'
+  BOUNDS .1
+
+SURFACES
+  USERSAG Z 0 -1/10 0 TORIC 0 RECTANGLE 9.99 9.99
+OBJECT 'LENS2_USERSAG_TORIC'
+
+SURFACES
+  OPTICAL Z 0 -10 0 RECTANGLE 9.99 9.99
+    ASYM 1 0
+    LOCAL -10 10 -10 10 -10 0
+    PARAMETERIZE -Z
+OBJECT 'LENS3_OPTICAL'
+
+EDGES
+  POINTS 0 0 0 ABS
+    -10 0 -10 -2
+    0 0 -10 90
+    0 0 0 -2
+    0 0 -10 90
+    10 0 -10 0
+    SWEEP DIRECTION 20 0 1 0
+    SHIFT Y -10
+OBJECT 'LENS4_SWEEP_DIR'
+
+EDGES
+  POINTS -10 -10 -10 1, -10 10 -10 0
+    SWEEP AXIS 180 0 1 0 0 0 -10
+OBJECT 'LENS5_SWEEP_AXIS'
+
+$DO 1 5
+  OBJECT ?; SHIFT X 25*?  !! Spaces the objects for better viewing
+
+PLOT FACETS 5 5
+$VIEW
+RETURN

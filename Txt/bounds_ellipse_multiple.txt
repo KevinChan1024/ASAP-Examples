@@ -1,0 +1,36 @@
+!!++
+!! BOUNDS_ELLIPSE_MULTIPLE.INR
+!! Title: Multiple Bounding an Ellipsoid
+!! Category: Simple Problem
+!! Keywords: Bounds, MULTIPLE, TUBE, ELLIPSOID
+!! Description: An ellipsoid is bounded with three
+!! planes and a tube. The tube is a positive bounder,
+!! so everything outside of the tube is kept.
+!! The planes are multiple bounded in a positive way
+!! so that everything is kept outside the intersection
+!! of all three planes.  In other words, the corner of
+!! the egg at that intersection is removed.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 02/29/2000 - cp - modified; added description
+!! 01/18/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  TUBE X 0 0.25 0.25 2 0.25 0.25
+    SHIFT 0 -0.5 -0.5
+  PLANE X 0 RECTANGLE 3 3 
+  PLANE Y 0 RECTANGLE 3 3
+  PLANE Z 0 RECTANGLE 3 3
+  ELLIPSOID 1.0 1.0 1.5   0 0 0
+  OBJECT 'EGG_WITH_HOLE'
+    BOUNDS .5 MULTIPLE .2 .3 .4
+
+!!PLOT SURFACES OVERLAY !! Put in to see bounding entities
+  
+PLOT FACETS 11 11
+$VIEW
+RETURN

@@ -1,0 +1,61 @@
+!!++
+!! SURF_ZERNIKE02.INR
+!! Title: ZERNIKE Surface with Trace
+!! Category: Isolated Command
+!! Keywords: ZERNIKE, SURFACE, macro, LOCAL, SCALE
+!! Description: Two different Zernike surfaces
+!! with different coefficients, showing raytrace
+!! results.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+COATINGS PROPERTIES
+  1 0  'REFL' 
+  
+SURFACES
+  ZERNIKE Z 0 0 0 0 -0.125 0 0 0 0 -0.025
+    LOCAL -6@1 Z  !! SCALE takes care of LOCAL scaling
+    SCALE 2 2 1   !! Z is not scaled: explicit surface
+OBJECT 'ZERNIKE_1'
+  INTERFACE COAT -REFL
+ 
+SYSRAY {  !! Ray macro
+  BEAMS INCOHERENT GEOMETRIC
+  GRID ELLIPTIC Z -2 -4@2 1 10
+    SOURCE DIRECTION 0 0 1
+}
+
+$SYSRAY
+TITLE 'ZERNIKE SURFACE CREATED WITH ZERNIKE COEFFICIENTS'
+WINDOW Y -2@4 Z -4 0.8
+PROFILES OVERLAY
+TRACE PLOT
+
+!! Start over with new Zernike:
+SYSTEM NEW
+RESET
+UNITS MM
+COATINGS PROPERTIES
+  1 0  'REFL'
+ 
+SURFACES        
+  ZERNIKE Z 0 0 0 0 -0.125
+    LOCAL -6@1 Z
+    SCALE 2 2 1    
+OBJECT 'ZERNIKE_2' 
+  INTERFACE COAT -REFL
+
+$SYSRAY
+TITLE 'ZERNIKE SURFACE WITH DIFFERENT ZERNIKE COEFFICIENTS'
+WINDOW Y -2@4 Z -4 0.8 
+PROFILES OVERLAY
+TRACE PLOT
+RETURN

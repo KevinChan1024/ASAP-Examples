@@ -1,0 +1,40 @@
+!!++
+!! MESH_COLOR01.INR
+!! Title: MESH Plot Using COLOR Option
+!! Category: Isolated Command
+!! Keywords: MESH, COLORS, plot
+!! Description: How to do a mesh plot of multiple sources
+!! in different colors. Two sources are created to emit in 
+!! opposite directions. A radiant distribution of each source
+!! is averaged around the X-Y plane.  A MESH plot with
+!! assigned color is sent to the vector file which can be
+!! displayed in the 3-D viewer. The default for MESH is B&W.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 04/09/2008 - cp - added S to COLORS
+!! 11/19/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! The following produces 2 lobes eminating in opposite
+!! directions.
+EMITTING RECT Z 0 5 5 50000 
+EMITTING RECT -Z 0 5 5 50000
+WINDOW X Y  
+
+SELECT ONLY SOURCE 1 
+RADIANT Z !! Using default values
+DISPLAY
+  AVERAGE 0 100 !! Average all pixels 360° around X-Y plane
+  MESH COLORS 2 
+  
+SELECT ONLY SOURCE 2 
+RADIANT Z !! Using default values
+DISPLAY
+  AVERAGE 0 100 !! Average all pixels 360° around X-Y plane
+  MESH COLORS 3
+
+$VIEW
+RETURN

@@ -1,0 +1,80 @@
+!!++
+!! ALLOWED01.INR
+!! Title: Use of the ALLOWED command
+!! Category: Isolated Command
+!! Keywords: ALLOWED, triplet
+!! Description: ALLOWED command with first 2 elements of Cooke Triplet 
+!! Edit History: (latest first) 
+!! 08/22/2007 - cp - reformatted
+!! 03/26/2007 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 550 NM
+
+MEDIA
+  1.613  'SK4'
+  1.606  'F15'  
+
+FRESNEL AVE
+SPLIT 2
+
+SURFACE
+  OPTICAL Z 0 44.55 ELLIPSE 16.9 16.9
+OBJECT 'L1.FRONT'    
+  INTERFACE COATING +BARE AIR SK4
+  
+SURFACE
+  OPTICAL Z 5 -436.6 ELLIPSE 16.9 16.9
+OBJECT 'L1.BACK'    
+  INTERFACE COATING BARE AIR SK4
+
+SURFACE
+  TUBE Z 0 16.9 16.9   5 16.9 16.9
+OBJECT 'L1.EDGE'
+  BOUNDS  +.3  -.2
+
+SURFACE
+  OPTICAL Z 15.31 -38.61 ELLIPSE 10.5 10.5
+OBJECT 'L2.FRONT'    
+  INTERFACE COATING BARE AIR F15
+
+SURFACE
+  OPTICAL Z 16.91 42.62  ELLIPSE 10.5 10.5
+OBJECT 'L2.BACK'    
+  INTERFACE COATING BARE AIR F15
+
+SURFACE
+  TUBE Z 13 10.5 10.5  19 10.5 10.5
+OBJECT 'L2.EDGE'
+  BOUNDS  +.3  -.2
+
+SURFACE 
+  PLANE Z 25 RECT 20 20
+OBJECT 'AFTDETECTOR'
+REDEFINE COLOR 10
+
+SURFACE 
+  PLANE Z -5 RECT 20 20
+OBJECT 'BEFDETECTOR'
+REDEFINE COLOR 10
+
+ALLOWED SEQUENTIAL 
+1 2 8 1  !! Rays from 2 thru 8 allowed to hit 1
+2 1 4 1  !! Rays from 1 thru 4 allowed to hit 2
+4 2 5 1  !! Rays from 2 thru 5 allowed to hit 4
+5 4 7 1  !! Rays from 4 thru 7 allowed to hit 5
+ 
+ALLOWED LIST  !! Note that source (0) sees all objects by default
+
+GRID ELLIPTIC Z -2  -16.5 16.5  -16.5 16.5 3 3 !!RANDOM 1  
+SOURCE DIR 0 0 1 
+ARROWS 1.5
+PLOT FACETS 5 5 0 OVERLAY 'ALLOWED'
+
+TRACE PLOT 
+
+RETURN

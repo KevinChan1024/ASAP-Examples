@@ -1,0 +1,102 @@
+!!++
+!! SOURCE_POLYCHROMATIC_02.INR
+!! Title: Polychromatic Source using built-in CIE standard illuminant
+!! Category: Isolated Command
+!! Keywords: SOURCE POLYCHROMATIC, Sources, cie, SET, LIST SOURCE
+!! Description: Creation of a series of monochromatic sources,
+!! spectrally weighted based on the CIE F1 illuminant.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 04/25/2013 - cp - added header and formatted
+!! 04/25/2013 - mt - creation
+!!--  
+
+SYSTEM NEW
+RESET   
+
+UNITS MM
+WAVELENGTHS 553 NM
+
+BEAMS INCOHERENT GEOMETRIC  
+$UNVAR ERROR  
+XMEMORY MIN
+
+SET MNPS 10  !! Maximum number of polychromatic sources
+
+!! Define system units and wavelengths
+
+UNITS MILLIMETERS 'Watts'
+WAVELENGTH 550 NM
+
+!! Define coatings
+
+COATINGS PROPERTIES
+  0 1 'TRANSMIT'
+  1 0 'REFLECT'
+  0 0 'ABSORB'
+
+!! Define Media
+
+MEDIA  
+  1.5 'GLASS'
+
+!! Geometry definitions begin here
+
+!! Source definitions begin here 
+
+!! Test grid source 
+!! Define a single monochromatic source 
+!! which will be duplicated for each spectrally weighted
+!! polychromatic source
+
+GRID ELLIPTIC Z 0 -4@2 11 11
+SOURCE POSITION 0 -3 -3 
+
+!! Use a built-in CIE Illuminant
+!! Choices include F1 - F12 fluorescent illuminants
+!! A, C, D50, D55, D65, D75, DTCXXXX 
+
+SOURCE POLYCHROMATIC CIE F1 100.0 81 380 780   
+RETURN
+
+LIST SOURCE POLYCHROMATIC
+STATS SOURCES  
+RETURN 
+
+!! Trace rays with optional plot
+
+!! WINDOW Y Z
+!! PLOT FACETS 5 5 0 OVERLAY
+!! TRACE !!PLOT 
+
+!! Analysis block begins here
+ 
+!! The following is a completely optional routine used for verification
+DLAMBDA=5
+SPD {
+$ITER WAVE 380 780 -((780-380)/DLAMBDA+1) BBPOWER
+ {
+  SELECT ONLY SOURCE (WAVE-380)/DLAMBDA+1 
+  STATS
+  $GRAB 'TOTAL' 0 2 BBPOWER
+ }
+SELECT ALL 
+
+}  
+
+&SPD                              
+
+DISPLAY SPD 
+  GRAPH 
+RETURN                                
+
+
+
+
+
+
+
+
+
+
+

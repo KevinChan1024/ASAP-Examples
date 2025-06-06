@@ -1,0 +1,33 @@
+!!++
+!! HARVEY_PLOT.INR
+!! Title: HARVEY PLOT Display
+!! Category: Isolated Command
+!! Keywords: HARVEY, PLOT, MODELS, PIXELS
+!! Description: How to use PLOT option on
+!! HARVEY model and call up the display data
+!! for further analysis. The PIXELS command
+!! sets the resolution for these plots and 
+!! the display data.
+!! Edit History: (latest first)
+!! 10/09/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+PIXELS 127  !! Set resolution for plots-this also
+            !! affects TIS computations
+
+MODELS
+  HARVEY 0.05 -2 PLOT !! Plots and writes to display file
+
+!! Note: The following DISPLAY format is for ASAP 7.0 or later.
+!! BSDF data for all angles are in one display file, accessed
+!! by 1(0°), 2(15°), 3(30°) etc.
+!! For earlier versions use "DISPLAY HARVEY_n.DIS" where n=0
+!! for 0°, n=15 for 15°, etc.
+
+DISPLAY HARVEY.DIS 1  !! Load Harvey 0 degree display data
+  ISOMETRIC 2 '3D PLOT OF BSDF AT 0 DEGREES'
+RETURN

@@ -1,0 +1,25 @@
+!!++
+!! SWEEP_TRUNCATED_CONE.INR
+!! Title: Truncated Cone with Swept Edge
+!! Category: Isolated Command
+!! Keywords: SWEEP, cone, truncated, edge
+!! Description: Making a truncated cone using
+!! an elliptical edge swept in position.  The
+!! faceting of the surface depends on the segments
+!! used to create the edge before it is swept.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/07/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  ELLIPSE Z 0 5 5 32  !! 32 segments
+    SWEEP POSITION .8 0 0 10  !! Sweep 80% toward point
+OBJECT 'TRUNCATED_CONE'
+WINDOW Y Z
+VUFACETS 
+
+RETURN

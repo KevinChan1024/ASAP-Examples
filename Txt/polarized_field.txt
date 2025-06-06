@@ -1,0 +1,85 @@
+!!++
+!! POLARIZED_FIELD.INR
+!! Title: Irradiance of Polarized Field
+!! Category: Simple Problem
+!! Keywords: Wave, POLARIZ, FIELD, irradiance
+!! Description: Irradiance of a polarized field.
+!! Demonstrates that orthogonally polarized fields
+!! sum in quadrature.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/29/2012 - cp - corrected keyword
+!! 08/02/2000 - cp - modified header and syntax
+!! 08/02/2000 - js - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+FRESNEL AVERAGE
+
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6
+WAVELENGTH 1 UM
+
+!! Two different polarizations
+POLARIZ X
+GRID RECT Z 0 -4@1 11 11 
+  SOURCE DIRECTION 0 0 1   
+                    
+POLARIZ Y
+GRID RECT Z 0 -4@1 11 11 
+  SOURCE DIRECTION 0 0 1   
+                    
+WINDOW Y X
+PIXELS 101
+
+SELECT ONLY SOURCE 1
+FIELD ENERGY 0
+DISPLAY
+  ISOMETRIC
+
+SELECT ONLY SOURCE 2
+FIELD ENERGY 0
+DISPLAY
+  ISOMETRIC 
+
+SELECT ALL
+!! The amplitudes are squared and then summed
+FIELD ENERGY 0
+DISPLAY
+  ISOMETRIC
+
+RAYS 0
+
+!! Now both have same polarization and in phase.
+
+POLARIZ X
+GRID RECT Z 0 -4@1 11 11 
+  SOURCE DIRECTION 0 0 1   
+                    
+POLARIZ X
+GRID RECT Z 0 -4@1 11 11 
+  SOURCE DIRECTION 0 0 1   
+                    
+WINDOW Y X
+PIXELS 101
+
+SELECT ONLY SOURCE 1
+FIELD ENERGY 0
+DISPLAY
+  ISOMETRIC
+
+SELECT ONLY SOURCE 2
+FIELD ENERGY 0
+DISPLAY
+  ISOMETRIC 
+
+SELECT ALL 
+!! The amplitudes are summed and then squared
+FIELD ENERGY 0
+DISPLAY
+  ISOMETRIC
+RETURN

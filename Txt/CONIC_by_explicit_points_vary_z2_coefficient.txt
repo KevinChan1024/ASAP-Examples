@@ -1,0 +1,45 @@
+!!++
+!! CONIC_BY_EXPLICIT_POINTS_02.INR
+!! Title: Create a Conic Surface with Varying Z^2 Coefficient
+!! Category: Isolated Command
+!! Keywords: CONIC, EDGES, SWEEP
+!! Description: Demonstrate objects formed by sweeping 
+!! CONIC curves expressed by implicit coefficients and
+!! end points. Shows changes resulting from varying Z^2 coefficient.
+!! Edit History: (latest first)
+!! 11/17/2015 - cp - added description
+!! 11/16/2015 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+!! parameters
+  R=1       !! Vertex radius of curvature
+  K=-1      !! Conic constant
+  H=1       !! Outer aperture height
+  O=0       !! Inner obscuration height  
+  Z_END=0.5 !! axial length
+
+!! vary CONIC Z coefficient. all else held constant
+EDGES !! or CURVE
+  !!      x  c y   z  y^2  yz  z^2  y' z'  y"   z"
+  CONIC X 0, 0 0 -2*R 1    0   K+1, 0  0, (H) (Z_END)
+    SWEEP AXIS 360 Z
+  OBJECT 'CONIC.BASE'
+EDGES
+  CONIC X 0, 0 0 -2*R 1    0   K+0, 0  0, (H) (Z_END)
+    SWEEP AXIS 360 Z
+  OBJECT 'CONIC.PERTURBED_Z2.1' 
+    SHIFT Z 0.1+Z_END
+EDGES
+  CONIC X 0, 0 0 -2*R 1    0   K+2, 0  0, (H) (Z_END)
+    SWEEP AXIS 360 Z
+  OBJECT 'CONIC.PERTURBED_Z2.2'
+    SHIFT Z (0.1+Z_END)*2
+RETURN
+
+PLOT FACETS 11 11 0
+$VIEW
+
+RETURN

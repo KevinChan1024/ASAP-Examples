@@ -1,0 +1,152 @@
+!!++
+!! TOWARDS_TRAN_REFLECT_01.INR
+!! Title: Scatter with TOWARDS TRAN/REFLECT
+!! Category: Simple Problem
+!! Keywords: Scatter, SCATTER, TOWARDS TRAN, TOWARDS REFL, PATHS, TEXT, SPLIT TRAN, MODELS
+!! Description: A demonstration of TOWARDS TRAN and TOWARDS REFL.
+!! Different scatter models are used for reflection and transmission. 
+!! The transmitted scatter, Gaussian, goes into a narrow cone and shallow angle. 
+!! The reflected scatter is Lambertian with a broader cone and steeper angle.
+!! Note: this is a contrived system to demonstrate a situation where a single
+!! TOWARDS SPEC could not accomplish the same result. In this case, 
+!! TOWARDS EDGE could have been used as effectively, but in more complex 
+!! systems this technique may sometimes be needed. It does not necessarily
+!! represent any real system. The model should work for a range of input
+!! angles (variable INP_ANG), but some other variables can easily defeat
+!! the intent of the example. It is based in part on example Scatter_Bsdf.inr.
+!! Note, this example uses some advanced tracing and plotting techniques which
+!! are only included to better illustrate results.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/27/2009 - cp - added header
+!! 02/26/2009 - jah - made the TRAN, REFL paths very different, added many variables
+!! 02/25/2009 - jah - changed models, added TOWARDS TRAN, REFL
+!! 08/08/2006 - cp - orig example basis
+!!--
+
+SYSTEM NEW
+RESET
+
+$UNVAR ERROR
+
+SPLIT 1 1E-23 TRAN !! force transmitted ray to trace first
+LEVEL 2 1E-23
+HALT 1E-23
+
+PIXELS 51
+
+!! variables to control behavior
+PI=4*ATAN(1)
+INP_ANG=40      !! Incident angle
+SCAT_NUM1R=500  !! Number of reflected scattered rays at SCAT_SURFACE
+SCAT_NUM1T=50   !! Number of transmitted scattered rays at SCAT_SURFACE
+SCAT_NUM2=100   !! Number of scattered rays at TRANS_SCAT
+NRAY=17         !! Number of rays initial GRID
+
+DET_RAD=5       !! detector radius
+DIF_RAD=1       !! diffuser radius
+DZ_DET=-10      !! detector Z distance from primary diffuser
+DZ_DIF2=20      !! diffuser 2 Z distance from primary diffuser
+
+
+!! function to describe the Gaussian scattering function
+A=SIN[60]  !! Scale factor
+$FCN GDIS   PSI=ACOS(_2+SQRT[1-_1]*SQRT[1-_3]),
+            0.7*GAUS(SQRT(PSI^2/A^2))  !! Can put your own model here
+
+MODELS  !! Below is an example of in-line data
+  LAMBERTIAN 0.001    !!  PLOT (INP_ANG)                  !! Model 1  
+  USERBSDF GDIS       !!  PLOT (INP_ANG)                  !! Model 2
+  HARVEY 0.6 -1.4 0.5 !!  PLOT ATAN[10*TAN[INP_ANG]/20]   !! Model 3
+
+TOW_NUM1R=1 
+TOW_NUM1T=-[ATAN[DZ_DET*TAN[INP_ANG]/DZ_DIF2]]/[INP_ANG]
+&REG TOW_NUM1R TOW_NUM1T 'TOWARDS SPEC deviation from normal
+ 
+!! REFL/TRAN primary diffuser
+SURFACES
+  PLANE Z 0 ELLIPSE (DIF_RAD)
+OBJECT 'SCAT_SURFACE'
+  INTERFACE 1E-12 1E-12 AIR AIR !! Allow only scattered rays to survive
+  SCATTER MODELS 1 2   !! due to obliquity, cones will slightly overfill, but better than guessing.
+    TOWARDS REFL (SCAT_NUM1R) -ATAN(DET_RAD/DZ_DET)  -(TOW_NUM1R)   !! PI/6  -0.8 
+    TOWARDS TRAN (SCAT_NUM1T)  ATAN(DIF_RAD/DZ_DIF2) -(TOW_NUM1T)   !! PI/60 -0.5
+  REDEFINE COLOR 11  
+
+!! detector
+SURFACES
+  PLANE Z (DZ_DET) ELLIP (DET_RAD) 
+OBJECT 'DET'
+  SHIFT Y DZ_DET*TAN[INP_ANG]
+  REDEFINE COLOR 25  
+
+!! secondary diffuser of primary diffuser's TRAN scattered rays 
+SURFACES
+  PLANE Z (DZ_DIF2) ELLIP (DIF_RAD) 
+OBJECT 'TRANS_SCAT'
+  SHIFT Y DZ_DET*TAN[INP_ANG]  
+  INTERFACE 1E-12 0 AIR AIR  !! Allow only scattered rays to survive
+  SCATTER MODEL 3
+    TOWARDS SPEC (SCAT_NUM2)  ATAN(5/30) 0 
+  REDEFINE COLOR 17  
+RETURN
+
+!! source at primary diffuser with incidence angle INP_ANG 
+GRID RECT Z 0 -4@.01 2@(NRAY) RANDOM 1  !! NRAY^2 rays for analysis
+  SOURCE DIRECTION Z (INP_ANG) 90
+  MOVE BY Z -5
+FLUX TOTAL 1
+
+WINDOW Y -1-DET_RAD+DZ_DET*TAN[INP_ANG] 10 Z 0 0
+
+!! plot system with floating text labels for 3D Viewer
+PLOT FACETS 5 5 0 'Diffuser TOWARDS REFL/TRAN demonstration' OVERLAY TEXT 
+0 8.0 -9,  0.0 0.0 0.8, 0.0 0.8 0.0, 1, 'REFL/TRAN diffuser with different'
+0 6.5 -8,  0.0 0.0 0.6, 0.0 0.6 0.0, 1, '  scattering functions, '
+0 5.5 -8,  0.0 0.0 0.6, 0.0 0.6 0.0, 1, '  scattering directions,  '
+0 4.5 -8,  0.0 0.0 0.6, 0.0 0.6 0.0, 1, '  scattering cone sizes, '
+0 3.5 -8,  0.0 0.0 0.6, 0.0 0.6 0.0, 1, '  and number of rays '
+0 2.0 -9,  0.0 0.0 0.6, 0.0 0.6 0.0, 1, 'in reflection (red) and transmission (blue)'
+MISSED ARROW 5
+
+!! trace in segments to illustrate different paths using varied ray color
+
+!! trace to REFL/TRAN diffuser surface only, in black color 1
+CONSIDER ONLY 0 SCAT_SURFACE
+TRACE 0 SCAT_SURFACE          PLOT 1>INT((NRAY^2)/37)                       COLOR 1   OVERLAY
+CONSIDER ALL
+
+PATHS !! gather information about the REFL/TRAN paths (modifying geometry may cause to fail)
+
+!! trace only REFL from REFL/TRAN diffuser surface only, in red color 2
+SELECT ONLY PATH 3
+TRACE SCAT_SURFACE DET        PLOT 1>INT((SCAT_NUM1R*NRAY^2)/117)           COLOR 2   OVERLAY
+
+!! trace only TRAN from REFL/TRAN diffuser surface only, in light blue color 3
+SELECT ONLY PATH 4
+TRACE SCAT_SURFACE TRANS_SCAT PLOT 1>INT((SCAT_NUM1T*NRAY^2)/37)            COLOR 3   OVERLAY
+SELECT ALL
+
+!! trace from the secondary diffuser, in forest green color 17
+!!   (these rays first were TRAN from REFL/TRAN diffuser) 
+TRACE TRANS_SCAT              PLOT 1>INT(SCAT_NUM1T*SCAT_NUM2*(NRAY^2)/57)  COLOR 17
+
+STATS
+
+!! look at rays on detector
+CONSIDER ONLY DET
+STATS
+WINDOW Y X
+SHIFT Z -0.1
+SPOTS POSITION ATTRIBUTE 0
+DISPLAY
+  AVERAGE
+  PICTURE 'detected flux'
+  WRITE DETECTED DIS
+RETURN
+
+PATHS 
+
+!! show the geometry and detector signal in 3D Viewer
+$VIEW
+&VIEW DETECTED.DIS

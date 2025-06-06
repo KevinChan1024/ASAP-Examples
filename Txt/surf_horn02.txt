@@ -1,0 +1,30 @@
+!!++
+!! SURF_HORN02.INR
+!! Title: HORN Surface #2
+!! Category: Isolated Command
+!! Keywords: HORN, SURFACE
+!! Description: Defines an OBJECT whose radial
+!! profile is determined by the following equation:
+!! r^2(z)=8.968+.6949z-2.503z^2+.8345z^3-.1287z^4+.01044z^5-3.478E-4z^6
+!! where z is measured from the reference point (0,0,6).
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/30/2009 - cp - corrected HORN equation in header
+!! 02/28/2002 - cp - corrected style
+!! 10/17/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  1 0  'REFL' 
+SURFACES
+  HORN Z 6 8.968 .6949 -2.503 .8345 -.1287 .01044 -3.478E-4
+    LOCAL -4@3.2 0 10
+OBJECT 'HORN_OBJECT'
+  INTERFACE COAT -REFL
+    
+PLOT FACETS 5 5
+RETURN

@@ -1,0 +1,123 @@
+!!++
+!! HELIOSTAT_SCATTER_01.INR
+!! Title: Scatter Towards Array of Heliostats
+!! Category: Simple Problem
+!! Keywords: Scatter, SCATTER, TOWARDS, heliostat, solar, mirror
+!! Description: The following script locates a source and specularly
+!! scatters light towards an array of heliostat mirrors.
+!! The position of the mirrors is located by x,y,z coordinates.
+!! Coordinates can be read from a text file or read in-line (currently).
+!! With the 4th data column, the mirrors are rotated about the Y-axis 
+!! (easily modified for rotating about other axes). 
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 08/27/2009 - cp - formatted and added header
+!! 08/26/2009 - wjd - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Define system units and wavelengths
+
+UNITS MILLIMETERS 'Watts'
+WAVELENGTH 550 NM
+
+!! Define coatings
+
+COATINGS PROPERTIES
+  0 1 'TRANSMIT'
+  1 0 'REFLECT'
+  0 0 'ABSORB' 
+  
+!! SCATTER MODELS
+MODELS
+  LAMBERTIAN 1/0.0001  !! SPECULAR SCATTERER
+RETURN
+
+!! VARIABLES
+NRAYS=30
+HS_SIZE=0.75
+SOURCESIZE=2               
+ROWS=12
+COLS=4
+SOU_X=-3 SOU_Y=5 SOU_Z=-30   
+
+!! MACROS
+**************************************************************
+!! MACRO TO MAKE HELIOSTATS
+MAKE_HELIOSTATS { 2
+$DO 1 (#1)
+ { 
+ EDGES
+   RECTANGLE Z 0 2@(#2) 
+   SHIFT (VAR?1) (VAR?2) (VAR?3)
+   ROTATE Y (VAR?4)
+ OBJECT 'HELIO.?'
+   INTERFACE COAT REFLECT AIR AIR 
+ RETURN
+ }
+}
+ROWS
+HS_SIZE                                                       
+
+**************************************************************
+!! To get one value at a time and store in a named variable:
+MAC1 {
+  $DO 1 (COLS)
+  { 
+  SECTION ? ?  #1 #1 !!GET
+  $GRAB 'SECTION' 2 2 VAR#1? !! for higher resolution use VAR#1?=A0 with GET above.
+  }
+} 
+
+!! Hand-made display file follows
+DISPLAY -9  !! Create your own distribution file - gets saved in BRO009.DAT
+X 0 SPOTS Y 0 1 (ROWS) Z 0 1 (COLS)  !! X position (0) and WINDOW range not important
+1   2  0 1  !! SPOTS POS is assumed due to XYZ letters used
+3   4  0 2  !! as opposed to ABC for SPOTS DIR. Y rows, Z columns.
+5   6  0 3  !! Data shown here can be brought in with $READ using external .txt file.
+7   8  0 4  !! Use "$FAST n m" in first line of external file
+9  10  0 5  !! to exceed 344 char limit, if necessary (n cols and m rows).
+11 12  0 6
+1   4  0 2 
+3   6  0 4
+5   8  0 6
+7  10  0 8
+9  12  0 10
+11 14  0 12
+
+$DO 1 (ROWS)
+  $MAC1 ?
+  
+&REG  !! To verify variable assignments
+RETURN
+
+!! GEOMETRY DEFINITIONS BEGIN HERE 
+&MAKE_HELIOSTATS (ROWS) (HS_SIZE)
+
+!! CREATE A DIFFUSER TO SPECULARLY SCATTER RAYS TOWARDS EDGES OF THE HELIOSTATS.
+SURFACES
+  PLANE Z 0+.1 RECT 2@(SOURCESIZE)+.2
+OBJECT 'DIFFUSER'
+  INTERFACE 0 1E-12
+  SCATTER MODEL 1
+    $DO 1 (ROWS)
+      TOWARDS EDGE ?
+
+!! SOURCE DEFINITIONS BEGIN HERE 
+EMITTING RECT Z 0 2@(SOURCESIZE) (NRAYS)
+GROUP -1 SOURCE 1
+  SHIFT (SOU_X) (SOU_Y) (SOU_Z)
+
+!! TRACE RAYS WITH OPTIONAL PLOT
+MISSED 15 ARROWS
+WINDOW Y X
+PLOT FACETS 5 5 0 OVERLAY
+PLOT EDGES OVERLAY
+!!PLOT RAYS
+TRACE PLOT 
+
+!! ANALYSIS BLOCK BEGINS HERE
+$VIEW  
+RETURN

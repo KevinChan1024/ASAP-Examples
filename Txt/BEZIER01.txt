@@ -1,0 +1,24 @@
+!!++
+!! BEZIER01.INR
+!! Title: A Bezier Edge
+!! Category: Isolated Command
+!! Keywords: EDGES, BEZIER  
+!! Description: A Bezier edge displayed
+!! with PLOT EDGES.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/04/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  BEZIER Z 0  0 4  0 .1 .3   .01   .01
+
+!! With coordinate axis Z, the Y coordinate is related to X by
+!! Y=c+c'*X+c"X^2+ ...
+WINDOW X Y
+PLOT EDGES
+RETURN

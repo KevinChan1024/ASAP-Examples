@@ -1,0 +1,87 @@
+!!++
+!! BOUNDS_MUTUAL_01.INR
+!! Title: Mutual Bounding to get Media right
+!! Category: Simple Problem
+!! Keywords: Geometry, BOUNDS, mutual, MEDIA
+!! Description: Bounding intersecting objects where two
+!! different media meet, in order to avoid wrong side warnings.
+!! A new object must be created at the intersection which has
+!! the two media assigned.  The remaining objects can have AIR
+!! on one side.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 03/02/2009 - cp - restructured
+!! 02/26/2009 - cp - creation
+!!--
+ 
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+MEDIA
+  1.54 'MEDIA1'
+  1.49 'MEDIA2'
+  
+FRESNEL AVE
+ 
+EDGES
+  RECT Z -10 5 5  
+  RECT Z 10  5 5
+  RECT X -5 5 10
+  RECT X 5  5 10
+  RECT Y -5 10 5
+  RECT Y 5  10 5
+
+$DO 1 6 
+{
+ OBJECT
+   ? 'MEDIA1-AIR_?'
+   INTERFACE COATING BARE MEDIA1 AIR  
+   REDEFINE COLOR 7 }
+EDGES
+  RECTANGLE Z -8  8 8 
+    SHIFT Y 12 
+  RECTANGLE Z 8  8 8
+    SHIFT Y 12 
+  RECTANGLE X -8  8 8
+    SHIFT Y 12 
+  RECTANGLE X 8  8 8
+    SHIFT Y 12 
+  RECTANGLE Y -8  8 8
+    SHIFT Y 12 
+  RECTANGLE Y 8  8 8
+    SHIFT Y 12 
+
+$DO 7 12 
+{
+ OBJECT
+   ? 'MEDIA2-AIR_?'
+   INTERFACE COAT BARE MEDIA2 AIR  
+   REDEFINE COLOR 18 }
+   
+OBJECT 3
+  BOUNDS 9 
+OBJECT 4
+  BOUNDS 10
+OBJECT 6
+  BOUNDS 11  
+OBJECT 11
+  BOUNDS 6
+OBJECT 7 
+  BOUNDS 1 
+OBJECT 8 
+  BOUNDS 2 
+
+!! Make common surface  
+EDGES
+  RECT Y 5  10 5 !! identical to entity 6
+OBJECT 'MEDIA1-MEDIA2'
+INTERFACE COAT BARE MEDIA1 MEDIA2
+REDEFINE COLOR 2
+ BOUNDS -11 
+  
+OBLIQUE
+PLOT FACETS 25 25 0
+$VIEW !! Hide sides to see common surface
+RETURN 

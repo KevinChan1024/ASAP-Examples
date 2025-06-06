@@ -1,0 +1,39 @@
+!!++
+!! ARRAY_NONLINEAR_01.INR
+!! Title: Nonlinear Array using MVFCN and USERPROG
+!! Category: Isolated Command
+!! Keywords: ARRAY NONLINEAR, Arrays, $FCN, backlight, dots, bumps, BOUNDS
+!! Description: A non-linear array of dimples or bumps on a surface
+!! created by bounding a non-linear array of ellipsoids with
+!! a plane and vice-versa.  
+!! Edit History: (latest first) 
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 02/27/2012 - cp - added header
+!! 02/27/2012 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+$FCN MULTIVARFCN1  (_0+2.0*_1+3.0*_2)*_ 
+$FCN MULTIVARFCN2  (_0^2+2.0*_1^2+3.0*_2^2+0.3*_3)*_ 
+
+SURFACES
+ ELLIPSOID 5 5 5 0 0 0
+  ARRAY NONLINEAR -Y MVFCN 16 X USERPROG 16 BOUNDS  !! SPACING
+   MULTIVARFCN1  1.0 2.0 3.0 !! USERFCN DRIVEN
+   USERPROG  1.0 2.0 3.0     !! USERPROG.F90 DRIVEN TEST 
+     
+ PLANE Z 0  
+  LOCAL -100 2000 -2000 100 -1 1
+OBJECT
+ 0.1 'PLANE_FULL_OF_HOLES'
+ BOUNDS 0.2    !! HOLES CUT BY ELLIPSOIDS 
+ FACETS 501 501  
+OBJECT
+ 0.2 'PEENS'
+ BOUNDS 0.1    !! ELLIPSOIDS CUT BY PLANE
+     
+WINDOW Y X
+PLOT FACETS
+$VIEW 
+RETURN

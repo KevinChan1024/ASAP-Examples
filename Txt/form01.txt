@@ -1,0 +1,54 @@
+!!++
+!! FORM01.INR
+!! Title: Modifying Display Data with FORM
+!! Category: Isolated Command
+!! Keywords: FORM, DISPLAY, ISOMETRIC, AVERAGE
+!! Description: Shows two uses for the FORM command
+!! to either take the square root of the display
+!! data or the square. An EMITTING DISK traces to
+!! a detector with an obscuring disk in between.
+!! An ISOMETRIC plot of the detector is shown for
+!! each FORM version.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/18/2000 - cp - modified format and header
+!! 04/24/2000 - bf - minor modifications 
+!! 04/07/2000 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  PLANE Z 10 RECTANGLE 10 10
+  OBJECT 'DETECTOR'
+    INTERFACE 0 0 AIR AIR
+
+SURFACES
+  PLANE Z 4 ELLIPSE 1.5 1.5
+  OBJECT 'OBSCURER'
+    INTERFACE 0 0 AIR AIR
+
+EMITTING DISK Z 0 -2@1 100000
+
+WINDOW Y Z
+PLOT FACETS
+TRACE PLOT 1000
+   
+WINDOW X Y
+CONSIDER ONLY DETECTOR
+SPOTS POSITION EVERY 10
+
+DISPLAY
+  AVERAGE  !! 3x3 Boxcar average of display data
+  AVERAGE  !! Do it again
+  FORM .5 
+  ISOMETRIC 'SQUARE ROOT OF FLUX/UNIT-AREA'
+
+DISPLAY 
+  AVERAGE
+  AVERAGE
+  FORM 2 
+  ISOMETRIC 'SQUARE OF FLUX/UNIT-AREA'
+RETURN
+

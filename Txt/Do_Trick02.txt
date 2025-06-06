@@ -1,0 +1,30 @@
+!!++
+!! DO_TRICK02.INR
+!! Title: Multiple Sources using $DO
+!! Category: Simple Problem
+!! Keywords: Scripts, $DO, EMITTING, Sources 
+!! Description: Making multiple oval emitting spheroids
+!! that get expanded and shifted by the loop counter. 
+!! Edit History: (latest first)
+!! 07/12/2002 - cp - removed source keyword
+!! 02/16/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+NRAYS=5000
+SEED 1 QUASI
+XMEMORY MIN
+
+!! A shortcut to make a multiple composite source. Each spheroid
+!! is expanded and shifted from the previous one using the loop counter.
+
+$DO 1 10; EMITTING; !! Executes first line once and iterates on the next
+  1 SPHEROID 3@0 ?*0.007 2@(?*0.006) (NRAYS); SHIFT X (?*0.006)
+
+PIXELS 21
+WINDOW Y X
+WINDOW 1.5  !! Enlarge by 50%
+SPOTS POSITION 'PLASMA EMISSION MODELED AS ELLIPTICAL RAY VOLUMES'
+RETURN

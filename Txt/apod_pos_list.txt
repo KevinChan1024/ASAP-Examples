@@ -1,0 +1,43 @@
+!!++
+!! APOD_POS_LIST.INR
+!! Title: Apodizing Position with List Data
+!! Category: Simple Problem
+!! Keywords: Sources, apodizing, APODIZE, USERAPOD, POSITION
+!! Description: Apodizing a source in position
+!! using in-line data.
+!! Edit History: (latest first)
+!! 11/11/2013 - gb - added APODIZE to keywords; changed POS to POSITION and EMITTING RECTANGLE to EMITTING RECT
+!! 02/14/2000 - cp - added description; formatting
+!! 01/15/1999 - gp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+USERAPOD POSITION 1 1 1  !! Scale factors usually set to 1
+  0.0   -1.0  0.0
+  0.31  -0.8  0.0
+  0.59  -0.6  0.0
+  0.81  -0.4  0.0
+  0.95  -0.2  0.0
+  1.0    0.0  1.0
+  0.95   0.2  1.0
+  0.81   0.4  1.0
+  0.59   0.6  1.0
+  0.31   0.8  1.0
+  0.0    1.0  1.0
+
+!! Since the following emitting plane is in the Z axis,
+!! The 1st column above represents apodization from -1 to
+!! 1 in X, and the 3rd column is Y apodization from -1 to 1.
+!! The range -1 to 1 is given by the center column.
+
+EMITTING RECT Z 0 2@1 1000000 ISO  !! Can also apodize grid sources
+                                   !! in position.
+WINDOW Y -1 1 X -1 1
+PIXELS 51
+SPOTS POSITION ATTRIBUTE 0
+DISPLAY
+  AVERAGE
+  PICTURE
+RETURN

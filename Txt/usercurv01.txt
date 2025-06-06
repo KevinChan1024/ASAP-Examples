@@ -1,0 +1,45 @@
+!!++
+!! USERCURV01.INR
+!! Title: Making a Curve with a Function
+!! Category: Simple Problem
+!! Keywords: Edges, USERCURVE, $FCN, LIMITS, curve, SWEEP
+!! Description: Making an edge based on a user-defined function
+!! using USERCURVE. This command calls the $FCN to produce the 
+!! curve. The edge in this example takes on the form of the
+!! sine-wave function. It is then swept into a ribbon-like surface.
+!! Edit History: (latest first) 
+!! 11/18/2014 - mt - Corrected format of $FCN
+!! 11/10/2014 - mt - Change PLOT FACETS 5 5 to PLOT FACETS 5 5 0
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 02/24/2011 - cp - corrected USERCURVE settings for shorter segments
+!! 07/25/2008 - cp - corrected command name
+!! 02/28/2002 - cp - corrected style
+!! 02/04/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+PI=ACOS(-1)
+
+$FCN NEWFUNC A=2*PI*_, 
+            (A), SIN(A), 0 !!x,y,z
+!! The underscore (_) is the placeholder for the range parameter 
+!! passed from USERCURVE.
+
+EDGES
+  USERCURVE NEWFUNC -2@1 360 !! Makes a 2 cycle sine wave (360 = # of segments)
+    SHIFT Z -1
+    SWEEP DIRECTION 2 0 0 1 !! Ribbon width=2, centered at Z=0
+OBJECT 'CURVE'
+  LIMITS -2@(2*PI) -4@1 !! LOCAL for entities, LIMITS for objects
+  INTERFACE 1 0
+
+!! Ray trace shows that proper normals were calculated for the surface  
+GRID RECT Y 2 -2@1 -2@(2*PI) 1 10
+  SOURCE DIRECTION 0 -1 0
+MISSED ARROWS 1
+WINDOW Y X
+PLOT FACETS 5 5 0 OVERLAY
+TRACE PLOT
+RETURN

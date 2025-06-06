@@ -1,0 +1,42 @@
+!!++
+!! EMITTING_DIR_CLIPPING.INR
+!! Title: Clipping Emitting Surfaces
+!! Category: Simple Problem
+!! Keywords: Sources, EMITTING, clipping, direction, PLOT, RAYS, ARROWS
+!! Description: Simple demo of how emitting surfaces work in
+!! direction space.  Allows easy viewing of effects from
+!! different half-angle clipping entries.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 02/17/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+X_ANGLE=30  !! Change numbers to see effects in 3-D plot
+Y_ANGLE=20 
+
+SEED 1 QUASI
+XMEMORY MIN
+
+!! The following is for making the ray plot (100 is enough)
+EMITTING RECTANGLE Z 0 2@.01 100 (X_ANGLE) (Y_ANGLE)  !! RECT 
+WINDOW Y -1 1 X -1 1
+SPOTS POSITION OVERLAY 
+ARROWS OFF  !! Turn off arrow heads - show lines only
+PLOT RAYS 1 OVERLAY  !! Ray lengths indicate flux value (rel. to 1)
+
+!! The following is to make enough spots on sphere (10000 is good)
+RAYS 0  !! Clear previous rays
+USERAPOD DIRECTION GDIS
+EMITTING RECT Z 0 2@.01 10000 (X_ANGLE) (Y_ANGLE) !! RECT
+
+SURFACES  !! The unit sphere
+  ELLIPSOID 3@1 3@0 
+  OBJECT 'SPHERE'
+   
+PLOT FACETS 4 5 OVERLAY
+SPOTS DIRECTION  !! Always plots at unit sphere location
+$VIEW  !! Use axis and LitWireFrame on the Sphere
+RETURN

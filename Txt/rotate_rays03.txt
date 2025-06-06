@@ -1,0 +1,33 @@
+!!++
+!! ROTATE_RAYS03.INR
+!! Title: Rotated Ray STATS Output
+!! Category: Simple Problem
+!! Keywords: Manipulating, rays, RAYS, ROTATE, STATS
+!! Description: STATS output of rotated rays. 
+!! Edit History: (latest first)
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+ --- STATS POSITION
+ 
+ Current Statistics for Object   0 -
+  Total Flux = 12.8264     from     97 rays (100.00%)
+                      X            Y            Z
+        Centroid: 0.682074E-07  6.36396      6.36396
+   RMS Deviation:  1.00844     0.713076     0.713076
+  Maximum Spread: -1.81818     -1.28565     -1.28565
+               to  1.81818      1.28565      1.28565
+. 
+.
+. 
+ --- STATS POSITION
+ 
+ Current Statistics for Object   0 -
+
+  Total Flux = 12.8264     from     97 rays (100.00%)
+                      X            Y            Z
+        Centroid: 0.682074E-07 -.184344E-08  9.00000
+   RMS Deviation:  1.00844      1.00844     0.000000
+  Maximum Spread: -1.81818     -1.81818     0.000000
+               to  1.81818      1.81818     0.000000

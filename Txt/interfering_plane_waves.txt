@@ -1,0 +1,43 @@
+!!++
+!! INTERFERING_PLANE_WAVES.INR
+!! Title: Interfering Plane Waves
+!! Category: Simple Problem
+!! Keywords: Wave, interference, SPREAD, PARABASAL
+!! Description: Two plane waves intersecting
+!! to show interfence. One is tipped relative
+!! to the other.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 07/25/2008 - cp - added keyword
+!! 01/12/2004 - cp - changed title
+!! 04/03/2000 - cp - modified format; added description
+!! 04/01/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CENTIMETERS
+WAVELENGTH 632.8 NANOMETERS
+DIA=25
+
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 6328 ANGSTROMS
+WIDTHS 1.6
+
+!! Make two sources, one tipped relative 
+!! to the other.
+GRID ELLIPTIC Z -100 -4@(DIA/2) 2@11
+  SOURCE DIRECTION Z 0 0 
+  
+GRID ELLIPTIC Z -100 -4@(DIA/2) 2@11
+  SOURCE DIRECTION Z 6E-4 45
+  
+WINDOW Y X
+PIXELS 101
+SPREAD NORMAL
+DISPLAY
+  PICTURE
+RETURN
+  

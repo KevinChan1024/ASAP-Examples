@@ -1,0 +1,32 @@
+!!++
+!! GRID_OBJECT.INR
+!! Title: Object-based Ray Grid
+!! Category: Isolated Command
+!! Keywords: GRID, OBJECT
+!! Description: Defines a uniform grid of rays
+!! on an object. In the case of an edge object,
+!! the rays lie at the center of each facet. 
+!! The number of rays can be controlled by the 
+!! FACETS modifier.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  0 1 'TRANS'
+  
+EDGES
+  ELLIPSE Z -5 2@5
+  ELLIPSE Z 5 2@10
+  OBJECT
+    0.1 0.2 'FACETED_TUBE'
+    INTERFACE COAT +TRANS
+    FACETS 4 4  !! An edge object modifier
+
+GRID OBJECT FACETED_TUBE
+RETURN

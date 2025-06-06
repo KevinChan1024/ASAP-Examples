@@ -1,0 +1,51 @@
+!!++
+!! FFAD01.INR
+!! Title: Full Field Aberration
+!! Category: Isolated Command
+!! Keywords: FFAD, Analysis, GRID, aberration  
+!! Description: Full field aberration analysis
+!! of an f/1 mirror. A perturbed conic is used
+!! to generate spherical aberration. A grid of
+!! polar grids are sent toward the conic, each with 
+!! a spread as determined by the GRID RECT below.
+!! The aberration across the entire field is analyzed
+!! at object 2, using two versions of FFAD.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 02/27/2009 - cp - modified keyword
+!! 10/04/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  1 0 'REFL'
+
+SURFACES
+  OPTICAL Z 2 -4 -1.+0.0256  !! Perturb conic to generate spherical aberration
+  OPTICAL Z 0 -2 RECTANGLE 1
+OBJECTS
+  1 'MIRROR'
+    LIMITS -4@1.1 1.8 2.001
+    INTERFACE COAT REFL
+  2 'NOMINAL_FOCAL_SURFACE'
+
+BEAMS INCOHERENT GEOMETRIC
+
+!! The following makes a grid of grids:
+GRID POLAR Z -0.2 0 1 0 360 4 4 1        !! Ray positions
+GRID RECT Z 1 -0.02 0.06 -0.03 0.03 9 7  !! Directions and spread
+SOURCE DIRECTION GRID                    !! -1.1 to 3.4 deg in x
+                                         !! -1.7 to 1.7 deg in y
+SEARCH SEQUENTIAL
+TRACE  !! To object 1 first, and then object 2
+TITLE 'FULL FIELD ABERRATION ANALYSIS OF F/1 MIRROR'
+WINDOW Y X
+WINDOW 1.1
+
+!! Plot rms spot ellipses for each field position of grid
+FFAD SPOTS REFERENCE 0.01 !! Plot spots with rms ellipses
+FFAD  !! Plot rms ellipses only
+RETURN

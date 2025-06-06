@@ -1,0 +1,44 @@
+!!++
+!! SURF_SAMPLED02.INR
+!! Title: Sampled Surface - Second Form
+!! Category: Isolated Command
+!! Keywords: SAMPLED, SURFACE, $FAST
+!! Description: This is an example of syntax two of the SAMPLED
+!! command.  In this syntax, you are able to enter points on lines 
+!! following the SAMPLED command. They will be evenly distributed
+!! within the bounds specifed.  This example creates a paraboloid
+!! of revolution based on sampled points.  The surface is created
+!! perpendicular to the Z axis, at 0.  The values are z values on
+!! an x-y grid.  The first pair of bounds is the x extent; 
+!! the second pair is the y extent.  The end points are included.
+!! The x dimension is horizontal in the table of values.
+!! $FAST allows lines in excess of 344 characters to be read.
+!! The first argument is the number of values per line, and the
+!! second is the number of records. 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style, and plot
+!! 06/28/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  SAMPLED MYSAMP Z 0 -2@.5 -2@.5
+$FAST 7 7
+0.131579 0.095029 0.073099 0.065789 0.073099 0.095029 0.131579
+0.095029 0.058479 0.036549 0.029239 0.036549 0.058479 0.095029
+0.073099 0.036549 0.014619 0.007310 0.014619 0.036549 0.073099
+0.065789 0.029239 0.007310 0.000000 0.007310 0.029239 0.065789
+0.073099 0.036549 0.014619 0.007310 0.014619 0.036549 0.073099
+0.095029 0.058479 0.036549 0.029239 0.036549 0.058479 0.095029
+0.131579 0.095029 0.073099 0.065789 0.073099 0.095029 0.131579
+OBJECT 'SAMPLED_SURF'
+
+WINDOW Y Z 
+PIXELS 301
+PROFILES -1 1 51
+$VIEW
+RETURN
+

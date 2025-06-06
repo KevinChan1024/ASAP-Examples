@@ -1,0 +1,81 @@
+!!++
+!! EDGE_CURVE_LOFTED.INR
+!! Title: One User-defined Edge Extruded along Another
+!! Category: Simple Problem
+!! Keywords: Edges, EDGES, USERCURVE, $FCN, extrude, curve, OBJECT, ALIGN, PLACE, MAP, SLOPES
+!! Description: A somewhat complex task of producing a surface made
+!! from two orthoganol sine functions. The end result appears as if
+!! a sinusoidal edge was dragged perpendicularly along another sinusoidal
+!! edge. Using a tricky combination of ALIGN and PLACE in a loop, one edge is
+!! recreated multiple times to follow the path of the edge in the
+!! orthoganol direction. All of the edges are then extruded together
+!! with the OBJECT command to produce a single wavy surface.
+!! Edit History: (latest first)
+!! 11/19/2014 - mt - corrected format of $FCN; corrected misspelling of WEIRD
+!! 11/10/2014 - mt - changed PLOT 5 5 to PLOT 5 5 0
+!! 06/24/2014 - gb - replaced CURV with CURVE for correct syntax
+!! 07/25/2008 - cp - corrected command name
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+PI=ACOS(-1)
+$FCN NEWFUNC A=2*PI*_, 
+            (A), SIN(A), 0 !!x,y,z
+
+EDGES
+  USERCURVE NEWFUNC -2@(.25*PI) 60
+    SHIFT Z -1
+  REPEAT
+    ROTATE Y 90  !! Makes second curve perpendicular to first
+
+EXTRUDE { 2  !! The Macro that does the lofting
+  PRINT EDGE #1
+  $GRAB 'total with' 0 -1 N K  !! Current line, start at beginning, put 1st 2 numbers in N & K
+  EDGE .1                      !! (N=60, K=1)
+    $DO 1 (N)
+      { 
+        ALIGN 0 0 1 EDGE .1, TANG #1 ?  !! Align given vector to tangent of the curve at ?
+        PLACE CURVE #1 ?
+      REPEAT
+        ALIGN 0 0 1 EDGE .1, TANG #1 ?.5
+        PLACE CURVE #1 ?.5
+      REPEAT 
+      }
+    ALIGN 0 0 1 EDGE .1, TANG #1 N+.9999
+    PLACE CURVE #1 N+.9999
+  OBJECT; -2*N-K 2 .7 .7*(1-K) '#2'
+}
+Extrude Path EDGE (absolute number)>
+Name of OBJECT>
+
+$EXTRUDE 1 WEIRD
+ 
+CONSIDER ONLY WEIRD
+WINDOW Y X
+PLOT FACETS 5 5 0
+$VIEW
+RETURN
+$IO
+
+!! The following is optional if time permits - type $IO to continue
+PIXELS 101
+MAP REF_MAP SLOPES
+ 
+DISPLAY REF_MAP 1ST
+  FORM -2
+
+!!GRAPH 'HEIGHT VALUES FOR ENTIRE PIXEL MATRIX'
+  ISOMETRIC
+DISPLAY REF_MAP 2ND
+  FORM -2
+!!GRAPH 'SLOPE VALUES IN Y'
+  ISOMETRIC
+DISPLAY REF_MAP 3RD 
+  FORM -2
+!!GRAPH 'SLOPE VALUES IN X'
+  ISOMETRIC
+RETURN
+

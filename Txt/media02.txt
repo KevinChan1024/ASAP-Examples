@@ -1,0 +1,36 @@
+!!++
+!! MEDIA02.INR
+!! Title: Defining Dispersive Media
+!! Category: Isolated Command
+!! Keywords: MEDIA, WAVELENGTHS 
+!! Description: Defining wavelengths and their 
+!! associated dispersive media.
+!! Edit History: (latest first)
+!! 07/23/2003 - cp - modified file structure
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Define common optical glasses BK7 and F2 in F, d and C light.
+UNITS METERS
+WAVELENGTHS 486.1   587.6   656.3 NM nanometers to meters
+MEDIA
+  1.52238 1.5168  1.51432 'SCHOTT_BK7'
+  1.63208 1.62004 1.61503 'HOYA_F2'
+
+SYSTEM NEW
+RESET
+
+!! Define radiation hardened Schott SF6G5 with constant
+!! absorption for all wavelengths.
+UNITS CM
+WAVELENGTHS 1014 852.1 706.5 656.3 NM nanometers to centimeters
+MEDIA
+  1.77520 1.78159 1.79117 1.79609 ABSORB .017163 inv cm 'SCHOTT_SF6G05'
+
+RETURN
+
+

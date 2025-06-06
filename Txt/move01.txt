@@ -1,0 +1,47 @@
+!!++
+!! MOVE01.INR
+!! Title: Moving Rays along Trajectory
+!! Category: Isolated Command
+!! Keywords: MOVE, rays
+!! Description: Model of a landscape lens to
+!! demonstrate MOVE command. Entrance pupil
+!! is located 5.639 inches from 1st surface.
+!! Entrance pupil is 1 inch in diameter
+!! and 10 degrees off-axis. Before and after
+!! SPOTS are shown.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/09/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS IN
+WAVELENGTHS 576.5 NM nanometers to inches
+
+LENSES
+  SINGLET Z 0 .5 1.5 BK7 RD 3.24794 11.42904
+  OBJECT 'LANDSCAPE_LENS'
+
+SURFACES
+  PLANE Z 3.5 ELLIPSE 2@1.5 0.3/1.5  !! Cut hole inside
+  OBJECT 'PHYSICAL_STOP'
+
+SURFACES
+  PLANE Z 8.5 ELLIPSE 2
+  OBJECT 'FILM_PLANE'
+
+BEAMS INCOHERENT GEOMETRIC
+GRID RECT Z 5.639 -4@0.5 1 10 
+  SOURCE DIRECTION 0 SIN[10] COS[10]
+  
+WINDOW Y Z
+WINDOW 1.5  !! Expand window to see second spots
+PLOT FACETS 5 5 OVERLAY
+SPOTS POSITION OVERLAY  !! Show initial ray positions
+   
+MOVE TO Z -1
+SPOTS POSITION       !! Show new ray positions
+RETURN

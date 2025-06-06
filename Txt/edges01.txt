@@ -1,0 +1,24 @@
+!!++
+!! EDGES01.INR
+!! Title: Simple Edge Aperture
+!! Category: Isolated Command
+!! Keywords: EDGES, aperture
+!! Description: A rectangular aperture made
+!! from two EDGEs.
+!! Edit History: (latest first)
+!! 10/04/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  ELLIPSE Z 1 5 5
+  RECTANGLE Z 1 1 1.5 16 !! Note that sixteen points are needed
+OBJECT                   !! to match the default 16 for the ellipse.
+  1 2 'RECTANGULAR_APERTURE'
+   
+WINDOW Y X
+PLOT FACETS 
+RETURN

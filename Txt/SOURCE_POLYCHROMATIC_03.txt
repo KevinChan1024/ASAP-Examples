@@ -1,0 +1,241 @@
+!!++
+!! SOURCE_POLYCHROMATIC_03.INR
+!! Title: Polychromatic Source using built-in CIE standard illuminant
+!! Category: Simple Problem
+!! Keywords: Sources, SOURCE POLYCHROMATIC, CIE, cie, CHROMATICITY, DUMP, $FCN
+!! Description: Using SOURCE POLYCHROMATIC with TABLE option.
+!! Edit History: (latest first)
+!! 05/22/2013 - cp - added header and formatted
+!! 05/22/2013 - kg - creation
+!!--  
+
+SYSTEM NEW
+RESET
+
+!! System units are MM
+!! General variables
+PI=4*ATAN(1)
+ACF=SQRT(PI/4)                !! Conversion of 1/e^2 to ASAP definition
+$FCN ALOG EXP[_]              !! Antilog function for display
+E2M=1/25.4                     
+HWHM_WO=SQRT(LOG(0.5)/(-2))   !! HWHM to Wo radius spatial scale factor 
+FWHM_WO=2*HWHM_WO             !! FWHM to Wo radius spatial scale factor 
+
+DLAMBDA=5
+NRAYS=100000
+
+UNITS MM 'LUMENS' 
+WAVELENGTHS 555 NM
+
+!! Create a macro with tabular data for the TABLE option
+!! The macro file can also be used with the file option
+!! The spectral apodization data is based upon a white light LED spectral power distribution
+BLUE_SPD {
+   360.0000      0.1446819E-01
+   365.0000      0.1441578E-01
+   370.0000      0.1432843E-01
+   375.0000      0.1618589E-01
+   380.0000      0.1959374E-01
+   385.0000      0.2239659E-01
+   390.0000      0.2492717E-01
+   395.0000      0.2811892E-01
+   400.0000      0.3776215E-01
+   405.0000      0.6559037E-01
+   410.0000      0.1396057    
+   415.0000      0.2920320    
+   420.0000      0.5180311    
+   425.0000      0.7692835    
+   430.0000      0.9714540    
+   435.0000       1.000000    
+   440.0000      0.8284951    
+   445.0000      0.5601001    
+   450.0000      0.3496856    
+   455.0000      0.2195501    
+   460.0000      0.1439962    
+   465.0000      0.9738245E-01
+   470.0000      0.7293323E-01
+   475.0000      0.6069299E-01
+   480.0000      0.6074362E-01
+   485.0000      0.7258096E-01
+   490.0000      0.9870434E-01
+   495.0000      0.1396056    
+   500.0000      0.1912208    
+   505.0000      0.2489830    
+   510.0000      0.3068316    
+}
+
+YELLOW_SPD {
+   515.0000      0.6865785    
+   520.0000      0.7697846    
+   525.0000      0.8402783    
+   530.0000      0.8967469    
+   535.0000      0.9388617    
+   540.0000      0.9682175    
+   545.0000      0.9888896    
+   550.0000      0.9986646    
+   555.0000       1.000000    
+   560.0000      0.9966653    
+   565.0000      0.9866766    
+   570.0000      0.9696367    
+   575.0000      0.9483619    
+   580.0000      0.9239584    
+   585.0000      0.8934048    
+   590.0000      0.8586842    
+   595.0000      0.8217205    
+   600.0000      0.7823302    
+   605.0000      0.7387583    
+   610.0000      0.6942244    
+   615.0000      0.6493240    
+   620.0000      0.6034781    
+   625.0000      0.5581586    
+   630.0000      0.5146247    
+   635.0000      0.4717314    
+   640.0000      0.4313110    
+   645.0000      0.3929814    
+   650.0000      0.3564523    
+   655.0000      0.3223270    
+   660.0000      0.2907658    
+   665.0000      0.2608453    
+   670.0000      0.2334430    
+   675.0000      0.2099934    
+   680.0000      0.1874595    
+   685.0000      0.1675583    
+   690.0000      0.1493510    
+   695.0000      0.1326775    
+   700.0000      0.1178813    
+   705.0000      0.1046037    
+   710.0000      0.9242488E-01
+   715.0000      0.8232927E-01
+   720.0000      0.7324095E-01
+   725.0000      0.6477831E-01
+   730.0000      0.5726190E-01
+   735.0000      0.5075276E-01
+   740.0000      0.4499150E-01
+   745.0000      0.3973383E-01
+   750.0000      0.3497981E-01
+   755.0000      0.3134754E-01
+   760.0000      0.2780683E-01
+   765.0000      0.2462477E-01
+   770.0000      0.2182423E-01
+   775.0000      0.1938998E-01
+   780.0000      0.1727624E-01
+}
+
+LED_DIE_APOD {
+!! Create a gaussian spatial apodization to simulate an individual die
+!! Keep the original Lambertian intensity pattern 
+$FCN GAUSS_APOD EXP(-2*(SQRT(_1^2+_2^2)/0.85)^2)
+XMEMORY MIN
+EMITTING DISK Z 0 2@1.25 (NRAYS) 
+  APODIZE POS GAUSS_APOD
+FLUX TOTAL 1
+DUMP LED_SOURCE
+
+RAYS 0
+EMITTING; $DO -2 2 
+  1 DATA LED_SOURCE; SHIFT X ?*1.1 
+DUMP LED_SRC
+} 
+
+BLUE_LED_COMPONENT {
+RAYS 0 
+!! Create emitter from data file and duplicate it automatically 
+XMEMORY MIN
+EMITTING; $DO -2 2 
+  1 DATA LED_SOURCE; SHIFT X ?*1.1
+SOURCE POLYCHROMATIC TABLE 0.373*2.50155 31 'BLUE'
+  $BLUE_SPD
+STATS  
+}
+
+YELLOW_LED_COMPONENT { 
+!! Create emitter from data file and duplicate it automatically 
+XMEMORY MIN
+SEED 20000001 QUASI   
+EMITTING; $DO -2 2 
+  1 DATA LED_SOURCE; SHIFT X ?*1.1
+SOURCE POLYCHROMATIC TABLE 0.627*2.50155 54 'YELLOW'
+  $YELLOW_SPD
+}
+
+CIE_COORDS { 
+!! Set MNCC 2 
+SOM=1931
+RESOLUTION=5nm
+CIE NEW (SOM) (RESOLUTION) 'INTA' 
+
+WINDOW Y -2@SIN[90] X -2@SIN[90]
+PIXELS (PIX=101) !!(PIX=71)
+CHROMATICITY RADIANT 1931 (RESOLUTION) ANGLE Y -90 90 180 -90 90 180  
+
+DISPLAY ciexyzxy_inta.dis 2ND
+  AVERAGE
+  PICTURE 'LUMINOUS INTENSITY | TYPE A'
+DISPLAY ciexyzxy_inta.dis 4TH
+  AVERAGE
+  PICTURE 'X CHROMO COORD | TYPE A'
+DISPLAY ciexyzxy_inta.dis 5TH
+  AVERAGE
+  PICTURE 'Y CHROMO COORD | TYPE A'
+RETURN
+
+SOM=1931
+RESOLUTION=5nm
+CIE NEW (SOM) (RESOLUTION) 'INTB'
+
+WINDOW Y -2@SIN[90] X -2@SIN[90]
+PIXELS (PIX=101) !!(PIX=71)
+CHROMATICITY INTENSITY 1931 (RESOLUTION) 
+
+DISPLAY ciexyzxy_intb.dis 2ND
+  PICTURE 'LUMINOUS INTENSITY'
+  ANGLES
+  PICTURE
+DISPLAY ciexyzxy_intb.dis 4TH
+  PICTURE 'X CHROMO COORD'
+DISPLAY ciexyzxy_intb.dis 5TH
+  PICTURE 'Y CHROMO COORD'
+RETURN
+
+SOM=1931
+RESOLUTION=5nm
+CIE NEW (SOM) (RESOLUTION) 'IRR' 
+
+WINDOW Y -2@2 X -2@4
+PIXELS (PIX)
+CHROMATICITY IRRADIANCE 1931 (RESOLUTION) 
+DISPLAY ciexyzxy_irr.dis 2ND
+  PICTURE 'ILLUMINANCE'
+DISPLAY ciexyzxy_irr.dis 4TH
+  PICTURE 'X CHROMO COORD'
+DISPLAY ciexyzxy_irr.dis 5TH
+  PICTURE 'Y CHROMO COORD'
+RETURN
+
+SOM=1931
+RESOLUTION=5nm
+CIE NEW (SOM) (RESOLUTION) 'RAD' 
+
+WINDOW Y -2@2 X -2@4
+PIXELS (PIX)
+CHROMATICITY RADIANCE 1931 (RESOLUTION) ANGLE Z 0 20 1 0 360 1 
+DISPLAY ciexyzxy_rad.dis 2ND
+  AVERAGE
+  PICTURE 'RADIANCE'
+DISPLAY ciexyzxy_rad.dis 4TH
+  AVERAGE
+  PICTURE 'X CHROMO COORD'
+DISPLAY ciexyzxy_rad.dis 5TH
+  AVERAGE
+  PICTURE 'Y CHROMO COORD'
+RETURN
+
+}
+
+$TIC
+$LED_DIE_APOD 
+$BLUE_LED_COMPONENT
+$YELLOW_LED_COMPONENT
+$CIE_COORDS
+$TIC 
+

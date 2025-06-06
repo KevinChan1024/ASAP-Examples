@@ -1,0 +1,45 @@
+!!++
+!! MACRO_$HELP01.INR
+!! Title: Using $HELP 
+!! Category: Isolated Command
+!! Keywords: $HELP, macro, Macros_pre
+!! Description: Several examples of using $HELP.
+!! Note when "&" is used instead of "$" it only shows the
+!! command format without text description.
+!! Note: This is not a runable inr file.
+!! Edit History: (latest first)
+!! 12/21/2001 - cp - modified description
+!! 10/24/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+ --- $HELP
+
+     (Pop-up window lists all the commands currently available)
+                                                
+ --- $HELP ARROWS
+ --- ARROWS [ s ]                                                               
+             OFF                                                                
+
+ The PLOT RAYS, TRACE PLOT, and PLOT POLARIZATION commands can have
+ arrows added to their basic lines by preceding them with this command.  "s" is
+ rescaling factor used to change the size of the arrows relative to the internal
+ setting (default=1).  The adding of arrows can also be turned OFF.
+
+                                                                                
+ --- OBJECTS
+ --- $HELP
+ 
+     (Pop-up window lists all OBJECT commands only)
+                    
+ --- &HELP ROUGHNESS
+ --- ROUGHNESS [ r [ l ] ] [ MODEL  i            [ FRACTION [ f ] ] ]
+                             RANDOM h [ s [ m ] ]
+                             
+ --- $IO LIB UTIL
+ Opening    24 util.lib
+ 
+ --- $HELP MACROS
+
+     (Pop-up window lists all macros in library)
+

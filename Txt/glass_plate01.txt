@@ -1,0 +1,36 @@
+!!++
+!! GLASS_PLATE01.INR
+!! Title: Glass Plate Using SURFACE
+!! Category: Isolated Command
+!! Keywords: SURFACE, PLANE, TUBE, glass
+!! Description: A Glass plate made with surfaces.
+!! Edit History: (latest first)
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+FRESNEL AVERAGE
+MEDIA
+  1.5168  'BK7'
+SURFACES
+  PLANE Z 0 ELLIPSE 2
+  OBJECT 'FIRST_SURFACE'
+    INTERFACE COATING +BARE AIR BK7
+
+SURFACES
+  PLANE Z 0.5 ELLIPSE 2
+  OBJECT 'SECOND_SURFACE'
+    INTERFACE COATING +BARE AIR BK7
+
+SURFACES
+  TUBE Z 0 2@2 0.5 2@2 
+  OBJECT 'PLATE_EDGE'
+    INTERFACE COATING +BARE AIR BK7
+
+WINDOW Y X
+OBLIQUE
+PLOT FACETS 5 5
+RETURN

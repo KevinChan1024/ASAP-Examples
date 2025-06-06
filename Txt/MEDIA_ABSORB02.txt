@@ -1,0 +1,123 @@
+!!++
+!! MEDIA_ABSORB02.INR
+!! Title: Making Absorbing Media #2
+!! Category: Simple Problem
+!! Keywords: Interfaces, MEDIA, ABSORB, $FCN, $EVAL, absorption, beer's law 
+!! Description:  Using the absorption coefficient on the 
+!! MEDIA command line.  Origin is at Vertex 1. Propagation
+!! direction is +Z.  Units are in MM.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/05/2012 - kg - corrected script
+!! 06/02/2008 - cp - added header
+!! 05/30/2008 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+
+!! SYSTEM UNITS ARE MM
+!! GENERAL VARIABLES
+
+PI=4*ATAN(1)
+ACF=SQRT(PI/4)                 !! CONVERSION OF 1/E^2 TO ASAP DEFINITION
+$FCN ALOG EXP[_]               !! ANTILOG FUNCTION FOR DISPLAY
+E2M=1/25.4                        
+                                  
+HWHM_WO=SQRT(LOG(0.5)/(-2))    !! HWHM TO WO RADIUS SPATIAL SCALE FACTOR 
+FWHM_WO=2*HWHM_WO              !! FWHM TO WO RADIUS SPATIAL SCALE FACTOR 
+
+!! SPECIFIC VARIABLES
+ABS_COEF=-LOG(0.98)/25.4       !! ACRYLIC ABORPTION 2% PER INCH
+
+$FCN INTERNAL_TRANSMISSION EXP(-ABS_COEF*_)  !! BEER'S LAW
+
+!! SET UP OPTICAL PROPERTIES DATABASE
+
+UNITS MM 'LUMENS'
+FRESNEL AVE
+
+WAVELENGTH  0.486133    0.587562    0.656273                      UM
+MEDIA;      1.49782763  1.49166834  1.48893834 ABSORB (ABS_COEF) 'ACRYLIC'
+            1.52237629  1.51680003  1.51432235                   'BK7'
+                                                                                                           
+COATINGS PROPERTIES
+            0 1         0 1         0 1        'TRAN'
+            1 0         1 0         1 0        'REFL'
+            0 0         0 0         0 0        'ABSORB'
+  
+
+!! SET UP SYSTEM GEOMETRY
+!! TEST MATERIAL FOR ABSROPTION CALCULATION
+
+BRANCH ACRYLIC
+
+SURFACES
+  PLANE Z -0.001 RECT 10
+OBJECT
+  0.1 'FRONT'
+  INTERFACE COAT +TRAN ACRYLIC AIR
+
+SURFACES
+  PLANE Z 6000 RECT 10
+OBJECT
+  0.1 'BACK'
+  INTERFACE COAT +TRAN ACRYLIC AIR
+
+!! DETECTORS
+
+BRANCH DETECTOR
+
+$DO 1 60 
+ {
+  SURFACES
+    PLANE Z 100*? RECT 2
+  OBJECT
+    0.1 'DETECTOR_?'
+    INTERFACE COAT +TRAN ACRYLIC ACRYLIC  
+  }
+  
+RETURN   
+
+!! MACROS
+
+SINGLE_RAY {
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 0.587
+RAYS Z -1
+ 0 0 1
+SOURCE DIRECTION 0 0 1
+} 
+
+BEERS_LAW {
+$EVAL DISTANCE 0 6000 -61 INTERNAL_TRANSMISSION
+DISPLAY EVAL
+ GRAPH 'BEERS LAW VIA FCN COMMAND'
+ 'POSITION, MM
+ 'BEERS LAW CALCULATION
+ '2% PER INCH IN ACRYLIC
+RETURN
+  
+$SINGLE_RAY
+$ITER STEP_NUM 1 6000 -61 FLUX
+ {
+ TRACE STEP 1 
+ STATS
+ $GRAB 'TOTAL' 0 2 FLUX
+ }
+DISPLAY BEERS_LAW
+GRAPH APPEND 'PLOT OF BEERS LAW VIA MEDIA COMMAND AND $FCN'
+ 'POSITION, MM
+ 'BEERS LAW CALCULATION | 2% PER INCH IN ACRYLIC
+ 'CURVE 1 FCN | CURVE 2 MEDIA
+}   
+  
+!!$IO
+$TIC
+$BEERS_LAW
+ONE_INCH_TRANSMISSION=INTERNAL_TRANSMISSION(25.4)
+$REG ONE_INCH_TRANSMISSION
+$TIC 
+
+RETURN

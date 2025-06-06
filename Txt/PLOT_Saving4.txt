@@ -1,0 +1,76 @@
+!!++
+!! PLOT_SAVING4.INR
+!! Title: Saving MODEL...PLOT Data to File #4 - with Loop 
+!! Category: Simple Problem
+!! Keywords: Scripts, Scatter, MODELS, WRITE, $DO, VOLUME, PLOT, DISPLAY, text, output, file, data, LIT
+!! Description: Demonstrates writing BSDF PLOT data to a file.
+!! Uses a VOLUME Media as an example. Writes plot data from display
+!! "slices" of a 3D display file containing the default incident angles.
+!! Uses $DO loop to save all files.
+!! Edit History: (latest first)
+!! 02/09/2010 - cp - Removed degree sign from graph title
+!! 05/10/2004 - cp - added graph titling
+!! 04/26/2004 - cp - creation 
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH (WL=632.8) NM
+
+!! Constants
+PI=4*ATAN(1)     !! Computer's value of Pi
+
+!! Parameters
+
+VTHICK=10            !! Pillbox thickness
+VRADI=50             !! Pillbox radius
+VCONC=1E6            !! Number of particles per unit of volume
+BEAMSIZE=1           !! Beam half diameter
+A_W=0.5              !! Particle Radius in waves (size parameter)
+A_NM=A_W*WL          !! True particle size in NM
+A_MM=A_NM*1E-6       !! True particle size in MM
+ 
+F=PI*(A_MM^2)*VCONC  !! Fractional area obscuration
+MFP=1/F              !! 1/F Roughly equals mean free path
+
+LEVEL (LEVEL=1000)
+
+!! Two media must be defined.  One is the "BULK" media in
+!! which the particles are suspended.  The other is the 
+!! index of the particles themselves (SPHERE)
+
+PIXELS 301 !! For good resolution on VOLUME...PLOT below
+MEDIA
+  1.59 'SPHERE'
+  1.33 'BULK
+  
+IMMERSE BULK !! Immerse spheres in BULK 
+
+MODEL
+  VOLUME MIE SPHERE 2@(A_NM) (F) PLOT  !! Creates 3D Display file named VOLUME.DIS
+  !! with 0 15 30 45 60 75 89.9 plot data.
+  
+MYGRAPH {
+  GRAPH 'Log BSDF at #1' !! Check each file 
+}
+
+$DO 1 7 
+  { 
+  DISPLAY VOLUME.DIS ? !! Accesses each display file
+  ANGLES  !! Converts Dir-Cos to Angle space
+  WRITE VOL? DIN  !! Write current distribution to ASCII text file
+  $GRAB 'ANGLE' A1
+  $MYGRAPH LIT(A1)
+  RETURN
+  } 
+
+MEDIA
+  1.33 SCATTER 1 'BULK_SPHERES'
+  
+PRINT MODELS
+RETURN 
+!! Continue with system, tracing and analysis.
+!! Be sure to IMMERSE AIR before creating source (if it is to be
+!! in AIR)

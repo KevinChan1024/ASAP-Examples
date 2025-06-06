@@ -1,0 +1,28 @@
+!!++
+!! TEXTFILE01.INR
+!! Title: Outputing Formatted Display Data
+!! Category: Isolated Command
+!! Keywords: TEXTFILE, output, data, spreadsheet, file, formatting, EOF
+!! Description: Create a text file of the data 
+!! distribution from a SPOTS command. The file
+!! may be further formatted or can be a single
+!! column of numbers.
+!! Edit History: (latest first)
+!! 10/18/2000 - cp - modified format and header
+!! 04/18/2000 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EMITTING DISK Z 0 0 0  100000  30 30
+
+WINDOW X Y
+SPOTS DIRECTION ATTRIBUTE 0
+
+DISPLAY
+  TEXTFILE YOURCHOICE  !!  Choose a filename: Assigns .txt extension
+    DATA               !!  Output flux values only: Different formats available
+    EOF	               !!  Required line to close file
+    
+RETURN

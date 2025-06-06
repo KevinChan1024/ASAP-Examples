@@ -1,0 +1,25 @@
+!!++
+!! LIBRARY02.INR
+!! Title: Macro Input Records
+!! Category: Isolated Command
+!! Keywords: LIBRARY, macro
+!! Description: Shows the proper way to call
+!! macros with input records.
+!! Note: This is not a runable inr file.
+!! Edit History: (latest first)
+!! 12/21/2001 - cp - modified description
+!! 10/09/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+The following input is permitted:
+$IO LIBRARY USER
+...  
+$ABEAM ...
+
+$CBEAM ...
+
+The following input is not permitted:
+$IO LIBRARY USER
+...
+$ABEAM ...; $CBEAM ...

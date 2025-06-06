@@ -1,0 +1,47 @@
+!!++
+!! USERFUNC_FCN.INR
+!! Title: Surface Defined by a Function
+!! Category: Simple Problem
+!! Keywords: Geometry, USERFUNC, $FCN, PARAMETERIZE, LOCAL
+!! Description: A surface made by a user-defined function.
+!! The command USERFUNC is used to call the $FCN.
+!! In this case, the surface takes on the form of the
+!! sine-wave function. 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 02/04/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+PI=ACOS(-1)
+
+!! $FCN must have four components: f(x,y,z)=0,
+!! which is the implicit form of the function,
+!! and the gradiant of this function (partial
+!! derivitive w.r.t. x,y,z respectively).
+!! Here f(x,y,z)= sin(x)-y (= 0)
+!! df/dx=cos(x); df/dy=-1; df/dz=0
+$FCN WAVE (SIN(_1)-_2) COS(_1) -1 0
+
+SURFACES
+  USERFUNC 0 0 0 WAVE  !! Uses global reference point and function name
+    LOCAL -2@2*PI -4@1 !! Limits the surface in all directions
+    PARAMETERIZE -Y    !! For meshing parallel to Y axis
+OBJECT 'SINX'
+  INTERFACE 1 0 AIR AIR
+
+!! Ray trace shows that proper normals were calculated for the surface 
+GRID RECT Y 2 -2@1 -2@(2*PI) 1 10
+  SOURCE DIRECTION 0 -1 0
+MISSED ARROWS 3
+WINDOW Y X
+PIXELS 101
+PROFILES -1 1 21 OVERLAY !! Show slices of surface rather than faceting
+
+!!PLOT FACETS 11 11 OVERLAY  !! Works, but slower on USERFUNC surfaces
+
+TRACE PLOT COLOR 2 
+RETURN

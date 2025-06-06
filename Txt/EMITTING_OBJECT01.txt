@@ -1,0 +1,34 @@
+!!++
+!! EMITTING_OBJECT01.INR
+!! Title: Emitting Half Cylinder
+!! Category: Simple Problem
+!! Keywords: Sources, cylinder, EMITTING OBJECT
+!! Description: Basic example of a bounded emitting
+!! object.  Creating an emitter from a half tube.
+!! Only half of rays asked for are created due
+!! to ray number being relative to the base entity
+!! being bounded.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 04/08/2008 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  TUBE Y -10 10 10 10 10 10
+    SHIFT Z -10
+SURFACES
+  PLANE Z -10
+OBJECT; .2 'LENS1'
+  BOUNDS .1
+EMITTING OBJECT LENS1 10000
+FLUX TOTAL 100
+WINDOW Z -15 5 X -2@15  
+PLOT ENTITIES OVER
+PLOT FACETS 5 5 OVER
+PLOT RAYS 4 
+STATS !! Note only half the rays asked for are emitted 
+$VIEW
+RETURN

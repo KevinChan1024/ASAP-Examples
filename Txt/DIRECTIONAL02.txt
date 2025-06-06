@@ -1,0 +1,29 @@
+!!++
+!! DIRECTIONAL02.INR
+!! Title: DIRECTIONAL Display Command
+!! Category: Isolated Command
+!! Keywords: DIRECTIONAL, Analysis, DISPLAY, $GUI
+!! Description: A DIRECTIONAL plot of a radially averaged
+!! emitting source showing ISO or Lambertian variation. 
+!! $GUI is used to show chart using original display viewer
+!! which shows 0 180° hemisphere only. 
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 08/12/2005 - cp - creation
+!!--
+
+SYSTEM NEW 
+RESET
+
+!! Lambertian if ISO is commented out
+EMITTING DISK Z 0 2@1 1000000 !!ISO
+FLUX TOTAL 1
+WINDOW Y -2@1 X -2@1
+PIXELS 39
+$GUI CHARTS_OFF
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+RADIAL !! Radially average the pixels
+DIRECTIONAL
+RETURN
+$GUI CHARTS_ON

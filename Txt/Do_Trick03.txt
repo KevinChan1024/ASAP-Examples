@@ -1,0 +1,29 @@
+!!++
+!! DO_TRICK03.INR
+!! Title: Multiple Source Directions using $DO
+!! Category: Simple Problem
+!! Keywords: Sources, $DO, direction 
+!! Description: Making multiple grid sources or 
+!! single ray sources incremented in direction
+!! using the loop counter. Saves entering an entire
+!! list of direction vectors by hand.
+!! Edit History: (latest first)
+!! 07/12/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+!! The following $DO loop performs what is on the same
+!! line once, then iterates on the second line, ending with 
+!! the statement on the third line.  This results in the
+!! correct syntax of SOURCE DIR for creating multiple
+!! source direction vectors.
+GRID RECTANGLE Z 0 -4@1 2@1
+$DO -80 80 10;  SOURCE DIRECTION 0 SIN[-90] COS[-90],
+  0 SIN[?] COS[?],
+  0 SIN[90] COS[90]
+
+WINDOW Y  Z  
+PLOT RAYS 10
+RETURN

@@ -1,0 +1,46 @@
+!!++
+!! OBJECT_REDEFINE01.INR
+!! Title: Redefining OBJECT Properties
+!! Category: Simple Problem
+!! Keywords: Geometry, OBJECT, INTERFACE, redefining
+!! Description: How to change the properties of
+!! a previously-defined object. In this case,
+!! the interface properties are changed.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/22/2002 - cp - changed title
+!! 03/12/2002 - cp - modified header
+!! 03/12/2002 - cl - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  COATINGS PROPERTIES
+    1.0   0.0  'REFLECT'
+    0.0   1.0  'TRANSMIT'
+    0.5   0.5  'BEAMSPLITTER'
+
+!! Create geometry
+SURFACES
+  PLANE Z 0 RECTANGLE 10 10 
+OBJECT 'ELEMENT_1'
+  INTERFACE COAT REFLECT AIR AIR
+
+SURFACES
+  PLANE Z 1 RECTANGLE 10 10 
+OBJECT 'ELEMENT_2'
+  INTERFACE COAT TRANSMIT AIR AIR
+
+!! Verify the properties of the object
+PRINT OBJECTS
+
+!! Change the properties associated with the first object
+OBJECT 1
+  INTERFACE COAT BEAMSPLITTER AIR AIR
+  
+!! Verify that the changed properties
+PRINT OBJECTS
+
+RETURN

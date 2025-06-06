@@ -1,0 +1,62 @@
+!!++
+!! ABSORBING_MEDIA03.INR
+!! Title: Defining Absorbing Media
+!! Category: Simple Problem
+!! Keywords: Interfaces, MEDIA, ABSORB, aluminum
+!! Description: These two definitions are equivalent in the example
+!! given, in which only a single wavelength is present.  The second
+!! form, using ABSORB, is independent of wavelength.  The first form
+!! becomes wavelength-dependent if dispersion data are specified, i.e.
+!! if multiple WAVELENGTHS are specified with corresponding complex
+!! refractive indices.  In the latter case, ASAP interpolates among
+!! the given indices to compute the complex index and the absorption
+!! coefficient. 
+!! ASAP does not impose the Kramers-Kronig relation upon refractive
+!! indices specified for multiple wavelengths, viz. the indices need
+!! not be consistent with causality.  
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 08/13/2004 - cp - Modified format; added header
+!! 08/13/2004 - kf - creation
+!!--
+ 
+SYSTEM NEW
+RESET
+
+!! Consider aluminum with complex index n = 1.44 + i5.23:
+UNITS MICRONS
+WAVELENGTH 0.589
+N=1.44			!! Real part of index
+NK=5.23			!! Imaginary part of index
+K=NK/N			!! Attenuation index Kappa
+ALPHA=4*3.14*NK/0.589	!! Absorption coefficient at 589 nanometers
+
+!! You can enter this in ASAP using either of two forms:
+MEDIA
+  (N)`(NK) 'ALUMINUM_1'			      !! 1ST FORM
+  (N) ABSORB (ALPHA) 'ALUMINUM_2'	!! 2ND FORM
+
+SURFACES
+  PLANE Z 2 RECTANGLE 2 2
+  OBJECT 'FRONT'
+    INTERFACE 0 1 AIR ALUMINUM_1 
+    
+SURFACES
+  PLANE Z 2.15 RECTANGLE 2 2  !! .15 Micron sheet -too thick to get through
+  OBJECT 'BACK'
+    INTERFACE 0 1 AIR ALUMINUM_1
+
+SURFACES
+  PLANE Z 3 RECTANGLE 3 3
+  OBJECT 'DETECTOR'
+    INTERFACE 0 0 AIR AIR
+     
+GRID ELLIPTIC Z 0 -4@1 2@1
+  SOURCE DIRECTION 0 SIN[5] COS[5]
+  FLUX TOTAL 100.0
+
+WINDOW Y Z
+PLOT FACETS OVERLAY
+TRACE PLOT
+STATS 
+RETURN

@@ -1,0 +1,46 @@
+!!++
+!! USERCURV07.INR
+!! Title: Swept User Curve in Direction
+!! Category: Isolated Command
+!! Keywords: USERCURVE, $FCN, curve, SWEEP, Edges 
+!! Description: Create a user curve with an 8th order $FCN
+!! and sweep in direction.
+!! Constants:
+!! a=4.5 b=-0.04345 c=1.8672E-5 d=1.1573E-7 e=-1.3214E-8
+!! Equation for the curve:
+!! z = a + b x^2 + c x^4 + d x^6 + e x^8
+!! Note: REVOLUTION can't be used for this since it only
+!! goes to 5th order.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/04/2009 - cp - modified header 
+!! 07/23/2009 - wjd- modified USERCURV07.INR for sweep in direction
+!!-- 
+
+SYSTEM NEW
+RESET 
+
+A1=4.5         !! First  order coefficient
+A2=-0.04345    !! Second order coefficient
+A4=1.8672E-5   !! Fourth order coefficient 
+A6=1.1573E-7   !! Sixth  order coefficient
+A8=-1.3214E-8  !! Eighth order coefficient   
+XEXT=12.0      !! Semi-Aperture X-extent
+
+$FCN CURV1 (_) (_) (A1+_^2*A2+_^4*A4+_^6*A6+_^8*A8) 
+!! The underscore (_) is the placeholder for the range parameter 
+!! passed from USERCURV.             
+
+EDGES
+  USERCURV CURV1 -2@(XEXT) 40   !! 40 X values varying from -XEXT to XEXT 
+  ROTATE 45 ABOUT 0 0 1 0 0 0   !! Realign curve.
+  SMOOTH
+  SWEEP DIRECTION 35 1 0 0 !! Sweep curve 35 units in X direction to create surface.
+OBJECT 'CURV_SURFACE'
+
+WINDOW Y X
+PLOT FACETS 11 11 0  OVERLAY
+PLOT EDGE COLOR 2
+$VIEW
+
+RETURN

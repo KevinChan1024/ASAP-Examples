@@ -1,0 +1,49 @@
+!!++
+!! XEQ01.INR
+!! Title: Using XEQ for Immediate Matrix Transformation
+!! Category: Isolated Command
+!! Keywords: XEQ, MATRIX, Manipulating 
+!! Description: Using XEQ to apply an immediate
+!! matrix transformation. 
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/22/2007 - cp - reformatted
+!! 04/12/2007 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+WINDOW Y -10 10 Z -10 15
+SURFACES
+  PLANE Z 0 RECT 2 4 
+OBJECT 'PLANE1'
+PLOT FACETS 3 3 0  COLOR 1  OVERLAY
+
+OBJECT .1
+  SHIFT 1 2 3 
+PLOT FACETS 3 3 0  COLOR 1  OVERLAY
+OBJECT .1
+  SHIFT Z 5
+  ROTATE 30 ABOUT 1 1 1 0 0 0
+PLOT FACETS 3 3 0  COLOR 1
+$VIEW
+
+
+SURFACES
+PLANE Z .1 RECT 2 4 
+OBJECT 'PLANE2'
+CONSIDER ONLY 2
+PLOT FACETS 3 3 0  COLOR 2   !!OVERLAY
+OBJECT .1
+  SHIFT 1.1 2.1 3.1
+PLOT FACETS 3 3 0  COLOR 2   !!OVERLAY
+OBJECT .1
+  MATRIX .1  !!LIST
+  SHIFT Z 5
+  XEQ
+  ROTATE 30 ABOUT 1 1 1 0 0 0
+!!MATRIX .1
+!!MATRIX .1
+PLOT FACETS 3 3 0  COLOR 2
+$VIEW

@@ -1,0 +1,130 @@
+!!++
+!! TWO_WAVELENGTH_INTERFERENCE.INR
+!! Title: Spatial Beats Produced by Wavelength Interference
+!! Category: Simple Problem
+!! Keywords: Wave, interference, beats, fringes, WAVELENGTHS
+!! Description: Demonstrate the capturing of beat phenomena as
+!! interference fringes along the propagation path (spatial beats). 
+!! Create two sources with wavelengths of the sodium doublet
+!! (0.5890, 0.5896 um) at z=0, t=0, and measure the field energy
+!! at z=0 and at x=0, a slice along the wavefront propagation direction.
+!! Move the waves by one-half of a spatial beat and re-measure the
+!! superposed waves to show another instant in time.
+!! Note that since ASAP is a time-independent code, the field will
+!! exist at negative z locations for any evaluation. However, we can
+!! displace the beam along its propagation path to simulate different
+!! instants in time, exhibiting displacement of the spatial beats. 
+!! Edit History: (latest first)
+!! 03/12/2009 - cp - added header
+!! 03/10/2009 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! variables
+C=2.9979246E14            !! light speed    [um/s]
+W1=0.5890                 !! wavelength 1   [um]
+W2=0.5896                 !! wavelength 2   [um]
+NU1=C/W1                  !! frequency 1    [1/s]
+NU2=C/W2                  !! frequency 2    [1/s]
+NU_BEAT=ABS[NU2-NU1]      !! beat frequency [1/s]
+DZ_BEAT=W2*W1/ABS(W1-W2)  !! beat path      [um]
+
+&REG C W1 W2 NU1 NU2 NU_BEAT DZ_BEAT 'Spatial and frequency beat parameters for the Na-D doublet '
+
+!! Output the parameters with neater formatting
+$SCR 7 'Spatial and frequency beat parameters for the Na-D doublet '
+light speed       \C^         \ [um/s]
+wavelength 1      \W1.5       \ [um]  
+wavelength 2      \W2.5       \ [um]  
+frequency 1       \NU1^       \ [1/s] 
+frequency 2       \NU2^       \ [1/s] 
+beat frequency    \NU_BEAT^   \ [1/s] 
+beat path length  \DZ_BEAT^   \ [um]
+
+!! set system and wavelength units
+UNITS UM
+WAVELENGTHS  (W1) (W2) UM
+
+!! set coherent source mode
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6
+PARABASAL 4
+
+!! create first source at 0.5890 um
+
+WAVELENGTHS (W1) UM
+GAUSSIAN Z 0 0 1 100
+
+!! create second source at 0.5896 um
+
+WAVELENGTHS (W2) UM
+GAUSSIAN Z 0 0 1 100   
+
+!! check a single source
+
+!! SELECT ONLY SOURCE 1
+!! 
+!! FIELD ENERGY 0 YX PIXELS 101
+!! 
+!! DISPLAY
+!!   PICTURE 'one source' 
+!! RETURN
+!! 
+!! SELECT ALL
+
+!! evaluate at origin at t=0  
+
+FIELD ENERGY 0 YX PIXELS 101
+DISPLAY
+  PICTURE 'z=0, t=0' 
+RETURN
+
+!! evaluate through axis at t=0
+
+FIELD ENERGY 0 YZ -2@200 -0 5000 PIXELS 51
+DISPLAY
+  PICTURE 'Spatial beats: x=0, t=0' 
+RETURN
+
+!! now adjust propagation by one-half spatial beat length and re-measure
+MOVE BY Z (DZ_BEAT/2)
+
+!! evaluate at origin a t= one-half beat
+FIELD ENERGY 0 YX PIXELS 101
+
+!! Note: there is still a Gaussian source here formed by the sum of the two sources,
+!!       but note that the magnitude is very small, i.e. ~10^-6 times the peak value.
+DISPLAY 
+  PICTURE 'z=0, t=1/2 beat' 
+!!  $GUI DisplayRange 0 4 
+!!  FORM -6
+!!  PICTURE 'z=0, t=1/2 beat' 
+RETURN
+
+!! evaluate through axis at t=1/2 beat
+
+FIELD ENERGY 0 YZ -2@200 -0 5000 PIXELS 51
+
+DISPLAY
+  PICTURE 'Spatial beats: x=0, t=1/2 beat'
+RETURN
+       
+$SCR 8 'Spatial and frequency beat parameters for the Na-D doublet '
+light speed       \C^         \ [um/s]
+wavelength 1      \W1.5       \ [um]  
+wavelength 2      \W2.5       \ [um]  
+frequency 1       \NU1^       \ [1/s] 
+frequency 2       \NU2^       \ [1/s] 
+beat frequency    \NU_BEAT^   \ [1/s] 
+beat path length  \DZ_BEAT^   \ [um]
+\DUMMY:?
+
+RETURN
+
+
+
+
+
+

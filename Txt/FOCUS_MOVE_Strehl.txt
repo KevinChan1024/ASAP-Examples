@@ -1,0 +1,95 @@
+!!++
+!! FOCUS_MOVE_STREHL.INR
+!! Title: FOCUS MOVE with Strehl
+!! Category: Isolated Command
+!! Keywords: FOCUS MOVE, Strehl, rms, wavefront, SINGLET APLANET, literal, string, PLOT TEXT 
+!! Description: Demonstrate the geometrical wavefront analysis of FOCUS MOVE r
+!! (where the "r" argument is a reference sphere radius).
+!! This example uses a simple singlet set up as an aplanat to
+!! examine the image space wavefront using geometrical tools
+!! in the FOCUS MOVE command when a reference sphere radius
+!! argument is provided. The RMS wavefront variation and the 
+!! Strehl ratio estimate are extracted, and they are then 
+!! added as annotation to the trace plot.   
+!! Edit History: (latest first)
+!! 01/23/2018 - cp - added header
+!! 01/11/2018 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+BEAMS INCOHERENT GEOMETRIC
+
+!! Define system units and wavelengths
+
+UNITS MILLIMETERS 'Watts'
+WAVELENGTH 550 NM
+
+!! Define coatings
+
+COATING PROPERTIES
+  0 1 'TRANSMIT'
+  1 0 'REFLECT'
+  0 0 'ABSORB'
+
+!! Define Media
+
+MEDIA  
+  1.5 'GLASS'
+
+!! Geometry definitions 
+
+LENSES
+  SINGLET Z 0 2.5 9.5 GLASS FL 50 1.0 APLANAT  
+OBJECT
+  .1 'TEST_SPH' 
+RETURN 
+
+SURFACE
+  PLANE Z 50 RECT 2@5
+OBJECT
+  .1 'TARGET'
+RETURN
+
+!! Source definitions 
+
+GRID ELLIP Z 0 -4@9.3 2@51
+SOURCE DIRECTION Z 0 90 
+MOVE TO Z -5
+
+!! Trace rays on geometry plot. Leave plot open via OVERLAY for subsequent annotation macro
+
+WINDOW Y Z
+PLOT FACETS 5 5 0 OVERLAY 'Singlet trace to demonstrate geometric wavefront analysis'
+TRACE PLOT COLOR 17 OVERLAY 
+!! NOTE: Leave the plot window open until the text annotation is added by a macro below
+
+!! Analysis block: extract geometric wavefront information with FOCUS MOVE reference sphere
+
+CONSIDER ONLY TARGET
+STATS
+
+$CLEAR 
+FOCUS MOVE -48  
+$GRAB 'Wavefront Variance (RMS)' 0 1 WAVEFRONT_RMS
+$GRAB 'Estimated Strehl Ratio'   0 1 STREHL_RATIO  
+&REG WAVEFRONT_RMS STREHL_RATIO 'Wavefront measures: '
+
+!! Macro for plot annotation
+PLOT_TEXT { 2
+PLOT TEXT
+  0 -8 25, 0 0 0.6, 0 0.7 0, 'Strehl ratio (estimate) :  0#1'
+  0 -9 25, 0 0 0.6, 0 0.7 0, 'RMS wavefront variation :  0#2'
+RETURN
+!! Note: The 0#1 & 0#2 in the arguments is simply to place a leading "0" 
+!!        character ahead of the decimal point in the output literals
+} 
+Literal string of value for Strehl ratio >>
+Literal string of value for RMS wavefront variation >>
+!! End the macro definition
+
+$PLOT_TEXT LIT[STREHL_RATIO] LIT[WAVEFRONT_RMS]   
+
+&REG WAVEFRONT_RMS STREHL_RATIO 'Wavefront measures: ' 
+RETURN

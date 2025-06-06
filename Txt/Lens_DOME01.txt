@@ -1,0 +1,54 @@
+!!++
+!! LENS_DOME01.INR
+!! Title: Dome Lens
+!! Category: Simple Problem
+!! Keywords: Lenses, LENSES, DOME
+!! Description: How to model a DOME lens, showing
+!! raytrace and analysis.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 03/14/2002 - cp - reformatted
+!! 03/13/2002 - cl - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.5 'GLASS'
+  1.84666 'OHARA S-TIH 53'
+ 
+!! Create geometry
+LENSES
+  DOME Z 0 100 2 100 1E8  !! 0    Location on Z axis
+                          !! 100  Axial thickness
+                          !! 2    Media number 
+                          !! 100  Front radius of curvature
+                          !! 1E8  Back radius of curvature
+OBJECT 'DOME WITH FLAT EXIT SURFACE'
+  
+SURFACES                   !! Make a detector plane to catch rays
+  PLANE Z 250 RECTANGLE 200 200 
+OBJECT 'DETECTOR'
+
+!! Verify geometry
+WINDOW Y Z
+PLOT FACETS 11 11 OVERLAY  !! Use the OVERLAY option, to trace
+                           !! rays on top of plotted geometry.
+
+!! Create sources
+GRID RECT Z -10 -50 50 -50 50 20 20 
+  SOURCE DIRECTION 0 SIN[10] COS[10]  !! Add a field angle of 10 degrees
+  FLUX TOTAL 100                !! Set flux to 100 units
+
+!! Trace rays
+TRACE PLOT
+
+!! Perform analysis
+$VIEW   !! Qualitatively look at traced rays in 3D viewer
+WINDOW Y X
+WINDOW 1.3  !! Enlarge window 30%
+SPOTS POSITION ATTRIBUTE 2  !! Use crosses for plotting
+
+RETURN 
+

@@ -1,0 +1,212 @@
+!!++
+!! MEDIA_ABSORB_LINEAR_VARIABLE_DISCRETE.INR
+!! Title: Linear Variable Bulk Absorber with Discrete Mono Sources  
+!! Category: Simple Problem
+!! Keywords: Interfaces, MEDIA ABSORB, absorption, linear, filter
+!! Description: A linear variable bulk absorber whose spectral pass
+!! band center varies with position. The pass band is a Gaussian function. 
+!! This example tests the filter using a series of monochromatic 
+!! Y-strip sources, probing the entire filter spectrum by discrete
+!! variation of wavelength along the X axis. The discrete sources 
+!! exercise the filter function to show its bandwidth and spatial 
+!! variation. It outputs the result via a ray plot where the passed
+!! ray energy shows the relative transmittance. 
+!! The bulk medium is defined using a variable absorption function and
+!! a weak null bulk scattering function to trigger the spatial 
+!! variation calculation as the medium is traced.
+!! A finite minimum transmittance is enforced to avoid possible
+!! trace issues with attempting to model physically a perfect
+!! transmittance or absorbance. The user supplies the 
+!!    size of the filter's clear aperture, 
+!!    slab thickness, 
+!!    minimum wavelength, 
+!!    maximum wavelength, 
+!!    transmission bandwidth (standard deviation),
+!!    peak transmittance, and
+!!    block transmittance.
+!! We assume that the minimum wavelength is at the filter's minimum Y 
+!! clear aperture coordinate, and that the minimum wavelength is at 
+!! the filter's maximum Y clear aperture coordinate.
+!! The function can easily be altered for other effects.
+!! The transmittance function clear aperture is inscribed within the 
+!! slab's full aperture. 
+!! Edit History: (latest first)
+!! 01/23/2018 - cp - added header
+!! 01/11/2018 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+XMEMORY MIN 
+
+!! Absorbing slab parameters
+SLAB_HW=22                 !! slab full Y semi-width
+SLAB_CA=20                 !! slab variable absorption function Y semi-width
+Z0_SLAB=0                  !! slab front plane Z location
+TH_SLAB=2                  !! slab thickness
+Z1_SLAB=Z0_SLAB+TH_SLAB    !! slab back plane Z location
+
+FILTER_WL_MIN=0.400         !! filter minimum wavelength [um]
+FILTER_WL_MAX=0.700         !! filter maximum wavelength [um] 
+FILTER_BW=0.010             !! filter wavelength bandwidth standard deviation [um] 
+FILTER_T_PASS=0.8           !! filter peak pass transmittance
+FILTER_T_BLOCK=1E-4         !! filter block transmittance
+
+UNITS MILLIMETERS 'Microwatts' 
+WAVELENGTHS 0.3 0.4 0.5 0.6 0.7 0.8 UM
+
+ACCURACY HIGH
+MISSED LINE 11
+CUTOFF 1E-32 1000
+HALT 1E-18
+SPLIT 1 !! MONTECARLO
+
+!! Define Media
+
+      MODEL (VOL_SCA=1)
+        VOLUME 0 1E-6 1E-3  !! VERY WEAK Homogeneous scattering model
+
+      $FCN SCATTER_DENS 1
+      SURFACES (SCATTERMOD=1)                               
+        USERFUNC 0 0 0 SCATTER_DENS                        
+
+!! Define a  function for absorption variation 
+!! Make an absorption function that varies center wavelength 
+!! as a function of the Y position. 
+!!
+!! User inputs:
+!!    _4  : filter clear semi-aperture 
+!!    _5  : slab thickness 
+!!    _6  : minimum wavelength 
+!!    _7  : maximum wavelength 
+!!    _8  : transmission bandwidth (standard deviation)
+!!    _9  : peak transmittance
+!!    _10 : block transmittance
+
+$FCN LINVAR_SPEC  WV=_0,
+                  DRANGE=_4,
+                  THICK=_5,
+                  WV_L=_6,
+                  WV_U=_7,
+                  BW=_8,
+                  T_PASS=_9,
+                  T_BLOCK=_10,
+                  WV_CTR=(WV_L+(WV_U-WV_L)*[(_2+DRANGE)/(2*DRANGE)]),
+                  TRANSMITTANCE=T_PASS*GAUS((WV-WV_CTR)/BW),
+                  TRANSMITTANCE=T_BLOCK>TRANSMITTANCE<T_PASS,
+                  ABS_COEFF=-LOG(TRANSMITTANCE)/THICK, 
+                  (ABS_COEFF)
+RETURN
+
+FUNCTION (ABSORBMOD2=SCATTERMOD+1)
+USERFUNC  0 0 0 LINVAR_SPEC (SLAB_CA) (TH_SLAB) (FILTER_WL_MIN) (FILTER_WL_MAX) (FILTER_BW) (FILTER_T_PASS) (FILTER_T_BLOCK)
+RETURN                   
+                  
+
+!! Alternate definition using long form of MEDIA ABSORB
+WAVELENGTHS 0.4 0.5 0.6 0.7 MICRONS
+MEDIA 
+1.578 ABSORB 1 (ABSORBMOD2) SCATTER  (VOL_SCA) (SCATTERMOD) 1 0.1 10000 'ABS_GLASS'
+                                                    !! dummy zero for absorption coefficient calculated from index, 
+                                                    !! surface designation for dummy constant "inhomogeneity", 
+                                                    !! function exponent (constant, but use 1 to be safe),
+                                                    !! step length in system units,
+                                                    !! maximum number of steps.
+RETURN
+
+!! Geometry
+SURFACES
+  PLANE Z (Z0_SLAB) RECT (SLAB_HW/2) (SLAB_HW)
+  PLANE Z (Z1_SLAB) RECT (SLAB_HW/2) (SLAB_HW) 
+  TUBE  Z (Z0_SLAB) (SLAB_HW/2) (SLAB_HW), (Z1_SLAB) (SLAB_HW/2) (SLAB_HW), 2@1
+OBJECT
+  .3 'SLAB.FRONT'
+      INTERFACE 0 1 AIR ABS_GLASS
+  .2 'SLAB.BACK'
+      INTERFACE 0 1 AIR ABS_GLASS
+  .1 'SLAB.EDGE'
+      INTERFACE 0 0 AIR ABS_GLASS  
+RETURN
+
+GROUP SLAB.?
+  COLOR 17
+RETURN
+
+SURFACE
+  PLANE Z (Z1_SLAB+5) RECT (SLAB_HW/2) (SLAB_HW)  
+OBJECT
+  .1 'DET' 
+      REDEFINE COLOR 20
+RETURN
+
+!! Source
+!! Make a series of sources of different wavelengths, 
+!! with the wavelengths progressing in X across the aperture.
+RAYS 0 
+
+!! Mind the integer math for the $DO (using wavelength in nm for index, convertign to um for source commands) 
+!! Note: if the wavelength span does not contain exactly an integer number of intervals, this may malfunction! 
+WL_L=400                        !! minimum wavelength [nm]
+WL_U=700                        !! maximum wavelength [nm]
+WL_SPAN=WL_U-WL_L               !! wavelength span [nm]
+WL_C=(WL_L+WL_U)/2              !! wavelength center [nm]
+WL_INCR=25                      !! wavelength increment [nm]
+N_WL=1+[(WL_U-WL_L)/WL_INCR]    !! numbers of wavelengths 
+WL_DX=2*SLAB_CA/(N_WL-1)        !! X-axis increment between source stripes 
+ 
+&REG N_WL WL_DX 'Number of wavelengths tested & x-spacing: '
+
+$DO (WL_L) (WL_U) (WL_INCR)
+  {
+WAVELENGTH ?/1000 MICRON      
+GRID RECTANGLE Z (Z0_SLAB) -2@(SLAB_HW) -2@(SLAB_HW) 1 501 !! 1D ray fan over full slab width
+!! GRID RECTANGLE Z (Z0_SLAB) -4@(SLAB_CA*21/20) 1 21 !! 1D ray fan over variable transmittance region
+SOURCE DIRECTION 0 0 1  
+SELECT ONLY SOURCE .1
+MOVE TO Z (Z0_SLAB-5)
+SHIFT X SLAB_CA*(?-WL_C)/WL_SPAN 
+FLUX 1 
+  }
+
+$CLEAR
+RAYSET   
+$GRAB 'rays defined' 0 -1 NRAYS
+&REG NRAYS 'Total number of rays: ' 
+
+SELECT ALL
+STATS SOURCES 
+
+!! Trace
+
+Y_ANNOT1=-(3*SLAB_CA/4)
+Z_ANNOT1=Z1_SLAB+5+2*SLAB_CA-(7*SLAB_CA/8)  
+
+X_ANNOT2=+(7*SLAB_CA/16)
+Y_ANNOT2=+(7*SLAB_CA/8)
+Z_ANNOT2=Z1_SLAB+5+2*SLAB_CA-(7*SLAB_CA/8)
+ 
+WINDOW Y -2@(SLAB_HW) Z (Z0_SLAB-5) (Z1_SLAB+5+2*SLAB_CA); WINDOW 1.1
+PLOT FACETS 3 3 0 OVERLAY 'Discrete monochromatic strip sources through linear spectral filter ' TEXT
+0 (Y_ANNOT1)      (Z_ANNOT1), 0 0 0.9, 0 1.1 0,  'Final rays show'  
+0 (Y_ANNOT1-1.6)  (Z_ANNOT1), 0 0 0.9, 0 1.1 0,  'flux variation in'  
+0 (Y_ANNOT1-3.2)  (Z_ANNOT1), 0 0 0.9, 0 1.1 0,  'spectral pass-band' 
+0 (Y_ANNOT1-4.8)  (Z_ANNOT1), 0 0 0.9, 0 1.1 0,  'along the Y direction' 
+
+(X_ANNOT2*16/16) (Y_ANNOT2-0*2.7)  (Z_ANNOT2), 0 0 0.7, 0 0.9 0,  'Discrete sources '  
+(X_ANNOT2*14/16) (Y_ANNOT2-1*2.7)  (Z_ANNOT2), 0 0 0.7, 0 0.9 0,  'are varied in ' 
+(X_ANNOT2*12/16) (Y_ANNOT2-2*2.7)  (Z_ANNOT2), 0 0 0.7, 0 0.9 0,  'wavelength from' 
+(X_ANNOT2*10/16) (Y_ANNOT2-3*2.7)  (Z_ANNOT2), 0 0 0.7, 0 0.9 0,  'blue to red in'  
+(X_ANNOT2*08/16) (Y_ANNOT2-4*2.7)  (Z_ANNOT2), 0 0 0.7, 0 0.9 0,  'the X direction ' 
+(X_ANNOT2*06/16) (Y_ANNOT2-5*2.7)  (Z_ANNOT2), 0 0 0.7, 0 0.9 0,  '   (depth) ' 
+TRACE PLOT 1>INT(NRAYS/101) OVERLAY
+PLOT RAYS (SLAB_CA)   
+$VIEW 
+RETURN
+
+
+
+
+
+
+

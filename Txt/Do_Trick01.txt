@@ -1,0 +1,44 @@
+!!++
+!! DO_TRICK01.INR
+!! Title: Multiple Media Indices using $DO
+!! Category: Simple Problem
+!! Keywords: Scripts, MEDIA, WAVELENGTHS, $DO 
+!! Description: Setting up a large number of wavelengths
+!! and media using $DO rather than typing it all by hand. 
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 07/12/2002 - cp - made compatible with ASAP/Basic
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Both of the following $DO loops perform what is on the same
+!! line once, then iterate on the second line, ending with 
+!! the statement on the third line.  
+
+$DO 1 14 1; WAVELENGTHS, !! Creates 15 total wavelengths
+  600+(10*?),
+  760               !! The 15th wavelength
+RETURN 
+ 
+MEDIA
+  $DO 1 14 1; 1.34, !! Assigns 15 total indices for each wavelength
+  1.34+(.03*?),     !! starting with 1.34.
+  'CIRCUS'          !! Names this media CIRCUS.
+RETURN  
+
+!! Check results of the above wavelengths and media 
+SURFACES
+  PLANE Z 0 RECTANGLE 10
+  OBJECT
+    INTERFACE 0 1 AIR CIRCUS
+ 
+PRINT OBJECTS 
+PRINT MEDIA           
+
+RETURN
+ 
+
+ 

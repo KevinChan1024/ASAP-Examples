@@ -1,0 +1,57 @@
+!!++
+!! LENSES_PERFECT03.INR
+!! Title: PERFECT Lens with Bi-directional Light Path
+!! Category: Isolated Command
+!! Keywords: PERFECT, LENSES
+!! Description: A PERFECT lens with a reflector
+!! at the focal plane. Shows the use of a bi-directional
+!! light path. A single PERFECT lens must be used at infinite
+!! conjugates. Either the image is at infinity or
+!! the object is at infinity.  Here, both paths are 
+!! demonstrated by the use of a mirror at one focal 
+!! distance away from the lens.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 06/17/2002 - cp - modified format; added description
+!! 06/12/2002 - js - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM 
+
+PARABASAL 4
+BEAMS COHERENT DIFFRACT 
+WIDTHS 1.6
+WAVELENGTH 632.8 NM
+ 
+GRID ELLIPTIC Z 9 -4@3 11 11
+  SOURCE DIRECTION 0 0 1
+
+LENSES
+  PERFECT Z 10 10 4
+OBJECT 'L1'
+
+SURFACES
+  PLANE Z 20 RECTANGLE 6
+OBJECT 'CATS_EYE_REFL'
+  INTERFACE 1 0 AIR AIR
+
+SURFACES
+  PLANE Z 0 RECTANGLE 6
+OBJECT 'DET'
+
+WINDOW Y Z
+PLOT FACETS 11 11 OVERLAY
+TRACE PLOT
+
+CONSIDER ONLY DET
+WINDOW Y -2@4 X -2@4
+PIXELS 61
+FIELD ENERGY
+DISPLAY
+  PICTURE
+DISPLAY 29 WAVEFRONT
+  PICTURE
+RETURN

@@ -1,0 +1,181 @@
+!!++
+!! BPMRIBBEDWAVEGUIDE.INR
+!! Title: Propagation down ribbed waveguide
+!! Category: Simple Problem
+!! Keywords: Wave, bpm, FIELD
+!! Description:  This file demonstrates the use of
+!! The Beam Propagation Method (BPM) in ASAP to propagate
+!! an input field down a simple ribbed waveguide.
+!! Note: Requires ASAP PRO to run.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 11/03/2010 - cp - added category
+!! 11/10/2004 - cp - added note
+!! 11/05/2003 - cp - reformatted
+!! 12/21/2000 - DCS - creation
+!!--
+
+!!
+!! Cross-section view of waveguide:
+!!
+!!                 |<----  WID  ---->| 
+!!                                                                     ^
+!!                 +-----------------+                 ---             |
+!!      NCLAD      |                 |                  HGT          Y |
+!!                 |                 |                                 
+!!  ---------------+      NCORE      +---------------  ---
+!!                                                      THK
+!!  -------------------------------------------------  ---          X --->
+!!             NSUB                                         
+!!  |<--------------      OWID       -------------->|                                                    
+!!
+
+
+!! Initialization commands...
+
+SYSTEM NEW; RESET  !! Clear out system geometry and sources
+$UNVAR ERROR       !! Tell ASAP to stop if undefined variables are encountered
+
+UNITS MICRONS      !! Set the system units
+
+
+!! Waveguide parameters...
+
+NCORE=3.44  !! index of core
+NCLAD=1.0   !! index of cladding (on top of core)
+NSUB=3.40   !! index of substrate
+
+
+!! Input field parameters...
+
+WX=1.00     !! Input gaussian waist semiwidth along X
+WY=0.6      !! Input gaussian waist semiwidth along Y
+WAVEL=1.15  !! Wavelength (in microns)
+
+
+!! Geometry parameters...
+
+OWID=20     !! See diagram above
+WID=3       !!  "     "      "
+HGT=0.6     !!  "     "      "
+THK=0.4     !!  "     "      "
+EPS=0.01    !! = epsilon (a small distance)
+L=1000      !! Distance to propagate along waveguide
+
+
+!! Miscellaneous and calculated parameters...
+
+RES=50            !! Vertical (along Y) resolution for BPM calculation
+NPLANES=30        !! Number of planes at which the field will be stored
+HSUB=3*(HGT+THK)  !! -Y Window limit
+HTOP=4*(HGT+THK)  !! +Y Window limit
+D=(OWID-WID)/2    !! X window limit
+
+
+!! Set the wavelength and define media properties...
+
+WAVELENGTH (WAVEL) MICRONS
+
+MEDIA
+  (NCORE) 'CORE_MED'
+  (NCLAD) 'CLAD_MED'
+  (NSUB)  'SUB_MED'
+
+
+!! Define upper edge of waveguide...
+
+EDGES
+  POINTS Z 0       0    (THK)      1
+                  (D)   (THK)      1
+                  (D)   (HGT+THK)  1
+                  (D+WID) (HGT+THK)  1
+                  (D+WID) (THK) 1
+                  (OWID) (THK) 0
+    SHIFT X -(OWID/2)                  
+    SWEEP DIRECTION (L) Z
+OBJECT 'CHANNEL.TOP'
+  INTERFACE 0 1 CORE_MED CLAD_MED
+
+
+!! Define waveguide front...
+
+EDGES
+  POINTS Z 0      0      0    1
+                  0    (THK)      1
+                  (D)   (THK)      1
+                  (D)   (HGT+THK)  1
+                  (D+WID) (HGT+THK)  1
+                  (D+WID) (THK) 1
+                  (OWID) (THK) 1
+                  (OWID) 0    1
+    SHIFT X -(OWID/2)                  
+OBJECT 'CHANNEL.FRONT'
+  INTERFACE 0 1 CORE_MED CLAD_MED
+
+
+!! Define waveguide bottom...
+
+EDGES
+  LINE 0 0 0 (OWID) 0 0
+    SHIFT X -(OWID/2)                  
+    SWEEP DIRECTION (L) Z
+OBJECT 'CHANNEL.BOTTOM'
+  INTERFACE 0 1 CORE_MED SUB_MED
+
+
+!! Define substrate front...
+
+SURFACES
+  PLANE Z 0 RECTANGLE (OWID/2) (HSUB/2)
+    SHIFT Y -(HSUB/2)
+OBJECT 'SUBSTRATE.FRONT'
+  INTERFACE 0 1 SUB_MED CLAD_MED
+
+
+!! Define a single gaussian beam...
+
+WIDTHS 1.6
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+
+IMMERSE CLAD_MED
+GAUSSIAN Z -(EPS) 0 0 1 1  0 0  (WX) (WY)
+  SHIFT Y (THK+HGT)/2
+
+
+!! Calculate field associated with this beam...
+
+WINDOW Y -(HSUB) (HTOP) X 0 (OWID/2) !! bilateral symmetry
+PIXELS (RES) 1.0
+FIELD ENERGY 0
+$COPY 29 INPUT_29.DIS
+$COPY 9 INPUT.DIS
+
+
+!! Draw contour plot of input and include in the vector file...
+
+DISPLAY INPUT.DIS
+  CONTOUR VECTOR
+RETURN  
+
+
+!! Propagate the input field along the waveguide using BPM...
+
+ACCURACY HIGH   !! Highest-order BPM approximation
+FIELD INPUT_29.DIS ENERGY -(EPS) (L) (NPLANES) BC 1 1
+$COPY 9 PROP.DIS
+$COPY 29 PROP_29.DIS
+
+
+!! Display results in viewer...
+
+PLOT FACETS                   !! Plot faceted view of the geometry
+DISPLAY PROP.DIS (NPLANES+1)  !! Draw contour of resulting field
+  CONTOUR .15 .25 .35 .45 .55 .65 .75 .85 .95 VECTOR
+RETURN
+$VIEW                         !! Show 3d view of current vector file
+&VIEW PROP.DIS                !! Add propagated field to the 3d view
+
+
+
+

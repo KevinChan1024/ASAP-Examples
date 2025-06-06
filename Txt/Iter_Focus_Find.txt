@@ -1,0 +1,93 @@
+!!++
+!! ITER_FOCUS_FIND.INR
+!! Title: Finding Best Focus with $ITER 
+!! Category: Simple Problem
+!! Keywords: Scripts, $ITER, LENSES, minimum, merit, iterate, FOCUS, MOVE, redefining
+!! Description: This demonstrates the second form of $ITER by finding
+!! the best focus of a singlet lens. A trace is performed at each 
+!! iteration and the target repositioned until a minimum ray deviation
+!! is found. The technique of redefining a Surface and Object is used.
+!! This new position is printed and compared with the ASAP command,
+!! FOCUS MOVE, which is actually the easier way to perform this
+!! function.
+!! The Radius of Curvature for the lens may be changed to view
+!! a different set of results.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 03/12/2002 - cp - modified header, script format
+!! 12/20/2001 - cp - modified SCR syntax
+!! 02/07/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+RAD=30  !! Radius of Curvature - Change this to view different results
+FOCPOS=60
+LENSES
+  SINGLET Z 0 30 30 SCHOTT_BAK1 RD (RAD) 0
+OBJECT 'LENS' 
+  INTERFACE 0 1 AIR AIR
+SURFACES  !! Original creation of Target (test focus) plane
+  PLANE Z (FOCPOS) RECTANGLE 10 10
+OBJECT 'TARGET' 
+
+ITERATE {
+  $ITER FOC 10 100 0.001 MERIT  !! Uses second form - Finding the minimum
+    {
+    RAYS 0  !! Clear old rays
+    GRID ELLIPTIC Z -10 -25 25 -20 20 10 10
+      SOURCE DIRECTION 0 0 1
+    SURFACES 2  !! Redefine surface 2
+      PLANE Z (FOC) RECTANGLE 10 10 
+    OBJECT 2 'TARGET'  !! Redefine object 2 at new position
+    TRACE
+    CONSIDER ONLY TARGET
+    STATS POSITION
+      $GRAB 'RMS Deviation' 0 1 XDEV
+      $GRAB 'RMS Deviation' 0 2 YDEV
+    MERIT=ABS(XDEV+YDEV)  !! Find minimum deviations in X and Y
+    CONSIDER ALL
+    RETURN
+   }
+}
+
+NSTEPS=30  FOC=60  !! Starting point for focus distance
+$ECHO NONE
+
+!! The $DO loops over the ITERATE macro NSTEPS times. Search Start Point is FOC=60
+$DO 1 (NSTEPS)
+  &ITERATE 
+ 
+$GRAB 'Centroid' 0 3 CENTROID !! Get final centroid from console
+$ECHO
+
+RAYS 0  !! Clear old rays
+WINDOW X Z 
+SURFACES 2  !! Redefine surface 2 with final focus position
+  PLANE Z (FOC) RECTANGLE 10 10
+OBJECT 2 'TARGET' !! redefine object 2 with new surface
+
+GRID ELLIPTIC Z -10 -25 25 -20 20 10 10
+  SOURCE DIRECTION 0 0 1 
+MISSED ARROWS 50
+PLOT FACETS 7 7 OVERLAY
+TRACE PLOT OVERLAY 
+SPOTS POSITION
+STATS POSITION
+FOCUS MOVE
+STATS POSITION
+  $GRAB 'RMS Deviation' 0 1 XDEV2
+  $GRAB 'RMS Deviation' 0 2 YDEV2
+  $GRAB 'Centroid' 0 3 CENTROID2
+MERIT2=ABS(XDEV2+YDEV2)
+
+$SCR 5
+  Found Minimum RMS at \MERIT.\
+      Focus Position= \FOC.     \  Centroid= \CENTROID.    \      
+  Using FOCUS MOVE, minimum RMS = \MERIT2.\
+      giving a Focus Position at \CENTROID2.     \        
+\DUMMY:?
+!! \DUMMY:? Causes $SCR to print on pop up input window!   
+
+RETURN

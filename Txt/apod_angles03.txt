@@ -1,0 +1,107 @@
+!!++
+!! APOD_ANGLES03.INR
+!! Title: Apodizing by Angles on Multiple Sources
+!! Category: Simple Problem
+!! Keywords: Sources, apodizing, APODIZE, ANGLES, $FCN, SPECTRUM, IMMERSE, macro, $DO
+!! Description: Apodizing in angle space on multiple
+!! sources, using a user-defined function. This file
+!! demonstrates how to simulate an angularly dependent
+!! filter using the ray modifier APODIZE.
+!! Edit History: (latest first)
+!! 11/11/2013 - gb - changed SURFACE to SURFACES
+!! 02/15/2000 - cp - modified format; added description
+!! 04/01/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTHS  486.1  587.6  656.3  NM
+
+MEDIA
+  1.52283 1.51680 1.51432 'GLASS'
+
+!! Immerse the rays in the glass media; i.e.
+!! inside of the filter - just for fun
+IMMERSE GLASS  !! Rays start in glass 
+
+!!Define a cosine intensity function
+$FCN LAMB1 COS(_1)    !! At 500 nm
+$FCN LAMB2 COS(_1)^2  !! At 600 nm
+
+!! Set up two uniform sources propagating into an angularly
+!! dependent filter and spectrally weight it
+SPECTRUM VISUAL
+
+$DO 500 600 100
+  {
+  SEED 1 QUASI
+  XMEMORY MIN
+  WAVELENGTH ? NM
+  EMITTING DISK Z 0 2@1 5000 2@40 ISO 
+    !!APODIZE ANGLES Z LAMB
+  }
+!! Now adjust total source flux
+STATS
+$GRAB 'TOTAL' 0 2 IFLUX
+FLUX 0 100/IFLUX
+
+!! Set up the dummy filter
+SURFACES
+  PLANE Z 0.1 RECTANGLE 20
+  OBJECT 'DUMMY_FILTER'
+    INTERFACE COATING +BARE AIR GLASS
+
+CSPOTS { 1
+!! This macro isolates each source and computes its
+!! monochromatic intensity
+  $DO 1 2
+    {
+    SELECT ONLY SOURCE ?
+    WINDOW Y X
+    SPOTS DIRECTION ATTRIBUTE 0
+    DISPLAY
+      AVERAGE
+      RADIAL
+      ANGLES
+      RANGE 0 99 !! Fix the plot range
+      ISOMETRIC 'INTENSITY BY SPOTS DIR OF SOURCE ? #1 APODIZATION'
+      GRAPH MAX APPEND 'INTENSITY BY SPOTS DIR  #1 APODIZATION'
+        'ANGLE FROM NORMAL'
+        'GRAPHS 1,3=SOURCE AT 500 NM BEFORE & AFTER APODIZATION'
+        'GRAPHS 2,4=SOURCE AT 600 NM BEFORE & AFTER APODIZATION'
+    }
+  SELECT ALL
+}
+ENTER TERM OF CALCULATION (BEFORE or AFTER)>
+
+CRADIANT {
+RADIANT Z 0 90 21 0 360 49 
+DISPLAY
+  AVERAGE
+  !!RADIAL
+  ISOMETRIC 'INTENSITY BY RADIANT'
+}
+
+$CSPOTS BEFORE
+
+TRACE STEP 1
+
+!! Now isolate rays at filter with consider command and
+!! select command. The select command is used to select
+!! an individual source which is then apodized with the
+!! apodize command.
+CONSIDER ONLY DUMMY_FILTER
+$DO 1 2
+  {
+  SELECT ONLY SOURCE ?
+    APODIZE ANGLES Z LAMB?
+  }
+
+$CSPOTS AFTER
+
+CONSIDER ALL
+SELECT ALL
+!! Continue ray trace and other analyses
+RETURN

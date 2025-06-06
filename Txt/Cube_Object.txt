@@ -1,0 +1,30 @@
+!!++
+!! CUBE_OBJECT.INR
+!! Title: A Cube as Single Object
+!! Category: Simple Problem
+!! Keywords: Geometry, OBJECT, solid, cube
+!! Description: Making a cube solid using second
+!! syntax of OBJECT command. The result is treated
+!! as one object.  SURFACES must be used.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 03/29/2006 - cp - added more facets
+!! 03/26/2001 - cp - creation
+!!--
+ 
+SYSTEM NEW
+RESET
+
+SURFACES
+  PLANE Z -5 RECT 5 5  
+  PLANE Z 5 RECT 5 5
+  PLANE X -5 RECT 5 5
+  PLANE X 5 RECT 5 5
+  PLANE Y -5 RECT 5 5
+  PLANE Y 5 RECT 5 5
+
+OBJECT; 1 1, 2 -1, 3 1, 4 -1, 5 1, 6 -1 'CUBE'
+OBLIQUE
+PLOT FACETS 5 5 0
+$VIEW
+RETURN 

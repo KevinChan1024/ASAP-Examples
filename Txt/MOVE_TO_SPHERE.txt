@@ -1,0 +1,52 @@
+!!++
+!! MOVE_TO_SPHERE.INR
+!! Title: Moving a source to a reference sphere
+!! Category: Isolated Command
+!! Keywords: MOVE TO SPHERE, Sources, GRID, Tracing
+!! Description: Demonstration of MOVE TO SPHERE.
+!! Some simple geometry is created and a source is 
+!! moved to a different location along a reference sphere.  
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 7/12/2005 - gg - creation
+!!--
+
+SYSTEM NEW
+RESET    
+
+!! Create geometry
+SURFACES
+  PLANE Z 10 RECTANGLE 4 4
+OBJECT 'PLANE
+
+!! Create rays
+GRID RECT Z 3 -4 4 -4 4 1 12
+  SOURCE POSITION 0 0 0
+              
+!! Show the geometry              
+WINDOW  Y Z
+WINDOW 1.5
+PLOT FACETS OVERLAY
+
+!! Plot rays
+TRACE PLOT
+
+!! Clear the rayset
+RAYS 0 
+                   
+!! Create a new rayset moved to a sphere
+GRID RECT Z 3 -4 4 -4 4 1 12
+  SOURCE POSITION 0 0 0
+  MOVE TO SPHERE 5 0 0 0  
+
+!! Plot the geometry again
+WINDOW Y Z
+WINDOW 1.5
+PLOT FACETS OVERLAY
+
+!! Plot the rays
+TRACE PLOT
+
+!! Compare the two plots to see the difference
+
+RETURN

@@ -1,0 +1,28 @@
+!!++
+!! LIST_ELLIPSE.INR
+!! Title: LIST ELLIPSE Output
+!! Category: Isolated Command
+!! Keywords: LIST ELLIPSE, Polarization
+!! Description: The LIST ELLIPSE command output
+!! for "POLARIZ X 0 1" on a grid of rays in the
+!! Z direction.
+!! Note: This is not a runable inr file.
+!! Edit History: (latest first)
+!! 07/30/2004 - cp - modified keyword
+!! 12/21/2001 - cp - modified description
+!! 10/09/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+ --- LIST ELLIPSE
+       Major Axis Orientation                     Minor/Major
+     Ray      X        Y            Z          Flux      Object    Ratio
+      1  0.0000000    1.0000000    0.0000000   0.444      0    0.0000000
+      2  0.0000000    1.0000000    0.0000000   0.444      0    0.0000000
+      3  0.0000000    1.0000000    0.0000000   0.444      0    0.0000000
+      4  0.0000000    1.0000000    0.0000000   0.444      0    0.0000000
+      5  0.0000000    1.0000000    0.0000000   0.444      0    0.0000000
+      6  0.0000000    1.0000000    0.0000000   0.444      0    0.0000000
+      7  0.0000000    1.0000000    0.0000000   0.444      0    0.0000000
+      8  0.0000000    1.0000000    0.0000000   0.444      0    0.0000000
+      9  0.0000000    1.0000000    0.0000000   0.444      0    0.0000000

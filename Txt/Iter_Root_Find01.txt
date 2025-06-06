@@ -1,0 +1,32 @@
+!!++
+!! ITER_ROOT_FIND01.INR
+!! Title: Finding Root of Equation with $ITER
+!! Category: Simple Problem
+!! Keywords: Scripts, $ITER, root, iterate, $SCR
+!! Description: Uses root finding method of $ITER.
+!! Edit History: (latest first)
+!! 02/09/2000 - cp - modified format; added description
+!! 10/18/1994 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+ROOT {   !! This macro performs a single iteration
+  $ITER X 1 4 0.01 Y
+  Y=(X-3)^2  !! Find an X that makes Y a minimum
+}
+ 
+LOOPER { 1  !! This macro loops over the root macro
+  X=1.5  !! Starting X value
+  $DO 1 #1
+    &ROOT
+ 
+  $SCR 1  !! Print out next line to console
+  The root of the equation y=(x-3)^2 is \X.  \
+}
+ENTER NUMBER OF ITERATIONS>
+
+&LOOPER 100
+ 
+RETURN

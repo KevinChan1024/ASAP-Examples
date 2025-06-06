@@ -1,0 +1,86 @@
+!!++
+!! MACRO_FRESNEL_LENS.INR
+!! Title: Fresnel Lens Macro
+!! Category: Simple Problem
+!! Keywords: Macros_user, Fresnel, lens, macro, $FCN, SWEEP, AXIS
+!! Description: A macro that makes an aspheric Fresnel lens. It
+!! uses parameters based on Edmund Scientic Fresnel lens. Another
+!! smaller macro is used for creating a test source.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/11/2000 - cp - Modified format; added description
+!! 03/23/1999 - cp - creation; Modified from on-line Help
+!!--
+
+SYSTEM NEW
+RESET
+
+RFRES { 6 'Fresnel macro'  !! Note 6 lines must follow
+  RAD=#1 FREQ=#2 EFL=#3 THICK=#4 INDEX=#5 KK=#6
+  RCURV=EFL*(INDEX-1)      !! Calculate curvature
+  NZONE=INT(FREQ*RAD]      !! Calculate number of zones
+  DELTAX=1/FREQ            !! Calculate zone spacing
+ 
+MEDIA
+  (INDEX) 'NF'
+  
+COATINGS PROPERTIES
+  0 1 'TRANS' 
+
+!! Surface sag equation
+$FCN ZCAL ((_)^2)/(RCURV)/(1+SQRT(1-((1+KK)*((_/RCURV)^2))))
+
+EDGES
+  $DO 1 (NZONE); POINTS 0 0 0 1  !! This line performed first (once) 
+    (?-1)*DELTAX 0 ZCAL(?*DELTAX)-ZCAL((?-1)*DELTAX) 1, ?*DELTAX 0 0 1
+    NZONE*DELTAX 0 -(THICK) 0    !! This line performed last (once) 
+  SWEEP AXIS 360 a 0 b 0 c 1, x 0 y 0 z 0
+  OBJECT 'FRESNEL_SIDE'
+    INTERFACE COAT +TRANS AIR NF
+ 
+SURFACES
+  PLANE Z -(THICK) ELLIPSE (NZONE*DELTAX)
+  OBJECT  'FLAT_SURFACE'
+    INTERFACE COAT +TRANS AIR NF
+}  !! Closing bracket must be in first column
+ENTER APERTURE RADIUS>
+ENTER LINE FREQUENCY>
+ENTER EFL>
+ENTER THICKNESS>
+ENTER INDEX OF REFRACTION>
+ENTER CONIC CONSTANT>
+ 
+$ECHO ALL
+&RFRES 6.35 10 10 0.06*25 1.49 -1.8  !! Call RFRES macro
+                                     !! "&" prevents macro echoing
+SURFACES
+  PLANE Z 10 RECTANGLE 3
+  OBJECT 'DETECTOR'
+
+SYSRAY { 1
+  BEAMS INCOHERENT GEOMETRIC
+  GRID ELLIPTIC Z -4 -4@(RAD) #1 1
+    SOURCE DIRECTION 0 0 1
+    ROTATE Z 5 0 0
+}
+ENTER NUMBER OF RAYS>
+
+TITLE 'A REAL FRESNEL LENS' !! For future plots
+WINDOW Y X
+WINDOW 1.2  !! Enlarge by 20%
+PLOT MESH 2
+
+WINDOW X Z
+WINDOW 1.2  !! Enlarge by 20%
+&SYSRAY 20  !! Create grid of 20 rays
+CONSIDER ONLY 2 3
+PIXELS 201
+PROFILES 0 0 1 OVERLAY
+CONSIDER ALL
+TRACE PLOT COLOR 5 OVERLAY
+
+WINDOW X 2 3 Z -1 1  !! Zoom in on portion of lens
+PLOT EDGES 'FRESNEL LENS RELIEF' !! Close-up of Fresnel profile
+PLOT FACETS 5 5  !! Show close-up portion of lens
+$VIEW
+RETURN

@@ -1,0 +1,41 @@
+!!++
+!! LASER_DIODE.INR
+!! Title: Diode Laser using DECOMPOSE DIRECTION 
+!! Category: Simple Problem
+!! Keywords: Wave, laser, diode, DECOMPOSE, FIELD, MODULUS
+!! Description: A model for a diode laser where
+!! DECOMPOSE DIRECTION is needed for a single
+!! narrow beam.  A DECOMPOSE POSITION would not
+!! work for this case. 
+!! Edit History: (latest first)
+!! 12/21/2001 - cp - modified Gaussian
+!! 03/27/2000 - cp - modified format; added description
+!! 03/15/2000 - js - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6
+WAVELENGTH 1.55 UM
+
+GAUSSIAN Z 0 0 0 1 1 0 0 .001 .0004
+
+WINDOW X Y
+PIXELS 51
+WINDOW  X -2@3.5E-3 Y -2@3.5E-3
+FIELD MODULUS 0
+DISPLAY
+  PICTURE
+RETURN
+
+RAYS 0  !! Clear previous rays/beams
+DECOMPOSE DIRECTION  !! Create new set of beams
+FIELD MODULUS 0
+DISPLAY
+  PICTURE
+RETURN

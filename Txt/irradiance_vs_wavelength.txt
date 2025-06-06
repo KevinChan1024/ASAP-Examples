@@ -1,0 +1,73 @@
+!!++
+!! IRRADIANCE_VS_WAVELENGTH.INR
+!! Title: Plotting Irradiance vs. Wavelength
+!! Category: Simple Problem
+!! Keywords: Analysis, SPECTRUM, THERMAL, WAVELENGTH, irradiance, $ITER, Sources  
+!! Description: How to plot irradiance vs. wavelength
+!! for a polychromatic source.  Uses $ITER to run
+!! raytraces at wavelength intervals over a thermal
+!! spectrum, saving the irradiance results to the
+!! iter.dis display file.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 07/12/2002 - cp - changed source keyword to Sources
+!! 05/04/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTHS  NM 
+FRESNEL AVERAGE 
+AREA=25  !! Target area
+
+!! Front of lens 
+SURFACES
+  OPTICAL Z -.692 4.5 -1 ELLIPSE 2.5
+OBJECT 'FRONT'
+  INTERFACE COAT +BARE AIR SCHOTT_BK7
+
+!! Back of Lens
+SURFACES
+  OPTICAL Z 0 -4.5 -1 ELLIPSE 2.5
+OBJECT 'BACK'
+  INTERFACE COAT +BARE AIR SCHOTT_BK7
+    SHIFT Z 1
+
+!! Edge of Lens
+SURFACES
+  TUBE Z 0 2.5 2.5 0.3 2.5 2.5
+OBJECT 'EDGE'
+
+!!Target 
+SURFACES
+  PLANE Z 10 RECTANGLE 5 5  
+OBJECT 'TARGET' 
+
+SPECTRUM THERMAL 3500
+
+$ITER WAVE 400 1200 -10 IRRAD  !! Iterate across range with endpoints
+  {
+  RAYS 0  !! Clear previous rays 
+  WAVELENGTH (WAVE)
+  GRID ELLIPTIC Z -5 -4@2.5 10 10
+    SOURCE DIRECTION 0 0 1 
+  TRACE 
+  WINDOW Y X
+  CONSIDER ONLY TARGET
+  SPOTS POSITION ATTRIBUTE 0
+  $GRAB 'Flux' 1 2 T_FLUX
+  IRRAD=T_FLUX/AREA
+  CONSIDER ALL
+  }
+    
+RETURN  
+CONSIDER ALL 
+WINDOW Y Z 
+!!PLOT FACETS 5 5 
+DISPLAY ITER 
+!!NORMALIZE 
+  GRAPH 'Irradiance vs. Wavelength'
+RETURN

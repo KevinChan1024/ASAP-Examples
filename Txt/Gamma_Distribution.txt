@@ -1,0 +1,24 @@
+!!++
+!! GAMMA_DISTRIBUTION.INR
+!! Title: Creating a Gamma Distribution Function 
+!! Category: Isolated Command
+!! Keywords: $EVAL, DISPLAY, distribution, FACT, $FCN, gamma
+!! Description: Creates the standard Gamma distribution using
+!! $FCN, then plots the distribution using $EVAL.  This could 
+!! be applied to a MIE particle size distribution, for example.
+!! Edit History: (latest first)
+!! 11/08/2005 - sm - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+A=2
+$FCN GAMMAFUNC (_^(A-1)*EXP[-_])/FACT[A-1]
+
+$EVAL _ 0 1 -101 GAMMAFUNC
+
+DISPLAY EVAL.DIS
+GRAPH
+RETURN
+ 

@@ -1,0 +1,33 @@
+!!++
+!! LENS_AFOCAL.INR
+!! Title: An Afocal Lens
+!! Category: Simple Problem
+!! Keywords: Lenses, LENSES, AFOCAL, binoculars
+!! Description: Making an afocal lens for use in 
+!! 7x35 binoculars. From the Lenses chapter.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 02/08/2000 - cp - modified format; added description
+!! 02/22/1999 - mc - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! AFOCAL creates a-two element afocal telescope.
+!! The elements in this case are refractive.
+LENSES 
+  AFOCAL Z 0 40 17.5 -2.5 BK7 BK7
+  OBJECT 'BINOCULARS '
+
+GRID RECT Z 0 -4@17.2 1 5
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -60
+
+ARROWS OFF 
+WINDOW Y Z
+WINDOW 1.5  !! Expand window by 50%
+PROFILES OVERLAY
+TRACE PLOT
+
+RETURN

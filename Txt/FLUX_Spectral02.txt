@@ -1,0 +1,94 @@
+!!++
+!! FLUX_SPECTRAL02.INR
+!! Title: Assigning Flux to Separate Source Groups 
+!! Category: Simple Problem
+!! Keywords: Sources, SPECTRUM, THERMAL, FLUX, SELECT, $ITER, $REG, GET
+!! Description: Assigning a total flux to individually apodized 
+!! source groups, which have their own spectral response.  In
+!! this example, two groups of sources over the same wavelengths
+!! are apodized with a different thermal temperature using the
+!! SPECTRUM command.  FLUX TOTAL works after the first group is
+!! created, but the second group must be selected out separately
+!! in order to assign its own flux. ASAP weights the component
+!! fluxes of each group according to the spectral response at 
+!! each wavelength.  A method for checking the spectral response
+!! of the sources, using $ITER, is shown.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 04/05/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+BEAMS INCOHERENT GEOMETRIC  
+
+!! Source group 1
+SPECTRUM THERMAL 3000
+$DO 550 650 10
+{    
+  WAVELENGTH ? NM
+  GRID ELLIPTIC Z 0 -4@10 2@11
+   SOURCE DIRECTION 0 0 1
+}
+
+FLUX TOTAL 100  !! Set first spectrum source flux
+
+!! Source group 2
+SPECTRUM THERMAL 1500  
+$DO 550 650 10
+{
+  WAVELENGTH ? NM
+  GRID ELLIPTIC Z 0 -4@5 2@5
+   SOURCE DIRECTION 0 0 1
+   SHIFT Y -10
+} 
+
+SELECT ONLY SOURCE 12 OR SOURCE 13 OR SOURCE 14 OR SOURCE 15 OR SOURCE 16,
+  OR SOURCE 17 OR SOURCE 18 OR SOURCE 19 OR SOURCE 20 OR SOURCE 21 OR SOURCE 22
+FLUX TOTAL 200  !! Set second spectrum source flux
+
+$ECHO NONE  !! Turn off console echoing
+
+!! Check 1st spectrum flux
+TFLUX=0
+$ITER SNUM 1 11 -11 SFLUX 
+  { 
+  SELECT ONLY SOURCE (SNUM)
+!!  STATS
+!!  $GRAB 'TOTAL' 0 2 SFLUX
+  GET
+  &REG F0 'FLUX='  !! More accurate than $GRAB
+  SFLUX=(F0)
+  TFLUX=TFLUX+SFLUX
+  }
+TFLUX=TFLUX-(F0)   !! Remove last iteration at "minimum"
+&REG TFLUX 'Total Flux='
+DISPLAY $ITER       !! Show graph of spectrum
+  GRAPH 'First Source'  
+RETURN
+   
+!! Check 2nd spectrum flux
+TFLUX=0  !! Reset Total Flux count
+$ITER SNUM 12 22 -11 SFLUX 
+  { 
+  SELECT ONLY SOURCE (SNUM)   
+!! STATS
+!! $GRAB 'TOTAL' 0 2 SFLUX  
+  GET
+  &REG F0 'FLUX='  !! More accurate than $GRAB
+  SFLUX=(F0)
+  TFLUX=TFLUX+SFLUX
+  }
+TFLUX=TFLUX-(F0)   !! Remove last iteration at "minimum"
+&REG TFLUX 'Total Flux='
+DISPLAY $ITER       !! Show graph of spectrum
+  GRAPH 'Second Source'
+RETURN
+
+$ECHO ALL  !! Turn on echoing
+SELECT ALL !! All sources selected for tracing
+!!LIST SOURCES 
+STATS      !! Total of all sources
+RETURN

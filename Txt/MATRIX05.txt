@@ -1,0 +1,54 @@
+!!++
+!! MATRIX05.INR
+!! Title: MATRIX For Source Coordinate System Conversion
+!! Category: Isolated Command
+!! Keywords: MATRIX, Sources, Manipulating, handedness, coordinate system
+!! Description: Example of using the MATRIX command to change from
+!! left handed to right handed coordinate system. This can be useful
+!! for converting Radiant Imaging ray files to the ASAP right-handed
+!! system.
+!! Edit History: (latest first)
+!! 01/23/2006 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  TUBE X 0 0.25 0.25 2 0.25 0.25
+    SHIFT 0 -0.5 -0.5
+  PLANE X 0 RECTANGLE 3 3 
+  PLANE Y 0 RECTANGLE 3 3
+  PLANE Z 0 RECTANGLE 3 3
+
+OBJECT 0  !! Reserved for the source - to be created
+  BOUNDS .4 MULTIPLE .1 .2 .3
+EMITTING SPHEROID 0 0 0 1 1 1.5 10000
+ 
+SPOTS POSITION 
+$VIEW !! Show original orientation
+RETURN
+
+SYSTEM NEW !! Start over
+RESET
+
+SURFACES
+  TUBE X 0 0.25 0.25 2 0.25 0.25
+    SHIFT 0 -0.5 -0.5
+  PLANE X 0 RECTANGLE 3 3 
+  PLANE Y 0 RECTANGLE 3 3
+  PLANE Z 0 RECTANGLE 3 3
+
+OBJECT 0  !! Reserved for the source - to be created
+  BOUNDS .4 MULTIPLE .1 .2 .3
+EMITTING SPHEROID 0 0 0 1 1 1.5 10000
+MATRIX  !! Change the X determinate to be -1 and leave Y and Z unchanged
+0 -1 0 0
+0 0 1 0
+0 0 0 1 !!LIST
+ 
+SPOTS POSITION
+$VIEW  !! Turn on axes in 3D viewer and rotate with mouse. 
+       !! Compare with other 3D viewer.  
+       !! One should be a reflection of the other.
+RETURN

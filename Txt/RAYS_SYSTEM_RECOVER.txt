@@ -1,0 +1,86 @@
+!!++
+!! RAYS_SYSTEM_RECOVER.INR
+!! Title: Rotating Ray Data
+!! Category: Simple Problem
+!! Keywords: Tracing, rays, RAYS, SYSTEM, XMEMORY
+!! Description: This demonstration creates a simple geometry and rayset,
+!! traces rays, deletes the geometry and rays, then reloads
+!! the geometry and rays. The appropriate associations
+!! between objects and rays are restored by this process.
+!! Edit History: (latest first)
+!! 06/28/2007 - cp - added header
+!! 06/28/2007 - jah - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+UNITS MM
+
+XMEMORY NORM 'MYRAYS.PGS' !! Instead of virtual.pgs
+
+GRID RECT Z -1 -4@1 2@11
+SOURCE POSITION 0 0 -2
+
+$DO 1 6
+ENT OBJ;PLANE Z ? RECT 2 'THING?'; INTERFACE 0 1
+
+SYSTEM TO MYGEOM.SYS  !! Store geometry
+
+WINDOW Y Z 
+WINDOW 1.6
+MISSED ARROW 3
+PLOT FACETS 3 3 0 OVERLAY
+TRACE PLOT
+
+STATS
+
+!! Rayset stored
+
+$SCR 2
+Rays traced and stored in file MYRAYS.PGS
+\DUMMY:?
+
+!! Geometry and rayset deletion
+SYSTEM NEW
+RESET 
+
+!! Verify deletion of geometry
+NUMBERS NAMES
+!! Verify deletion of rays
+STATS 
+
+$SCR 2
+Rays and geometry deleted
+\DUMMY:?
+
+
+
+!! Restore ray file 
+$COPY MYRAYS.PGS VIRTUAL.PGS 
+
+STATS
+
+$SCR 2
+file MYRAYS.PGS copied to default VIRTUAL.PGS
+\DUMMY:?
+
+!! Reload rayset 
+SYSTEM FROM MYGEOM.SYS
+
+!! Verify geometry status
+NUMBERS NAMES
+
+$SCR 2
+geometry reloaded
+\DUMMY:?
+
+!! Re-activate rayset relation to geometry 
+RAYS
+
+STATS
+
+$SCR 2
+Rays and their geometry associations reloaded
+\DUMMY:?
+
+

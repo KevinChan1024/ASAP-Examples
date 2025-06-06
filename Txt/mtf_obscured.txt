@@ -1,0 +1,89 @@
+!!++
+!! MTF_OBSCURED.INR
+!! Title: Monochromatic Diffraction MTF 
+!! Category: Simple Problem
+!! Keywords: Wave, mtf, FFT, diffraction, macro, APPEND
+!! Description: Monochromatic diffraction MTF of
+!! an obscured aperture F/2 system.  
+!! A note on sampling issues:
+!! Using a GRID type of ELLIPTICAL exhibits "crenulation"
+!! that will manifest in the diffraction pattern and resulting
+!! MTF. Crenulation is the "stepping" of the rays in the outer
+!! edge pattern due to the fact that a GRID ELLIPTIC is a
+!! truncated GRID RECT. The GRID ELLIPTIC was chosen so the user
+!! could put a hole directly in the rayset to easily simulate
+!! the obscurration.  If you need a true circular pattern then
+!! you have to switch to a GRID POLAR and clip the rays with an
+!! aperture to simulate the apodization, or DECOMPOSE POSITION
+!! the field at the secondary of the system.  
+!! In general, the MTF or the PSF are a function of the number
+!! of Gaussian beams.  The MTF is computed by the Fast Fourier 
+!! Transform  (FFT) in DISPLAY.  The "roundedness" of the PSF
+!! and MTF will be a function of the number of Gaussian beams. 
+!! The number of Gaussian beams, the number of pixels, the FFT 
+!! size and the window size all determine the quality of the MTF. 
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/01/2012 - kg - corrected for new default FFT size, added sampling notes 
+!! 11/05/2003 - cp - fixed keyword
+!! 10/09/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  1 0 'REFL'
+
+SURFACES
+  OPTICAL Z 0 -40 -1 ELLIPSE 5
+OBJECT 'PRIMARY_MIRROR'
+  INTERFACE COAT REFL
+
+SURFACES
+  PLANE Z -20 ELLIPSE 1
+OBJECT 'DETECTOR'
+
+
+SEARCH SEQUENTIAL FORWARD
+FFT_POWER=8
+FTSIZE (FFT_POWER)
+FFT_SIZE=2^(FFT_POWER)
+PIX=101  WAVEL=0.5  UNI=39.37E-6  FNUM=2
+WIDE=PIX*PIX*WAVEL*UNI*FNUM/(4*FFT_SIZE) !! Set window according to FFT size
+
+COBSMTF {  !! MTF macro of obscured systems
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTHS (WAVEL) UNITS (UNI)
+WIDTHS 1.6 !! Recommended setting
+GRID ELLIPTIC Z -5 -4@5 2@31 #1
+  SOURCE DIRECTION 0 0 1
+  
+TRACE
+WINDOW Y -2@(WIDE) X -2@(WIDE)
+PIXELS (PIX)
+FIELD ENERGY -20
+$IO PLOT REWIND
+TITLE 'MTF OF OBSCURED APERTURE F/2 SYSTEM'
+DISPLAY
+  RADIAL
+  FFT 
+  NORM MAX
+  NORM 0.0101
+  GRAPH APPEND AXIS -100 100 
+    'RELATIVE SPATIAL FREQUENCY [%]'
+    '0%, 25%, 50%, 75% LINEAR OBSCURATION'
+RETURN
+}
+
+$DO 0 3  !! Loop to do MTF calculations
+  &COBSMTF ?/4
+
+DISPLAY
+FFT
+  NORMALIZE MAX MAX
+  NORMALIZE 0.010 0.010 
+ISOMETRIC '3D MTF PATTERN FOR 75% LINEAR OBSCURATED SYSTEM'
+RETURN

@@ -1,0 +1,45 @@
+!!++
+!! TORIC_LENS_BOUNDING.INR
+!! Title: Make a toric lens by USERSAG and mutually bound with TUBE
+!! Category: Simple Problem
+!! Keywords: Geometry, conic, lens, TORIC, USERSAG, OPTICAL, TUBE, BOUNDS 
+!! Description: Creates a toric lens with a vertex radius 
+!! and conic constant which vary azimuthally, and bounds with a TUBE
+!! to form an edge.
+!! Edit History: (latest first)
+!! 10/15/2014 - mt - By defining both entities before the objects are made, either entity can be used to bound the other.
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/28/2004 - jh - converted USERSAG to toric lens and added bounding
+!! 02/03/2000 - cp - creation (as CYLINDRICAL_LENS.INR)
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+!! Variables
+RCX=-10
+RCY=-20
+KX=-4
+KY=-1
+
+!! Tube to be mutually bounded with toric lens 
+SURFACES 
+  TUBE Z -10 2@8 5 2@8  
+
+!! Toric surface with varying vertex radius and conic constant
+  USERSAG Z 0 (1/RCX) (KX) TORIC (RCY) (KY) ELLIPSE 9.99 9.99
+
+!! Make into objects mutually bounded
+OBJECT
+  .1 'TORIC_LENS'
+      BOUNDS -.2
+  .2 'LENS_EDGE'
+      BOUNDS -.1
+
+
+PLOT FACETS 5 5 0 OVERLAY
+PLOT ENTITIES  !! Superimpose entities to illustrate bounding
+$VIEW
+RETURN

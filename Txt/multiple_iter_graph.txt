@@ -1,0 +1,92 @@
+!!++
+!! MULTIPLE_ITER_GRAPH.INR
+!! Title: Graphing Multiple ITER Results
+!! Category: Simple Problem
+!! Keywords: Analysis, $ITER, GRAPH, $DO, APPEND, RANGE, macro  
+!! Description: Graphing several iter display files on 
+!! one plot.  A $ITER which performs wavelength vs. irradiance 
+!! over a thermal spectrum is put inside a macro.  This way
+!! the iter may be called from a $DO loop, passing it a
+!! parameter which changes the absorption of the material.
+!! On each loop a $ITER display file is produced and plotted
+!! on the same graph. Probably an unnecessarily complicated
+!! way to show how to graph several display files in the same
+!! plot after having fixed the range.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 09/08/2005 - cp - modified GRAPH line
+!! 05/10/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM
+
+ITRANS=0.32
+
+MEDIA
+  1.489 ABSORB -LOG(ITRANS)/3 'ACRYLIC' 
+  
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTHS  NM 
+FRESNEL AVE 
+AREA=25  !! Target area
+
+!! Front of lens 
+SURFACES
+  OPTICAL Z -.692 4.5 -1 ELLIPSE 2.5
+  OBJECT 'FRONT'
+    INTERFACE COAT +BARE AIR ACRYLIC
+
+!! Back of Lens
+SURFACES
+  OPTICAL Z 0 -4.5 -1 ELLIPSE 2.5
+  OBJECT 'BACK'
+    INTERFACE COAT +BARE AIR ACRYLIC
+    SHIFT Z 1
+
+!! Edge of Lens
+SURFACES
+  TUBE Z 0 2.5 2.5 0.3 2.5 2.5
+  OBJECT 'EDGE'
+
+!!Target 
+SURFACES
+  PLANE Z 10 RECTANGLE 5 5  
+  OBJECT 'TARGET' 
+
+SPECTRUM THERMAL 3500
+
+ABSPLOT {
+$ITER WAVE 400 1200 -10 IRRAD  !! Iterate across range with endpoints
+  {
+  RAYS 0  !! Clear previous rays
+  ITRANS=ITRANS-0.0005*2^(#1)
+  
+  MEDIA 1  !! Redefine with more absorption each time around
+    1.489 ABSORB -LOG(ITRANS)/3 'ACRYLIC
+    
+  WAVELENGTH (WAVE)
+  GRID ELLIPTIC Z -5 -4@2.5 10 10
+    SOURCE DIRECTION 0 0 1
+    STATS
+  TRACE 
+  WINDOW Y X
+  CONSIDER ONLY TARGET
+  SPOTS POSITION ATTRIBUTE 0
+  $GRAB 'Flux' 1 2 T_FLUX
+  IRRAD=T_FLUX/AREA
+  CONSIDER ALL
+  }
+}    
+
+TITLE 'Irradiance vs. Wavelength as Absorption is Increased' 
+$DO 1 5 1
+  {
+  &ABSPLOT ?
+  DISPLAY ABSPLOT  !! Each iter is put in ABSPLOT.DIS named after the macro
+    RANGE 0 0.5
+    GRAPH APPEND !! use OVER to use the old plot viewer
+  }
+RETURN

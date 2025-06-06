@@ -1,0 +1,93 @@
+!!++
+!! GRIN_LENS01.INR
+!! Title: Grin Lens Optimization
+!! Category: Simple Problem
+!! Keywords: Interfaces, GRIN, $ITER, macro, $DO, FUNCTION
+!! Description: A GRIN lens optimized for best focus.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 01/21/2004 - cp - removed blank line in STEP macro 
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+T=1 L=1.5 N=1.65 M=1.65 H=1.8
+FUNCTION
+  GENERAL
+    C (N)
+    Z M-N/T 
+
+MEDIA
+  1 GRIN 1 2 T/10 'AGRIN'
+COATINGS PROPERTIES
+  0 1 'TRANS'
+
+SURFACES
+  OPTICAL Z 0 3 ELLIPSE 2.1
+  OBJECT 'SURF_1'
+    INTERFACE COAT TRANS AIR AGRIN
+
+SURFACES
+  PLANE Z (T) ELLIPSE 2.1
+  OBJECT 'SURF_2'
+    INTERFACE COAT TRANS AIR AGRIN
+
+SURFACES
+  PLANE Z 5 ELLIPSE 2.1 
+  OBJECT 'IMAGE_PLANE'
+
+ANALYZE {  !! Plot lens and ray fan
+ BEAMS INCOHERENT GEOMETRIC
+ GRID RECT Z -1 -4@2.04 1 51
+   SOURCE DIRECTION 0 0 1
+ PROFILES OVERLAY
+ TRACE PLOT 2
+ FOCUS
+
+ $ITER I -25.5 25.5 51 Y0
+   GET 26+INT[I.]
+ DISPLAY ANALYZE
+   GRAPH AXIS -1 1 'TRANSVERSE RAY FAN PLOT'
+ RETURN
+}
+ 
+MERIT {  !! Evaluate merit function
+ UPDATE !! Make room for redefined surface definition
+ FUNCTION 1
+   GENERAL
+     C (N)
+     Z M-N/T
+ $DO 1 8; RAYSET Z -1
+   0 2*SQRT(?/8)
+   SOURCE DIRECTION 0 0 1
+   TRACE
+   GET 1
+   MOVE BY Z -Y0*B0/C0 !! Move rays to paraxial focus
+ MERIT=0 
+ $DO 2 8
+   GET ?; DY?=(Y0) MERIT=(DY?)^2+MERIT !! Calculate spot size
+}
+ 
+STEP {  !! Do one major iteration
+ $IO OUTPUT CANCEL
+ $ITER N (L) (H) 0.01 M (L) (H) 0.01 DY2:DY8
+ &MERIT
+ $IO OUTPUT
+ $REG M N MERIT
+}
+ 
+WINDOW Y -2 2 Z -1 5
+PIXELS 71
+TITLE 'SYSTEM BEFORE OPTIMIZATION'
+$ANALYZE
+$IO OUTPUT ITER2 2
+$DO 1 3
+  $STEP
+$IO OUTPUT CLOSE
+TITLE 'SYSTEM AFTER OPTIMIZATION'
+$ANALYZE
+
+RETURN

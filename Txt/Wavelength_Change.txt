@@ -1,0 +1,33 @@
+!!++
+!! WAVELENGTH_CHANGE.INR
+!! Title: Changing a Dump File Wavelength
+!! Category: Simple Problem
+!! Keywords: Tracing, WAVELENGTH, EMITTING, DUMP, GET
+!! Description: Shows how to change the wavelength on
+!! a DUMP dile used as a new source.  Simply specify
+!! the new wavelength before creating the source with 
+!! EMITTING DATA. 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 11/10/2004 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 500 NM
+
+EMITTING RECT Z 0 2@10 100 2@20
+
+DUMP TESTRAYS !! Make a ray file
+
+RAYS 0  !! Clear old rays
+
+WAVELENGTH 450 NM  !! Set new wavelength
+EMITTING DATA TESTRAYS  !! Bring up old set of rays
+
+LIST SOURCE !! Show source info with wavelength
+GET  
+&REG WAVELEN !! Print new wavelength directly
+RETURN

@@ -1,0 +1,76 @@
+!!++
+!! HOE1.INR
+!! Title: HOE Imported from Zemax
+!! Category: Simple Problem
+!! Keywords: Gratings, hoe, doe, hologram, optical, $FCN, USERFUNC, DIFFRACT
+!! Description: An HOE (Holographic Optical Element) imported
+!! from Zemax. The holographic surface used for the diffractive 
+!! element is made with a multiple USERFUNC surface which calls
+!! a holographic function.
+!! Edit History: (latest first)
+!! 11/19/2014 - mt - Corrected misspelling of HOLOGRAM; added 0 in PLOT FACETS 4 4 0
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 11/10/2011 - cp - modified keywords  
+!! 09/22/2008 - cp - fixed keyword
+!! 02/14/2000 - cp - creation; modified from mc
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Following geometry was translated from Zemax
+
+UNITS MM
+WAVELENGTHS 0.55 MICRON
+
+SPECTRUM 1
+
+MEDIA
+  0.7`-7.0  'ZMX_ALUMINUM'
+
+COATINGS PROPERTIES
+  0.0 1.0  'TRANSMIT'
+  1.0 0.0  'REFLECT'
+  0.0 0.0  'ABSORB'
+
+$FCN HOLOGRAM,
+  FDX1=_4-_1,  FDY1=_5-_2,  FDZ1=_6-_3,  FS1=_10,
+  FDX2=_7-_1,  FDY2=_8-_2,  FDZ2=_9-_3,  FS2=-1,
+  FD1=FS1*SQRT(FDX1*FDX1+FDY1*FDY1+FDZ1*FDZ1),
+  FD2=FS2*SQRT(FDX2*FDX2+FDY2*FDY2+FDZ2*FDZ2),
+  FD1+FD2, -FDX1/FD1-FDX2/FD2, -FDY1/FD1-FDY2/FD2, -FDZ1/FD1-FDZ2/FD2 
+  
+
+!! Aperture stop
+SURFACES
+  USERFUNC 0 0 0 HOLOGRAM,
+    0 5 1000000000,
+    0 0 -100 1
+    MULTIPLE 1 0.55
+SURFACES
+  OPTICAL Z 0 0 0
+    PARAMETERIZE -Z
+    LOCAL -6@10 Z
+  OBJECT 'SURF1'
+    INTERFACE COAT "TRANSMIT"  "AIR" "AIR" DIFFRACT -.2 1
+
+!! Detector
+SURFACES
+  OPTICAL Z 0 0 0
+    PARAMETERIZE -Z
+    LOCAL -6@18.3808373 Z
+  OBJECT 'IMAGE_SURF'
+    INTERFACE COAT "ABSORB"  "AIR" "AIR"  
+    SHIFT Z 99.950034978
+RETURN
+
+!! Trace
+WAVELENGTH 0.55
+GRID ELLIPTIC Z 0 -4@20/2 1 5
+  SOURCE DIRECTION 0 TAN[0] 1
+  MOVE TO Z -20/2
+WINDOW Y Z
+PLOT FACETS 4 4 0 OVERLAY
+TRACE PLOT
+$VIEW 
+RETURN

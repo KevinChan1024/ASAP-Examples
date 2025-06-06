@@ -1,0 +1,87 @@
+!!++
+!! BILATERAL01.INR
+!! Title: Use of the BILATERAL command
+!! Category: Isolated Command
+!! Keywords: BILATERAL, folding, mirroring, flip, Sources 
+!! Description: Using BILATERAL to fold a source in half in
+!! one axis and then again in the other axis, ending up with 
+!! only one quadrant (ray number remains same). 
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 05/23/2011 - cp - improved visual style and changed keywords  
+!! 08/22/2007 - cp - reformatted
+!! 04/12/2007 - bf - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+MEDIA
+  1.613  'SK4'
+
+BILATERAL OFF
+
+SURFACES
+  OPTICAL Z 0 44.55 ELLIPSE 16.9 16.9
+OBJECT 'L1.FRONT'    
+  INTERFACE 0 1 AIR SK4
+  
+SURFACES
+  OPTICAL Z 5 -436.6 ELLIPSE 16.9 16.9
+OBJECT 'L1.BACK'    
+  INTERFACE 0 1 AIR SK4
+
+SURFACES
+  TUBE Z 0 16.9 16.9   5 16.9 16.9
+OBJECT 'L1.EDGE'
+  BOUNDS  +.3  -.2
+
+SURFACES
+  PLANE Z  65.12    RECT 5
+OBJECT 'DETECTOR'  
+
+GRID ELLIPSE Z -1 -4@16 101  101
+SOURCE DIRECTION 0 0 1
+FLUX TOTAL 100
+!!BILATERAL POSITION  X Y
+
+WINDOW Y Z
+PLOT FACETS 7 7 0   OVERLAY
+TRACE PLOT  111
+
+CONSIDER ONLY DETECTOR
+WINDOW  X -2@.318 Y -2@.318 
+PIXELS 101
+
+SPOTS POSITION
+
+DISPLAY
+AVERAGE
+PICTURE 'NO BILATERAL'
+RETURN
+
+$IO VECTOR REWIND
+RAYS 0
+
+GRID ELLIPSE Z -1 -4@16 101  101
+SOURCE DIRECTION 0 0 1
+FLUX TOTAL 100
+BILATERAL POSITION  X Y
+
+CONSIDER ALL
+WINDOW Y Z
+PLOT FACETS 7 7 0   OVERLAY
+TRACE PLOT  111
+
+CONSIDER ONLY DETECTOR
+WINDOW X -2@.318 Y -2@.318  
+PIXELS 101
+
+SPOTS POSITION
+
+DISPLAY
+AVERAGE
+PICTURE 'WITH BILATERAL'
+RETURN

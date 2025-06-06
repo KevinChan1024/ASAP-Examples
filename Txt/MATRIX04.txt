@@ -1,0 +1,68 @@
+!!++
+!! MATRIX04.INR
+!! Title: Converting MATRIX to Discrete Translations
+!! Category: Isolated Command
+!! Keywords: MATRIX, Manipulating, LIST, ROTATE 
+!! Description: Convert a direct MATRIX command input to a
+!! discrete sequence of ROTATEs and SHIFTs using the LIST option.
+!! Create 1 Plane surface with MATRIX. Apply the LIST option at
+!! the end of the last line. This gives the rotational angle info
+!! to use with ROTATE in the Ouput Console.  Can use either X-Y-Z
+!! or Z-Y-X data to reconstruct the translation matrix (not both)
+!! using discrete ROTATE commands. Note that Z-Y-X is in that
+!! order even though it falls under the columns in the order of
+!! X-Y-Z. ROTATE commands must be referenced to Global Origin, and
+!! therefore any additional SHIFTs must follow at the end.  SHIFTs
+!! are determined by the number in the first column (displacement
+!! vector).  In this example, only a Z shift is given. 
+!! A second surface is created with the discrete commands and
+!! is compared to the other, showing they overlap exactly.
+!! A LIST is also done after the last translation command, in
+!! this case SHIFT, to show the computed MATRIX is the same as
+!! the previous MATRIX entered. The first line in the Matrix output
+!! can be ignored.  Initially, for this example, simple integer
+!! numbers were used with ROTATE and SHIFT and the LIST output was
+!! copied and used for the direct MATRIX input on the first surface.
+!! This shows the LIST output may be used either way for conversion.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/14/2004 - cp - creation
+!!--
+ 
+SYSTEM NEW
+RESET
+
+SURFACES
+  PLANE Z 100 RECTANGLE 100 100
+OBJECT 'PLANE.1'
+  MATRIX
+  0.000000    0.6419067      -.1453687E-01  0.7666450
+  0.000000    -.3364090E-01  0.9983237      0.4709719E-01
+  75.00000    -.7660444      -.5602263E-01  0.6403416  LIST
+
+
+SURFACES
+  PLANE Z 100 RECTANGLE 100 100
+OBJECT 'PLANE.2' 
+!! The following is taken from the LIST output from above
+!! and should make an equivalent surface - see Console Output:
+  ROTATE X -5.0  0 0  !! Be sure to use Global Origin Reference "0 0"
+  ROTATE Y 50.0  0 0  !! especially if surfaces are created other than at 0,0,0.
+  ROTATE Z -3.0  0 0               
+ 
+!! This set may be used instead of above. Don't use both.
+  !!ROTATE Z  1.297321  0 0
+  !!ROTATE Y  50.05356  0 0
+  !!ROTATE X -4.206536  0 0
+
+!! This is not necessary:
+  !!ROTATE 50.1869 ABOUT 0.6712336E-01  -.9976673  0.1243531E-01 
+
+!! Place all SHIFTs at the end. These are from the first column in the MATRIX
+  SHIFT Z 75  LIST  !! Only a Z shift in this case. X and Y are 0. 
+                    !! LIST is used to check matrix values.
+
+PLOT FACETS  !! To show surfaces overlap exactly
+$VIEW  
+RETURN
+

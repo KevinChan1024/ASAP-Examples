@@ -1,0 +1,90 @@
+!!++
+!! INTEGRATING_SPHERE02.INR
+!! Title: Integrating Sphere
+!! Category: Simple Problem
+!! Keywords: Scatter, SCATTER, TOWARDS, sphere, integrating
+!! Description: A more detailed integrating sphere using
+!! a Lambertian surface scattering TOWARDS an edge. The
+!! RANDOM modifier is needed on the SCATTER MODEL command
+!! to make sure a seed ray gets generated to make all rays
+!! scatter toward the importance edge. With a LEVEL high
+!! enough and sufficient number of starting rays, the correct
+!! flux should be calculated for the exit hole. 
+!! For a Lambertian sphere:
+!!
+!! Ratio of Exit Power/Entrance Power =
+!!
+!! Reflectance of Walls X (Exit Port Area/Sphere Area)
+!! -----------------------------------------------------
+!! 1-Reflectance of Walls X (1-Area of all Ports/Sphere Area)
+!!
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 05/14/2001 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET   
+
+UNITS MM 'Watts' 
+HALT 10000 1E-30
+CUTOFF 1E-30 10000
+LEVEL 200
+
+MODEL
+  LAMBERTIAN .9 
+
+EDGES  !! Edge #1
+  ELLIPSE Z 295 24 24  !! Importance edge
+
+SURFACES
+  PLANE Z 295 ELLIPSE 24 24
+  OBJECT 'DETECTOR'
+
+SURFACES
+  ELLIPSOID 3@24 -330 0 0 -X
+  OBJECT 'LAMP_BACK'
+  INTERFACE 1 0 AIR AIR
+    
+SURFACES  !! To create exit port
+  TUBE Z 280 24 24 330 24 24  
+    SOLID MINUS NOHOLE  !! To cut one hole on sphere
+  
+SURFACES  !! Lamp housing - entrance port
+  TUBE X -280 24 24 -330 24 24 
+    SOLID MINUS NOHOLE  !! To cut one hole on sphere
+
+SURFACES
+  ELLIPSOID 3@300 3@0
+  OBJECT 'SPHERE'
+  BOUNDS .2 .3  !! Make 2 holes 90° apart
+    INTERFACE 0 0 AIR AIR
+    SCATTER MODEL 1 RANDOM .9 1
+      TOWARDS EDGE 1 10  !! 10 rays scattered toward edge
+
+OBJECT; .2 'LAMP_HOUSING'
+  INTERFACE 1 0 AIR AIR
+  BOUNDS .1  !! Trim to sphere
+  
+EMITTING SPHEROID -330 0 0 3@10 100  !! Increase rays for more accuracy
+  FLUX TOTAL 10 
+
+WINDOW Y Z
+  OBLIQUE
+PLOT FACETS 5 5 OVERLAY 
+SPOTS POSITION OVERLAY  !! To see source
+PLOT EDGES 
+OBLIQUE OFF
+
+TRACE GRAPH 
+
+CONSIDER ONLY DETECTOR
+SELECT ONLY SOURCE -1  !! May use to eliminate direct rays
+WINDOW Y -2@24 X -2@24
+PIXELS 201 
+STATS
+SPOTS POSITION ATTRIBUTE 0
+DISPLAY
+AVERAGE 
+CONTOUR 10 TICS 
+RETURN

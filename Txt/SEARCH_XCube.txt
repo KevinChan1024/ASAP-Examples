@@ -1,0 +1,105 @@
+!!++
+!! SEARCH_XCUBE.INR
+!! Title: Skipping Objects with SEARCH
+!! Category: Simple Problem
+!! Keywords: Interfaces, SEARCH, cube, combiner
+!! Description: A hypothetrical beam combiner (X-cube) showing 
+!! how to bypass objects with SEARCH. The SEARCH criteria on
+!! the input sides of a cube are set to direct rays to the 
+!! correct reflective diagonal surface so that they will
+!! only exit out the one side. Three one-dimensional GRID 
+!! sources are set up with varying sizes to more clearly 
+!! show the ray paths in the 3D viewer. The Green input side
+!! is set up to see only the output side and skip both 
+!! diagonals. The Blue and Red input sides can only see
+!! the diagonal that allows the rays to reflect out the
+!! output side. 
+!! This is a simplified example. SEARCH criteria may be 
+!! modified for BARE interfaces or splitting, as required.
+!! Note: Object numbers may be replaced by their "names" or
+!! relative referencing (.1, .2, etc.) may be used.  This may 
+!! be advantageous if adding objects later that may otherwise
+!! interfere with the absolute number referencing.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/24/2003 - cp - added description
+!! 06/07/2002 - cp - corrected color paths
+!! 03/11/2002 - cp - reformatted
+!! 05/31/2001 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+MEDIA
+  1.54 'GLASS'
+  
+SURFACES
+  PLANE Z 0 RECTANGLE 10 10
+OBJECT 'GREEN_SIDE'  !! 1
+  REDEFINE COLOR 13
+  INTERFACE 0 1 AIR GLASS
+SURFACES
+  PLANE X 10 RECTANGLE 10 10
+OBJECT 'BLUE_SIDE' !! 2
+  INTERFACE 0 1 AIR GLASS
+  REDEFINE COLOR 11
+  SHIFT Z 10
+SURFACES
+  PLANE X -10 RECTANGLE 10 10
+OBJECT 'RED_SIDE' !! 3
+  INTERFACE 0 1 AIR GLASS
+  REDEFINE COLOR 2
+  SHIFT Z 10
+SURFACES
+  PLANE Z 20 RECTANGLE 10 10
+OBJECT 'OUT_SIDE'  !! 4
+  INTERFACE 0 1 AIR GLASS
+SURFACES
+  PLANE Z 10 RECTANGLE 10*1.414 10
+OBJECT 'DIAG_1'  !! 5
+  INTERFACE 1 O  GLASS GLASS
+  ROTATE Y -45
+SURFACES
+  PLANE Z 10 RECTANGLE 10*1.414 10
+OBJECT 'DIAG_2'  !! 6
+  INTERFACE 1 O GLASS GLASS
+  ROTATE Y 45
+SURFACES
+  PLANE Z 30 RECTANGLE 10 10
+OBJECT 'DETECTOR'  !! 7 
+  REDEFINE COLOR 9
+   
+SEARCH     !! Force specific search for each object
+  1 4 4 1  !! Rays leaving 1 can only go to 4, skipping 5 or 6 - Green path 
+  3 5 5 1  !! Rays leaving 3 can only go to 5 and
+  5 4 4 1  !! 5 can only go to 4 and
+  4 7 7 1  !! 4 can only go to 7 - this completes the Red path
+  2 6 6 1  !! 2 can only go to 6 and
+  6 4 4 1  !! 6 can only go to 4 - Blue path
+  
+SEARCH LIST  !! Note that source (0) sees all objects by default
+               
+GRID RECT Z -10 -4@1 10 1  !! Green
+  SOURCE DIRECTION 0 0 1
+  SHIFT Z 0
+GRID RECT X -20 -4@2 1 10  !! Red
+  SHIFT Z 10
+  SOURCE DIRECTION 1 0 0
+GRID RECT X 20 -4@4 1 10   !! Blue
+  SOURCE DIRECTION -1 0 0
+  SHIFT Z 10
+    
+MISSED ARROWS 15
+WINDOW X Z
+WINDOW 1.2
+PLOT FACETS 5 5 OVERLAY
+SELECT ONLY SOURCE 1 
+  TRACE PLOT OVERLAY COLOR 13  !! Green
+SELECT ONLY SOURCE 2 
+  TRACE PLOT OVERLAY COLOR 2 !! Red
+SELECT ONLY SOURCE 3 
+  TRACE PLOT OVERLAY COLOR 11 !! Blue
+   
+$VIEW
+RETURN

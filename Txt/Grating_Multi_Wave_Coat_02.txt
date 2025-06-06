@@ -1,0 +1,120 @@
+!!++
+!! GRATING_MULTI_WAVE_COAT_02.INR
+!! Title: Grating using 5 Wavelengths with COATING PROPERTIES
+!! Category: Simple Problem
+!! Keywords: Gratings, DIFFRACT, MULTIPLE, diffraction, COATINGS, doe
+!! Description: Illustrate functional variation of grating efficiency 
+!! with wavelength using simple COATING PROPERTIES applied to the
+!! efficiencies in INTERFACE DIFFRACT.
+!! The grating is probed with a unit-flux ray at each specified
+!! wavelength, and the results are output in the $SCR table by
+!! wavelength and order.
+!! Edit History: (latest first) 
+!! 12/17/2015 - jah - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTHS 450 500 550 600 650 NM   
+
+COATING PROPERTIES
+0 0.1, 0 0.2, 0 0.3, 0 0.25, 0 0.2 'DIFF_WLVAR_0'
+0 0.9, 0 0.8, 0 0.7, 0 0.75, 0 0.8 'DIFF_WLVAR_P1'
+
+BEAMS INCOHERENT GEOMETRIC
+
+SURFACES
+  PLANE Y 0          
+    MULTIPLE 1 0.002    
+  PLANE Z 0 RECTANGLE 3   
+OBJECT 'GRATING'
+  INTERFACE 0 1 AIR AIR DIFFRACT 0.2, 0 DIFF_WLVAR_0, +1 DIFF_WLVAR_P1
+RETURN
+
+!! Set up and trace the rays
+WAVELENGTH 450 NM
+RAYSET Z 0 
+0 -2 1
+  SOURCE DIRECTION 0 0 1 
+WAVELENGTH 500 NM
+RAYSET Z 0 
+0 -1 1
+  SOURCE DIRECTION 0 0 1 
+WAVELENGTH 550 NM
+RAYSET Z 0 
+0  0 1
+  SOURCE DIRECTION 0 0 1 
+WAVELENGTH 600 NM
+RAYSET Z 0 
+0 +1 1
+  SOURCE DIRECTION 0 0 1 
+WAVELENGTH 650 NM
+RAYSET Z 0 
+0 +2 1
+  SOURCE DIRECTION 0 0 1 
+
+MOVE BY -1
+
+
+WINDOW Y -3 4 Z -2 6
+MISSED ARROW 4; ARROWS 2
+PROFILES OVERLAY 'Simple Polychromatic Grating Example'
+TRACE PLOT 
+STATS
+RETURN  
+
+PATHS
+
+ 
+SELECT ONLY PATH 1 AND SOURCE 1
+STATS
+$GRAB ' TOTAL' 0 2 F_O0_450NM
+&REG F_O0_450NM 'Flux, 0 order, 450nm: ' 
+SELECT ONLY PATH 1 AND SOURCE 2
+STATS 
+$GRAB ' TOTAL' 0 2 F_O0_500NM
+&REG F_O0_500NM 'Flux, 0 order, 500nm: ' 
+SELECT ONLY PATH 1 AND SOURCE 3
+STATS 
+$GRAB ' TOTAL' 0 2 F_O0_550NM
+&REG F_O0_550NM 'Flux, 0 order, 550nm: ' 
+SELECT ONLY PATH 1 AND SOURCE 4
+STATS 
+$GRAB ' TOTAL' 0 2 F_O0_600NM
+&REG F_O0_600NM 'Flux, 0 order, 600nm: ' 
+SELECT ONLY PATH 1 AND SOURCE 5
+STATS 
+$GRAB ' TOTAL' 0 2 F_O0_650NM
+&REG F_O0_650NM 'Flux, 0 order, 650nm: ' 
+SELECT ONLY PATH 2 AND SOURCE 1
+STATS 
+$GRAB ' TOTAL' 0 2 F_OP1_450NM
+&REG F_OP1_450NM 'Flux, +1 order, 450nm: ' 
+SELECT ONLY PATH 2 AND SOURCE 2
+STATS 
+$GRAB ' TOTAL' 0 2 F_OP1_500NM
+&REG F_OP1_500NM 'Flux, +1 order, 500nm: ' 
+SELECT ONLY PATH 2 AND SOURCE 3
+STATS 
+$GRAB ' TOTAL' 0 2 F_OP1_550NM
+&REG F_OP1_550NM 'Flux, +1 order, 550nm: ' 
+SELECT ONLY PATH 2 AND SOURCE 4
+STATS 
+$GRAB ' TOTAL' 0 2 F_OP1_600NM
+&REG F_OP1_600NM 'Flux, +1 order, 600nm: '   
+SELECT ONLY PATH 2 AND SOURCE 5
+STATS 
+$GRAB ' TOTAL' 0 2 F_OP1_650NM
+&REG F_OP1_650NM 'Flux, +1 order, 650nm: '   
+
+$SCR 7 'Output flux of grating'
+Wavelength                  Order 
+  [nm]                 0                +1
+  450       \F_O0_450NM.5\   \F_OP1_450NM.5\
+  500       \F_O0_500NM.5\   \F_OP1_500NM.5\
+  550       \F_O0_550NM.5\   \F_OP1_550NM.5\
+  600       \F_O0_600NM.5\   \F_OP1_600NM.5\
+  650       \F_O0_650NM.5\   \F_OP1_650NM.5\
+

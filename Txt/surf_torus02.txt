@@ -1,0 +1,27 @@
+!!++
+!! SURF_TORUS02.INR
+!! Title: TORUS Surface #2
+!! Category: Isolated Command
+!! Keywords: TORUS, SURFACE
+!! Description: Defines a toroidal surface whose
+!! origin is at (3,0,0) with an outer diameter
+!! of 16 and an inner diameter of 12. The cross-
+!! sectional diameters are 2 and 4.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 10/17/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  TORUS X 3 7 1 2
+OBJECT
+
+WINDOW Y Z  !! To view object
+PLOT FACETS 5 5 'SURF:TORUS' COLORS 11
+RETURN
+

@@ -1,0 +1,55 @@
+!!++
+!! CUSTOM_SPACED_ARRAY02.INR
+!! Title: A Custom-Spaced Array along a Curve
+!! Category: Simple Problem
+!! Keywords: Arrays, ARRAY, Macros_user, custom, curve, SHIFT
+!! Description: An ARRAY of rectangles with custom spacing
+!! shifted along a curve.
+!! Edit History: (latest first)
+!! 06/04/2015 - cp - corrected header closing
+!! 05/06/2015 - wjd- modified from CUSTOM_SPACED_ARRAY01.INR to follow a curve
+!!--
+
+SYSTEM NEW
+RESET  
+ 
+LASTYSHIFT=0 
+LASTXSHIFT=0
+NCOL=3
+REFPTSHIFT=3
+
+MAKEARRAY { 2
+
+SURFACES
+  PLANE Z 0 RECTANGLE 1 1/2
+  ARRAY (NCOL-1) (REFPTSHIFT) 0 0
+  OBJECT 
+  SHIFT Y LASTYSHIFT+#2
+  SHIFT X LASTXSHIFT+#1
+  RETURN
+  LASTYSHIFT=LASTYSHIFT+#2
+  LASTXSHIFT=LASTXSHIFT+#1
+}
+'SHIFTPOINTX'
+'SHIFTPOINTY' 
+
+&MAKEARRAY 0 0
+&MAKEARRAY 1 1
+&MAKEARRAY 2 3
+&MAKEARRAY 3 5  
+&MAKEARRAY 4 9
+&MAKEARRAY 5 13
+&MAKEARRAY 6 20
+
+
+
+
+
+
+
+
+WINDOW Y X
+PLOT FACETS 
+
+RETURN 
+

@@ -1,0 +1,20 @@
+!!++
+!! PENTA01.INR
+!! Title: Penta Prism Lens
+!! Category: Isolated Command
+!! Keywords: PENTA, LENSES
+!! Description: Defines a penta-angle prism
+!! whose first conicoid is located at z=0.
+!! The prism has an aperture semi-diameter of
+!! .5 and is composed of medium 1.  The prism
+!! is oriented so that a ray entering the prism
+!! along the z-axis leaves the prism propagating
+!! along the positive y-direction.
+!! Edit History: (latest first)
+!! 10/10/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!-- 
+
+LENSES
+  PENTA Z 0 .5 BK7  Y 
+

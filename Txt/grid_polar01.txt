@@ -1,0 +1,23 @@
+!!++
+!! GRID_POLAR01.INR
+!! Title: Hexapolar Grid of Rays
+!! Category: Isolated Command
+!! Keywords: GRID, POLAR
+!! Description: Defines a hexapolar grid
+!! of rays in the z plane at z = 5. This
+!! uses the short form of the command.
+!! The extent of the grid in the radial
+!! direction is 0 to 3. The extent in the
+!! azimuthal direction is 0 to 360 degrees.
+!! There are five rays in the radial direction
+!! and six rays in the first ring, thereby making
+!! the grid hexapolar. Ninety-one rays are
+!! generated.
+!! Edit History: (latest first)
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+GRID POLAR Z 5 0 3 0 360 5 6  !! Short form
+
+

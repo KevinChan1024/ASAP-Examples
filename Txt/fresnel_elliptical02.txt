@@ -1,0 +1,72 @@
+!!++
+!! FRESNEL_ELLIPTICAL02.INR
+!! Title: Simple Elliptical Fresnel
+!! Category: Simple Problem
+!! Keywords: Edges, Fresnel, ELLIPSE, EDGES, SMOOTH, OBJECT
+!! Description: An elliptical Fresnel lens made with EDGE
+!! ELLIPSE's and the second form of the OBJECT command.
+!! This creates all the ring surfaces and walls seen in
+!! the 3D viewer.  A center ellipse is made separately
+!! with a SWEEP POSITION in order to get the final cone in the
+!! center. 
+!! NOTE: One may assume this could be done with EDGE POINTS
+!! and SWEEP AXIS and then SCALE it to make elliptical.
+!! Unfortunately this will not work, and therefore we suggest
+!! using the method shown here.
+!! Edit History: (latest first) 
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 07/13/2000 - cp - Modified syntax; added description
+!! 07/13/2000 - arg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.5 'GLASS'
+
+EDGES
+  ELLIPSE Z 0.0  2.646*1.5  2.646
+    SMOOTH
+  ELLIPSE Z 0.1  2.449*1.5  2.449
+    SMOOTH
+  ELLIPSE Z 0.0  2.449*1.5  2.449
+    SMOOTH
+  ELLIPSE Z 0.1  2.236*1.5  2.236
+    SMOOTH
+  ELLIPSE Z 0.0  2.236*1.5  2.236
+    SMOOTH
+  ELLIPSE Z 0.1  2.0*1.5    2.0
+    SMOOTH
+  ELLIPSE Z 0.0  2.0*1.5    2.0
+    SMOOTH
+  ELLIPSE Z 0.1  1.7*1.5    1.7
+    SMOOTH
+  ELLIPSE Z 0.0  1.7*1.5    1.7
+    SMOOTH
+  ELLIPSE Z 0.1  1.4*1.5    1.4
+    SMOOTH
+  ELLIPSE Z 0.0  1.4*1.5    1.4
+    SMOOTH
+  ELLIPSE Z 0.1  1.0*1.5    1.0
+    SMOOTH
+  ELLIPSE Z 0.0  1.0*1.5    1.0
+    SMOOTH
+
+  OBJECT
+    -13  1 1 0 'OUTER_RINGS'
+      INTERFACE 0 1 AIR GLASS
+
+EDGES
+  ELLIPSE Z 0.0  1.0*1.5  1.0
+    SMOOTH
+    SWEEP POSITION 1.0  0.0 0.0 0.1
+
+  OBJECT 'RING_CENTER'
+    INTERFACE 0 1 AIR GLASS
+
+WINDOW Y X
+!!PLOT EDGES
+PLOT FACETS 9 9
+$VIEW 
+RETURN

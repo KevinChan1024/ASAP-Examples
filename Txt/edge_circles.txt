@@ -1,0 +1,34 @@
+!!++
+!! EDGE_CIRCLES.INR
+!! Title: Five Circle Methods
+!! Category: Simple Problem
+!! Keywords: Edges, EDGES, circle, RACETRACK, CURVES, ARC, POINTS, SEGMENTS, SMOOTH, PRINT
+!! Description: A circle is made five different ways using
+!! EDGES. The first four circles produce identical points and connection
+!! factors as seen from the PRINT statement.
+!! Edit History: (latest first)
+!! 03/01/2000 - cp - Modified syntax; added description
+!! 05/20/1999 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  ELLIPSE X 0 2@1 8
+    SMOOTH  !! Quadratically smooth above curve
+  RACETRACK X 0 4@1
+  ARC X 0 1
+  POINTS X 0  !! 4 quadratic segments
+    1  0 2;  1  1 SQRT(.5)
+    0  1 2; -1  1 SQRT(.5)
+   -1  0 2; -1 -1 SQRT(.5)
+    0 -1 2;  1 -1 SQRT(.5)
+  POINTS X 0  !! 1 quintic segment - 5th degree Bezier 
+    1 0 5, 1 4 .2, -3 2 .2, -3 -2 .2, 1 -4 .2  !! .2 weighted control vertices
+
+PRINT  !! Note - 1st 4 circles Points and Conn. Factors are identical
+SEGMENTS 30 !! Set up 30 segments per 45° arc for smooth plot
+$DO 1 5
+  PLOT CURVES ? '?'
+RETURN

@@ -1,0 +1,91 @@
+!!++
+!! MSQUARED.INR
+!! Title: Creating and characterizing an M-squared gaussian beam in ASAP
+!! Category: Simple Problem
+!! Keywords: Wave, M-squared, GAUSSIAN, FIELD, ENERGY, $ITER
+!! Description: Demonstrates technique for creating an M-squared
+!! laser beam in ASAP. Requires making a wavelength adjustment to
+!! compensate for the increased divergence of a non-ideal gaussian.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 05/16/2003 - cp - modified format
+!! 05/15/2003 - sam - creation
+!!--
+
+SYSTEM NEW
+RESET  
+
+UNITS CM
+
+!!Constants
+PI=4*ATAN(1)  CF=0.8862269
+!!Msquared value
+MSQ=1.21
+!!Original wavelength in microns
+LWAVE=1.064
+!!Adjusted wavelength in microns
+SWAVE=LWAVE*MSQ
+!!Beamwaist raius
+WST=1E-2
+!!Window half height
+BX=7E-1
+!!Limits for finding radius at plane from graph
+BLIM=0.3E-1      ULIM=5E-1
+!!Downrange plane location
+ZLIM=100
+!!Rayleigh ranges for original and Msquared beams
+ZRL=PI*WST^2/(LWAVE*1E-4)
+ZRS=PI*WST^2/(SWAVE*1E-4)
+!!Farfield divergences for original and Msquared beams 
+LDIV=2E3*(LWAVE*1E-4)/(PI*WST)
+SDIV=2E3*(SWAVE*1E-4)/(PI*WST)
+
+!!Inspection planes
+SURFACES
+  PLANE Z (ZLIM) RECTANGLE 10
+OBJECT 'WALL'
+
+!!Beam definitions
+BEAMS COHERENT DIFFRACT
+PARABASAL 4;WIDTHS 1.6
+WAVELENGTH (LWAVE) UM
+GAUSSIAN Z -1 2@0 2@21 2@0 2@(WST*CF)
+WAVELENGTH (SWAVE) UM
+GAUSSIAN Z -1 2@0 2@21 2@0 2@(WST*CF)
+
+!!Trace to plane
+TRACE
+CONSIDER ONLY WALL
+
+!!Examine original beam
+SELECT ONLY SOURCE 1
+PIXELS 101
+WINDOW Y -2@(BX) X -2@(BX)
+FIELD ENERGY
+DISPLAY;NORM MAX;GRAPH .5
+
+!!Find e^-2 beam radius
+$ECHO NONE
+$ITER XD (BLIM) (ULIM) -51 XDIF
+  VALUES (XD) 0 WR;XDIF=ABS[WR-EXP(-2)]
+RETURN
+$GRAB 'ENERGY' 1 1 LRAD
+
+!!Examine Msquared beam
+SELECT ONLY SOURCE 2
+FIELD ENERGY
+DISPLAY;NORM MAX;GRAPH .5 
+
+!!Find e^-2 beam radius
+$ITER XD (BLIM) (ULIM) -51 XDIF
+  VALUES (XD) 0 WR;XDIF=ABS[WR-EXP(-2)]
+RETURN
+$GRAB 'ENERGY' 1 1 SRAD
+RETURN
+
+!!Report results
+&REG LRAD SRAD 'RADII IN CM'
+&REG ZRL ZRS   'RAYLEIGH RANGE IN CM'
+&REG LDIV SDIV 'DIVERGENCE IN RADIANS'
+$ECHO
+RETURN

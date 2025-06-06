@@ -1,0 +1,39 @@
+!!++
+!! MACRO_$ASK01.INR
+!! Title: $ASK Predefined Macro 
+!! Category: Isolated Command
+!! Keywords: $ASK, macro, Macros_pre, prompt, ask, VUFACETS
+!! Description: Demonstrates the use of $ASK.
+!! Edit History: (latest first)
+!! 12/15/2014 - mt - changed VUFACETS 7 7 to 7 7 0
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 12/21/2001 - cp - added defaults in case dialogs are cancelled
+!! 02/11/2000 - cp - modified format; added description
+!! 07/24/1999 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Default values
+S="ELLIPSE"
+A1=2
+A2=2
+FL=2
+HOLE=.2
+Z=0
+
+$ASK Z 'Enter location along Z'
+&ASK S 'Enter RECTANGLE or ELLIPSE'
+&ASK A1 A2 'Enter major and minor diameter'
+&ASK FL 'Enter Focal length'
+&ASK HOLE 'Enter hole size as fraction of aperture size'
+
+SURFACES
+  OPTICAL Z (Z) (FL*2) -1 S" (A1/2) (A2/2) (HOLE)
+  OBJECT 'PRIMARY'
+    INTERFACE 1 0 AIR AIR
+
+VUFACETS 7 7 0 !! Facet and view in 3D viewer with no 2D plot
+RETURN
+ 

@@ -1,0 +1,50 @@
+!!++
+!! LENSES_PERFECT01.INR
+!! Title: PERFECT Lens with Image at Infinity
+!! Category: Isolated Command
+!! Keywords: PERFECT, LENSES 
+!! Description: A PERFECT lens with object at first focus, and
+!! image at infinity. This maintains an infinite
+!! conjugate which is essential when using PERFECT.
+!! Coherent beams are used to show that the wavefront
+!! curvature is maintained, rather than if using IDEAL.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 06/17/2002 - cp - modified format; added description
+!! 06/12/2002 - js - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM 
+
+PARABASAL 4
+BEAMS COHERENT DIFFRACT 
+WIDTHS 1.6
+WAVELENGTH 632.8 NM
+ 
+GRID ELLIPTIC Z 9 -4@3 11 11
+  SOURCE POSITION 0 0 0
+
+LENSES
+ PERFECT -Z 10 10 4  !! Minus(-) says focus is on negative Z side
+OBJECT 'L1'
+
+SURFACES
+  PLANE Z 25 RECTANGLE 6
+OBJECT 'DET'
+
+WINDOW Y Z
+PLOT FACETS 11 11 OVERLAY
+TRACE PLOT
+
+CONSIDER ONLY DET
+WINDOW Y -2@3 X -2@3
+PIXELS 61
+FIELD ENERGY
+DISPLAY
+  PICTURE
+DISPLAY 29 WAVEFRONT
+  PICTURE
+RETURN

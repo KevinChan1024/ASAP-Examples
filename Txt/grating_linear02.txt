@@ -1,0 +1,52 @@
+!!++
+!! GRATING_LINEAR02.INR
+!! Title: Linear Diffraction with R and T
+!! Category: Simple Problem
+!! Keywords: Gratings, doe, DIFFRACT, MULTIPLE, linear, diffraction
+!! Description: Linear grating made with a single
+!! MULTIPLE surface to create the diffractive lines.
+!! Three orders of diffraction and their efficiencies
+!! are specified. The trace plot shows the three orders
+!! in reflection and transmission. 
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 11/05/2003 - cp - fixed keyword
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  0.4 0.6  'DOE'
+SPLIT 1
+
+SURFACES
+  PLANE Y 0          !! Grating line generating surface
+    MULTIPLE 1 0.1   !! Grating spacing 0.1, point 0 0 0
+  PLANE Z 0 RECTANGLE 1   !! Grating base surface
+OBJECT 'LINEAR_GRATING'
+  INTERFACE COAT DOE AIR AIR DIFFRACT 0.2 -1st order 0.25, 0th 0.5, 1st 0.25
+
+SURFACES
+  PLANE Z 10 RECTANGLE 1  !! Detector plane
+OBJECT 'DETECTOR'
+  ROTATE X ASIN[.25] 0 0
+
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 0.025
+  GRID ELLIPTIC Z -1 -4@1 1 5
+    SOURCE DIRECTION 0 0 1
+
+WINDOW Y Z
+WINDOW 1.4
+TITLE 'GRATING W/-1,0,1st ORDERS IN REFLECTION AND TRANSMISSION'
+PROFILES OVERLAY
+TRACE PLOT TEXT 
+  0  -2.6   10, 0 0 .25, 0 .25 0, 1 '-1st order'
+  0  2.8   4.5, 0 0 .25, 0 .25 0, 1 '+1st order'
+  0   1   8.75, 0 0 .25, 0 .25 0, 1 '0th order'
+  0 1.75 -2.25, 0 0 .25, 0 .25 0, 1 '+1st order'
+  0  -2  -2.25, 0 0 .25, 0 .25 0, 1 '-1st order'
+RETURN

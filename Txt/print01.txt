@@ -1,0 +1,19 @@
+!!++
+!! PRINT01.INR
+!! Title: Printing System Media 
+!! Category: Isolated Command
+!! Keywords: PRINT, MEDIA 
+!! Description: Example output of PRINT MEDIA
+!! for birefringent materials.
+!! Edit History: (latest first)
+!! 10/10/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!-- 
+ 
+ --- PRINT MEDIA
+ 
+ MEDIUM  Index/Absorb  FUNC:  exponent   steplength  maxnum
+          1.000000       0  1.00000     0.100000E+10  1000  VACUUM_AIR
+    1     1.664000       0  1.00000     0.100000E+10  1000  ORDSAP
+    2     1.656000       0  1.00000     0.100000E+10  1000  SAPPHIRE
+ CRYSTAL axis   0.0000000   0.0000000   1.0000000 ordinary medium  1

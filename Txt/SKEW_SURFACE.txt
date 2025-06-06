@@ -1,0 +1,39 @@
+!!++
+!! SKEW_SURFACE.INR
+!! Title: Modifying an Object with SKEW
+!! Category: Isolated Command
+!! Keywords: SKEW
+!! Description: SKEW the back side of the first element of Cooke Triplet,
+!! by 60 degrees from Y to Z.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/25/2008 - cp - changed category
+!! 08/22/2007 - cp - reformatted
+!! 04/17/2007 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.613  'SK4'
+
+SURFACES
+  OPTICAL Z 0 44.55 ELLIPSE 16.9 16.9
+OBJECT 'L1.FRONT'    
+  INTERFACE 0 1 AIR SK4
+  
+SURFACES
+  OPTICAL Z 5 -436.6 ELLIPSE 16.9 16.9
+OBJECT 'L1.BACK'    
+  INTERFACE 0 1 AIR SK4
+
+SURFACES
+  TUBE Z 0 16.9 16.9   5 16.9 16.9
+OBJECT 'L1.EDGE'
+  BOUNDS  +.3  -.2
+  SKEW Y 60 Z
+
+PLOT FACETS 5 5 0       
+$VIEW 
+RETURN

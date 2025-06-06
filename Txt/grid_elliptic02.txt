@@ -1,0 +1,19 @@
+!!++
+!! GRID_ELLIPTIC02.INR
+!! Title: Elliptical Grid: Non-equally Spaced
+!! Category: Isolated Command
+!! Keywords: GRID, ELLIPTIC
+!! Description: Defines a grid of rays
+!! in the yz plane at x = 10. The extent
+!! of the grid in the y direction is -2 to 2;
+!! the extent in the z direction is -5 to 5.
+!! One hundred and sixty rays are generated.
+!! The grid is contained within an elliptical
+!! aperture.
+!! Edit History: (latest first)
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+GRID ELLIPTIC X 10 -2@2 -2@5 40 5
+

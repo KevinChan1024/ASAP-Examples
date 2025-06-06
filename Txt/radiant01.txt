@@ -1,0 +1,27 @@
+!!++
+!! RADIANT01.INR
+!! Title: Radiance of Emitting Spheroid
+!! Category: Isolated Command
+!! Keywords: RADIANT, Radiometry, radiance
+!! Description: Simple use of the RADIANT
+!! command. MESH allows viewing results
+!! in 3-D viewer.
+!! Edit History: (latest first)
+!! 10/11/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+XMEMORY MIN
+SEED 1 QUASI
+EMITTING SPHEROID 0 0 0 3@0.1 10000
+
+RADIANT Z 0 180 18 0 360 18
+
+DISPLAY 
+  AVERAGE 
+  MESH
+  $VIEW
+RETURN

@@ -1,0 +1,48 @@
+!!++
+!! ROTATE_RAYS02.INR
+!! Title: Rotating Ray Data
+!! Category: Simple Problem
+!! Keywords: Manipulating, rays, RAYS, ROTATE
+!! Description: Rotating ray data with ROTATE. 
+!! Two variations are shown.  In one case, rotation
+!! is done immediately after source creation. In the
+!! other, the rayset is referenced at a later time for 
+!! rotation using the RAYS command. The latter method
+!! is useful after using SELECT or CONSIDER commands
+!! to isolate a particular set of rays.
+!! Edit History: (latest first)
+!! 10/11/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTHS 587 NM
+GRID ELLIPTIC Z 9 -4@2 2@11
+  SOURCE DIRECTION 0 0 1
+  ROTATE X -45 0 0  !!  Rotates rayset
+
+CONSIDER ONLY 0  !! The source
+STATS POSITION
+
+WINDOW Y Z
+WINDOW 1.5  !! Enlarge 50%
+SPOTS POSITION ATTRIBUTE 1 'SIDE VIEW OF SPOTS WITH RAY DIRECTIONS' OVERLAY
+PLOT RAYS 1  !! Display ray intensity represented by length (norm. to 1)
+
+WINDOW Y X
+WINDOW 1.5  !! Enlarge 50%
+SPOTS POSITION ATTRIBUTE 1 'SPOT DIAGRAM WITH OBLIQUITY'
+
+RAYS  !! Loads current ray data for rotation
+  ROTATE X 45 0 0
+STATS POSITION
+WINDOW Y X
+WINDOW 1.5
+
+SPOTS POSITION ATTRIBUTE 1 'SPOT DIAGRAM WITHOUT OBLIQUITY'
+RETURN

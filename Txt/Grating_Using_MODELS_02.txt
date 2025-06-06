@@ -1,0 +1,198 @@
+!!++
+!! GRATING_USING_MODELS_02.INR
+!! Title: Grating using a COATING MODEL
+!! Category: Simple Problem
+!! Keywords: Gratings, DIFFRACT, MULTIPLE, diffraction, COATINGS
+!! Description: Multiple diffraction orders at different angles
+!! of incidence using COATING MODELS.
+!! Edit History: (latest first) 
+!! 09/22/2011 - cp - added comments
+!! 08/04/2011 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+UNITS MM
+
+WAVELENGTH 500 NM
+FRESNEL AVE !! Required
+SPLIT 1
+PIXELS 501 !! for PLOT accuracy below  
+
+!! Define COATINGS MODEL 'ORDR0' using the RAWDATA command.  The data entered
+!! below the RAWDATA command is the measurement of the grating efficiency 
+!! at different diffraction angles at different AOIs.  The model 'ORDR0' 
+!! is later used in the INTERFACE...DIFFRACT... command to assign 
+!! diffraction efficiencies to the diffraction orders in
+!! accordance to the incident angles.  For the use of RAWDATA, please
+!! refer to the Help menu. 
+
+!! The data entered below is just chosen arbitrarily. It doesn't represent 
+!! any physically meaningful model.
+ 
+MODELS !! Arbitrary numbers used for a crude example
+  RAWDATA ANGLES PLOT
+  0 0     !! First AOI
+  0	 0 1     
+  5	 0 1.2 	
+  10 0 1.4 	
+  15 0 1.7 	
+  20 0 2   	
+  25 0 2.5 	
+  30 0 3.5 	
+  35 0 4.5 	
+  40 0 5    
+  45 0 4.5 	
+  50 0 3.5 	
+  55 0 2.5 	
+  60 0 2   	
+  65 0 1.7 	
+  70 0 1.4 	
+  75 0 1.2 	
+  80 0 1.05 
+  85 0 1 
+  
+  20 0     !! Second AOI
+  0	 0 1     
+  5	 0 1.1 	
+  10 0 1.2 	
+  15 0 1.3 	
+  20 0 1.6   	
+  25 0 1.8 	
+  30 0 2.0 	
+  35 0 2.5 	
+  40 0 3   
+  45 0 3.5 	
+  50 0 3.0 	
+  55 0 2.5 	
+  60 0 2   	
+  65 0 1.7 	
+  70 0 1.3 	
+  75 0 1.2 	
+  80 0 1.05 
+  85 0 1   	
+  
+  40 0     !! Third AOI
+  0	 0 1     
+  5	 0 1.4 	
+  10 0 1.5 	
+  15 0 1.7 	
+  20 0 2.2   	
+  25 0 2.5 	
+  30 0 3.1 	
+  35 0 3.5 	
+  40 0 4    
+  45 0 3.5 	
+  50 0 3.2 	
+  55 0 3.0 	
+  60 0 2.6   	
+  65 0 2.3 	
+  70 0 2.0 	
+  75 0 1.6 	
+  80 0 1.2 
+  85 0 1   	
+  
+  60 0      !! Fourth AOI
+  0	 0 1     
+  5	 0 1.2 	
+  10 0 1.4 	
+  15 0 2 	
+  20 0 2.3   	
+  25 0 2.8 	
+  30 0 3.2 	
+  35 0 3.8 	
+  40 0 4.2    
+  45 0 4.0 	
+  50 0 3.6 	
+  55 0 3.1 	
+  60 0 2.6   	
+  65 0 2.3 	
+  70 0 1.8 	
+  75 0 1.5 	
+  80 0 1.2 
+  85 0 1   	
+  
+  80 0     !! Fifth AOI
+  0	 0 1     
+  5	 0 1.2 	
+  10 0 1.4 	
+  15 0 1.7 	
+  20 0 2   	
+  25 0 2.4 	
+  30 0 2.8 	
+  35 0 3.4 	
+  40 0 4.4    
+  45 0 5.4 	
+  50 0 5.0 	
+  55 0 4.5 	
+  60 0 4   	
+  65 0 3.5 	
+  70 0 2.6 	
+  75 0 1.9 	
+  80 0 1.3 
+  85 0 1   	  	
+RETURN 
+
+$GRAB 'Relative TIS' 1 2 TIS  !! TIS at Normal incidence for crude numbers above
+
+!! Definition of the coating model
+COATINGS MODELS 1 1 1 1
+0 0.2/TIS 'ORDR0' !! 20% transmission at Normal incidence normalized to the TIS
+
+!! Define SURFACES to represent grating line spacing.  This surface is used
+!! below in the INTERFACE command for the object 'GRATING'.
+SURFACES
+ PLANE Z 0
+MULTIPLE 1 0.42E-2
+
+SURFACES
+ PLANE Y 0 RECT 1
+OBJECT 'GRATING' 
+!! Use Syntax 3 of INTERFACE...DIFFRACT command to define the grating surface
+INTERFACE 0 1 AIR AIR DIFFRACT .2 ORDR0 -8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8
+
+ !!Use $ITER to step through the different incident angle (41 steps between
+!! 0 to 80 degrees) and calculate the corresponding flux collected by the
+!! detector.  The result is plotted as a GRAPH by using DISPLAY ITER.
+ANG=0
+
+$ITER ANG 0 80 -41 PWR !! Iter 41 steps from 0 to 80 degrees
+{ RAYS 0
+
+RAYSET Y 0; 0 0 1; SOURCE DIR 0 1 TAN[ANG]
+MOVE BY -1
+&REG ANG
+WINDOW Y Z
+PLOT FACETS OVER
+TRACE PLOT
+STATS
+$GRAB 'TOTAL' 0 2 PWR
+}
+
+DISPLAY ITER
+  GRAPH 'Detector flux vs AOI'
+RETURN
+
+!! Analysis at 78 degree incident angle is the last angle used in the
+!! $ITER calculation.  Upon the completion on the $ITER calculation over all
+!! the incident angle as stated in the $ITER command (41 steps from 0 to 80
+!! degrees), $ITER will perform one last extra calculation at the angle that
+!! has minimum total power at the detector.  In this case, this angle is 
+!! 78 degree.  
+
+PATHS
+SELECT EXCEPT PATH 1
+LIST RAYS
+
+WINDOW Z -2@1 X -2@1
+PIXELS 541
+SPOTS DIR ATT 0
+DISPLAY
+  RANGE 0 1
+  DIRECTIONAL UNWRAP 'At 78 degree AOI'
+  GRAPH 'At 78 degree AOI'
+RETURN
+
+DISPLAY ITER
+  GRAPH
+RETURN

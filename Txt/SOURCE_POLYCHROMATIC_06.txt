@@ -1,0 +1,50 @@
+!!++
+!! SOURCE_POLYCHROMATIC_06.INR
+!! Title: Polychromatic Source by CIE Input
+!! Category: Isolated Command
+!! Keywords: SOURCE POLYCHROMATIC, STATS SOURCES, Sources, cie
+!! Description: A polychromatic source using the CIE option -
+!! Syntax 2.
+!! Edit History: (latest first)
+!! 06/02/2014 - gb - added STATS SOURCES to keywords
+!! 04/09/2013 - cp - added header and formatted
+!! 03/13/2013 - js - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 500 NM
+
+EMITTING RECT Z 0 1 2 10000 
+SOURCE POLYCHROMATIC CIE D50 1 41 380 780 
+
+LIST SOURCES
+STATS SOURCES
+
+WINDOW Y X
+SPOTS POSITION 
+DISPLAY
+  PICTURE
+RETURN
+
+WINDOW Y X
+SPOTS DIRECTION
+DISPLAY
+  PICTURE
+RETURN
+
+$ECHO NONE
+&ITER N 1 41 -41 POWER
+{
+ SELECT ONLY SOURCE (N)
+ STATS
+ $GRAB 'TOTAL' 0 2 POWER
+ RETURN }
+
+$ECHO
+DISPLAY ITER
+  GRAPH
+RETURN

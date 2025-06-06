@@ -1,0 +1,53 @@
+!!++
+!! HISTORY_FLUX_PER_ANGLE.INR
+!! Title: Graphing Flux per Angle of any Object
+!! Category: Isolated Command
+!! Keywords: HISTORY PX, $ITER, SAVE, Tracing
+!! Description: An example showing how to use HISTORY PX
+!! to select out paths of rays hitting a surface for each
+!! degree over a specified angular range.  A $ITER loop
+!! is used to create the display file of flux per angle
+!! using PX commands.  A graph is easily plotted from the
+!! stored iter data. A parabola was examined here, but any
+!! surface could have been used.
+!! Edit History: (latest first)  
+!! 05/19/2009 - cp - added header
+!! 05/14/2009 - jh/wjd - modified LENS_MIRROR example
+!! 02/10/2000 - cp - modified format; added description
+!! 02/19/1999 - mc - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES 
+  MIRROR  Z 0 10 20 1
+  OBJECT 'ELLIPTIC_MIRROR' 
+  
+EMITTING SPHEROID  0 0 -19.29252 0 0 0 100000
+
+ARROWS OFF 
+WINDOW Y Z
+WINDOW 1.5  !! Enlarge window by 50%
+PROFILES OVERLAY 
+
+SAVE 10 !! Must use long form with file number to get angle info stored
+TRACE PLOT 501
+
+HISTORY PX !! Start PX mode      
+INTERSECTS ELLIPTIC_MIRROR GT 0  !! Get all paths that intersect mirror
+ $ITER TESTANGLE 0 17 -18 TFLUX
+ {
+  ANGLE ELLIPTIC_MIRROR GT (TESTANGLE) SETHIGH  !! Store all paths GT angle in SETHIGH
+  ANGLE ELLIPTIC_MIRROR LT (TESTANGLE+1) SETLOW  !! Store all paths LT angle+1 in SETLOW
+  AND SETHIGH SETLOW SETALL !! Store all paths in SETALL that exist in both SETHIGH & SETLOW
+  SUMMARY SETALL  !! Get flux information for all paths in SETALL
+
+  $GRAB 'Total Flux' 0 1 TFLUX  !! Assign to TFLUX to be stored in iter.dis
+  &REG TFLUX TESTANGLE
+ }
+ 
+RETURN !! Ends PX mode
+DISPLAY ITER.DIS  !! TFLUX vs. TESTANGLE
+GRAPH 'Flux per AOI'
+RETURN

@@ -1,0 +1,47 @@
+!!++
+!! BEND01.INR
+!! Title: A Bent Tube
+!! Category: Isolated Command
+!! Keywords: TUBE, BEND  
+!! Description: BEND a tube by replacing the given coordinate
+!! in the command with a quadratic in the other 2 coordinates.
+!! The bent surface does not mesh; use PROFILES and/or RENDER.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 09/13/2007 - cp - modified format; added description
+!! 09/13/2007 - bf - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+WINDOW Y Z
+
+SURFACES 
+PLANE Z 0 ELLIPSE 5 5
+
+SURFACES 
+PLANE Z 10 ELLIPSE 5 5
+
+SURFACES 
+  TUBE Z 0 2 2 10 2 2
+OBJECT 'TESTTUBE1'
+
+SURFACE 
+  TUBE Z 0 2 2 10 2 2
+  BEND X  .01 -.1   
+OBJECT 'TESTTUBE2'
+  BOUNDS +.4  -.3
+
+PIXELS 201
+PLOT FACETS 7 7 0   OVERLAY  !!The bent surface does not mesh; use PROFILES
+!!CONSIDER ONLY 2
+PROFILES 1 1 -101
+RENDER
+
+PIXELS 201 
+OBLIQUE !!OFF
+$PLOT OFF
+LIGHT 0
+$PLOT NORM
+$VIEW 

@@ -1,0 +1,105 @@
+!!++
+!! MICHELSON_INTERFEROMETER.INR
+!! Title: Michelson Interferometer
+!! Category: Simple Problem
+!! Keywords: Wave, interference, Michelson, interferometer, SPREAD, splitter
+!! Description: Interferometer using two mirrors
+!! and a beam splitter.  A plane wave splits in two,
+!! hits two mirrors at equal distance and are sent
+!! back through the splitter to end up at the same
+!! location on the detector. One mirror is tilted
+!! slightly to show the interference effects between
+!! the two beams.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 04/03/2000 - cp - modified format; added description
+!! 04/01/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CENTIMETERS
+WAVELENGTH 632.8 NANOMETERS
+
+WL=632.8E-7
+PI=4*ATAN(1)
+
+COATINGS PROPERTIES
+  0.0  0.0  'ABSORB'
+  0.0  1.0  'TRANSMIT'
+  1.0  0.0  'REFLECT'
+  0.5  0.5  'BEAM_SPLITTER' 
+
+PL=100  !! Path length
+DIA=50  !! Diameter
+
+SURFACES
+  PLANE Z 0 ELLIPSE (DIA/2) (1.414*DIA/2) 0 0 0
+  OBJECT 'PELLICLE'
+    INTERFACE COAT "BEAM_SPLITTER" AIR AIR
+    FACETS 4 4
+    REDEFINE COLOR 1
+    ROTATE X 45
+
+!! Retro Reflector 1
+SURFACES
+  PLANE Z 0 ELLIPSE 2@(DIA/2)
+  OBJECT 'RETRO1_FRONT'
+    INTERFACE COAT REFLECT AIR SCHOTT_BK7
+    FACETS 4 4
+    REDEFINE COLOR 1
+    ROTATE X -90
+    SHIFT Y (PL)
+
+!! Retro Reflector 2
+TILT_WAVES=2  !! Tilt in waves
+TILT=(TILT_WAVES*WL/(DIA/2))*180/PI  !! Tilt in degrees
+
+SURFACES
+  PLANE Z 0 ELLIPSE 2@(DIA/2)
+  OBJECT 'RETRO2_FRONT'
+    INTERFACE COAT REFLECT AIR SCHOTT_BK7
+    FACETS 4 4
+    REDEFINE COLOR 1
+    SHIFT Z (PL)
+    ROTATE X (TILT)
+
+!! DETECTOR
+SURFACES
+  PLANE Z 0 ELLIPSE 2@(DIA/2)
+  OBJECT 'DETECTOR'
+    INTERFACE COAT ABSORB AIR SCHOTT_BK7
+    FACETS 4 4
+    REDEFINE COLOR 1
+    ROTATE X 90
+    SHIFT Y -(PL)
+
+!! Verify Geometry
+WINDOW Y Z
+PLOT FACETS 7 7 OVERLAY
+
+!! Define source
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 6328 ANGSTROMS
+WIDTHS 1.6
+
+GRID ELLIPTIC Z -100 -4@(DIA/2) 2@11
+  SOURCE DIRECTION Z 0 0
+
+TRACE PLOT COLOR 2
+$VIEW
+ 
+PIXELS 101
+CONSIDER ONLY DETECTOR
+SPREAD NORMAL
+WINDOW Z -2@(DIA/2) X -2@(DIA/2)
+WINDOW 1.2  !! Enlarge by 20%
+SPREAD NORMAL
+
+DISPLAY
+  PICTURE
+RETURN
+
+

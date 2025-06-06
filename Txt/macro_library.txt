@@ -1,0 +1,53 @@
+!!++
+!! MACRO_LIBRARY.INR
+!! Title: Example Library of Macros
+!! Category:  Simple Problem
+!! Keywords: Scripts, library, macro
+!! Description: This is an example set of macros
+!! to be saved as a library file with the .LIB
+!! extension.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/05/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SETCOL {    'macro for setting column of sources'
+ $DO -1 1
+   ROW ?
+}
+ 
+ROW {       'macro for setting row of sources'
+ $DO -1 1
+   SYSRAY ? #1
+}
+ 
+SYSRAY {    'macro for setting individual source'
+ BEAMS INCOHERENT GEOMETRIC
+ GRID ELLIPTIC Z -1 -4@10 5 5
+   SOURCE POSITION 0 0 -30
+   MOVE TO Z -30
+   SHIFT #1*25 #2*25 0
+}
+ 
+FITSURF {   'macro for finding plane'
+ $DO 1 9
+   $FITLOOP ?
+ SURFACES
+   FITTED 1
+ $DO 2 9 1
+   0 0 0 ABS (XX1) (YY1) (ZZ1),
+   (XX?) (YY?) (ZZ?),
+   *
+ CONSIDER ALL
+ PRINT SURFACE 0.1
+   $GRAB 'z' TEMP
+ DIST=1/TEMP
+ $REG DIST 'Z LOCATION OF BEST FIT PLANE IS'
+}
+ 
+FITLOOP {   'macro for grabbing focal centroid points'
+ SELECT ONLY SOURCE #1
+ FOCUS
+   $GRAB 'Centroid Point' 0 1 XX#1 YY#1 ZZ#1
+}

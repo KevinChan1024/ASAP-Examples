@@ -1,0 +1,70 @@
+!!++
+!! POLARIZ_CRYSTAL.INR
+!! Title: Analyzing Crystal Polarizers
+!! Category: Simple Problem
+!! Keywords: Polarization, PLOT, CRYSTAL, LIST ELLIPSE, POLARIZ
+!! Description: Using PLOT POLAR and LIST ELLIPSE to
+!! analyze a crystal-type polarizer. A CRYSTAL media
+!! generates two rays, ordinary and extraordinary.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/30/2004 - cp - more formatting, changed keyword
+!! 03/16/2000 - cp - reformatted; added header
+!! 03/02/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 550 NM
+FRESNEL BOTH
+XMEMORY NORM  !! Minimum setting to track polarization
+SPLIT 1
+
+MEDIA
+  1.6 'CRYSTAL_ORD'
+  1.1  CRYSTAL Y 45 45 CRYSTAL_ORD 'CRYSTAL'
+ 
+SURFACES 
+  PLANE Z 0 RECTANGLE 1
+OBJECT 'CALCITE.FRONT'
+  INTERFACE COAT +BARE AIR CRYSTAL
+  REDEFINE COLOR 1
+
+SURFACES
+  PLANE Z 1 RECTANGLE 1 1
+OBJECT 'CALCITE.BACK'
+  INTERFACE COAT +BARE AIR CRYSTAL
+  REDEFINE COLOR 1
+  
+EDGES
+  RECTANGLE Z 0 1 1
+  SWEEP DIRECTION 1  0 0 1
+OBJECT 'CALCITE.EDGE
+  INTERFACE 0 0 AIR CRYSTAL
+    REDEFINE COLOR 2
+  
+SURFACES 
+  PLANE Z 2 RECTANGLE 1 1
+OBJECT 'DETECTOR'
+  INTERFACE 0 0 AIR AIR
+  REDEFINE COLOR 3
+
+THETA=30
+  
+GRID RECT Z -1 -4@1   1 1
+SOURCE DIRECTION Z (THETA) 90
+  SHIFT Y 2*(-SIN[THETA])
+
+WINDOW Y Z
+PROFILES OVERLAY
+TRACE PLOT COLOR 2
+
+CONSIDER ONLY DETECTOR
+WINDOW Y -2@1 X -2@1
+PLOT EDGES OVERLAY
+PLOT POLARIZATION  !! Shows 2 rays
+LIST ELLIPSE  
+RETURN 
+

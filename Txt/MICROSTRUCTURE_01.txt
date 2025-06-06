@@ -1,0 +1,290 @@
+!!++
+!! MICROSTRUCTURE_01.INR
+!! Title: A Unit Cell Backlight System
+!! Category: Isolated Command
+!! Keywords: MICROSTRUCTURE, unit cell, backlight, lightguide, Arrays, bumps, led
+!! Description: Unit cell model of a backlight system with bumps
+!! on the bottom of a lightguide. The effective size of the bumps
+!! (packing fraction) increases toward the end of the lightguide. 
+!! See "Backlight_Explicit_01.INR" example to compare trace time to
+!! an identical discretely made backlight.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 06/04/2013 - cp - added header and formatted
+!! 05/01/2013 - rs - creation
+!!--
+  
+SYSTEM NEW
+RESET
+
+NRAYS=100000	!! Number of initial rays traced from each LED
+BUMPRAD=.3	  !! Radius of bumps in the unit cell
+
+!! Define a function named "SFAC" that scales the size of the bumps as a function of
+!! position on the lightguide.
+!! The variable "_1" represents the global X coordinate in the scaling function.
+!! Y and Z coordinates are represented by "_2" and "_3", but the scaling
+!! only varies with X, so "_2" and "_3" are not used in this example.
+A=5
+!!$FCN SFAC 1+(A*_1/100)
+$FCN SFAC 1+ABS((A*_1-250)/100)+ABS((A*_2)/100)
+
+!! System units
+UNITS MM
+
+!! Define refractive indices and names for the optical materials
+MEDIA
+  1.586 'POLYCARB'
+  1.52  'EPOXY'
+RETURN
+
+!! This edge defines a square boundary for the unit cell.
+!! This is the first edge that is defined, so it is edge number 1.
+EDGES
+  RECTANGLE Z 0 2@1
+RETURN
+
+!! These two objects define a unit cell.
+SURFACES
+  TUBE Z -1 2@(BUMPRAD) 1 2@(BUMPRAD)
+  PLANE Z 0 REC 1
+OBJECT 'UC1'
+  BOUNDS .2
+  INTERFACE COAT BARE AIR POLYCARB
+  REDEFINE COLOR 3
+RETURN
+
+SURFACES
+  PLANE Z 0
+  ELLIPSOID 3@(BUMPRAD), 3@0
+OBJECT 'UC2'
+  BOUNDS .2
+  INTERFACE COAT BARE AIR POLYCARB
+  REDEFINE COLOR 1
+RETURN
+
+!! ASAP requires a rectangular object to pad or clip the border 
+!! around the unit cell when it is scaled up or down.
+!! The size of the rectangle is arbitrary (ASAP will adjust it to
+!! clip or pad the scaled unit cell), but the Z height must match
+!! the Z height of the unit cell border, which is zero in this example.
+EDGES
+  RECTANGLE Z 0 2@.01	!! Z height of zero matches Z height of unit cell border
+OBJECT 'UC3'
+  INTERFACE COAT BARE AIR POLYCARB
+  REDEFINE COLOR 1
+RETURN
+
+!! Define a microstructure model with a reference direction parallel 
+!! to the global x axis.  The integer "1" that follows the "X" entry
+!! is the number of the edge that defines the boundary of the unit cell.
+!! "UC1" and "UC2" are the names of the objects that define the unit cell.
+!! "UC3" is the name of the object that is used to pad or clip the unit
+!! cell as it is scaled.
+!! The keyword "SCALE" tells ASAP that we are going to scale the size of 
+!! the unit cell.  "SFAC" is the name of the function (defined above) that
+!! defines the scale factor.
+MODEL
+  MICROSTRUCTURE X 1, UC1 UC2 UC3, SCALE SFAC
+RETURN
+
+!!=============================================
+!! Define the geometry of the backlight display
+!!=============================================
+
+!! Top of the lightguide
+SURFACE
+  PLANE Z 0 RECT 50
+    SHIFT 50 0 0
+OBJECT 'TOP'
+  INTERFACE COAT BARE AIR POLYCARB
+  REDEFINE COLOR 3
+RETURN
+
+!! Entrance face of the lightguide
+SURFACE
+  PLANE X 0 RECT 50 5
+    SHIFT 0 0 -5
+OBJECT 'ENT'
+  INTERFACE COAT BARE AIR POLYCARB
+  REDEFINE COLOR 11
+RETURN
+
+!! Sides of the lightguide
+SURFACES
+  PLANE Z -10 
+    ROTATE Y -2.862405 -10 0
+  PLANE Y -50 RECT 5 50
+    SHIFT 50 0 -5
+OBJECT 'SIDEMY'
+  INTERFACE COAT BARE AIR POLYCARB
+  BOUNDS .2
+  REDEFINE COLOR 11
+RETURN
+
+SURFACES
+  PLANE Z -10 
+    ROTATE Y -2.862405 -10 0
+  PLANE Y 50 RECT 5 50
+    SHIFT 50 0 -5
+OBJECT 'SIDEPY'
+  INTERFACE COAT BARE AIR POLYCARB
+  BOUNDS .2
+  REDEFINE COLOR 11
+RETURN
+
+!! End of the lightguide
+SURFACES
+  PLANE X 100 RECT 50 2.5
+    SHIFT 0 0 -2.5
+OBJECT 'END'
+  INTERFACE COAT BARE AIR POLYCARB
+  REDEFINE COLOR 11
+RETURN
+
+!! Bottom of the lightguide
+SURFACES
+  PLANE Z 0 RECT 50/COS[2.862405] 50
+OBJECT 'BOTTOM'
+  SHIFT 50/COS[2.862405] 0 -10
+  ROTATE Y -2.862405 -10 0
+  SCATTER MODEL 1
+  REDEFINE COLOR 3
+  FACETS 31 31 !! Increase the default faceting on this
+			         !! object so an array of unit cells is rendered
+RETURN
+
+!! Reflectors that direct light from the LEDs into the lightguide
+SURFACE
+  PLANE X 0 RECT 50 2
+    SHIFT 0 0 2
+    ROTATE Y 50 0 0
+    SHIFT -3.1 0 -5
+    SHIFT 0 0 2
+OBJECT 'REFTOP'
+  INTERFACE .9 0	!! Reflectance is 0.9
+  REDEFINE COLOR 20
+RETURN
+
+SURFACES
+  PLANE X 0 RECT 50 2
+    SHIFT 0 0 -2
+    ROTATE Y -50 0 0
+    SHIFT -3.1 0 -5
+    SHIFT 0 0 -2
+OBJECT 'REFBOT'
+  INTERFACE .9 0	!! Reflectance is 0.9
+  REDEFINE COLOR 20
+RETURN
+
+!! Catcher that collects rays coming from the top of the lightguide
+SURFACES
+  PLANE Z .1 RECT 50
+    SHIFT 50 0 0
+OBJECT 'CATCHER'
+  REDEFINE COLOR 3
+RETURN
+
+!! Define a line of nine led sources
+$DO 0 80 10
+{
+!! Dome
+SURFACES
+  PLANE Z 0 
+  ELLIPSOID 3@1.3, 3@0
+OBJECT 'DOME.?'
+  BOUNDS .2
+  SHIFT 0 (?-40) 0
+  INTERFACE COAT +BARE AIR EPOXY
+  REDEFINE COLOR 3
+RETURN
+
+!! Base top
+SURFACE
+  PLANE Z 0 RECT 3 1.8
+    SHIFT .6 0 0
+OBJECT 'BASE.TOP.?'
+  SHIFT 0 (?-40) 0
+  REDEFINE COLOR 1
+RETURN
+
+!! Base bottom
+SURFACES
+  PLANE Z -.6 RECT 3 1.8
+    SHIFT .6 0 0
+OBJECT 'BASE.BOT.?'
+  SHIFT 0 (?-40) 0
+  REDEFINE COLOR 1
+RETURN
+
+!! Base edge
+EDGES
+  RECTANGLE Z -.6 3 1.8
+    SHIFT .6 0 0
+  RECTANGLE Z 0 3 1.8
+    SHIFT .6 0 0
+OBJECT;.1 .2 'BASE.EDGE.?'
+  SHIFT 0 (?-40) 0
+  REDEFINE COLOR 1
+RETURN
+
+!! Create rays for this LED and set the total
+!! power of all rays to 1.
+IMMERSE EPOXY
+EMITTING RECT Z .1 2@.5 (NRAYS)
+  SHIFT 0 (?-40) 0
+  FLUX TOTAL 1 SOU .1
+  }
+
+!! Shift the LED objects to the entrance face of the backlight
+GROUP DOME.? BASE.TOP.? BASE.BOT.? BASE.EDGE.?
+  ROTATE Y 90 0 0
+  SHIFT -3.1 0 -5
+RETURN
+
+!! Shift the rays to the entrance face of the backlight
+RAYSET
+  ROTATE Y 90 0 0
+  SHIFT -3.1 0 -5
+RETURN
+
+!! Render the backlight, and render a unit cell in the
+!! center of each facet on the bottom of the lightguide.
+!! The catcher and top of the lightguide are not rendered so
+!! the unit cell renderings may be seen. 
+!! Note that "PLOT FACETS ... MICROSTRUCTURE" shows only the 
+!! shape and orientation of unit cells, not their size
+!! or spacing.
+WINDOW Y X
+CONSIDER EXCEPT CATCHER TOP
+PLOT FACETS 5 5 MICROSTRUCTURE
+$VIEW
+CONSIDER ALL
+!!CONSIDER EXCEPT UC1 UC2 UC3
+
+!! Restart the clock that times the ray trace
+$TIC
+
+!! Trace rays
+SPLIT 1		  !! Allow one generation of Fresnel reflections
+FRESNEL AVE	!! Reflectance is average of S and P polarization
+TRACE 
+
+!! Print out the time required for the ray trace
+$TIC
+
+!! Turn off all objects except the catcher that collected
+!! rays that came from the top of the lightguide
+CONSIDER ONLY CATCHER
+
+!! Calculate and plot the irradiance on the catcher
+WINDOW Y -50 50 X 0 100			            !! Window dimensions for the calculation
+PIXEL 101				                        !! Resolution of the calculation
+SPOTS POSITION AT 0				                  !! Calculate irradiance and write data to a display file
+DISPLAY					                        !! Read the display file into memory
+  PICTURE 'BACKLIGHT IRRADIANCE'	      !! Plot the irradiance
+  FORM -2.5                             !! Take the log of the irradiance
+  AVERAGE                               !! Nearest neighbor average
+  PICTURE 'LOG (BACKLIGHT IRRADIANCE)'  !! Plot log of irradiance
+RETURN
+

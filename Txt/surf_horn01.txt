@@ -1,0 +1,28 @@
+!!++
+!! SURF_HORN01.INR
+!! Title: HORN Surface
+!! Category: Isolated Command
+!! Keywords: HORN, SURFACE
+!! Description: A horn surface using
+!! simple radial coefficients. In this
+!! case, the LOCAL command is needed to
+!! define its size.  
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  HORN Z 0 0 0 0 0 1  !! Radially increasing in Z dir
+    LOCAL -4@1.25 -.1 2 Z
+OBJECT
+  
+WINDOW Y Z  !! To view object
+WINDOW 1.5
+PLOT FACETS 5 5 'SURF:HORN' COLORS 11
+RETURN

@@ -1,0 +1,46 @@
+!!++
+!! USERBSDF08.INR
+!! Title: BSDF Model for Asymmetrical Gaussian 
+!! Category: Simple problem
+!! Keywords: Scatter, USERBSDF, USERANIS, anisotropic, Gaussian, asymmetric  
+!! Description: Example showing the default anisotropic Gaussian
+!! scatter model (USERANIS) referred to in Online Help under
+!! USERBSDF. See third Remark under the heading Anisotropic-Surface
+!! Scatter Models.  The widths given for alpha and beta directions
+!! are different in order to make an asymmetrical Gaussian dispersion.
+!! Edit History: (latest first)
+!! 05/19/2006 - cp - modified, added header
+!! 05/19/2006 - sm - creation
+!!--
+
+SYSTEM NEW
+RESET
+UNITS MM
+
+C=.1        !! Peak BSDF value
+CP=SIN[2]   !! Width in local alpha direction
+CDP=SIN[8]  !! Width in local beta direction
+
+PIXELS 101
+
+!! Implements the default gaussian anisotropic model
+!! Uses routine USERANIS in userprog.dll
+!! See online help for USERBSDF
+!! ------ last Remark under heading Anisotropic-Surface Scatter Models
+
+MODEL
+ USERBSDF Z (C) (CP) (CDP) PLOT
+!!        ^----this entry can be either X Y Z U V W R T A
+
+!! Choose this entry carefully
+!! X Y Z are global directions
+!! U V W are local x y z directions wrt the surface
+!! R is radial, T is tangential, and A is axial
+
+DISPLAY USERBSDF 1  !! Extract layer for Normal incidence, 0° 
+PICTURE 'BSDF at 0°' !! 2D plot of BSDF function at 0°
+RETURN
+!! Note: The same plot may be obtained by the following method:
+!! From the ASAP Workspace, right-click on Display Viewer and 'Open'
+!! the display file userbsdf.dis.
+ 

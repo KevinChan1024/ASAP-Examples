@@ -1,0 +1,59 @@
+!!++
+!! ANGLES_RADIANCE_01.INR
+!! Title: Comparing ANGLES with ANGLES RADIANCE
+!! Category: Isolated Command
+!! Keywords: ANGLES RADIANCE, DIRECTION, Analysis, ANGLES
+!! Description: Comparing ANGLES using RADIANCE to just
+!! ANGLES, showing that for narrow source cones RADIANCE
+!! produces projected intensity which is the same as
+!! ANGLES divided by the cosign obliquity.
+!! Edit History: (latest first)  
+!! 10/22/2008 - jh - modified from SPOTS_DIR01.inr
+!!--
+
+SYSTEM NEW
+RESET
+
+BEAMS INCOHERENT GEOMETRIC
+
+ANGROT=75
+$ASK ANGROT 'Source rotation angle/obliquity'
+
+!! create a narrow-angle source at angle ANGROT from Z
+EMITTING DISK Z 0 0 0 100000 0.1 0.1
+ROTATE X (ANGROT) 0 0
+
+CONSIDER ONLY 0  !! To plot rays on source only
+WINDOW Y X
+WINDOW 0.6  !! 
+
+SPOTS DIRECTION 'SPOT DIAGRAM IN DIRECTION COSINE SPACE'
+
+DISPLAY
+  PICTURE 'DIR COSINE SPACE'
+  $CLEAR
+  ANGLES
+  $GRAB 'Average' 0 1 AVG_ANGLES
+  $REG AVG_ANGLES
+  PICTURE 'ANGLES'
+RETURN
+
+DISPLAY
+  ANGLES RADIANCE
+  PICTURE 'ANGLES RADIANCE'
+  $GRAB 'Average' 0 1 AVG_ANGRAD
+  $REG AVG_ANGRAD
+RETURN
+
+!! Convert intensity to "projected" intensity
+!! (only valid for source with small range of angles)
+AVG_ANGPROJ=AVG_ANGLES/COS[ANGROT]
+
+&REG AVG_ANGLES AVG_ANGRAD 'ANGLES & ANGLES RADIANCE' 
+&REG AVG_ANGRAD AVG_ANGPROJ 'Compare projected intensity to angles radiance' 
+
+RETURN
+!! It appears, for angles up to 89 degrees, that the
+!! ANGLES RADIANCE is the projected ANGLES, i.e.
+!! ANGLES divided by the cosine obliquity to the
+!! base plane/WINDOW normal.

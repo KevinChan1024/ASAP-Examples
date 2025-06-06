@@ -1,0 +1,20 @@
+!!++
+!! AFOCAL02.INR
+!! Title: Afocal Lens
+!! Category: Isolated Command
+!! Keywords: AFOCAL, LENSES
+!! Description: Defines an afocal telescope
+!! composed of mirrors. The axial separation
+!! of the mirrors is 5. The input beam diameter
+!! is 1.5; the output beam diameter is 8.
+!! Edit History: (latest first)
+!! 08/09/2012 - cp - added RETURN
+!! 10/11/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+LENSES
+  AFOCAL Z 0 5 .75 4 REFL REFL 
+RETURN
+ 
+

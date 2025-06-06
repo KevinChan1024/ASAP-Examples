@@ -1,0 +1,39 @@
+!!++
+!! GRATING_LINEAR.INR
+!! Title: Simple Linear Grating
+!! Category: Simple Problem
+!! Keywords: Gratings, doe, DIFFRACT, MULTIPLE, diffraction
+!! Description: Simple grating made with a single
+!! MULTIPLE surface to create the diffractive lines.
+!! Two orders of diffraction and their efficiencies
+!! are specified. The trace plot shows the second 
+!! order rays produced.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 11/05/2003 - cp - fixed keyword
+!! 03/16/2000 - cp - Reformatted; added header
+!! 03/02/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 0.55 UM
+
+!! Define the grating
+SURFACES
+  PLANE Y 0
+    MULTIPLE 1 1.5E-3
+  PLANE Z 0 RECTANGLE 1
+OBJECT 'GRATING'
+  INTERFACE 0 1 AIR AIR DIFFRACT .2   1 .7   0 .3
+
+!! Set up a grid and trace the rays
+GRID ELLIPTIC Z -1 -4@.2 1 3
+  SOURCE DIRECTION 0 0 1
+  
+WINDOW Y Z
+PROFILES OVERLAY 'Grating Example'
+TRACE PLOT COLOR 2
+RETURN

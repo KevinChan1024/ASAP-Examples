@@ -1,0 +1,63 @@
+!!++
+!! TRACE02.INR
+!! Title: TRACE Command Output
+!! Category: Isolated Command
+!! Keywords: TRACE, Tracing, STATS
+!! Description: Output generated from TRACE STATS.
+!! The total rays and flux on each object during the
+!! ray trace is printed, alongside the object's
+!! number, positional data, and name.
+!! Note: Not a run-able script file.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - added note, corrected style
+!! 10/18/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+ --- COATINGS PROPERTIES
+ ---   0.9 0 'REFL'
+ ---   0   0 'ABSORB'
+ --- SURFACES
+ ---   OPTICAL Z -15 -12.5 -2.25 ELLIPSE 1.6
+ --- OBJECT 'SECONDARY_MIRROR'
+ ---   INTERFACE COAT -REFL
+ --- SURFACES
+ ---   OPTICAL Z 0 -40 -1 ELLIPSE 5 5 0.25
+ --- OBJECT 'PRIMARY_MIRROR'
+ ---   INTERFACE COAT -REFL
+ --- LENSES
+ ---   MIRROR Z 10 0.25
+ --- OBJECT 'DETECTOR'
+ ---   INTERFACE COAT ABSORB
+ --- BEAMS INCOHERENT GEOMETRIC
+ --- GRID ELLIPTIC Z -20 -4@5 1 11
+ ---   SOURCE DIRECTION 0 0 1
+
+     11 rays created in a ELLIPTICAL grid for a total of     11
+ 
+ Source Z  angle for rays
+    0.000       1     -11
+ --- TRACE STATS
+ 
+ Total of      3 warnings
+             Missed Mult    Wrong  Low   Total  Wrong
+ Obj  Total  After  Bounce  Side   Flux  Refl   Direc
+   1      3      3                                    SECONDARY_MIRROR
+         27 ray-objects encountered  at   246 per second
+        120 order-intersections done at  1097 per second
+
+ 
+ Object      X             Y             Z       Incident Flux and Rays
+     0 0.0000000     -4.545455     -20.00000      79.19928           11
+       0.0000000      4.545455     -20.00000
+ 
+     1 0.0000000     -1.139306     -15.05179      73.97630           11
+       0.0000000      1.139306     -15.00000     SECONDARY_MIRROR
+ 
+     2 0.0000000     -4.545455     -.2582645      52.22960            8
+       0.0000000      4.545455     -.4132231E-01 PRIMARY_MIRROR
+
+ 
+     3 0.0000000     -.4282962E-06  10.00000      42.30596            8
+       0.0000000     0.4282962E-06  10.00000     DETECTOR

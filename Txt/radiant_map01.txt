@@ -1,0 +1,35 @@
+!!++
+!! RADIANT_MAP01.INR
+!! Title: Radiance Map
+!! Category: Isolated Command
+!! Keywords: RADIANT, Radiometry, radiance, EMITTING 
+!! Description: An example of a radiance map using an 
+!! emitting surface.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/15/2000 - cp - modified format; added description
+!! 03/29/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SEED 1 QUASI
+XMEMORY MIN
+EMITTING RECT Z 0 2@1 100000 
+
+EDGES
+  RECTANGLE Z 0 2@1
+
+PIXELS 2  !! Break up window into 4 total pixels
+WINDOW Y -2@1 X -2@1  !! The size of emitter
+RADIANT Z 0 90 9 0 360 9 MAP 2
+WINDOW Z Y
+WINDOW 1.2  !! Enlarge for oblique view
+OBLIQUE
+
+PLOT EDGES 'RADIANCE MAP OF AN EMITTING RECTANGLE' OVERLAY
+REPLOT  !! Right click in plot window to exit
+ 
+!! $VIEW
+RETURN 

@@ -1,0 +1,56 @@
+!!++
+!! CONDUIT_wire_wrapping.INR
+!! Title: Wrapping wires with a conduit
+!! Category: Simple Problem
+!! Keywords: Geometry, CONDUIT, TUBE, REPEAT, wire, tube
+!! Description: Creates 4 wires out of tubes and then wraps
+!! them with a conduit
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 07/12/2005 - gg - creation
+!!--
+
+SYSTEM NEW
+RESET
+  
+!! Create the wires
+SURFACES
+  TUBE Z 0 .1 .1 8 .1 .1 
+OBJECT !! wire 1           
+
+
+SURFACES 
+  REPEAT 1
+  SHIFT Y .2  
+OBJECT !! wire 2
+
+SURFACES
+  REPEAT 1  
+  SHIFT X .2  
+OBJECT !! wire 3      
+      
+SURFACES
+  REPEAT .1
+  SHIFT Y .2
+OBJECT !! wire 4 
+ 
+!! Bundle the wires together and give them the same name
+GROUP -4
+OBJECT 'WIRE_BUNDLE'                                    
+
+!! Create the conduit to surround the wires
+SURFACES
+  CONDUIT Z  1 7 .27 
+  SHIFT X .1
+  SHIFT Y .1
+OBJECT 'ELECTRICAL_CONDUIT'
+                                           
+!! Plot the conduit and the wires
+WINDOW Y X
+PLOT FACETS       
+                                 
+!! See in 3D viewer
+$VIEW 
+!! Rotate the window to see the objects 
+
+RETURN

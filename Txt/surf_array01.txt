@@ -1,0 +1,56 @@
+!!++
+!! SURF_ARRAY01.INR
+!! Title: ARRAY Surface
+!! Category: Isolated Command
+!! Keywords: ARRAY, SURFACE, BOUNDS, stairs, steps
+!! Description: Two arrayed surfaces used to make
+!! stair steps. They are bounded to planes to define
+!! the tops and bottoms. A LIMITS box defines the sides.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 09/05/2003 - cp - added keywords 
+!! 03/11/2002 - cp - reformatted
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+  
+COATINGS PROPERTIES
+  1 0  'REFL'
+SURFACES
+  PLANE Y 0
+    ARRAY 10 0 1 0  !! Shift in Y increments of 1
+  PLANE Z 0
+    ARRAY 10 0 0 1  !! Shift in Z increments of 1
+  PLANE Z 0
+    ROTATE X 45 0 0 !! To bound upper side of stairs
+  PLANE Z 0
+    ROTATE X 45 0 0 !! To bound lower side of stairs
+    SHIFT Z 1
+OBJECT
+  1 'STAIR_SIDES'
+  BOUNDS 0.2 -0.1 
+  LIMITS -1 1 -1 11 -1 11
+  INTERFACE COAT -REFL 
+OBJECT
+  2 'STAIR_TOPS'
+  BOUNDS 0.2 -0.1 
+  LIMITS -1 1 -1 11 -1 11
+  INTERFACE COAT -REFL 
+
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC Z -1 -5 5 -5 8 1 9
+  SOURCE DIRECTION 0 0 1 
+  SHIFT Y 5
+  ROTATE X 20 0 -1 
+
+WINDOW Y Z
+WINDOW 1.1
+PIXELS 127  !! Used for profile
+ARROWS 1.5
+TITLE 'REFLECTIVE STAIRCASE USING 2 SURFACE ARRAYS BOUNDED ON SIDES'
+PROFILES OVERLAY
+TRACE PLOT
+RETURN

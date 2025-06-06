@@ -1,0 +1,22 @@
+!!++
+!! LENS_WEDGE01.INR
+!! Title: Glass Wedge Lens
+!! Category: Isolated Command
+!! Keywords: WEDGE, LENSES
+!! Description: A wedge of glass made
+!! with LENSES command.
+!! Edit History: (latest first)
+!! 10/07/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+LENSES
+  WEDGE Z 0 1 BK7 20 .5
+
+WINDOW X Z
+WINDOW 1.5  !! Enlarge 50%
+PLOT LENSES 'LENS:WEDGE' COLORS 11
+RETURN

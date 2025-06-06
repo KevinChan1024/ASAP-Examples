@@ -1,0 +1,339 @@
+!!++
+!! COMBINING_DISTRIB.INR
+!! Title: Combining Spots Distributions
+!! Category: Simple Problem
+!! Keywords: Sources, Tracing, COMBINE, SHIFT, SPOTS, iges, WRITE, IMMERSE, SUBSET
+!! Description: This is a demonstration of how to simulate a row of
+!! identical LED's used as a multiple source without having to trace
+!! geometry and the source more than once.  It creates a single LED used
+!! as an emitting object which is traced to a target plane.  Normally,
+!! there would be an optic or some local geometry in front of the LED,
+!! as well.  A SPOTS distribution on the target is saved to a file.
+!! This is then duplicated, shifted and combined to a file a number
+!! of times to represent multiple sources and geometry.  This could
+!! save much time over recreating the entire geometry set, and then 
+!! creating, shifting and retracing the source many times, especially
+!! if there is a large array or complex geometry involved.
+!! Of course, be aware that the single trace method would not show
+!! effects of ray interaction with adjacent geometry that is not there.
+!! Edit History: (latest first)
+!! 06/02/2014 - gb - removed SUM in Keywords
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/14/2008 - cp - corrected keyword spelling
+!! 10/15/2002 - cp - modified syntax
+!! 02/07/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM 'mW'
+WAVELENGTH 655 NM
+BEAMS INCOHERENT GEOMETRIC
+XMEMORY MIN 
+
+MEDIA
+  1.45 'EPOXY'                    
+  
+!! The following geometry is imported through the CAD translator
+!! It could have resided in a separate file and read in with $READ.
+!! Note that some syntax may not exactly follow recommended style.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+COATINGS PROPERTIES
+         0 ,       0     'ABSORB'
+         1 ,       0     'REFLECT'
+         0 ,       1     'TRANSMIT'
+
+TITLE = "T 1 3/4 LED LAMP"
+!   1     21   Plane Bounded SURFACE
+ CURVES
+  POINTS 2.8453959  .8934800  .0000000 2.0000000; $FAST 12    1
+ 3.1025481  .7398547  .0000000 1.1101508   3.1296805  .4388347  .0000000 2.0000000   3.1466881  .2501426  .0000000 1.4801325  
+ 2.9552803  .0000000  .0000000  .0000000  
+  LINE  2.955280      .0000000  .0000000      .2040035E-01  .0000000  .0000000    
+  LINE  .0000000  .0000000  .0000000      .0000000  .8903874      .0000000    
+  LINE  .0000000  .8903874      .0000000      2.733960      .8956388      .0000000    
+  LINE  2.733960      .8956388      .0000000      2.845396      .8934800      .0000000    
+  COMPOSITE
+
+  SWEEP AXIS 361 0 1 0 
+  
+OBJECT =LENS_BASE
+  INTERFACE COAT +BARE AIR EPOXY
+  REDEFINE COLOR 2
+
+!   2     49   Plane Bounded SURFACE
+CURVES
+  LINE  .0000000  9.010715      .0000000      .0000000  .8935028      .0000000    
+  LINE  .0000000  .8935028      .0000000      2.836638      .8925862      .0000000    
+  POINTS 2.8366385  .8925867  .0000000 2.0000000 
+ 2.8367691 2.6481251  .0000000 1.4244997   2.8375483 6.2131564  .0000000  .0000000  
+  POINTS 2.8375484 6.2131572  .0000000 2.0000000; $FAST 12    1
+ 2.9204742 7.7077714  .0000000  .8803829   1.9026162 8.4675363  .0000000 2.0000000   1.2599600 8.9472371  .0000000 1.0617340  
+  .0000000 9.0107154  .0000000  .0000000  
+  COMPOSITE
+ 
+SWEEP AXIS 361 0 1 0 
+
+OBJECT =LENS_BULLET
+  INTERFACE COAT +BARE AIR EPOXY
+  REDEFINE COLOR 2
+
+!! Import of Electrodes
+
+!! Cathode
+!   1     28   Plane Bounded SURFACE
+CURVES
+  LINE  2.188936      .0000000      .0000000      2.188936      4.121396      .0000000    
+  LINE  2.188936      4.121396      .0000000      2.319593      4.591764      .0000000    
+  LINE  2.319593      4.591764      .0000000      2.006015      4.591764      .0000000    
+  LINE  2.006015      4.591764      .0000000      1.718568      4.095264      .0000000    
+  LINE  1.718568      4.095264      .0000000      1.718568      2.422845      .0000000    
+  LINE  1.718568      2.422845      .0000000      1.483384      2.422845      .0000000    
+  LINE  1.483384      2.422845      .0000000      1.483384      2.135398      .0000000    
+  LINE  1.483384      2.135398      .0000000      1.718568      2.135398      .0000000    
+  LINE  1.718568      2.135398      .0000000      1.614042      1.325320      .0000000    
+  LINE  1.614042      1.325320      .0000000      .8039635      1.246925      .0000000    
+  LINE  .8039635      1.246925      .0000000      .8039635      .0000000      .0000000    
+  LINE  .8039635      .0000000      .0000000      2.188936      .0000000      .0000000    
+  COMPOSITE
+   SWEEP DIRECTION 0  .0000000      .0000000      1.000000    
+OBJECT =Cathode1
+  INTERFACE COAT +REFLECT EPOXY EPOXY
+  REDEFINE COLOR 20
+  SHIFT Z -.38
+CURVES
+  REPEAT; SHIFT Z .76 !! To duplicate surface at .76 thick
+OBJECT =Cathode2
+  INTERFACE COAT +REFLECT EPOXY EPOXY
+  REDEFINE COLOR 20
+
+
+!   1     28   Plane Bounded SURFACE
+CURVES
+  LINE  2.188936      .0000000      .0000000      2.188936      4.121396      .0000000    
+  LINE  2.188936      4.121396      .0000000      2.319593      4.591764      .0000000    
+  LINE  2.319593      4.591764      .0000000      2.006015      4.591764      .0000000    
+  LINE  2.006015      4.591764      .0000000      1.718568      4.095264      .0000000    
+  LINE  1.718568      4.095264      .0000000      1.718568      2.422845      .0000000    
+  LINE  1.718568      2.422845      .0000000      1.483384      2.422845      .0000000    
+  LINE  1.483384      2.422845      .0000000      1.483384      2.135398      .0000000    
+  LINE  1.483384      2.135398      .0000000      1.718568      2.135398      .0000000    
+  LINE  1.718568      2.135398      .0000000      1.614042      1.325320      .0000000    
+  LINE  1.614042      1.325320      .0000000      .8039635      1.246925      .0000000    
+  LINE  .8039635      1.246925      .0000000      .8039635      .0000000      .0000000    
+  LINE  .8039635      .0000000      .0000000      2.188936      .0000000      .0000000    
+  COMPOSITE
+   SWEEP DIRECTION .76 0 0 1  !! Extrude tube to proper thickness    
+OBJECT =Cathode3
+  INTERFACE COAT +REFLECT EPOXY EPOXY
+  SHIFT Z -.38
+   REDEFINE COLOR 20
+
+!! Anode
+!   2     47   Plane Bounded SURFACE
+ CURVES
+  LINE -.8684558     .0000000       .0000000     -.8684558      1.116267      .0000000    
+  LINE -.8684558      1.116267      .0000000     -1.783060      1.403714      .0000000    
+  LINE -1.783060      1.403714      .0000000     -1.783060      3.755554      .0000000    
+  LINE -1.783060      3.755554      .0000000      1.117542      3.755554      .0000000    
+  LINE  1.117542      3.755554      .0000000      1.431121      4.565632      .0000000    
+  LINE  1.431121      4.565632      .0000000     -2.227296      4.565632      .0000000    
+  LINE -2.227296      4.565632      .0000000     -2.227296      .0000000      .0000000    
+  LINE -2.227296     .0000000       .0000000     -.8684558      .0000000      .0000000    
+  COMPOSITE
+   SWEEP DIRECTION 0  .0000000      .0000000      1.000000    
+OBJECT =Anode1
+  INTERFACE COAT +REFLECT EPOXY EPOXY
+  REDEFINE COLOR 20
+  SHIFT Z -.38
+CURVES
+  REPEAT; SHIFT Z .76 !! To duplicate surface at .76 thick
+OBJECT =Anode2
+  INTERFACE COAT +REFLECT EPOXY EPOXY
+  REDEFINE COLOR 20
+
+
+!   2     47   Plane Bounded SURFACE
+ CURVES
+  LINE -.8684558      .0000000      .0000000     -.8684558      1.116267      .0000000    
+  LINE -.8684558      1.116267      .0000000     -1.783060      1.403714      .0000000    
+  LINE -1.783060      1.403714      .0000000     -1.783060      3.755554      .0000000    
+  LINE -1.783060      3.755554      .0000000      1.117542      3.755554      .0000000    
+  LINE  1.117542      3.755554      .0000000      1.431121      4.565632      .0000000    
+  LINE  1.431121      4.565632      .0000000     -2.227296      4.565632      .0000000    
+  LINE -2.227296      4.565632      .0000000     -2.227296     .0000000       .0000000    
+  LINE -2.227296     .0000000       .0000000     -.8684558     .0000000       .0000000    
+  COMPOSITE
+   SWEEP DIRECTION .76 0 0 1  !! Extrude tube to proper thickness    
+OBJECT =Anode3
+  INTERFACE COAT +REFLECT EPOXY EPOXY
+  SHIFT Z -.38
+   REDEFINE COLOR 20
+
+!! 1st Lead
+!   3     68   Plane Bounded SURFACE
+CURVES
+  LINE -.8435031     .0000000       .0000000     -.8427559     -2.837413      .0000000    
+  LINE -.8427559     -2.837413      .0000000     -1.195761     -2.837413      .0000000    
+  LINE -1.195761     -2.837413      .0000000     -1.160460     -2.837413      .0000000    
+  LINE -1.160460     -2.837413      .0000000     -1.157184     -15.24576      .0000000    
+  LINE -1.157184     -15.24576      .0000000     -1.898494     -15.24576      .0000000    
+  LINE -1.898494     -15.24576      .0000000     -1.901769     -2.839668      .0000000    
+  LINE -1.901769     -2.839668      .0000000     -2.254774     -2.839668      .0000000    
+  LINE -2.254774     -2.839668      .0000000     -2.255521     .0000000       .0000000    
+  LINE -2.255521     .0000000       .0000000     -.8435031     .0000000       .0000000    
+  COMPOSITE
+   SWEEP DIRECTION 0  .0000000      .0000000     -1.000000    
+OBJECT =Lead1
+  INTERFACE COAT +REFLECT AIR AIR
+  REDEFINE COLOR 20
+  SHIFT Z -.38
+CURVES
+  REPEAT; SHIFT Z .76 !! To duplicate surface at .76 thick
+OBJECT =Lead2
+  INTERFACE COAT +REFLECT AIR AIR
+  REDEFINE COLOR 20
+
+!   3     68   Plane Bounded SURFACE
+CURVES
+  LINE -.8435031     .0000000       .0000000     -.8427559     -2.837413      .0000000    
+  LINE -.8427559     -2.837413      .0000000     -1.195761     -2.837413      .0000000    
+  LINE -1.195761     -2.837413      .0000000     -1.160460     -2.837413      .0000000    
+  LINE -1.160460     -2.837413      .0000000     -1.157184     -15.24576      .0000000    
+  LINE -1.157184     -15.24576      .0000000     -1.898494     -15.24576      .0000000    
+  LINE -1.898494     -15.24576      .0000000     -1.901769     -2.839668      .0000000    
+  LINE -1.901769     -2.839668      .0000000     -2.254774     -2.839668      .0000000    
+  LINE -2.254774     -2.839668      .0000000     -2.255521     .0000000       .0000000    
+  LINE -2.255521     .0000000       .0000000     -.8435031     .0000000       .0000000    
+  COMPOSITE
+   SWEEP DIRECTION .76 0 0 1  !! Extrude tube to proper thickness    
+OBJECT =Lead3
+  INTERFACE COAT +REFLECT AIR AIR
+  SHIFT Z -.38
+  REDEFINE COLOR 20
+
+
+!! 2nd Lead
+!   4     89   Plane Bounded SURFACE
+CURVES
+  LINE  2.199381     .0000000       .0000000      2.199381     -3.040865      .0000000    
+  LINE  2.199381     -3.040865      .0000000      1.846377     -3.040865      .0000000    
+  LINE  1.846377     -3.040865      .0000000      1.881677     -3.040865      .0000000    
+  LINE  1.881677     -3.040865      .0000000      1.881677     -16.34127      .0000000    
+  LINE  1.881677     -16.34127      .0000000      1.140367     -16.34127      .0000000    
+  LINE  1.140367     -16.34127      .0000000      1.140367     -3.043282      .0000000    
+  LINE  1.140367     -3.043282      .0000000      .7873628     -3.043282      .0000000    
+  LINE  .7873628     -3.043282      .0000000      .7873628     .0000000       .0000000    
+  LINE  .7873628     .0000000       .0000000      2.199381     .0000000       .0000000    
+  COMPOSITE
+   SWEEP DIRECTION 0  .0000000      .0000000     -1.000000    
+OBJECT =Lead4
+  INTERFACE COAT +REFLECT AIR AIR
+  REDEFINE COLOR 20
+  SHIFT Z -.38
+CURVES
+  REPEAT; SHIFT Z .76 !! To duplicate surface at .76 thick
+OBJECT =Lead5
+  INTERFACE COAT +REFLECT AIR AIR
+  REDEFINE COLOR 20
+
+!   4     89   Plane Bounded SURFACE
+CURVES
+  LINE  2.199381     .0000000       .0000000      2.199381     -3.040865      .0000000    
+  LINE  2.199381     -3.040865      .0000000      1.846377     -3.040865      .0000000    
+  LINE  1.846377     -3.040865      .0000000      1.881677     -3.040865      .0000000    
+  LINE  1.881677     -3.040865      .0000000      1.881677     -16.34127      .0000000    
+  LINE  1.881677     -16.34127      .0000000      1.140367     -16.34127      .0000000    
+  LINE  1.140367     -16.34127      .0000000      1.140367     -3.043282      .0000000    
+  LINE  1.140367     -3.043282      .0000000      .7873628     -3.043282      .0000000    
+  LINE  .7873628     -3.043282      .0000000      .7873628      .0000000      .0000000    
+  LINE  .7873628     .0000000      .0000000      2.199381       .0000000      .0000000    
+  COMPOSITE
+   SWEEP DIRECTION .76 0 0 1  !! Extrude tube to proper thickness    
+OBJECT =Lead6
+  INTERFACE COAT +REFLECT AIR AIR
+  SHIFT Z -.38
+   REDEFINE COLOR 20
+
+!! Die
+!   1      3   Rational B-Spline SURFACE General
+CURVES
+  POINTS   .004190 4.2431232   .000414 1.0000000; $FAST 12   11
+   .004190 4.2431232   .000414  .7071068     .004190 4.2431232   .000414 1.0000000     .004190 4.2431232   .000414  .7071068  
+   .004190 4.2431232   .000414 1.0000000     .004190 4.2431232   .000414  .7071068     .004190 4.2431232   .000414 1.0000000  
+   .004190 4.2431232   .000414  .7071068     .004190 4.2431232   .000414 1.0000000    -.326705 4.2382697   .000414 1.0000000  
+  -.326705 4.2382697   .331309  .7071068     .004190 4.2382697   .331309 1.0000000     .335085 4.2382697   .331309  .7071068  
+   .335085 4.2382697   .000414 1.0000000     .335085 4.2382697  -.330481  .7071068     .004190 4.2382697  -.330481 1.0000000  
+  -.326705 4.2382697  -.330481  .7071068    -.326705 4.2382697   .000414 1.0000000    -.680695 4.4328758   .000414 1.0000000  
+  -.680695 4.4328758   .685298  .7071068     .004190 4.4328758   .685298 1.0000000     .689074 4.4328758   .685298  .7071068  
+   .689074 4.4328758   .000414 1.0000000     .689074 4.4328758  -.684471  .7071068     .004190 4.4328758  -.684471 1.0000000  
+  -.680695 4.4328758  -.684471  .7071068    -.680695 4.4328758   .000414 1.0000000    -.920640 4.6511363   .000414 1.0000000  
+  -.920640 4.6511363   .925243  .7071068     .004190 4.6511363   .925243 1.0000000     .929019 4.6511363   .925243  .7071068  
+   .929019 4.6511363   .000414 1.0000000     .929019 4.6511363  -.924416  .7071068     .004190 4.6511363  -.924416 1.0000000  
+  -.920640 4.6511363  -.924416  .7071068    -.920640 4.6511363   .000414 1.0000000  
+  PATCHES  2  3    4    1
+OBJECT =  PARAB
+  INTERFACE COAT +REFLECT EPOXY EPOXY
+  REDEFINE COLOR 20
+
+!   2     69   Plane Bounded SURFACE
+CURVE
+  ARC Z  .0000000      .9248295      .0000000      .0000000      .0000000      360.0000
+    MATRIX; $FAST 4 3
+     .4189769E-02 -1.000000      .1134812E-15  .0000000    
+     4.651136      .0000000      .0000000     -1.000000    
+     .4138962E-03 -.1134812E-15 -1.000000      .0000000    
+   SWEEP DIRECTION 0  .9603699E-15 -1.000000      .9603699E-15
+
+OBJECT =DIE_SURF  !! The emitting surface
+  INTERFACE COAT +REFLECT EPOXY EPOXY
+  REDEFINE COLOR 20
+
+$ECHO  !! Turn console echo back on
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! End of imported IGES file and back to recommended syntax style.
+
+!! Assume that an optic and other local geometry is put between LED and the Plane
+
+SURFACES   !! Make absorbing plane to catch rays
+  PLANE Y 10 RECT 120 20
+OBJECT 'PLANE'
+  INTERFACE 0 0
+  SHIFT Z 25
+
+NRAYS=50000    !! Source created from object emitter inside LED
+IMMERSE EPOXY  !! Rays to be born in epoxy
+SEED 3 QUASI
+EMITTING OBJECT -DIE_SURF -(NRAYS) 0
+  FLUX TOTAL 10  !! 10 mW 
+SPLIT 1  !! Permits total internal reflection
+MISSED ARROWS 5
+PLOT FACETS 3 3 OVERLAY
+TRACE PLOT 100  !! Trace 1st LED and plot every 100th ray
+
+!! Create one distribution and duplicate across a region 
+CONSIDER ONLY PLANE
+  SUBSET                    !! Dump all rays except those on Plane
+WINDOW X -2@10 Z -10 130    !! Plane must be big enough to handle
+PIXELS 51                  !! the entire array of leds
+SPOTS POSITION ATTRIBUTE 0          
+DISPLAY
+  WRITE SUM DIS  !! Write first LED rays to distribution file called SUM.DIS
+RETURN
+
+$DO 1 15  !! Create 15 additional LED distributions
+  {
+  SELECT ALL
+    SHIFT Z 8 0 0
+  SPOTS POSITION ATTRIBUTE 0  !! Write next LED after shift to current dist file
+  DISPLAY 
+    COMBINE SUM 1.0  !! Add SUM.DIS to current dist. file
+    WRITE SUM DIS    !! Write current dist. file back to SUM.DIS
+  }
+DISPLAY SUM
+  CONTOUR 10  !! Plot contour with 10 levels of all 16 LEDs
+RETURN
+

@@ -1,0 +1,47 @@
+!!++
+!! CONTOUR01.INR
+!! Title: CONTOUR Display Command
+!! Category: Isolated Command
+!! Keywords: CONTOUR, DISPLAY
+!! Description: Create a CONTOUR plot with and
+!! without tic marks using 10 contour levels.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/07/2003 - cp - changed category
+!! 10/04/2000 - cp - modified format;
+!! 04/04/2000 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES !! or CURVES
+  R=1    !! Vertex radius of curvature
+  K=-1   !! Conic constant
+  H=1.5  !! Outer aperture height
+  O=0    !! Inner obscuration height
+  CONIC X 0, 0 0 -2*R 1 0 K+1, Y (O) (H)
+    SWEEP AXIS 360 Z
+  OBJECT
+    INTERFACE 1 0 AIR AIR
+       
+SURFACES
+  PLANE Z 2 RECTANGLE 2 
+  OBJECT 'DETECTOR'
+    INTERFACE 0 0 AIR AIR
+
+EMITTING SPHEROID 0 0 1 .1 .1 .1 100000 Z
+!! PLOT FACETS 11 11 OVERLAY
+TRACE !! PLOT 1000
+
+WINDOW X Y      
+CONSIDER ONLY DETECTOR 
+SPOTS POSITION ATTRIBUTE 0  !! Supress the spots plot
+
+DISPLAY
+  AVERAGE
+  CONTOUR 10  !! 10 Coutour levels and no tic marks
+  CONTOUR 10 TICS 0.2 0.2  !! TIC marks at intervals of 0.2
+
+RETURN
+

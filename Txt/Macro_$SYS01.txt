@@ -1,0 +1,38 @@
+!!++
+!! MACRO_$SYS01.INR
+!! Title: $SYS to Run External Commands
+!! Category: Isolated Command
+!! Keywords: $SYS, Macros_pre, PICTURE
+!! Description: Shows how $SYS may be used to perform
+!! an external process. In this case, temp files are 
+!! created by the PICTURE command and may be left behind.
+!! $SYS is used to delete the unwanted files when done.
+!! The screen will go black while executing the command
+!! prompt function.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! Replaced USERAPOD command with APODIZE
+!! 11/27/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM PI=3.1416
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTHS 0.6328 UM 
+APODIZE POSITION (U=SQRT(PI/2)*0.75) (V=SQRT(PI/2)*0.75) U*V
+GRID ELLIPTIC Z 0 -4@1 2@51
+  SOURCE DIRECTION 0 0 1
+
+WINDOW Y X
+PIXELS 121
+SPOTS POSITION ATTRIBUTE 0
+DISPLAY
+  PICTURE
+WINDOW Y Z
+SPOTS POSITION ATTRIBUTE 0
+DISPLAY
+  PICTURE
+$SYS DEL "DISPLA*.TMP" !! Perform external 'DOS' command 
+RETURN

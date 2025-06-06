@@ -1,0 +1,27 @@
+!!++
+!! MACRO_$GRAB01.INR
+!! Title: $GRAB Predefined Macro 
+!! Category: Isolated Command
+!! Keywords: $GRAB, Macros_pre, macro
+!! Description: Demonstrates the use of $GRAB.
+!! Uses $GRAB to assign variables to numbers
+!! that are printed to the command console.
+!! Edit History: (latest first)
+!! 02/11/2000 - cp - modified format; added description
+!! 07/24/1999 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EMITTING DISK Z 0 1 1 1000
+
+STATS POSITION
+
+!! Grab numbers starting with 1st number of
+!! same line as the given string.
+$GRAB 'Centroid:' 0 1  XCENT YCENT ZCENT
+
+$REG XCENT YCENT ZCENT  
+
+RETURN

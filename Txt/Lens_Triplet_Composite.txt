@@ -1,0 +1,47 @@
+!!++
+!! LENS_TRIPLET_COMPOSITE.INR
+!! Title: Triplet Lens using REPEAT and COMPOSITE
+!! Category: Simple Problem
+!! Keywords: Lenses, LENSES, SEQUENCE, RADI, REPEAT, COMPOSITE, triplet
+!! Description: A lens triplet using the REPEAT and COMPOSITE commands.
+!! The COMPOSITE command combines several lens entities into a single
+!! lens entity. IDEAL lens entities are not allowed in a composite set.
+!! The REPEAT command repeats previously defined entity data that may
+!! subsequently be changed by linear transformations. From the Lenses
+!! chapter.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 02/10/2000 - cp - modified format; added description
+!! 02/22/1999 - mc - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES 
+  SEQUENCE RADI 'FIRST CROWN'
+    0 0 0,     0 0 1,   10 22.01   0 0 SK16
+    0 0 3.26,  0 0 1,   10 -435.76 0 0 AIR
+
+  SEQUENCE RADI 'FLINT'
+    0 0 9.26,  0 0 1,   8 -22.21   0 0 SCHOTTNEW_F2
+    0 0 10.26, 0 0 1,   8 20.29    0 0 AIR
+
+  REPEAT  0.2     !! Second crown
+                  !! Similar shape to first element
+    SHIFT 0 0 19
+    SCALE 0.9
+
+  COMPOSITE -3    !! Connect last 3 together
+OBJECT 'TRIPLET'
+
+GRID RECT Z 0 -4@10 1 5
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -60
+
+ARROWS OFF 
+WINDOW Y Z
+WINDOW 1.5  !! Enlarge by 50%
+PROFILES OVERLAY
+TRACE PLOT 
+RETURN

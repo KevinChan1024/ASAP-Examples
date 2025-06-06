@@ -1,0 +1,28 @@
+!!++
+!! SURF_TUBE01.INR
+!! Title: TUBE Surface #1
+!! Category: Isolated Command
+!! Keywords: TUBE, SURFACE
+!! Description: A circular tapered tube surface.
+!! Starts at Z=0 with a radius of 1 and ends at Z=2
+!! with a radius of 1.5. The q parameters are assumed
+!! 0 for circular by default.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  TUBE Z  0 1 1  2 1.5 1.5
+OBJECT 
+  
+WINDOW Y Z  !! To view object
+WINDOW 1.2
+OBLIQUE
+PLOT FACETS 1 2 'SURF:TUBE' COLORS 11
+RETURN

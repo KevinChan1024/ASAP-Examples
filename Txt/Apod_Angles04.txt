@@ -1,0 +1,51 @@
+!!++
+!! APOD_ANGLES04.INR
+!! Title: Apodizing by Angles using $FCN
+!! Category: Simple Problem
+!! Keywords: Sources, apodizing, APODIZE, ANGLES, $FCN, RADIAL, ANGLES, macro
+!! Description: A more complex demonstration of
+!! Apodizing in angle space using a user-defined
+!! function after source creation.  Uses user-defined
+!! macros for analysis.
+!! Edit History: (latest first)
+!! 02/15/2000 - cp - modified format; added description
+!! 03/30/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+$FCN LAMB COS(_1)
+$FCN ILAMB 1/COS(_1)  !! Optional
+
+SEED 1 QUASI
+XMEMORY MIN
+
+!!USERAPOD ANGLES Z LAMB  !! Optional
+EMITTING DISK Z 0 2@1 5000 ISO 
+APODIZE ANGLES Z LAMB
+
+CSPOTS {
+  WINDOW Y X
+  SPOTS DIRECTION ATTRIBUTE 0
+  DISPLAY
+    AVERAGE
+    RADIAL  !! Rotationally average data about the centroid
+    ISOMETRIC 'INTENSITY BY SPOTS DIR IN DIRECTION COSINE SPACE'
+    ANGLES  !! Convert data to angle space
+    ISOMETRIC 'INTENSITY BY SPOTS DIR IN CONVERTED TO ANGLE SPACE'
+}
+
+CRADIANT {
+  RADIANT Z 0 90 21 0 360 49 
+  DISPLAY
+    AVERAGE
+    !!RADIAL
+    ISOMETRIC 'INTENSITY BY RADIANT'
+}
+
+$CSPOTS   !! Run macros
+$CRADIANT
+RETURN

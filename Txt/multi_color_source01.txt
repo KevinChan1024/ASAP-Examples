@@ -1,0 +1,44 @@
+!!++
+!! MULTI_COLOR_SOURCE01.INR
+!! Title: Multi-color Source
+!! Category: Simple Problem
+!! Keywords: Sources, SPECTRUM, VISIBLE, WAVELENGTH, EMITTING, OBJECT 
+!! Description: Using an emitting object at multiple 
+!! wavelengths specified by SPECTRUM VISIBLE.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/25/2004 - cp - corrected command
+!! 07/12/2002 - cp - removed source keyword
+!! 02/15/2000 - cp - modified format; added description
+!! 09/19/1997 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM 'LUMENS'
+WAVELENGTH NM
+XMEMORY MIN 
+
+SURFACES
+  !!TUBE Z -5 2@2 5 2@2
+  TORUS Z 0 5 2 2
+    PARAMETERIZE -Z
+OBJECT 'TUBE_SOURCE'
+
+SPECTRUM VISUAL
+
+$DO 400 700 50
+  {
+  WAVELENGTH ? NM
+  EMITTING OBJECT TUBE_SOURCE -7000  !! 7000 rays total per source
+  }
+STATS
+$GRAB 'TOTAL' 0 2 IFLUX
+FLUX 0 100/IFLUX  !! Normalize flux to 100
+
+WINDOW Y X
+PLOT FACETS 5 5 OVERLAY
+SPOTS POSITION
+$VIEW
+RETURN

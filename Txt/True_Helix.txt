@@ -1,0 +1,45 @@
+!!++
+!! TRUE_HELIX.INR
+!! Title: A Real Helix Made with Extruded Ellipses
+!! Category: Simple Problem
+!! Keywords: Geometry, USERCURVE, helix, $FCN, extrude, curve, OBJECT, ALIGN, PLACE
+!! Description: This creates a real helix by extruding many equally spaced 
+!! ellipses which are aligned perpendicular to a helical USERCURV curve.
+!! Edit History: (latest first)
+!! 11/18/2014 - mt - corrected format of $FCN
+!! 06/24/2014 - gb - replaced CURV with CURVE for correct syntax
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/25/2008 - cp - corrected command name
+!! 02/08/2004 - cp - formatted and added header
+!! 02/06/2004 - sm - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+HELRADIUS=1
+PI=ACOS(-1)
+
+$FCN NEWFUNC A=2*PI*_, 
+             COS(A), SIN(A), (A) !!x,y,z
+EDGES
+  USERCURVE NEWFUNC -2@(0.5*PI) 61 !! Make helical curve
+    SHIFT Z -1
+!!  SEGMENTS 45
+
+$DO 1 61
+ {
+ EDGES
+   ELLIPSE Z 0 (HELRADIUS) (HELRADIUS) 16 0 360
+     ALIGN 0 0 1 TAN 1 ?  !! EDGE .1, Align given vector to tangent of the curve at ?
+     PLACE CURVE 1 ?
+ RETURN
+ }
+
+OBJECT
+ -61 2 2 0 'HELIX_TUBE' !! Extrude all ellipses to make helical tube
+
+!!PLOT EDGES OVERLAY
+PLOT FACETS
+$VIEW 
+RETURN

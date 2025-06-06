@@ -1,0 +1,33 @@
+!!++
+!! DUMP01.INR
+!! Title: DUMP Rayset to File
+!! Category: Isolated Command
+!! Keywords: DUMP, rays, output
+!! Description: Dump the rayset on a rectangular
+!! detector coming from an emitting spheroid to
+!! a distribution file, TESTDUMP.DIS.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/18/2000 - cp - modified format and header
+!! 04/05/2000 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  PLANE Z 2 RECTANGLE 3 
+  OBJECT 'DETECTOR'
+    INTERFACE COAT 0 0 AIR AIR
+
+EMITTING SPHEROID 0 0 1 1 1 1 1000 Z
+
+WINDOW Y Z
+PLOT FACETS 11 11 OVERLAY
+TRACE PLOT 
+CONSIDER ONLY DETECTOR      
+
+!! DUMP the rayset on detector to a rayset distribution file
+DUMP TESTDUMP  !! To testdump.dis
+
+RETURN

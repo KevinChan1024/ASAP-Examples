@@ -1,0 +1,46 @@
+!!++
+!! LENS_SEQUENCE_SHORT01.INR
+!! Title: A Cooke Triplet using Short Form of SEQUENCE Command
+!! Category: Simple Problem
+!! Keywords: Lenses, LENSES, SEQUENCE, RADI, Cooke, triplet
+!! Description: A 50 MM Cooke triplet using the long form
+!! of the SEQUENCE command. This command creates a sequence
+!! of conicoids. It can be used in its short or long form.
+!! The short form uses a more compact notation and assumes
+!! that all conicoids share a similar vertex normal vector.
+!! Distances between conicoids are used to relate each
+!! conicoid. However, the first conicoid of a SEQUENCE must
+!! be entered in the long format. 
+!! This example is especially designed to please lens
+!! designers that are conditioned to recognize an input
+!! sequence that ends each line with a thickness input.
+!! From the Lenses chapter.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 02/10/2000 - cp - modified format; added description
+!! 02/19/1999 - mc - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES 
+  SEQUENCE RADI
+    0 0 0,  0 0 1,  10 22.01   0 0 SK16;  3.26,
+                    10 -435.76 0 0 AIR;   6.00, 
+                    8 -22.21   0 0 SCHOTTNEW_F2;    1.00, 
+                    8 20.29    0 0 AIR;   4.75,
+                    9  79.68   0 0 SK16;  2.95,
+                    9 -18.40   0 0 AIR
+  OBJECT 'COOKE TRIPLET' 
+
+GRID RECT Z 0 -4@10 1 5
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -5
+
+ARROWS OFF 
+WINDOW Y Z
+WINDOW 2.5  !! Enlarge window 2.5 times
+PROFILES OVERLAY
+TRACE PLOT
+RETURN

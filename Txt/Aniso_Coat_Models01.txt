@@ -1,0 +1,387 @@
+!!++
+!! ANISO_COAT_MODELS01.INR
+!! Title: Anisotropic COATING MODELS Polarized
+!! Category: Simple Problem
+!! Keywords: Interfaces, COATINGS, MODELS, RAWDATA, POLARIZ, anisotropic, $ITER
+!! Description: Making anisotropic scatter models with RAWDATA ANGLES 
+!! to model anisotropic reflectance and transmittance. In this case, four
+!! models are provided using the same anisotropic parametric direction 'U'
+!! (or local x) for R and T at both s and p polarizations. Transmittance 
+!! is calculated over the hemisphere using a $ITER to trace a single ray
+!! over 51 alpha by 51 beta steps. The result is the PICTURE plot. 
+!! ASAP linearly interpolate in amplitude space to get coefficients between
+!! the rough angle data given here.
+!! The first number in the RAWDATA ANGLES list is the angle in
+!! degrees from the surface normal.  The second is the azimuth angle.
+!! The third number determines the flux scaling. Here, the numbers are
+!! scaled relative to normal incidence. This is not really necessary as
+!! ASAP will rescale the values to the 0 0 value for you.  This means
+!! the R and T values in the COATING MODELS statement ("0 1") are
+!! multiplied by the "0 0" value given as a starting point in the list.
+!! Other angle values will decrease based by the specified relative amount
+!! to this normalized value. Since both S and P data are the same, no 
+!! difference will be seen using POLAR X or Y.
+!! Edit History: (latest first)
+!! 07/07/2014 - cp - added XMEMORY setting to speed up virtual.pgs writing
+!! 11/14/2003 - cp - added header, formatted
+!! 11/13/2003 - gp - creation
+!!--
+
+SYSTEM NEW 
+RESET
+
+!! Define models for reflectance and transmittance
+MODEL  !! S Reflectance
+  RAWDATA U ANGLES
+  0   0  1
+  10  0  0.9
+  20  0  0.8
+  30  0  0.7
+  40  0  0.6
+  50  0  0.5
+  60  0  0.4
+  70  0  0.3	
+  80  0  0.2
+
+  0   45  1
+  10  45  0.5
+  20  45  0.45
+  30  45  0.4
+  40  45  0.35
+  50  45  0.3
+  60  45  0.25
+  70  45  0.2	
+  80  45  0.15
+
+  10  90  0.1
+  20  90  0.1
+  30  90  0.1
+  40  90  0.1
+  50  90  0.1
+  60  90  0.1
+  70  90  0.1
+  80  90  0.1
+
+  0   135  1
+  10  135  0.5
+  20  135  0.45
+  30  135  0.4
+  40  135  0.35
+  50  135  0.3
+  60  135  0.25
+  70  135  0.2	
+  80  135  0.15
+
+  10  180  0.9
+  20  180  0.8
+  30  180  0.7
+  40  180  0.6
+  50  180  0.5
+  60  180  0.4
+  70  180  0.3	
+  80  180  0.2
+
+  0   225  1
+  10  225  0.5
+  20  225  0.45
+  30  225  0.4
+  40  225  0.35
+  50  225  0.3
+  60  225  0.25
+  70  225  0.2	
+  80  225  0.15
+
+  10  270  0.1
+  20  270  0.1
+  30  270  0.1
+  40  270  0.1
+  50  270  0.1
+  60  270  0.1
+  70  270  0.1
+  80  270  0.1
+
+  0   315  1
+  10  315  0.5
+  20  315  0.45
+  30  315  0.4
+  40  315  0.35
+  50  315  0.3
+  60  315  0.25
+  70  315  0.2	
+  80  315  0.15
+
+MODEL  !! P Reflectance
+  RAWDATA U ANGLES
+  0   0  1
+  10  0  0.9
+  20  0  0.8
+  30  0  0.7
+  40  0  0.6
+  50  0  0.5
+  60  0  0.4
+  70  0  0.3	
+  80  0  0.2
+
+  0   45  1
+  10  45  0.5
+  20  45  0.45
+  30  45  0.4
+  40  45  0.35
+  50  45  0.3
+  60  45  0.25
+  70  45  0.2	
+  80  45  0.15
+
+  10  90  0.1
+  20  90  0.1
+  30  90  0.1
+  40  90  0.1
+  50  90  0.1
+  60  90  0.1
+  70  90  0.1
+  80  90  0.1
+
+  0   135  1
+  10  135  0.5
+  20  135  0.45
+  30  135  0.4
+  40  135  0.35
+  50  135  0.3
+  60  135  0.25
+  70  135  0.2	
+  80  135  0.15
+
+  10  180  0.9
+  20  180  0.8
+  30  180  0.7
+  40  180  0.6
+  50  180  0.5
+  60  180  0.4
+  70  180  0.3	
+  80  180  0.2
+
+  0   225  1
+  10  225  0.5
+  20  225  0.45
+  30  225  0.4
+  40  225  0.35
+  50  225  0.3
+  60  225  0.25
+  70  225  0.2	
+  80  225  0.15
+
+  10  270  0.1
+  20  270  0.1
+  30  270  0.1
+  40  270  0.1
+  50  270  0.1
+  60  270  0.1
+  70  270  0.1
+  80  270  0.1
+
+  0   315  1
+  10  315  0.5
+  20  315  0.45
+  30  315  0.4
+  40  315  0.35
+  50  315  0.3
+  60  315  0.25
+  70  315  0.2	
+  80  315  0.15
+
+MODEL  !! S Transmittance
+  RAWDATA U ANGLES
+  0   0  1
+  10  0  0.9
+  20  0  0.8
+  30  0  0.7
+  40  0  0.6
+  50  0  0.5
+  60  0  0.4
+  70  0  0.3	
+  80  0  0.2
+
+  0   45  1
+  10  45  0.5
+  20  45  0.45
+  30  45  0.4
+  40  45  0.35
+  50  45  0.3
+  60  45  0.25
+  70  45  0.2	
+  80  45  0.15
+
+  10  90  0.1
+  20  90  0.1
+  30  90  0.1
+  40  90  0.1
+  50  90  0.1
+  60  90  0.1
+  70  90  0.1
+  80  90  0.1
+
+  0   135  1
+  10  135  0.5
+  20  135  0.45
+  30  135  0.4
+  40  135  0.35
+  50  135  0.3
+  60  135  0.25
+  70  135  0.2	
+  80  135  0.15
+
+  10  180  0.9
+  20  180  0.8
+  30  180  0.7
+  40  180  0.6
+  50  180  0.5
+  60  180  0.4
+  70  180  0.3	
+  80  180  0.2
+
+  0   225  1
+  10  225  0.5
+  20  225  0.45
+  30  225  0.4
+  40  225  0.35
+  50  225  0.3
+  60  225  0.25
+  70  225  0.2	
+  80  225  0.15
+
+  10  270  0.1
+  20  270  0.1
+  30  270  0.1
+  40  270  0.1
+  50  270  0.1
+  60  270  0.1
+  70  270  0.1
+  80  270  0.1
+
+  0   315  1
+  10  315  0.5
+  20  315  0.45
+  30  315  0.4
+  40  315  0.35
+  50  315  0.3
+  60  315  0.25
+  70  315  0.2	
+  80  315  0.15
+
+MODEL  !! P Transmittance
+  RAWDATA U ANGLES
+  0   0  1
+  10  0  0.9
+  20  0  0.8
+  30  0  0.7
+  40  0  0.6
+  50  0  0.5
+  60  0  0.4
+  70  0  0.3	
+  80  0  0.2
+
+  0   45  1
+  10  45  0.5
+  20  45  0.45
+  30  45  0.4
+  40  45  0.35
+  50  45  0.3
+  60  45  0.25
+  70  45  0.2	
+  80  45  0.15
+
+  10  90  0.1
+  20  90  0.1
+  30  90  0.1
+  40  90  0.1
+  50  90  0.1
+  60  90  0.1
+  70  90  0.1
+  80  90  0.1
+
+  0   135  1
+  10  135  0.5
+  20  135  0.45
+  30  135  0.4
+  40  135  0.35
+  50  135  0.3
+  60  135  0.25
+  70  135  0.2	
+  80  135  0.15
+
+  10  180  0.9
+  20  180  0.8
+  30  180  0.7
+  40  180  0.6
+  50  180  0.5
+  60  180  0.4
+  70  180  0.3	
+  80  180  0.2
+
+  0   225  1
+  10  225  0.5
+  20  225  0.45
+  30  225  0.4
+  40  225  0.35
+  50  225  0.3
+  60  225  0.25
+  70  225  0.2	
+  80  225  0.15
+
+  10  270  0.1
+  20  270  0.1
+  30  270  0.1
+  40  270  0.1
+  50  270  0.1
+  60  270  0.1
+  70  270  0.1
+  80  270  0.1
+
+  0   315  1
+  10  315  0.5
+  20  315  0.45
+  30  315  0.4
+  40  315  0.35
+  50  315  0.3
+  60  315  0.25
+  70  315  0.2	
+  80  315  0.15
+RETURN
+
+!! Define a coating that uses the reflectance and transmittance models
+COATING MODELS 1 2 3 4
+  0 1 'ANI'
+RETURN
+
+!! MAke a test surface
+SURFACE
+  PLANE Z 0 ELLIPSE 1
+OBJECT 'TEST'
+  INTERFACE COATING ANI AIR AIR
+RETURN
+
+!! Iterate over a two-dimensional array of incident directions
+XMEMORY NORM 100
+$ECHO NONE	!! Turn of command echoing to reduce output to screen
+
+$ITER BETA -1 1 51 ALPHA -1 1 51  TRAN
+{
+  TRAN=0
+  $IF ALPHA^2+BETA^2 LT 1 THEN
+    FRESNEL BOTH
+    POLARIZ X 1 0
+    GRID ELLIPTIC Z 0 -1 1 -1 1 1 1
+      SOURCE DIRECTION (ALPHA) (BETA) SQRT(1-ALPHA^2-BETA^2)
+      FLUX TOTAL 1
+      MOVE TO Z -1
+      TRACE
+      STATS
+      $GRAB 'TOTAL' 0 2 TRAN
+  $ENDIF
+  }
+
+$ECHO
+
+DISPLAY ITER
+  PICTURE 'TRANSMITTANCE'
+RETURN

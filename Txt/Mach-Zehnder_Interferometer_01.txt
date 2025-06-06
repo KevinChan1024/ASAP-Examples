@@ -1,0 +1,165 @@
+!!++ 
+!! MACH-ZEHNDER_INTERFEROMETER_01.INR
+!! Title: Mach-Zehnder Interferometer
+!! Category: Simple Problem
+!! Keywords: Wave, interference, Mach-Zehnder, interferometer, SPREAD, splitter
+!! Description:  Mach-Zehnder interferometer with circular fringes
+!! resulting from point-source illumination with a
+!! dense-medium slab to change the optical path length
+!! in one arm. Derived from Michelson_Interferometer.inr example.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/24/2009 - cp - reformatted; added header
+!! 10/21/2008 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+SPLIT 2
+
+UNITS CENTIMETERS
+WAVELENGTH 632.8 NANOMETERS
+
+WL=632.8E-7
+PI=4*ATAN(1)
+
+MEDIA
+  1.49 'PMMA'
+
+COATINGS PROPERTIES
+  0.0  0.0  'ABSORB'
+  0.0  1.0  'TRANSMIT'
+  1.0  0.0  'REFLECT'
+  0.5  0.5  'BEAM_SPLITTER' 
+
+PL=100  !! Path length
+DIA=50  !! Diameter
+
+SURFACES
+  PLANE Z 0 ELLIPSE (DIA/2) (1.414*DIA/2) 0 0 0
+OBJECT 'SPLITTER'
+  INTERFACE COAT "BEAM_SPLITTER" AIR AIR
+  FACETS 4 4
+  REDEFINE COLOR 11
+  ROTATE X 45
+
+SURFACES
+  PLANE Z 0 ELLIPSE (DIA/2) (1.414*DIA/2) 0 0 0
+OBJECT 'COMBINER'
+  INTERFACE COAT "BEAM_SPLITTER" AIR AIR
+  FACETS 4 4
+  REDEFINE COLOR 11
+  ROTATE X 45
+  SHIFT 0 (PL) (2*PL) 
+
+!! Reflector 1
+SURFACES
+  PLANE Z 0 ELLIPSE (DIA/2) (1.414*DIA/2)
+OBJECT 'MIRROR1_FRONT'
+  INTERFACE COAT REFLECT AIR SCHOTT_BK7
+  FACETS 4 4
+  REDEFINE COLOR 25
+  ROTATE X 45
+  SHIFT Y (PL)
+
+!! Reflector 2
+TILT_WAVES=0.01  !! Tilt in waves
+TILT=(TILT_WAVES*WL/(DIA/2))*180/PI  !! Tilt in degrees
+
+SURFACES
+  PLANE Z 0 ELLIPSE (DIA/2) (1.414*DIA/2)
+OBJECT 'MIRROR2_FRONT'
+  INTERFACE COAT REFLECT AIR SCHOTT_BK7
+  FACETS 4 4
+  REDEFINE COLOR 25
+  ROTATE X 45+TILT 
+  SHIFT Z (2*PL)
+
+!! index slab in one interferometer arm
+
+SURFACES
+  PLANE Z (7*PL/8) RECT 2@(DIA/2)
+  PLANE Z (9*PL/8) RECT 2@(DIA/2)
+  TUBE  Z (7*PL/8) 2@(DIA/2), (9*PL/8) 2@(DIA/2), 1 1
+OBJECT 
+  .3 'SLAB.EDGE'
+    INTERFACE COAT TRANSMIT AIR PMMA
+    REDEFINE COLOR 7
+  .2 'SLAB.EDGE'
+    INTERFACE COAT TRANSMIT AIR PMMA
+    REDEFINE COLOR 7
+  .1 'SLAB.EDGE'
+    INTERFACE COAT ABSORB AIR PMMA
+    REDEFINE COLOR 7
+    
+!! DETECTORS
+SURFACES
+  PLANE Z 0 ELLIPSE 2@(DIA/2)
+OBJECT 'DETECTOR_Z'
+  INTERFACE COAT ABSORB AIR SCHOTT_BK7
+  FACETS 4 4
+  REDEFINE COLOR 20
+  SHIFT 0 (PL) (2.5*PL)
+
+SURFACES
+  PLANE Y 0 ELLIPSE 2@(DIA/2)
+OBJECT 'DETECTOR_Y'
+  INTERFACE COAT ABSORB AIR SCHOTT_BK7
+  FACETS 4 4
+  REDEFINE COLOR 20
+  SHIFT 0 (1.5*PL) (2*PL)
+
+
+!! Verify Geometry
+WINDOW Y Z
+PLOT FACETS 7 7 OVERLAY  'Mach-Zehnder interferometer'
+
+!! Define source
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 6328 ANGSTROMS
+WIDTHS 1.6
+
+GRID ELLIPTIC Z 4*PL -4@(DIA/2) 2@17 !! make source reference grid near "virtual" end of system
+!!  SOURCE DIRECTION Z 0 0  !! plane wave
+  SOURCE POSITION  0 0 -3000  !! point source
+FLUX TOTAL 1 
+MOVE TO Z -100  !! move source starting plane before system elements
+
+TRACE PLOT COLOR 2
+$VIEW
+ 
+PIXELS 101 
+
+STATS
+
+CONSIDER ONLY DETECTOR_Z
+MOVE BY (PL/10)  !! move the interferogram a bit behind the detector
+
+WINDOW Y 0 0 X -2@(DIA/2)
+WINDOW 1.2  !! Enlarge by 20% 
+SPREAD NORMAL
+
+DISPLAY
+  PICTURE 'Z detector'
+RETURN
+
+$COPY 9 Z_DET.DIS
+
+CONSIDER ONLY DETECTOR_Y
+MOVE BY (PL/10) !! move the interferogram a bit behind the detector
+
+WINDOW Z 0 0 X -2@(DIA/2)
+WINDOW 1.2  !! Enlarge by 20% 
+SPREAD NORMAL
+
+DISPLAY
+  PICTURE 'Y detector'
+RETURN
+
+$COPY 9 Y_DET.DIS 
+
+$VIEW
+&VIEW Z_DET.DIS
+&VIEW Y_DET.DIS

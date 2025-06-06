@@ -1,0 +1,56 @@
+!!++
+!! SOURCE_POLYCHROMATIC_04.INR
+!! Title: A Table-Driven Polychromatic Source
+!! Category: Isolated Command
+!! Keywords: SOURCE POLYCHROMATIC, STATS SOURCES, Sources
+!! Description: A polychromatic source using TABLE input -
+!! Syntax 3 in Help.
+!! Edit History: (latest first)
+!! 06/02/2014 - gb - added STATS SOURCES to keywords
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 04/09/2013 - cp - added header and formatted
+!! 03/13/2013 - js - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+UNITS MM
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 500 NM
+
+EMITTING RECT Z 0 1 2 10000 0
+!!GRID RECT Z 0 -4@1 25 25
+!!SOURCE DIRECTION 0 SIN[30] COS[30]
+SOURCE POLYCHROMATIC TABLE 2/.284495 11 !!RANDOM BOTH .3 .5
+380 .01
+420 .12
+450 .2
+490 .5
+510 .7
+580 .8
+600 2
+630 1.5
+650 .8
+700 .3
+740 .1
+
+LIST SOURCES
+STATS SOURCES
+
+WINDOW Y X
+SPOTS POSITION 
+DISPLAY
+  PICTURE
+RETURN
+
+$ITER N 1 11 -11 POWER
+{
+ SELECT ONLY SOURCE (N)
+ STATS
+ $GRAB 'TOTAL' 0 2 POWER
+ RETURN }
+
+DISPLAY ITER
+  GRAPH
+RETURN

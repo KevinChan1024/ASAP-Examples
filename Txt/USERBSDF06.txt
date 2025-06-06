@@ -1,0 +1,62 @@
+!!++
+!! USERBSDF06.INR
+!! Title: Creating an Isotropic Scatter Surface
+!! Category: Simple problem
+!! Keywords: Scatter, USERBSDF, $FCN, isotropic, MODELS, Lambertian  
+!! Description: This uses a USERBSDF with a $FCN designed to 
+!! create a isotropic scatter interface.  It compares this to
+!! a standard Lambertian result.
+!! Edit History: (latest first)
+!! 11/08/2005 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+PI=ACOS(-1) 
+
+!! Lambertian model has a constant bsdf,
+!! an isotropic model does not. (see Intro tutorial)
+!! An isotropic model has a BSDF=1/cos(scatter angle)
+!! Remember that _1=Sin(scatter angle)^2
+!! The 2PI normalizes the model to TIS=100%
+$FCN ISOT 1/(2*PI*SQRT[1-_1])
+PIXELS 501 !! For PLOT below if used
+MODELS
+  LAMBERTIAN 1  !!PLOT
+  USERBSDF ISOT !!PLOT
+   
+RETURN
+
+SURFACES
+  ELLIPSOID 3@3 3@0
+OBJECT 'DET'
+
+SURFACES
+  PLANE Z 0 RECTANGLE 1
+OBJECT 'DIFFUSER'
+
+$DO 1 2
+{
+OBJECT DIFFUSER
+  SCATTER MODEL (?)
+  TOWARDS SPEC 1000 PI/2 0 
+
+RAYS 0
+GRID RECT Z 1 -4@1 2@11
+  SOURCE DIRECTION 0 0 -1
+TRACE
+STATS
+CONSIDER ONLY DET
+WINDOW Y -2@1 X -2@1
+PIXELS 91
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+ AVERAGE
+ AVERAGE
+$IF (?) EQ 1
+PICTURE 'LAMBERTIAN'
+$IF (?) EQ 2
+PICTURE 'ISOTROPIC' 
+RETURN 
+CONSIDER ALL }  
+RETURN

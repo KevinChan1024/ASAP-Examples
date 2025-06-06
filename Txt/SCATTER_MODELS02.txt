@@ -1,0 +1,99 @@
+!!++
+!! SCATTER_MODELS02.INR
+!! Title: Bi-directional Scatter with COATING MODELS and SPLIT MONTECARLO
+!! Category: Simple Problem
+!! Keywords: Scatter, SCATTER, MODELS, SPLIT, MONTECARLO
+!! Description: Two way scatter using the MODELS
+!! modifier on the SCATTER command. Allows separate
+!! scatter models for both R and T. Forces scattering
+!! on both sides of interface without need for LEVEL ALL
+!! command or low energy cutoffs at the interface. The  
+!! scattering interface allows for both reflection and
+!! transmission of the parent rays.
+!! Run with SPLIT MONTECARLO or SPLIT 1 (default) 
+!! IMPORTANT! - Must have the "S" on MODELS for the
+!! two-directional model assignment to work. 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 12/09/2004 - cp - added TOWARDS comment
+!! 08/13/2001 - cp - changed file name, modified structure
+!! 07/25/2001 - bf,arg - added MONTECARLO, COATING MODELS
+!! 10/18/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SPLIT MONTECARLO
+
+MODELS
+  HARVEY 30 -1.5 0.01  !! Reflective Model 1    TIS=.339
+  LAMBERTIAN 0.5       !! Transmissive Model 2  TIS=.500
+  BSDFDATA ANGLES !! Reflected for both polarizations
+   0   0   1
+  10   0   1.05
+  20   0   1.10
+  30   0   1.15
+  40   0   1.20
+  50   0   1.25
+  60   0   1.30
+  70   0   1.35
+  80   0   1.40
+  90   0   1.45
+  BSDFDATA ANGLES !! Transmitted for both polarizations
+   0   0   1
+  10   0   .95
+  20   0   .90
+  30   0   .85
+  40   0   .80
+  50   0   .75
+  60   0   .70
+  70   0   .65
+  80   0   .60
+  90   0   .55
+COATINGS MODELS 3 3 4 4
+  .051 .11  'RT_DATA'  !! The behavior at normal incidence
+
+SURFACES
+  PLANE Z 0 RECTANGLE 5 5
+  OBJECT 'TWOWAY_SCATTER_SURFACE'
+    INTERFACE COAT RT_DATA AIR AIR  !!Parent rays in R and T
+    SCATTER MODELS 1 2  !! Apply model 1 to R scatter, and Model 2 to T scatter
+      TOWARDS SPEC 2 3.1415/2 0   !! 2 scatter rays into each hemisphere about Normal
+
+!! Add absorbing hemisphere to avoid missed after rays
+SURFACES  !! Absorbing hemisphere to capture reflected rays
+ELLIPSOID 5 5 5 0 0 0 -Z 
+OBJECT 'REFLDETECTOR'
+
+SURFACES  !! Absorbing hemisphere to capture transmitted rays
+ELLIPSOID 5 5 5 0 0 0 Z 
+OBJECT 'TRANDETECTOR'
+
+GRID RECT Z -.5 -4@0.5 100 100
+  SOURCE DIRECTION 0 SIN[0] COS[0]
+
+STATS
+
+WINDOW Y Z
+PLOT FACETS 3 3 OVERLAY
+TRACE PLOT 59
+
+WINDOW Y X
+PIXELS 39
+
+SELECT ONLY C 0  !! Select Rays in -Z direction
+CONSIDER ONLY REFLDETECTOR
+SPOTS POSITION 'REFLECTED SPOTS' 
+RETURN
+
+SELECT ONLY 0 C  !! Select Rays in +Z direction
+CONSIDER ONLY TRANDETECTOR
+SPOTS POSITION 'TRANSMITED SPOTS' 
+RETURN
+
+CONSIDER ALL
+SELECT ALL
+STATS
+RETURN

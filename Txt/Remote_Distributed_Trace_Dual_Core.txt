@@ -1,0 +1,263 @@
+!!++
+!! REMOTE_DISTRIBUTED_TRACE_DUAL_CORE.INR
+!! Title: Using Remote to Split a Trace Across 2 Cores
+!! Category: Simple Problem
+!! Keywords: Tracing, Remote, $GUI, $SCR, Tracing, SEED
+!! Description: This INR file shows how to set up a trace
+!! across two Remote cores on same machine using a different starting 
+!! SEED value for each.  This produces two random traces of the same
+!! optical system occuring at the same time and thereby
+!! reducing the total raytrace time by one half. The rays
+!! for each are set to 1/2 of the combined total given at the start.
+!! The SPOTS results may either be transfered back to the local machine
+!! automatically and COMBINEd into one display file for analysis,
+!! or you can choose to do this manually using the remote toolbar buttons. 
+!! For this test case, an Integrating Sphere model was chosen 
+!! since this generally requires many rays to trace properly.
+!! Please make sure to set up the Remote Configuration as per
+!! instructions found at our Knowledge base for each computer.
+!! A dialog will ask for various parameters including the name
+!! of the computer (can be your own machine if desired),
+!! total number of rays and total flux. 
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 09/05/2012 - cp - fixed macro sending to Remotes & header  
+!! 07/23/2012 - cp - fixed remote directory to work with both XP and Win 7
+!! 02/29/2012 - cp - updated SEED macros to match latest SET_SEED Template
+!! 12/03/2010 - cp - revised for 2010 compatibility 
+!! 05/27/2009 - cp - added latest random SEED generator
+!! 02/25/2009 - cp - creation
+!!--
+
+!! Reset the system
+
+SYSTEM NEW
+RESET
+
+$ECHO NONE
+!! Initialize variables
+C1="TUT8" N1="100" F1="10" 
+
+!! N1=10000 == 20M RAYS per trace
+PI=4*ATAN(1)
+RSCAT=.9 !! Lambertian reflectance
+PORT_R=24 !! Port radius
+SPHERE_R=300  !! Sphere radius   
+SCR_CANCEL=1 !! Allows cancelling of window & terminating demo
+
+$SCR 20 !! The following 16 lines will appear in a dialog box
+This file demonstrates how to use the Remote feature of ASAP to
+distribute a trace of an optical system across two cores on same
+computer. A different SEED value is used for each computer and
+the results are returned to the local machine to be COMBINEd into
+one distribution file and analyzed.
+
+There must be another computer on the network available with
+the same version of ASAP installed, or else use your local machine.
+The computer must be set up according to the Remote setup document
+at our Knowledge base. 
+******************************************************************
+NOTE: For faster response when running sessions on local machine,
+right-click on the main KERNEL~1.EXE in Task Manager-Processes tab
+and choose "Set Affinity" and check all CPU's before continuing.
+******************************************************************
+After filling in the following parameters carefully, choose YES
+to proceed, otherwise hit CANCEL. (No backslashes necessary)
+Name of computer or ip address: \C1"                        ? 
+Total Number of rays:   \N1"      ? 
+Total Flux of Source    \F1"      ?
+
+ 
+$IF (SCR_CANCEL) EQ 1; $GO usercancel !! Tests for Cancel button hit
+SCR_CANCEL=1 
+
+!! The following macros are for generating a random seed on each remote session:
+*************** 
+!!create macro to act as random delay timer
+COUNTER {
+  $LOC N; N=0    !! create local variable 
+  $RAN DEC
+  $DO 1 INT(1001~10001)    !! counter timer
+    N=N+1
+}
+
+!! set SEED value by adding up multiple $TICS
+SET_SEED {  
+  $ECHO NONE
+  SYSTEM NEW; RESET  
+  $LOC SEED_NUMBER TOT_TIME STEP_TIME  !! create local variables
+  TOT_TIME=0                           !! initialize total time variable
+                                          
+  &TIC                                 !! reset TIC timer
+  $DO 1 21                             !! Do loop to add multiple $TIC values
+    {                                     
+     &COUNTER                          !! call Counter macro
+     $ECHO ALL                            
+     $TIC MILI                         !! get $TIC time in msec
+     $GRAB '$TIC' 1 1 STEP_TIME        !! grab $TIC value
+     $ECHO NONE                           
+     TOT_TIME=TOT_TIME+(STEP_TIME)     !! add $TIC value to total time variable
+     }                                    
+                                          
+  $RAN INT(TOT_TIME*123457)            !! initialize $RAN value
+  SEED_NUMBER=INT(2000001~20000010)    !! use $RAN to compute SEED value        
+  SEED (SEED_NUMBER)                   !! set SEED value
+  $GUI CLEARALL                        !! clear Output window
+  $ECHO ALL                               
+  $REG SEED_NUMBER TOT_TIME            !! show SEED and total time values
+}          
+***************  
+
+!! Before remote session starts
+!! Define a macro that will only contain the geometry of the system
+INT_SPHERE {
+  $SET_SEED !! Generate random starting seed
+  UNITS MM 'Watts' 
+  HALT 10000 1E-30
+  CUTOFF 1E-30 10000
+  LEVEL 200
+  RSCAT=1.0 !! Lambertian reflectance
+  PORT_R=24 !! Port radius
+  SPHERE_R=300  !! Sphere radius   
+
+  MODEL
+    LAMBERTIAN (RSCAT) 
+  
+  EDGES  !! Edge #1
+    ELLIPSE Z SPHERE_R*.983 2@(PORT_R) 64 !! Importance edge
+    SMOOTH
+  OBJECT 'DETECTOR'
+  
+  SURFACES
+    ELLIPSOID 3@(PORT_R) -SPHERE_R-30 0 0 -X
+    OBJECT 'LAMP_BACK'
+    INTERFACE 1 0 AIR AIR
+      
+  SURFACES  !! To create exit port
+    TUBE Z 280 2@(PORT_R) SPHERE_R+30 2@(PORT_R)  
+    
+  SURFACES  !! Lamp housing - entrance port
+    TUBE X -280 2@(PORT_R) -SPHERE_R-30 2@(PORT_R) 
+  
+  SURFACES
+    ELLIPSOID 3@(SPHERE_R) 3@0
+    OBJECT 'SPHERE'
+    BOUNDS .2 .3  !! Make 2 holes 90° apart
+      SCATTER MODEL 1 RANDOM .9 1
+        TOWARDS EDGE 1 10  !! 10 rays scattered toward edge
+        
+  OBJECT; .2 'LAMP_HOUSING'
+    INTERFACE 1 0 AIR AIR
+    BOUNDS .1  !! Trim to sphere
+    
+  EMITTING SPHEROID -330 0 0 3@10 #1  !! Increase rays for more accuracy
+    FLUX TOTAL #2/2 !! Desired flux divided by number of sessions
+  
+  TRACE
+  CONSIDER ONLY DETECTOR
+  SELECT ONLY SOURCE -1  !! May use to eliminate direct rays
+  WINDOW Y -2@(PORT_R) X -2@(PORT_R)
+  PIXELS 201 
+  STATS
+  SPOTS POSITION ATTRIBUTE 0
+  DISPLAY
+  WRITE SPOTS_RESULT DIS
+  RETURN
+}
+
+!! Create a macro that will do the raytrace and make the 
+!! distribution files:
+
+TRACE_REMOTE { 
+
+  !! Start remote sessions on 2 cores
+  $GUI REMOTESTART #1:0 "C:\USERS\PUBLIC\REMOTE_SESSION1\" 
+  $GUI REMOTESTART #1:1 "C:\USERS\PUBLIC\REMOTE_SESSION2\" 
+  !! Send all necessary files to remote sessions  
+  $GUI REMOTESENDFILE #1:0 "COUNTER.MAC"
+  $GUI REMOTESENDFILE #1:1 "COUNTER.MAC" 
+  $GUI REMOTESENDFILE #1:0 "SET_SEED.MAC"
+  $GUI REMOTESENDFILE #1:1 "SET_SEED.MAC" 
+  $GUI REMOTESENDFILE #1:0 "INT_SPHERE.MAC"
+  $GUI REMOTESENDFILE #1:1 "INT_SPHERE.MAC"
+
+                       
+  !! Run the file that traces with different SEED
+  $GUI REMOTECOMMAND #1:0 $INT_SPHERE #2 #3 !! #2=#Rays, #3=Flux
+  $GUI REMOTECOMMAND #1:1 $INT_SPHERE #2 #3
+                                                           
+  !! Wait for all computers to be complete before exporting
+  !! newly created display files
+
+  STATUS1=0      !! Status of computer 1
+  STATUS2=0      !! Status of computer 2
+  
+  !! Use a $DO loop to repeatedly wait until the last session
+  !! is finished processing
+  
+  $ECHO NONE 
+  $DO 1 1000
+  {
+    !! Check the status of the last session that is being issued commands
+    $GUI REMOTEBUSY #1:0 STATUS1 
+    $GUI REMOTEBUSY #1:1 STATUS2
+        
+    !! Status of 1 means session is still running
+    !! Status 0f 0 means session is finished running
+    
+    !! If any of the sessions are still busy, wait 5 seconds and check again
+    $IF (STATUS2) EQ 1 OR (STATUS1) EQ 1  
+    	$WAIT 5 
+    !! If all computer are finished processing, leave the $DO loop and continue
+    $IF (STATUS1) EQ 0 AND (STATUS2) EQ 0 
+    	$LEAVE !! Exit $DO loop and continue with macro
+  }         
+  $ECHO ALL
+
+ANS=1
+$SCR 1
+Automatically Sum files and close sessions? \ANS:? 
+
+$IF (SCR_CANCEL) EQ 1 OR (ANS) NE 1; $LEAVE !! Tests for Cancel button hit
+!!SCR_CANCEL=1 
+
+!! Continue to retrieve and sum files and close sessions:
+  !! Send the desired dis files back to the Local machine
+  $GUI REMOTEGETFILE #1:0 "SPOTS_RESULT.DIS" 
+  DISPLAY "#1_0\SPOTS_RESULT.DIS" !! #1_0 is folder in Local Working Directory 
+    WRITE COMBINE DIS  !! Write first dist. to COMBINE.DIS
+  RETURN 
+  $GUI REMOTEGETFILE #1:1 "SPOTS_RESULT.DIS"
+  DISPLAY "#1_1\SPOTS_RESULT.DIS" !! #1_1 is folder in Local Working Directory 
+    COMBINE COMBINE 1.0  !! Add COMBINE.DIS to current dist. file
+    WRITE COMBINE DIS    !! Write current dist. file back to COMBINE.DIS         
+  RETURN 
+
+  !! End the remote sessions
+ $GUI REMOTEEND #1:0
+ $GUI REMOTEEND #1:1
+
+  ***** END OF REMOTE SESSION ***********
+
+ RETURN
+}
+
+$TRACE_REMOTE C1" N1" F1" !! All arguments must be transferred as literals
+&REG
+$IF (SCR_CANCEL) EQ 1 OR (ANS) EQ 0; $GO usercancel
+!! Perform analysis of combined display file at local machine: 
+DISPLAY COMBINE.DIS !! Contains thew two results added together
+  !!AVERAGE !! Commented out to match manual mode
+  CONTOUR 10 TICS
+  PICTURE 
+RETURN
+$GRAB 'TOTAL' 0 1 E_FLUX  !! Get Exit Power
+$ECHO NONE
+&REG 'Flux at Exit Port =' E_FLUX 
+!! Example of alternate method of listing arguments when $SCR not used:
+!!$TRACE_REMOTE TUT8 10000 10
+
+usercancel !! Label used for a user Cancel from first $SCR
+$TIC !! Total time of remote runs with analysis
+$ECHO
+RETURN

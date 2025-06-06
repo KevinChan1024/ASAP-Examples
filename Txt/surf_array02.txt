@@ -1,0 +1,53 @@
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!!++
+!! SURF_ARRAY02.INR
+!! Title: Cassegrain Telescope with Vanes
+!! Category: Isolated Command
+!! Keywords: ARRAY, SURFACE, Cassegrain
+!! Description: A Cassegrain telescope using vanes
+!! for light baffling. The ARRAY modifier creates 
+!! additional copies of the "sample" vane surface
+!! which then all become one object. This reduces
+!! overall object count and saves raytrace time.
+!! Edit History: (latest first)
+!! 03/11/2002 - cp - reformatted
+!! 10/17/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  1 0  'REFL'
+
+SURFACES
+  OPTICAL Z -15 -12.5 -2.25 ELLIPSE 1.6 
+OBJECT 'SECONDARY_MIRROR'
+  INTERFACE COAT -REFL
+SURFACES
+  OPTICAL Z 0 -40 -1 ELLIPSE 2@5 0.25
+OBJECT 'PRIMARY_MIRROR'
+  INTERFACE COAT -REFL
+SURFACES
+  TUBE Z -20 2@7 1 2@7
+OBJECT 'MAIN_BAFFLE'
+SURFACES
+  PLANE Z 10 ELLIPSE 0.25
+OBJECT 'DETECTOR'
+
+SURFACES 
+  PLANE Z -20 ELLIPSE 7 7 6/7  !! 1st vane
+    ARRAY 18 0 0 1  !! 18 more copies at Z=1 intervals
+OBJECT 'VANES'  !! All 19 vanes made into one object
+
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC Z -20 -4@5 1 7 1.6/5
+  SOURCE DIRECTION 0 0 1
+
+TITLE 'CASSEGRAIN TELESCOPE W/VANES CREATED BY ARRAY COMMAND'
+WINDOW Y Z
+WINDOW 1.2
+PLOT FACETS 5 5 OVERLAY
+TRACE PLOT
+RETURN

@@ -1,0 +1,26 @@
+!!++
+!! AFOCAL03.INR
+!! Title: Afocal Lens
+!! Category: Isolated Command
+!! Keywords: AFOCAL, LENSES
+!! Description: An afocal lens with a single
+!! ray plot. 
+!! Edit History: (latest first)
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES
+  AFOCAL Z 0  1  1 .5  REFL REFL
+  OBJECT
+  
+WINDOW Y Z
+WINDOW 1.5  !! Enlarge 50%
+ARROWS 3
+RAY 0 -.8 -1,  0 0 1 PLOT OVERLAY 'LENS:AFOCAL' COLORS 2
+PLOT LENS 'LENS:AFOCAL' COLORS 11
+RETURN
+

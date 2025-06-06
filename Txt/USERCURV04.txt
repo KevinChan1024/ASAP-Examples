@@ -1,0 +1,43 @@
+!!++
+!! USERCURV04.INR
+!! Title: Swept Parabolic Curve
+!! Category: Isolated Command
+!! Keywords: USERCURVE, $FCN, parabolic, curve, SWEEP 
+!! Description: Create a parabolic curve with $FCN and USERCURVE.
+!! Equation for parabola:
+!! (X-H)^2 = 4P(Y-K)
+!! For parabola centered on Y axis.
+!! X^2 = 4P(Y-K)
+!! Y = [X^2 - 4PK]/4P
+!! The _ sign is the placeholder for the X coordinate
+!! Y = [_^2 - 4PK]/4P
+!! SWEEP the curve about an axis offset from the Y-axis.
+!! Edit History: (latest first) 
+!! 11/10/2014 - mt - remove header statement "Distance from vertex to focus specified."; see P=5 in example script
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/25/2008 - cp - corrected command name
+!! 12/22/2005 - bf - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+P=5  !! Distance from vertex to focus
+K=5  !! X-value of center of parabola
+
+$FCN PARABOLA  (_) (_^2-4*P*K)/(4*P)  0
+!! The last 3 values in this form represent the coordinates (X,Y,Z)                
+
+EDGES
+  USERCURVE PARABOLA  -10 20 30   
+!! 30 X values varying from -10 to 20
+  SMOOTH
+  SWEEP AXIS 270  0 1 0  -20 0 0
+OBJECT 'PARABOLIC CROSS SECTION SURFACE'
+
+WINDOW Y X
+PLOT FACETS 9 9 0  OVERLAY
+PLOT EDGE COLOR 2
+$VIEW
+
+RETURN

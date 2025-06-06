@@ -1,0 +1,71 @@
+!!++
+!! SCATTER_HARVEY.INR
+!! Title: Harvey Scatter Model
+!! Category: Simple Problem
+!! Keywords: Scatter, HARVEY, bsdf, MODELS 
+!! Description: Shows Harvey model in graphical picture.
+!! Allows user to vary harvey parameters and see the effect.
+!! Edit History: (latest first)
+!! 10/10/2013 - cp - corrected spelling
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 11/05/2003 - cp - fixed keyword
+!! 03/12/2002 - cp - modified format
+!! 03/08/2002 - cl - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MODELS
+  HARVEY 0.1 -2 !! The second parameter is the slope of the BSDF.
+                !! Steeper slopes (more negative numbers) will
+                !! have narrower scatter cone angles.
+                !! Typical values -1.0 to -2.5
+                !! Try values from -0.5 to -3.0.
+                !! For -0.5 change FORM to -3 (at end of script)
+                          
+**********************************************
+!! Create geometry
+EDGES                 !! This is the importance edge towards which
+  RECTANGLE Z 0 10 10      !! rays are scattered
+    SHIFT Z 10
+    
+SURFACES
+  PLANE Z 0 RECTANGLE 5 5 
+OBJECT 'Diffuser'     !! Simple diffuser
+  INTERFACE 0 0.000000001 AIR AIR  !! Keep specular rays at very low level of flux
+    SCATTER MODEL 1
+    TOWARDS EDGE 1 1  !! Scatter towards edge number 1, 1 ray
+
+SURFACES
+  PLANE Z 10 RECTANGLE 10 10  
+OBJECT 'Detector'     !! Detector
+
+!! Verify geometry
+PLOT FACETS 5 5 OVERLAY
+
+**********************************************
+!! Create sources
+GRID RECT Z -10 -2 2 -2 2 200 200  
+  SOURCE DIRECTION 0 0 1 
+
+**********************************************
+!! Trace rays
+TRACE PLOT 20  !! Rays which are shown are ALL scattered rays.
+               !! The number of scattered rays does not vary as the 
+               !! Harvey model changes.  The flux contained in each ray
+               !! DOES vary as the Harvey model is changed.
+                          
+**********************************************
+!! Perform analysis
+PIXELS 501
+WINDOW Y -15 15 X -15 15 
+SPOTS POSITION EVERY 7 !! Note that the spots will not change for
+                       !! different Harvey parameters.  The flux contained
+                       !! in different rays WILL change, however.
+DISPLAY
+  AVERAGE 2 2
+  NORMALIZE
+  FORM -6              !! This takes the log of the data.
+  PICTURE
+RETURN

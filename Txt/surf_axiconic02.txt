@@ -1,0 +1,65 @@
+!!++
+!! SURF_AXICONIC02.INR
+!! Title: Axiconic First Mode
+!! Category: Isolated Command
+!! Keywords: AXICONIC, SURFACE
+!! Description: Axiconic surface using the first
+!! mode of operation where 2 foci are given.
+!! This example defines an axiconic surface 10 in
+!! diameter. The point (0,1.5,0) lies on the
+!! surface. The first focal point is located in
+!! the plane z = -30 and has a radius of 2. The
+!! second focal point is located in the plane
+!! z = -10 and has a radius of .5. The sign of s
+!! is positive so the sum of the distances from
+!! one focus to another is stationary.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/11/2002 - cp - reformatted, corrected syntax
+!! 10/17/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  1 0  'REFL'
+SURFACES
+  AXICONIC Z 0 1.5  -30 2  1  -10 -0.5
+    LOCAL -4@5 -2@0.5 Z
+OBJECT 'PRIMARY'
+  INTERFACE COAT -REFL
+ 
+SURFACES
+  PLANE Z -10
+    LOCAL -4@.6 Z
+OBJECT 'DETECTOR'
+ 
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC Z 1 -4.8 4.8 0 4.8 1 5
+  SOURCE POSITION 0 2 -30
+  MOVE TO Z -30  !! Make ray fan
+ 
+CONSIDER ALL
+WINDOW Y -6 6 Z -31 1
+PROFILES OVERLAY 'AXICONIC SURFACE IMAGES ONE FOCAL POINT TO ANOTHER IN PLANE'
+TRACE PLOT OVERLAY 
+RAYSET Z -31 
+  0 0
+  SOURCE DIRECTION 0 0 1
+CONSIDER ONLY 0  !! Only trace last rayset created
+TRACE PLOT
+
+$IO VECTOR REWIND PLOT CANCEL  !! Clear plot files
+RAYS 0  !! Clear previous rays
+GRID POLAR Z -20 1.9 2.1 0 360 1 18
+  SOURCE POSITION 0 0 -52.1429
+  
+CONSIDER ALL 
+WINDOW Y -6 6 Z -22 1
+PLOT FACETS 5 5 'AXICONIC SURFACE IMAGING RING SOURCE TO RING IMAGE' OVERLAY
+TRACE PLOT 
+RETURN 
+
+

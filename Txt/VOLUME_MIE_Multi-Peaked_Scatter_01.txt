@@ -1,0 +1,171 @@
+!!++
+!! VOLUME_MIE_MULTI-PEAKED_SCATTER_01.INR
+!! Title: Multi-Peaked Mie Scatter
+!! Category: Simple Problem
+!! Keywords: Scatter, MIE, MODELS, VOLUME, VOXELS FLUENCE, $FCN, $EVAL
+!! Description: This example builds on a previous example (Volume_Scatter02.inr)
+!! substituting three RECT peaks with distinct particle size ranges using a $FCN.
+!! The particle sizes are defined in waves; each peak's particle size, variation,
+!! and volume density are used to determine its Fobs, which in turn is used to
+!! weight its peak as a component of the overall distribution with its overall Fobs,
+!! the sum of all the sub-Fobs. This is a starting point for investigating the value 
+!! of such a summed model. It is presented without regard to its accuracy or
+!! correctness, which would require real data. Some intuitive exploration is
+!! possible by altering individual peaks and seeing how they interact. 
+!! Edit History: (latest first)
+!! 06/04/2015 - mt - modified geometry construction
+!! 02/29/2012 - cp - corrected keywords
+!! 03/06/2009 - cp - added header  
+!! 03/05/2009 - jah - converted to a three-peaked distribution
+!! 05/14/2001 - rh - initial creation of Volume_Scatter02.inr 
+!!--
+
+SYSTEM NEW
+RESET
+
+$UNVAR ERROR
+
+UNITS MM 
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH (WL=632.8) NM
+
+!! Constants
+PI=4*ATAN(1)     !! Computer's value of Pi
+
+!! Parameters
+
+VTHICK=10               !! Pillbox thickness
+VRADI=50                !! Pillbox radius
+BEAMSIZE=1              !! Beam half diameter
+
+
+VCONC1=1E8              !! Number of particles per unit of volume
+A_W1=0.05               !! Particle Radius in waves (size parameter)
+A_NM1=A_W1*WL           !! True particle size in NM
+A_MM1=A_NM1*1E-6        !! True particle size in MM
+F1=PI*(A_MM1^2)*VCONC1  !! Fractional area obscuration
+VAR1=0.4                !! relative size variation from mean
+RA1=A_NM1               !! re-express for simplicity
+RMIN1=RA1*(1-VAR1)      !! lower limit of particle size
+RMAX1=RA1*(1+VAR1)      !! upper limit of particle size
+
+VCONC2=5E6              !! Number of particles per unit of volume
+A_W2=0.20               !! Particle Radius in waves (size parameter)
+A_NM2=A_W2*WL           !! True particle size in NM
+A_MM2=A_NM2*1E-6        !! True particle size in MM
+F2=PI*(A_MM2^2)*VCONC2  !! Fractional area obscuration
+VAR2=0.1                !! relative size variation from mean
+RA2=A_NM2               !! re-express for simplicity
+RMIN2=RA2*(1-VAR2)      !! lower limit of particle size
+RMAX2=RA2*(1+VAR2)      !! upper limit of particle size
+
+VCONC3=1E6              !! Number of particles per unit of volume
+A_W3=0.50               !! Particle Radius in waves (size parameter)
+A_NM3=A_W3*WL           !! True particle size in NM
+A_MM3=A_NM3*1E-6        !! True particle size in MM
+F3=PI*(A_MM3^2)*VCONC3  !! Fractional area obscuration
+VAR3=0.1                !! relative size variation from mean
+RA3=A_NM3               !! re-express for simplicity
+RMIN3=RA3*(1-VAR3)      !! lower limit of particle size
+RMAX3=RA3*(1+VAR3)      !! upper limit of particle size
+
+
+RMIN=RMIN1<RMIN2<RMIN3  !! overall lower limit of particle size
+RMAX=RMAX1>RMAX2>RMAX3  !! overall upper limit of particle size
+
+RSPAN=RMAX-RMIN         !! get distribution total span
+RMIN=RMIN-RSPAN/20      !! give distribution a little baseline at lower end 
+RMAX=RMAX+RSPAN/20      !! give distribution a little baseline at upper end 
+
+ 
+F=F1+F2+F3  !! Fractional area obscuration
+MFP=1/F              !! 1/F Roughly equals mean free path
+IBULK=1.33           !! Used for bulk media and MIE calculation
+
+&REG VCONC1 A_W1 A_NM1 A_MM1 F1 VCONC2 A_W2 A_NM2 A_MM2 F2 VCONC3 A_W3 A_NM3 A_MM3 F3 F MFP
+&REG VAR1 RA1 RMIN1 RMAX1 VAR2 RA2 RMIN2 RMAX2 VAR3 RA3 RMIN3 RMAX3 RMIN RMAX RSPAN 
+
+LEVEL (LEVEL=1000)
+
+!! A multi-peaked function for the PSD using three RECT functions for
+!! the three sub-distributions described by the variables above. The 
+!! coefficients are roughly weighted to make the area proportional 
+!! to the Fobs of each sub-distribution.  
+$FCN TRIPLEPSD R=[_*((RMAX-RMIN)/2)+((RMAX+RMIN)/2)],
+                  TPSD=(F1/F/(RMAX1-RMIN1))*[RECT[(R-RA1)/(RMAX1-RMIN1)]],
+                  TPSD=TPSD+(F2/F/(RMAX2-RMIN2))*[RECT[(R-RA2)/(RMAX2-RMIN2)]],
+                  TPSD=TPSD+(F3/F/(RMAX3-RMIN3))*[RECT[(R-RA3)/(RMAX3-RMIN3)]],
+                  TPSD*1E2
+
+
+$EVAL _ -1.0 1.0 -111 TRIPLEPSD
+DISPLAY EVAL.DIS
+  RANGE 0 1.5
+  GRAPH 'multi-peaked PSD'
+RETURN
+   
+!! Two media must be defined.  One is the "BULK" media in
+!! which the particles are suspended.  This must be specified twice.
+!! The other is the index of the particles themselves (SPHERE).
+!! See Procedural Note "Using VOXELS in ASAP" 
+PIXELS 101 !! may need to be increased for required resolution on VOLUME...PLOT below
+MEDIA
+  1.59 'SPHERE'
+  (IBULK) 'BULK'
+  
+IMMERSE BULK !! Immerse spheres in BULK
+MODEL
+  VOLUME MIE SPHERE (RMIN) (RMAX) (F) TRIPLEPSD 51 PLOT  !! More integration points may be needed in practice 
+   
+MEDIA
+  (IBULK) SCATTER 1 'BULK_SPHERES'
+  
+PRINT MODELS
+&REG
+
+!! demonstrate that PSD is functional
+
+SURFACE
+	PLANE Z 0 ELLIPSE 2@50
+OBJECT
+	0.1	 'FRONT'
+  INTERFACE 0 1 AIR BULK_SPHERES
+  REDEFINE COLOR 1
+
+SURFACE
+	PLANE Z 10 ELLIPSE 2@50
+OBJECT
+	0.1	 'BACK'
+  INTERFACE 0 1 AIR BULK_SPHERES
+  REDEFINE COLOR 1
+  
+SURFACE
+	TUBE Z 0 2@50 10 2@50
+OBJECT
+	0.1  'TUBE'
+  INTERFACE 0 1 AIR BULK_SPHERES
+  REDEFINE COLOR 1
+
+  
+IMMERSE AIR  !! To switch from IMMERSE BULK earlier 
+GRID POLAR Z -10 0 (BEAMSIZE) 0 360  301 6 
+  GRID ELLIPSE Z -1 -4@(BEAMSIZE) 3 3
+  SOURCE DIRECTION 0 0 1
+
+FLUX 1 0
+PIXELS 39
+WINDOW Y  Z  
+PLOT FACETS 7 7 OVERLAY
+VOXELS FLUENCE -2@2 -2@2 0 10  31 31 INT(31*10/4)
+MISSED ARROW 5 
+TRACE PLOT 5000  COLOR 1
+
+!! When the view appears, hide the geometry, and zoom
+!! in to see the fluence distribution.
+
+$VIEW
+&VIEW BRO009.DAT  !! Add volume display file
+
+STATS 
+&REG
+RETURN

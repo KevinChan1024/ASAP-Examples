@@ -1,0 +1,37 @@
+!!++
+!! EMITTING_CONE.INR
+!! Title: Emitting Cone
+!! Category: Isolated Command
+!! Keywords: EMITTING CONE, Sources
+!! Description: Demonstration of EMITTING CONE.
+!! A surface emitter which is Lambertian by
+!! default.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 04/09/2008 - cp - changed keywords
+!! 7/12/2005 - gg - creation
+!!--
+           
+
+SYSTEM NEW
+RESET
+   
+!! Create the emitting cone
+EMITTING CONE Z 0 1 1 3 .1 .1 100000 !! Lambertian by default   
+                                     !! unless ISO option used                           
+!! Plot the rays
+PLOT RAYS 100 OVERLAY  
+                           
+!! To get a better idea of what kind of cone is emitting
+!! create a tube that has the shape of our emitter
+SURFACES
+  TUBE Z 0 1 1 3 .1 .1
+OBJECT 'OUTLINE OF EMITTING CONE'                 
+
+!! Plot the object on top of the rays
+PLOT FACETS                          
+     
+!! See 3D Viewer
+$VIEW           
+
+RETURN

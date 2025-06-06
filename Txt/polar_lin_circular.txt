@@ -1,0 +1,55 @@
+!!++
+!! POLAR_LIN_CIRCULAR.INR
+!! Title: Linear to Circular Polarization
+!! Category: Simple Problem
+!! Keywords: Polarization, LENSES, IDEAL, POLARIZ, POLAR, FIELD, REAL, quarter
+!! Description: Linear polarized rays converted to circular
+!! polarization by an ideal lens. A grid of rays, initially
+!! linear polarized at 45° are passed through an ideal lens
+!! set up to be a quarter wave plate (using Jones Matrix -
+!! fast axis vertical). The result is right-circular
+!! polarization.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/01/2000 - cp - Modified syntax; added description
+!! 05/20/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+ 
+UNITS MM
+FRESNEL BOTH 
+
+LENSES
+  IDEAL Z 1 5
+    1 0 0 1 
+    COS[45]`SIN[45] 0 0 SIN[45]`(-1*COS[45])
+  OBJECT 'QUARTER_WAVE_PLATE'
+SURFACES
+  PLANE Z 5 RECTANGLE 10
+  OBJECT 'DETECTOR'
+
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 0.6328 UM
+POLARIZ X 1 1  !! 45 Degree Linear
+WIDTHS 1.6
+GRID ELLIPTIC Z 0 -4@4.6 2@10
+  SOURCE DIRECTION 0 0 1
+
+TITLE 'INPUT POLARIZATION STATE'
+WINDOW Y X
+PLOT POLARIZATION
+TRACE
+SEGMENTS 2
+ARROWS 1
+TITLE 'POLARIZATION STATE AFTER QUARTER WAVE PLATE'
+PLOT POLARIZATION
+PIXELS 15
+TITLE 'ELECTRIC FIELD VECTOR'
+FIELD REAL 5 DELTA
+
+$DO 1 4
+  FIELD REAL 5 DELTA ?/8 OVERLAY
+RETURN   

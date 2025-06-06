@@ -1,0 +1,25 @@
+!!++
+!! LENS_MIRROR_02.INR
+!! Title: Parabolic Mirror with Hole
+!! Category: Isolated Command
+!! Keywords: MIRROR, LENSES
+!! Description: Defines a parabolic mirror located at
+!! z=-15 with a semi-diameter of 5. The focal length
+!! of the mirror is 20. The central 25 percent of the
+!! mirror aperture is cut out.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 10/07/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+LENSES
+  MIRROR Z -15 5 20 -1 .25 
+  
+WINDOW Y Z
+WINDOW 1.5  !! Enlarge 50%
+PLOT LENSES 'LENS:MIRROR' COLORS 11
+RETURN
+

@@ -1,0 +1,38 @@
+!!++
+!! BOUNDS04.INR
+!! Title: Multiple Bounding
+!! Category: Isolated Command
+!! Keywords: BOUNDS, MULTIPLE
+!! Description: Bounding using the MULTIPLE
+!! option. A tilted plane is 'AND' bounded with
+!! a tube and 'OR' bounded with multiple planes.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  1 0  'REFL'
+SURFACES
+  PLANE Z 15
+    ROTATE X 45 0 15
+  TUBE Z 0 2@8 20 2@8  !! Outer boundary
+  PLANE X 1            !! Side
+  PLANE X -1           !! Other side
+  PLANE Y 3            !! Top
+  PLANE Y -3           !! Bottom
+OBJECT
+  1 'DIAGONAL_MIRROR'  !! Refers to first plane
+    BOUNDS -2 MULTIPLE 3 -4 5 -6
+    LIMITS -4@8.1 5 25
+    INTERFACE COATING -REFL
+ 
+WINDOW Y X
+PIXEL 127
+OBLIQUE 
+PROFILES 0 0 -30 'SURFACE BOUNDED (MULTIPLE) BY SURFACES'
+RETURN

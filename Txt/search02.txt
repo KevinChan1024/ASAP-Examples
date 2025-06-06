@@ -1,0 +1,38 @@
+!!++
+!! SEARCH02.INR
+!! Title: SEARCH Command Output
+!! Category: Isolated Command
+!! Keywords: SEARCH, Tracing, sequential  
+!! Description: SEARCH command output for a specific
+!! sequential raytrace of a Triplet lens. 
+!! Note: This is not a run-able script file.
+!! Edit History: (latest first)
+!! 03/11/2002 - cp - added note
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+ --- !! The Triplet System is already loaded into ASAP.
+ --- !! The SEARCH command is used to over-ride the non-
+ --- !! sequential ray trace.
+ --- SEARCH
+ --- 1 2 2 1
+ --- 2 4 4 1
+ --- 4 5 5 1
+ --- 5 7 7 1
+ --- 7 8 8 1
+ --- 8 10 10 1
+ --- SEARCH LIST
+ Object From  To  By   Description
+    0    1  300    1
+    1    2    2    1  LENS_A_SURF_1
+    2    4    4    1  LENS_A_SURF_2
+
+    3    1  300    1  LENS_A_RIM
+    4    5    5    1  LENS_B_SURF_1
+    5    7    7    1  LENS_B_SURF_2
+    6    1  300    1  LENS_B_RIM
+    7    8    8    1  LENS_C_SURF_1
+    8   10   10    1  LENS_C_SURF_2
+    9    1  300    1  LENS_C_RIM
+   10    1  300    1  IMAGE_PLANE

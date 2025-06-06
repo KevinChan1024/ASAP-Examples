@@ -1,0 +1,40 @@
+!!++
+!! MACRO_$IF01.INR
+!! Title: $IF Predefined Macro #1
+!! Category: Isolated Command
+!! Keywords:  $IF, macro, Macros_pre, $ENDIF
+!! Description: Demonstrates the use of $IF.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 11/18/2003 - cp - removed keyword
+!! 02/11/2000 - cp - modified format; added description
+!! 12/21/1998 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+TEST=1
+
+SURFACES
+  PLANE Z 0 RECTANGLE 0.5
+  OBJECT 'PLANE_1'
+    INTERFACE 0 0 AIR AIR
+
+$IF (TEST) EQ 1 THEN 
+  SURFACES
+    PLANE Z 1 RECTANGLE 0.5
+    OBJECT 'PLANE_2'
+      INTERFACE 0 0 AIR AIR
+$ENDIF
+
+SURFACES
+  PLANE Z 2 RECTANGLE 0.5
+  OBJECT 'PLANE_3'
+    INTERFACE 0 0 AIR AIR
+
+WINDOW Y Z
+OBLIQUE
+PLOT FACETS 11 11
+
+RETURN

@@ -1,0 +1,85 @@
+!!++
+!! SCATTER_INFIELD.INR
+!! Title: In Field Scatter
+!! Category: Simple Problem
+!! Keywords: Scatter, psf, SPREAD, SELECT, bsdf 
+!! Description: In-field scatter calculations on 
+!! a mirror surface. A PSF is performed on the signal
+!! as well as the incoherent scatter rays.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 11/05/2003 - cp - fixed keyword
+!! 03/12/2002 - cp - reformatted
+!! 08/15/2001 - cp - added keyword BSDF
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS IN
+COATINGS PROPERTIES
+  1 0 'REFL' 
+SURFACES 
+  OPTICAL Z 0 -160 -1 ELLIPSE 5 
+OBJECT 'PRIMARY'
+  INTERFACE COAT REFL 
+  SCATTER BSDF 0.1 -1.5   !! ~15 angstrom rms surface roughness
+
+SURFACES
+  PLANE Z -80 ELLIPSE 0.5
+OBJECT 'DETECTOR'
+ 
+SEARCH SEQUENTIAL FORWARD 
+
+!! Create coherent signal beam
+PARABASALS 8
+BEAMS COHERENT DIFFRACT 
+WAVELENGTHS 546.1 NM
+WIDTHS 1.6 
+GRID POLAR Z -10 0 5 0 360 7 6
+  SOURCE DIRECTION 0 0 1 
+FLUX 0.1 0 SOURCE 1
+
+!! Create incoherent pseudo beam for scatter rays
+PARABASALS 8
+BEAMS INCOHERENT GEOMETRIC SHAPE RECT  
+WAVELENGTH 546.1 NM
+WIDTHS 1.6 
+GRID POLAR Z -10 0 5 0 360 7 6
+  SOURCE DIRECTION 0 0 1 
+FLUX 0.1 0 SOURCE 2
+
+SELECT ONLY SOURCE 1
+  LEVEL 0
+  TRACE  !! Trace signal beam with no scatter rays
+  
+SELECT ONLY SOURCE 2
+  LEVEL 1
+  TRACE  !! Trace pseudo beam with no scatter rays
+  
+SELECT ONLY SOURCE 1 OR SOURCE -2  !! Isolate signal and scatter           
+  WINDOW Y -2@.01 X -2@.01
+  PIXELS 1000 
+  SPREAD NORMAL DOWN 0.5 0.5
+DISPLAY
+  FORM -12
+  GRAPH  !! Composite PSF
+    
+SELECT ONLY SOURCE 1
+  SPREAD N DOWN 0.5
+DISPLAY
+  FORM -12
+  GRAPH APPEND  !! Signal PSF only
+$IO PLOT REWIND
+ 
+SELECT ONLY SOURCE -2 
+  SPREAD NORMAL DOWN 0.5 0.5
+DISPLAY
+  FORM -12  !! Scatter PSF only
+  GRAPH APPEND 'PSF (with mirror scatter)' 
+    'Y AXIS (INCHES)
+    '1: composite  2: signal PSF  3: scatter PSF 
+    'All scatter rays are incoherent
+RETURN

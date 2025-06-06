@@ -1,0 +1,33 @@
+!!++
+!! REPLOT01.INR
+!! Title: REPLOT of MESH
+!! Category: Isolated Command
+!! Keywords: REPLOT, MESH
+!! Description: Using REPLOT to display MESH
+!! of a radiance distribution.
+!! Edit History: (latest first)
+!! 10/11/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+XMEMORY MIN
+SEED 1 QUASI
+EMITTING SPHEROID 0 0 0 3@0.1 10000
+
+RADIANT Z 0 180 18 0 360 18
+
+DISPLAY
+  AVERAGE 
+  MESH
+RETURN
+WINDOW Y Z
+WINDOW 1.2  !! Enlarge 20%
+TITLE 'RADIANT INTENSITY OF SPHEROID' 
+
+REPLOT  !! Right-click mouse on plot to continue or use
+OBLIQUE !! left button to zoom.
+
+REPLOT
+RETURN

@@ -1,0 +1,45 @@
+!!++
+!! MACRO_$SCR01.INR
+!! Title: $SCR and Cancel
+!! Category: Isolated Command
+!! Keywords: $SCR, macro, Macros_pre, output, $GO
+!! Description: A few examples of using $SCR to 
+!! print out a dialog box of information and
+!! how to test for and use the Cancel button.
+!! Note: This is not a runable inr file.
+!! Edit History: (latest first) 
+!! 04/17/2003 - cp - added underscore comment
+!! 12/21/2001 - cp - modified description
+!! 10/24/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+********************************************************
+SCR_CANCEL=1  !! To make sure a cancel button appears
+$SCR "Test.scr" !! To call Test.inr 
+
+!! or
+$SCR TEST
+
+!! or
+$SCR TEST.SCR  !! NOTE: $SCR TeST.SCR will not work
+
+********************************************************
+$IF (SCR_CANCEL) EQ 1; $GO usercancel
+...
+... !! More code here
+...
+usercancel  !! Skip to here if Cancel button was pressed.
+...         !! Do not use underscores (_) in label name.
+... !! More code here
+...
+SCR_CANCEL=1  !! Resets SCR_CANCEL to 1 in case
+              !! the last screen was cancelled
+
+********************************************************
+$SCR "Test2.scr" !! Calls Test2.scr file
+$IF (SCR_CANCEL) EQ 1; $GO end
+...
+... !! More code here
+...
+end

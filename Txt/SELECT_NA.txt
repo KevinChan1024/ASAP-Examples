@@ -1,0 +1,68 @@
+!!++
+!! SELECT_NA.INR
+!! Title: Demonstrate Selection by Numerical Aperture
+!! Category: Simple Problem
+!! Keywords: Radiometry, SELECT, na, $GRAB
+!! Description: Selecting rays within a central core of
+!! the measured NA. Shows how to keep only rays in the
+!! inner half (in angle) of the beam NA, or the 
+!! complementary set.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/26/2002 - cp - added description
+!! 11/02/2004 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! MEDIA
+
+MEDIA
+  1.5 'GLASS'
+
+!! GEOMETRY DEFINITIONS BEGIN HERE
+
+SURFACES
+  PLANE Z 10 RECTANGLE 5 5
+OBJECT 'DETECTOR'
+
+LENSES
+  SINGLET Z 0 2 4 GLASS FL 10 1
+OBJECT 'L1'
+RETURN
+
+!! Source definitions begin here
+EMITTING DISK Z -1 3 3 3111 2@1 
+
+!! Trace rays with optional plot
+WINDOW Y Z
+PLOT FACETS 3 3 0 OVERLAY
+TRACE PLOT 
+
+!! Analysis block begins here
+
+CONSIDER ONLY DETECTOR
+FOCUS MOVE !! Optional move
+ 
+$GRAB 'Centroid Point' 0 3 ZDET
+$GRAB 'N.A.' 0 -3 ZNA
+
+ZDCMAX=COS(ASIN(ZNA)/2)  !! limit to half of beam NA
+
+&REG ZDET ZNA ZDCMAX
+
+!!OBJECT DETECTOR !! Optional
+!!  PLACE 0 0 (ZDET)
+RETURN
+
+SPOTS DIRECTION YX -4@(ZNA) 'Before SELECT'
+
+SELECT ONLY (ZDCMAX) C
+
+SPOTS DIRECTION YX -4@(ZNA) 'After SELECT -- subtense halved'
+
+SELECT ONLY C (ZDCMAX)
+
+SPOTS DIRECTION YX -4@(ZNA) 'After SELECT -- conical outer annulus'
+RETURN

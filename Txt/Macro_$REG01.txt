@@ -1,0 +1,35 @@
+!!++
+!! MACRO_$REG01.INR
+!! Title: Example of $REG 
+!! Category: Isolated Command
+!! Keywords: $REG, macro, Macros_pre, output
+!! Description: Various ways of using $REG to 
+!! print out variable or register values. Note
+!! that "&" in place of "$" makes for a cleaner 
+!! output.
+!! Note: This is not a runable inr file.
+!! Edit History: (latest first)
+!! 12/21/2001 - cp - modified description
+!! 10/24/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+ --- PI=3.14159
+ --- $REG PI
+ Z/: PI               3.14159
+ 
+ --- &REG PI
+ PI=3.14159
+ 
+ --- $REG PI 'THE VALUE OF PI IS'
+ THE VALUE OF PI IS 3.14159
+ 
+ --- E=2.71828
+ --- $REG PI E
+ Z/: PI               3.14159
+ E : E                2.71828
+ 
+ --- $REG PI E 'THE VALUES OF PI AND E ARE'
+ THE VALUES OF PI AND E ARE
+ Z/: PI               3.14159
+ E : E                2.71828

@@ -1,0 +1,51 @@
+!!++
+!! MATRIX03.INR
+!! Title: Compare MATRIX and ROTATE
+!! Category: Isolated Command
+!! Keywords: MATRIX, Manipulating, ROTATE
+!! Description: Compare the MATRIX command to the
+!! ROTATE command. Create 1 Plane surface. Then
+!! create 2 identical surfaces at the same place.
+!! ROTATE 1 of the surfaces. Use the MATRIX command
+!! to rotate the other surface. Inspect with 3D-Viewer.
+!! Edit History: (latest first)
+!! 01/12/2015 - gb - added 0 to PLOT FACETS 9 9
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/18/2000 - cp - modified format and header
+!! 05/12/2000 - bf - make the example more generic
+!! 05/11/2000 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+ALPHA=45.
+ZSHIFT=5
+DELY=((SIN[ALPHA]))*ZSHIFT
+DELZ=(1-(COS[ALPHA]))*ZSHIFT
+
+SURFACES
+  PLANE Z 1 RECTANGLE 1 1
+  OBJECT 'PLANE-0'
+
+!! ROTATE the following plane surface through
+!! an angle ALPHA in the x-plane
+!! about a point (y,z) = (0,zshift) in the x=0 plane.
+SURFACES
+  PLANE Z 1 RECTANGLE 1 1
+  OBJECT 'PLANE-1'
+    ROTATE X (ALPHA) 0 (ZSHIFT) LIST
+
+!!The above is equivalent to the following:
+SURFACES
+  PLANE Z 1 RECTANGLE 1 1
+    OBJECT 'PLANE-2'
+    MATRIX
+    0.0000  1.0000  0.0000        0.0000
+    (DELY)  0.0000  (COS[ALPHA])  (SIN[-ALPHA])
+    (DELZ)  0.0000  (SIN[ALPHA])  (COS[ALPHA])
+
+PLOT FACETS 9 9 0
+$VIEW
+RETURN
+

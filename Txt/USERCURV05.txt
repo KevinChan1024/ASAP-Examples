@@ -1,0 +1,50 @@
+!!++
+!! USERCURV05.INR
+!! Title: Swept Elliptical Curve
+!! Category: Isolated Command
+!! Keywords: USERCURVE, $FCN, elliptical, curve, SWEEP 
+!! Description: Create an elliptical curve with $FCN and USERCURVE.
+!! Semi-major and semi-minor axes specified.
+!! Center at (H,K).
+!! Equation for ellipse:
+!! (X-H)^2/A^2 + (Y-K)^2/B^2 = 1
+!! Put the equation in the binomial form solving for Y, specifying X
+!! Y^2 - [2K]Y + [K^2 + (B^2/A^2)(X-H)^2 - B^2] = 0
+!! The _ sign is the placeholder for the X coordinate
+!! Y^2 - [2K]Y + [K^2 + (B^2/A^2)(_-H)^2 - B^2] = 0
+!! Sweep the curve about an axis offset from the Y-axis.
+!! Edit History: (latest first)
+!! 10/08/2014 - gb - correct typo in Title 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/25/2008 - cp - corrected command name 
+!! 12/22/2005 - bf - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+A=15  !!Semi-major axis
+B=10  !!Semi-minor axis
+H=0   !!X-value of center of ellipse
+K=4   !!Y-value of center of ellipse
+
+$FCN ELLIPSE,
+  COEFFA=1,
+  COEFFB=-2*K,
+  COEFFC=(K^2)+((B/A)^2)*((_-H)^2)-(B^2),
+  (_) (-(COEFFB)+(SQRT((COEFFB^2)-4*COEFFA*COEFFC)))/(2*COEFFA)  0
+!! The last 3 values in this form represent the coordinates (X,Y,Z)                
+
+EDGES
+!! Create the curve with 30 X values varying from -10 to 15
+  USERCURVE ELLIPSE  -10 15 30
+  SMOOTH
+  SWEEP AXIS 270  0 1 0  -20 0 0
+OBJECT 'ELLIPTICAL CROSS SECTION SURFACE'
+
+WINDOW Y X
+PLOT FACETS 9 9 0  OVERLAY
+PLOT EDGE COLOR 2
+$VIEW
+
+RETURN

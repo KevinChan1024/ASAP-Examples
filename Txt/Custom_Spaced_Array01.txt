@@ -1,0 +1,43 @@
+!!++
+!! CUSTOM_SPACED_ARRAY01.INR
+!! Title: Making Custom-Spaced Arrays
+!! Category: Simple Problem
+!! Keywords: Arrays, ARRAY, Macros_user, custom
+!! Description: An ARRAY of disks with custom spacing
+!! of rows using macros.
+!! Edit History: (latest first)
+!! 06/04/2015 - cp - corrected header closing
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 04/09/2007 - cp - added header
+!! 04/02/2007 - jah/wjd - creation
+!!--
+
+SYSTEM NEW
+RESET  
+
+LASTSHIFT=0
+NCOL=4
+REFPTSHIFT=2
+
+MAKEARRAY { 1
+
+SURFACES
+  PLANE Z 0 ELLIPSE 2@1/2
+  ARRAY (NCOL-1) (REFPTSHIFT) 0 0
+  OBJECT 
+  SHIFT Y LASTSHIFT+#1
+  RETURN
+  LASTSHIFT=LASTSHIFT+#1
+}
+'SHIFTPOINT'
+
+&MAKEARRAY 0 
+&MAKEARRAY 2
+&MAKEARRAY 4
+&MAKEARRAY 8
+
+WINDOW Y X
+PLOT FACETS 
+
+RETURN 
+

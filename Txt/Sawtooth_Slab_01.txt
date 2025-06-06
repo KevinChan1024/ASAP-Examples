@@ -1,0 +1,57 @@
+!!++
+!! SAWTOOTH_SLAB_01.INR
+!! Title: Sawtooth Slab using EDGES 
+!! Category: Simple Problem
+!! Keywords: Edges, sawtooth, EDGES, corrugated
+!! Description: Creates a slab with top corrugated as sawtooth
+!! using EDGES.
+!! Edit History: (latest first)
+!! 12/08/2009 - cp - added header 
+!! 11/05/2009 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES 
+  !! top
+  SAWTOOTH  X -5, 4 2, 5 0, 3
+    SWEEP DIR 10 1 0 0 
+  !! far edge
+  LINE -5 15  0, -5 15 -2
+    SWEEP DIR 10 1 0 0 
+  !! bottom
+  LINE -5 15 -2, -5  0 -2
+    SWEEP DIR 10 1 0 0 
+  !! near edge
+  LINE -5  0 -2, -5  0  0 
+    SWEEP DIR 10 1 0 0 
+  !! repeat the above edges and composite them to make sides
+  REPEAT .4 
+  REPEAT .4 
+  REPEAT .4 
+  REPEAT .4 
+  COMPOSITE -4 GAPS -1 
+  REPEAT .1
+    SHIFT X 10
+RETURN
+
+!! plot the component edges
+WINDOW Z Y
+PLOT EDGES 
+
+OBJECT
+  .6 'SLAB.TOOTH'
+  .5 'SLAB.END.FAR'
+  .4 'SLAB.BOTTOM'
+  .3 'SLAB.END.NEAR'
+  .2 'SLAB.SIDE.1'
+      FACETS 17 17   !! improve plot fidelity of side
+  .1 'SLAB.SIDE.2' 
+      FACETS 17 17   !! improve plot fidelity of side
+RETURN
+
+!! plot the objects
+PLOT FACETS 5 5 0  
+$VIEW
+RETURN      

@@ -1,0 +1,37 @@
+!!++
+!! TWO_HOLE_BAFFLE.INR
+!! Title: Two Hole Absorbing Baffle
+!! Category: Simple Problem
+!! Keywords: Bounds, baffle, aperture
+!! Description: Simple demo of making a circular
+!! absorbing baffle with two offset holes.  Note
+!! that faceting could be a problem depending on
+!! relative hole sizes.  However, this does not mean
+!! the holes are not perfectly circular.  A high
+!! PIXEL count and further RENDERing will show the
+!! true shapes.
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! Edit History: (latest first)
+!! 02/28/2002 - cp - corrected style
+!! 11/01/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  ELLIPSE Z 0 1 1 
+    SHIFT Y 3
+  ELLIPSE Z 0 1 1 
+    SHIFT Y -3 
+SURFACES
+  PLANE Z 0 ELLIPSE 10 10 
+OBJECT  'TWO-HOLE_BAFFLE'      
+  BOUNDS .2 .3
+
+WINDOW Y X
+PLOT FACETS 11 11
+
+!!PIXELS 201 
+!!RENDER
+RETURN

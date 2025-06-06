@@ -1,0 +1,41 @@
+!!++
+!! RAY_SPLITTING02.INR
+!! Title: Tracing with SPLIT 3
+!! Category: Simple Problem
+!! Keywords: Tracing, SPLIT, child, parent, rays, splitting, EMITTING
+!! Description: Ray trace plot showing effects of
+!! SPLIT set to 3. First and second generation child rays
+!! are allowed to split but third generation cannot split.
+!! Only the most energetic great-grand-child ray continues.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/29/2000 - cp - modified; added description
+!! 01/18/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM
+WAVELENGTH 550 NM
+
+SURFACES
+  PLANE Z 0 RECTANGLE 5 5
+  OBJECT 'SLAB.FRONT'
+    INTERFACE COAT BARE AIR SCHOTT_BK7   
+  
+SURFACES
+  PLANE Z 2 RECTANGLE 5 5
+  OBJECT 'SLAB.BACK'
+    INTERFACE COAT BARE AIR SCHOTT_BK7 
+  
+WINDOW Z Y
+PROFILES 0 0 -1 OVERLAY
+
+SPLIT 3
+
+EMITTING RAYS
+  0 -3  -2,  0 SIN[30] COS[30]
+  
+TRACE PLOT
+RETURN

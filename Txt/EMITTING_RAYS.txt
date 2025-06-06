@@ -1,0 +1,40 @@
+!!++
+!! EMITTING_RAYS.INR
+!! Title: Using the EMITTING RAYS Command
+!! Category: Simple Problem
+!! Keywords: Sources, EMITTING RAYS, Tracing, PLOT RAYS
+!! Description: A single or multiple rays can be created 
+!! with this command. In this example, an absorbing
+!! plane is placed to collect the emitted rays.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 09/04/2007 - cp - reformatted 
+!! 04/17/2007 - bf - creation 
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES 
+PLANE Z 10 RECT 20 20
+OBJECT 'TESTPLANE'
+ 
+EMITTING RAYS
+0 0 1  0 1 1  100
+0 1 2  1 1 1  100
+FLUX TOTAL 100
+
+GRID RECT Z 0 -4@1 1 1 
+SOURCE DIRECTION  1 1 1
+EMITTING RAYS  10  .1 .1 .1   .0 .1 .2
+
+GRID RECT Z 0 -4@1 1 1 
+SOURCE DIRECTION  0 .5 1
+EMITTING RAYS  10  .1 .1 .1   .2 .2 .2
+
+PLOT FACETS 3 3 0  OVERLAY
+TRACE PLOT
+
+STATS
+!!$VIEW
+RETURN

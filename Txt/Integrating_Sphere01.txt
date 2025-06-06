@@ -1,0 +1,74 @@
+!!++
+!! INTEGRATING_SPHERE01.INR
+!! Title: Importance Area Sampling
+!! Category: Simple Problem
+!! Keywords: Scatter, SCATTER, RANDOM, TOWARDS, LEVEL, HALT, integrating, sphere
+!! Description: A model of an integrating sphere
+!! to show multiple random scatter. LEVEL and HALT 
+!! are adjusted to allow many generations of scatter
+!! for a more accurate power calculation.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 05/16/2001 - cp - added keywords; modified name
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+PI=3.14159
+
+RHO=0.88  !! Sphere TIS
+RAD=1     !! Sphere radius
+PRAD=0.02 !! Detector port radius
+
+EDGES
+  ELLIPSE Z 0.995 2@(PRAD) 24 !! Exit aperture important area
+
+SURFACES 
+  ELLIPSOID 3@(RAD) 3@0       !! Sphere
+  ELLIPSOID 3@PRAD. 2@0 (RAD) !! Port
+
+OBJECT
+  2 'INTEGRATING_SPHERE'
+    SCATTER RANDOM (RHO) !! TIS with 1 ray into hemisphere and
+      TOWARDS EDGE 1     !! scatter 1 rays f 0 t 1 a 0.5
+    BOUNDS 3
+
+SURFACES
+  PLANE Z 0.995 ELLIPSE (PRAD)
+  OBJECT 'DETECTOR'
+
+!! Ideal integrating sphere power calculation
+AREAT=PI*(PRAD^2)
+AREAS=4*PI*(RAD^2)
+IPOW=(RHO*AREAT/AREAS)/(1-RHO*(1-AREAT/AREAS))
+
+SYSRAY {  !! Input ray macro
+ XMEMORY OFF  !! Parabasal rays and higher order beam modes not needed
+ BEAMS INCOHERENT GEOMETRIC
+ RAYSET Y 0
+   0 0 1
+   SOURCE DIRECTION 0 1 0
+} 
+&SYSRAY
+
+LEVEL 3  !! Scatter
+WINDOW Y Z
+PIXELS 71
+PROFILES OVERLAY 'INTEGRATING SPHERE EXAMPLE OF MULTIPLE RANDOM SCATTER'
+TRACE PLOT
+
+RAYS 0  !! Clear old rays
+LEVEL 40 1E-18
+HALT 1000 1E-18  !! Increase scattering level for actual calculations
+&SYSRAY 
+
+PRINT 1
+TRACE 
+CONSIDER ONLY DETECTOR 
+WINDOW Y -1 1 X -1 1
+SPOTS POSITION ATTRIBUTE 0
+$REG IPOW 'IDEAL INTEGRATING SPHERE CALCULATED POWER'
+RETURN

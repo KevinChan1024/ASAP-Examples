@@ -1,0 +1,22 @@
+!!++
+!! EMITTING_PYRAMID.INR
+!! Title: Emitting Pyramid
+!! Category: Isolated Command
+!! Keywords: EMITTING, PYRAMID, Sources
+!! Description: Demonstration of an EMITTING
+!! PYRAMID. A volume emitter.
+!! Edit History: (latest first)
+!! 09/04/2007 - cp - modified format; added description
+!! 04/06/2007 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EMITTING PYRAMID Z 2  0 0  10  3 6  3000 Z  !! ISO by default
+
+WINDOW Y Z
+PLOT RAYS .2
+SPOTS POSITION 
+$VIEW
+RETURN

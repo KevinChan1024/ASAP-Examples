@@ -1,0 +1,39 @@
+!!++
+!! FILAMENT.INR
+!! Title: Filament Emitters
+!! Category: Isolated Command
+!! Keywords: FILAMENT, EMITTING, CURVES, CHARACTER, $FCN, Sources
+!! Description: Two filament emitters. One defined by a
+!! curve and the other by a function.
+!! Edit History: (latest first)
+!! 10/05/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+TITLE 'ASAP MODEL OF A CURVE OF RAYS'
+CURVES
+  CHARACTER X 0 1 2 'EAT AT JOE~S'
+  
+XMEMORY MIN
+SEED 1 QUASI 
+EMITTING FILAMENT 1 5000 .1
+
+WINDOW Z Y
+SPOTS POSITION  !! Show emitter from curve
+
+RAYS 0
+TITLE 'ASAP MODEL OF GAUSSIAN SHAPED FILAMENT WITH HELIX'
+H=5 L=2  PI=3.14159  R=0.2  T=15
+$FCN EFCN L*_+(R*COS(2*PI*T*_)),
+          H*GAUS(2*_),
+          R*SIN(2*PI*T*_),
+          1
+SEED 1 QUASI 
+EMITTING FILAMENT EFCN -1 1 5000 0.05 
+
+WINDOW Y X
+SPOTS POSITION  !! Show emitter from function
+RETURN

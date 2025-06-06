@@ -1,0 +1,69 @@
+!!++
+!! PINHOLE_ARRAY.INR
+!! Title: Array of Pinholes
+!! Category: Simple Problem
+!! Keywords: Arrays, Bounds, pinhole, BOUNDS, ARRAY
+!! Description: This shows how to create a pinhole array in a panel
+!! by bounding a plane to an array of tubes.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 655 NM
+BEAMS INCOHERENT GEOMETRIC
+XMEMORY MIN
+
+MEDIA
+  1.5 'PLASTIC'
+
+!! Geometry for the diffuser panel itself
+HORDIM=250/2       !! half length of panel
+VERTDIM=190/2      !! half width of panel)
+HPOS=0             !! X position of of panel
+GAP=0.001          !! gap between source and top edge
+                   !! to avoid putting the newborn
+                   !! rays at a media interface, a
+                   !! source of boundless confusion.
+
+!! Geometry for Dots
+DOT_DIA=1                     !! Smallest dot dia
+SQDIM_H=(HORDIM*2)            !! Square dimension in Hor
+SQDIM_V=(VERTDIM*2)           !! Square dimension in Vert
+DOTS_H=10                     !! Number of dots - horizontal
+DOTS_V=10                     !! Number of dots - vertical
+SPACE_V=SQDIM_V/(DOTS_V+1)    !! Dot center to center spacing
+SPACE_H=SQDIM_H/(DOTS_H+1)    !! Dot center to center spacing
+
+!! Create the dots
+DOT_SQUARE { 3  'Macro for creating a square of dots'
+  SURFACES
+    TUBE X -(HPOS+3)  (DOT_DIA+#1) (DOT_DIA+#1) (HPOS+3) !! Tubes with slight length
+      SHIFT Y ((#3*SQDIM_V)+SPACE_V)   !! Start of 1st dot in Y
+      SHIFT Z ((#2*SQDIM_H)+SPACE_H)   !! Start of 1st dot in Z
+    ARRAY (DOTS_H-1) 0 0 (SPACE_H), (DOTS_V-1) 0 (SPACE_V) 0 !! Make rest of tubes in both axis
+}
+Enter Dot dia>
+Enter starting Hor Position>
+Enter starting Vert Position>
+
+RETURN
+ 
+&DOT_SQUARE 2 0 0
+
+!! Create the panel
+SURFACES
+  PLANE X (HPOS) RECTANGLE (VERTDIM) (HORDIM)
+  OBJECT 'DIFFUSER'
+    INTERFACE COAT BARE AIR PLASTIC
+    SHIFT Y (VERTDIM); SHIFT Z (HORDIM) !! Move panel to start at origin
+    BOUNDS MULTIPLE .2
+    REDEFINE COLOR 20
+WINDOW Y Z
+PIXELS 300
+RENDER
+RETURN

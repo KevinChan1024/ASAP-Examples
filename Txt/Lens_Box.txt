@@ -1,0 +1,223 @@
+!!++
+!! LENS_BOX.INR
+!! Title: Lens Box to View Radiant Source
+!! Category: Simple Problem
+!! Keywords: Sources, LENSES, box, Radiant
+!! Description: Lens box for viewing a Radiant
+!! Imaging source. Needs to be larger than
+!! the source dimensions. Included here for
+!! convenience.  
+!! NOTE: You must put your own filename for
+!! the source ray distribution (.dis) below
+!! where it says SOURCEFILE.
+!! Radiant sources are essentially a collection
+!! of many far-field snap-shots of ray locations
+!! at different angles. They would appear as a
+!! cloud of rays rather than what the source
+!! actually looked like. It is necessary to
+!! provide a focusing lens to see the image
+!! from chosen directions.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 6/25/2001 - cp - corrected spelling
+!! 3/08/2001 - cp - creation
+!!--
+
+!!   
+
+SYSTEM NEW
+RESET
+
+FLEN=20.0
+LEN_HWID=24.0
+LEN_THK=0.1
+OBJ_DST=40.0
+BOX_HWID=(OBJ_DST+1.0/(1/FLEN-1/OBJ_DST))
+
+UNIT MM
+XMEMORY MIN
+
+MEDIA
+  1.0  'AIR'
+
+COATINGS PROPERTIES
+  0.0  0.0  'ABSORB'
+  0.0  1.0  'TRANSMIT'
+  1.0  0.0  'REFLECT'
+
+MAKE_LENS  { 2
+  LENS
+    IDEAL Z (#1*OBJ_DST) (LEN_HWID) (LEN_THK) (LEN_HWID); 1 0 -1/FLEN 1 0
+  OBJECT; .1  'LENS_#2'
+    INTERFACE COAT  "TRANSMIT"  "AIR"  "AIR"
+    FACETS 2 4
+}
+sign
+len number
+
+MAKE_LENS_PAIR  {
+  MAKE_LENS 1 #1
+  MAKE_LENS -1 N_#1
+  GROUP -2
+}
+
+!! ==================================================================
+
+OLD_MAKE_BOX  { 2
+  EDGES
+    RECTANGLE Z -(#1) (#1) (#1)
+    REPEAT; SHIFT Z 2*(#1)
+  OBJECT; .1 .2  'BOX_SIDE_#2'
+    INTERFACE COAT  "ABSORB"  "AIR"  "AIR"
+    FACETS 1 1
+
+  EDGES
+    REPEAT .2
+  OBJECT 'BOX_BOTTOM_#2'
+    INTERFACE COAT  "ABSORB"  "AIR"  "AIR"
+    FACETS 1 1
+
+  EDGES
+    REPEAT .2
+  OBJECT 'BOX_TOP_#2'
+    INTERFACE COAT  "ABSORB"  "AIR"  "AIR"
+}
+box half width
+box number
+
+!! ==================================================================
+
+MAKE_BOX  { 2
+  SURFACES
+    PLANE Z -(#1) RECTANGLE (#1)
+  OBJECT 'BOX_NZ_#2'
+    INTERFACE COAT  "ABSORB"  "AIR"  "AIR"
+    FACETS 1 1
+
+  SURFACES
+    PLANE Z (#1) RECTANGLE (#1)
+  OBJECT 'BOX_PZ_#2'
+    INTERFACE COAT  "ABSORB"  "AIR"  "AIR"
+    FACETS 1 1
+
+  SURFACES
+    PLANE X -(#1) RECTANGLE (#1)
+  OBJECT 'BOX_NX_#2'
+    INTERFACE COAT  "ABSORB"  "AIR"  "AIR"
+    FACETS 1 1
+
+  SURFACES
+    PLANE X (#1) RECTANGLE (#1)
+  OBJECT 'BOX_PX_#2'
+    INTERFACE COAT  "ABSORB"  "AIR"  "AIR"
+    FACETS 1 1
+
+  SURFACES
+    PLANE Y -(#1) RECTANGLE (#1)
+  OBJECT 'BOX_NY_#2'
+    INTERFACE COAT  "ABSORB"  "AIR"  "AIR"
+    FACETS 1 1
+
+  SURFACES
+    PLANE Y (#1) RECTANGLE (#1)
+  OBJECT 'BOX_PY_#2'
+    INTERFACE COAT  "ABSORB"  "AIR"  "AIR"
+    FACETS 1 1
+}
+box half width
+box number
+
+!! ==================================================================
+
+MAKE_BOX_W_HOLES  { 3
+
+  INSCRIBED_RAD=SQRT((#1)*(#1)+(#2)*(#2))
+
+  SURFACES
+    ELLIPSOID 3@(INSCRIBED_RAD) 3@0
+
+  SURFACES
+    PLANE Z -(#1) RECTANGLE (#1)
+    OBJECT 'BOX_W_HOLE_NZ_#3'
+      BOUNDS .2
+      INTERFACE COAT  "ABSORB"  "AIR"  "AIR"
+      FACETS 10 5
+
+  SURFACES
+    PLANE Z (#1) RECTANGLE (#1)
+    OBJECT 'BOX_W_HOLE_PZ_#3'
+      BOUNDS .3
+      INTERFACE COAT  "ABSORB"  "AIR"  "AIR"
+      FACETS 10 5
+
+  SURFACES
+    PLANE X -(#1) RECTANGLE (#1)
+    OBJECT 'BOX_W_HOLE_NX_#3'
+      BOUNDS .4
+      INTERFACE COAT  "ABSORB"  "AIR"  "AIR"
+      FACETS 10 5
+
+  SURFACES
+    PLANE X (#1) RECTANGLE (#1)
+    OBJECT 'BOX_W_HOLE_PX_#3'
+      BOUNDS .5
+      INTERFACE COAT  "ABSORB"  "AIR"  "AIR"
+      FACETS 10 5
+
+  SURFACES
+    PLANE Y -(#1) RECTANGLE (#1)
+    OBJECT 'BOX_W_HOLE_NY_#3'
+      BOUNDS .6
+      INTERFACE COAT  "ABSORB"  "AIR"  "AIR"
+      FACETS 10 5
+
+  SURFACES
+    PLANE Y (#1) RECTANGLE (#1)
+    OBJECT 'BOX_W_HOLE_PY_#3'
+      BOUNDS .7
+      INTERFACE COAT  "ABSORB"  "AIR"  "AIR"
+      FACETS 10 5
+
+!!  EDGE
+!!    RECTANGLE Z -(#1) (#1) (#1)
+!!    REPEAT; SHIFT Z 2*(#1)
+!!  OBJECT; .1 .2  'BOX_WHOLE_SIDE_#3'
+!!    BOUNDS .3
+!!    INTERFACE COAT  "ABSORB"  "AIR"  "AIR"
+!!    FACETS 10 5
+}
+box half width
+hole rad
+box number
+
+!! ==================================================================
+
+MAKE_LENS_PAIR Z
+
+MAKE_LENS_PAIR Y
+  ROTATE X 90 0 0 
+
+MAKE_LENS_PAIR X
+  ROTATE Y 90 0 0 
+
+MAKE_BOX_W_HOLES (OBJ_DST) (LEN_HWID) 1
+MAKE_BOX (BOX_HWID) 1 
+RETURN
+************************************** 
+!! Put your own sourcefile name below!
+EMITTING DATA SOURCEFILE 1000000
+************************************** 
+PLOT FACETS 3 3 OVER
+SPOTS POSITION EVERY 10 !! To check source size
+
+TRACE 0 BOX_NY_1
+CONSIDER ONLY BOX_NY_1
+
+PIXELS 51
+WINDOW X -.5 .5 -Z 1 -1
+SPOTS POSITION ATTRIBUTE 0 !!  Creates distribution 
+ 
+DISPLAY
+  AVERAGE; AVERAGE
+  PICTURE
+RETURN 

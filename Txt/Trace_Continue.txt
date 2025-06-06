@@ -1,0 +1,45 @@
+!!++
+!! TRACE_CONTINUE.INR
+!! Title: Continuing Trace after Absorption
+!! Category: Simple Problem
+!! Keywords: Tracing, MOVE, BY, rays, TRACE
+!! Description: This is the simplest method of 
+!! continuing a trace after the rays have already
+!! been absorbed on a surface.  The rays are moved
+!! off the absorbing object and the trace is continued.
+!! If necessary, you may need to use the CONSIDER ONLY
+!! command on the surface of interest and then use RAYS
+!! to bring up just those rays on that surface. Then
+!! perform the MOVE command to move those rays off that
+!! surface to continue tracing.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 02/04/2000 - cp - creation
+!!--
+ 
+SYSTEM NEW
+RESET
+ 
+SURFACES
+  PLANE Z 10 RECTANGLE 10 10
+OBJECT !! Absorbing by default
+
+SURFACES
+  PLANE Z 20 RECTANGLE 10 10 
+OBJECT !! Absorbing by default
+ 
+GRID RECT Z 0 -2 2 -2 2 2 2 
+  SOURCE DIRECTION 0 0 1
+WINDOW Y Z  
+PROFILES OVERLAY
+$ASK 'Trace rays to absorbing plane'
+
+TRACE PLOT OVERLAY !! Rays stop at absorbing plane
+MOVE BY Z .01 !! Move rays .01 in +Z direction
+STATS POSITION  !! Check position
+$ASK 'Rays now moved off absorbing plane: Continue trace!'
+
+TRACE PLOT COLOR 3 !! Show continuing rays in blue
+STATS
+RETURN

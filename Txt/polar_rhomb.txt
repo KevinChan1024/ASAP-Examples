@@ -1,0 +1,75 @@
+!!++
+!! POLAR_RHOMB.INR
+!! Title: Fresnel Rhomb Converter
+!! Category: Simple Problem
+!! Keywords: Polarization, Fresnel, rhomb, POLARIZ, POLAR, ARROWS, SEGMENTS 
+!! Description: The Fresnel rhomb is a simple optical
+!! device for converting linearly polarized light to
+!! circularly polarized light by way of total internal
+!! reflection. Note: Last plot allows mouse zoom or right-
+!! click to exit.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+FRESNEL BOTH  !! Configure system geometry for polarization ray trace
+MEDIA
+  1.517 'GLASS'
+
+EDGES 
+  RECTANGLE Z 0 .5 .5 4
+  REPEAT
+    SHIFT Z 2 
+    SKEW Y 90-54.62 Z 0
+  OBJECT
+    0.1 0.2 'PRISM_SIDES'
+    INTERFACE COAT BARE AIR GLASS
+
+EDGES 
+  REPEAT 1
+  OBJECT 'FRONT_FACE' 
+    INTERFACE COAT BARE AIR GLASS
+
+EDGES 
+  REPEAT
+    SHIFT Z 2
+    SKEW Y 90-54.62 Z 0
+  OBJECT 'BACK_FACE' 
+  INTERFACE COAT BARE AIR GLASS
+
+SURFACES
+  PLANE Z 2.5 RECTANGLE 5
+  OBJECT 'EXIT_PLANE'
+ 
+SPLIT 1
+ARROWS 3  !! Increase arrow size by factor of 3
+SEGMENTS 3  !! Set number of arc segments in plot to default
+
+BEAMS INCOHERENT GEOMETRIC  !! Set up polarized source
+POLARIZ X 1 1
+GRID POLAR Z -.5 0 .5 0 360 1 4 1
+  SOURCE DIRECTION 0 0 1
+
+WINDOW Y X
+WINDOW .5
+PLOT POLARIZATION 'INPUT 45 DEGREE LINEAR POLARIZATION'
+ 
+ARROWS 1
+WINDOW Y -0.5 2 Z -0.5 3
+TITLE = TOTAL INTERNAL REFLECTION FRESNEL RHOMB
+PLOT FACETS 1 1 OVERLAY
+TRACE PLOT 
+ARROWS 3  
+SELECT ONLY 0 C
+  WINDOW Y X
+  WINDOW 0.5
+  PLOT POLAR 'OUTPUT CIRCULAR POLARIZATION'
+  WINDOW Y Z
+  OBLIQUE
+  REPLOT 'CONVERSION OF LIN. TO CIRC. POLAR. BY FRESNEL RHOMB'
+RETURN

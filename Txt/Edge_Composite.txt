@@ -1,0 +1,26 @@
+!!++
+!! EDGE_COMPOSITE.INR
+!! Title: COMPOSITE for Attaching Edges
+!! Category: Simple Problem
+!! Keywords: Edges, EDGES, COMPOSITE, ARC, LINE
+!! Description: Shows how to attach several edges
+!! together to make one object, using the COMPOSITE
+!! command.
+!! Edit History: (latest first)
+!! 02/15/2000 - cp - modified format; added description
+!! 03/31/1998 - kg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  LINE 0 0 0, 0 5 0
+  ARC X 0, 5 0, 7 -1 -30
+  ARC X 0, 5.767949 0.866025, 10 -3 -20
+  COMPOSITE -3  !! Combine last 3 edges
+  OBJECT 'TEST'
+
+WINDOW Z Y
+PLOT FACETS 5 5 
+RETURN

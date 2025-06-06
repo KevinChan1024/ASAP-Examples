@@ -1,0 +1,162 @@
+!!++
+!! DOE_LENS_DOUBLE-EXPOSURE_01.INR
+!! Title: Double-exposure DOE Lens
+!! Category: Simple Problem
+!! Keywords:  Gratings, doe, GENERAL, MULTIPLE, FIELD, DIFFRACT, Lenses, hologram, hoe
+!! Description: Create a double-exposure diffractive optical element
+!! where each exposure captures the behavior of a single lens. Offset
+!! the two lens holograms laterally to produce the action of two
+!! lenses in a single element.  
+!! Use the on-axis hologram of a lens of specified focal length
+!! for each DOE. Offset laterally by the width of a few Airy rings
+!! in the diffraction pattern. Apply two different diffraction
+!! efficiencies to the two exposures to see the effect of non-ideal
+!! exposure control.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 11/10/2011 - cp - added header
+!! 11/03/2011 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET   
+
+UNITS CM
+
+$GUI CHARTS_ON !! for Chart Viewer
+
+!! Parameters of system & analysis 
+FN=5.6             !! focal ratio of lens
+L=0.6328E-4        !! wavelength in system units [cm]
+F1=4.0*FN          !! focal length of first lens in system units [cm]
+F2=F1              !! focal length of second lens in system units [cm]
+Y_OFFSET=0.0035    !! lateral (Y-axis) offset of lenses from Z-axis, in system units [cm]
+
+WIN_HW=0.0025      !! window half-width for measurements, in system units [cm]
+
+!! System definitions
+
+COATINGS PROPERTIES
+0 1 'TRANS'
+
+!! Two GENERAL functions are used to define the grating structure of the
+!! two diffractive lenses by their intersections with the grating plane.
+SURFACES
+  GENERAL 0 +(Y_OFFSET) 0
+    X2 1
+    Y2 1 !!f(x,y,z)
+  MULTIPLE n 1, f prime 2*L*F1
+  GENERAL 0 -(Y_OFFSET) 0
+    X2 1
+    Y2 1 !!f(x,y,z)
+  MULTIPLE n 1, f prime 2*L*F2
+  PLANE Z 0 ELLIPSE 2
+OBJECT 'DOUBLE_DOE'
+  INTERFACE COAT TRANS AIR AIR, DIFFRACT surface 1, -1st order, 0.91 efficiency , DIFFRACT surface 2, -1st order, 0.09 efficiency 
+  REDEFINE COLOR 3
+RETURN
+
+!! A small detector just beyond nominal focus of the lenses
+SURFACES
+  PLANE Z (F1+1E-2) ELLIPSE 0.25
+OBJECT 'DETECTOR'
+  REDEFINE COLOR 25
+RETURN
+
+!! Create a plane-wave source to play back the HOE/DOE
+
+BEAMS COHERENT DIFFRACT
+WAVELENGTH (L)
+PARABASAL 4
+WIDTHS 1.6
+
+GRID ELLIPTIC Z -1 -4@2.0 201 201 RANDOM 1
+SOURCE DIRECTION 0 0 1
+
+!! plot the system
+
+WINDOW Y Z
+!! dummy plot to set window without plotting geometry multiple times
+$PLOT OFF
+PLOT FACETS 3 3 0
+$PLOT NORM
+$IO VECTOR REWIND
+CONSIDER NONE 
+!! plot window with size of system geometry
+TITLE '~F/5.6 Double-exposure DOE lens -- double focus ' 
+PLOT FACETS 3 3 0 OVERLAY TEXT
+0 3.00 5.0, 0 0 0.5, 0 0.5 0, 'Two lenses offset in Y,' 
+0 2.40 1.5, 0 0 0.5, 0 0.5 0, 'different diffraction efficiencies'
+
+CONSIDER ALL !! trace with all geometry on 
+!! first trace segment: source to the DOE double lens
+TRACE 0 +DOUBLE_DOE PLOT 211 COLOR 1
+PATHS
+
+SELECT ONLY PATH 1 
+
+!! Add a plot the system detail near the detector
+
+$CLEAR
+FOCUS
+$GRAB 'Centroid Point' 0 1 X_FOCUS Y_FOCUS Z_FOCUS
+DOF=2*L*FN^2
+&REG X_FOCUS Y_FOCUS Z_FOCUS DOF 'Focus of DOE exposure 1'  
+
+WINDOW Y -2@(2*Y_OFFSET+2*WIN_HW)  Z (Z_FOCUS-4*DOF) (F1+1E-2)
+WINDOW 1.1  
+TITLE '~F/5.6 Double-exposure DOE lens detail near focus ' 
+PLOT FACETS 3 3 0 OVERLAY !! TEXT
+!! 0 3.00 5.0, 0 0 0.5, 0 0.5 0, 'Two lenses offset in Y,' 
+!! 0 2.40 1.5, 0 0 0.5, 0 0.5 0, 'different diffraction efficiencies'
+
+!! Trace first-exposure DOE to detector and measure
+TRACE DOUBLE_DOE PLOT 111 OVERLAY COLOR 2
+
+CONSIDER ONLY DETECTOR
+
+FOCUS MOVE
+
+FIELD ENERGY YX (Y_OFFSET-WIN_HW) (Y_OFFSET+WIN_HW) -2@(WIN_HW)  PIXELS 201 
+DISPLAY
+  PICTURE '1st exposure focus only'
+  WRITE EXPOSURE_1 DIS
+RETURN
+
+CONSIDER ALL
+
+!! Trace second-exposure DOE to detector and measure
+
+SELECT ONLY PATH 2
+TRACE DOUBLE_DOE PLOT 111 COLOR 17
+
+CONSIDER ONLY DETECTOR
+
+FOCUS MOVE
+
+FIELD ENERGY YX (-Y_OFFSET-WIN_HW) (-Y_OFFSET+WIN_HW) -2@(WIN_HW)  PIXELS 201 
+DISPLAY
+  PICTURE '2nd exposure focus only'
+  WRITE EXPOSURE_2 DIS
+RETURN
+
+SELECT ALL
+
+!! Examine the interference pattern accounting for both exposures
+
+FIELD ENERGY XY -2@(2*WIN_HW) -2@(Y_OFFSET+2*WIN_HW)  PIXELS 201 
+DISPLAY
+  TRANSPOSE  
+  FORM -4
+  PICTURE 'Interference of both exposures'
+  WRITE EXPOSURE_ALL DIS
+RETURN
+
+!! Display the geometry, trace, and the energy pattern (in the plane of lens 1 best focus)
+!! in the 3D Viewer.
+$VIEW
+!! &VIEW EXPOSURE_1.DIS
+!! &VIEW EXPOSURE_2.DIS 
+&VIEW EXPOSURE_ALL.DIS 
+
+!! Examine the system, trace, and energy pattern (just before the detector) in the 3D Viewer

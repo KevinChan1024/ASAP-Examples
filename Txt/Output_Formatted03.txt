@@ -1,0 +1,50 @@
+!!++
+!! OUTPUT_FORMATTED03.INR
+!! Title: Writing Formatted Output #3
+!! Category: Simple Problem
+!! Keywords: Macros_pre, output, formatting, $SCR, $IO, $GRAB, redirect, append
+!! Description: This file shows how to grab console output
+!! and write the data to a file with formatting using $SCR.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$ECHO NONE  !! Prevents echoing except for STATS below
+
+AA=FILE(12)  !! Finds an available output unit number above 12
+
+$IO OUTPUT TEST1 -(AA)  !! Opens unit number AA & rewinds to beginning
+
+$SCR 1  !! Prints out anything on the next line
+Parameter             Flux
+
+$IO OUTPUT CLOSE   !! Closes file
+
+SURFACES
+  PLANE Z 10 RECTANGLE 10 10
+  OBJECT 'DETECTOR'
+
+$DO 1 10 1
+  {
+  RAYS 0  !! Clear previous rays
+  CONSIDER ALL
+  EMITTING RECT Z 0 5 5 10*? 60 60  !! Just to generate some flux
+  TRACE
+  CONSIDER ONLY DETECTOR
+  STATS
+  $GRAB 'DETECTOR' 0 -3 FLUX_VAL  !! Grab 3rd number from left on same line
+  INC=?   !!  Assign current ? to INC
+  $IO OUTPUT TEST1 +(AA)  !! Open file again and this time append data, using + sign
+
+  $SCR 1  !! Line that follows is outputted to file
+\INC\                \FLUX_VAL.\
+
+  $IO OUTPUT CLOSE  !!  Close file
+  }
+
+$ECHO ALL  !! Turn echoing back on
+RETURN

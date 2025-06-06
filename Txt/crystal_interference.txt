@@ -1,0 +1,78 @@
+!!++
+!! CRYSTAL_INTERFERENCE.INR
+!! Title: Birefringence of a Uniaxial Crystal
+!! Category: Simple Problem
+!! Keywords: Polarization, CRYSTAL, interference, POLARIZ, IDEAL, FIELD
+!! Description: In the following example, we create
+!! an interference pattern with ordinary and extraordinary
+!! rays out of a uniaxial crystal. Light from a point source,
+!! horizontally polarized (along the y axis), propagates
+!! through the crystal. Propagation through the crystal
+!! generates extraordinary rays for rays not propagating
+!! directly along the y axis. The reason extraordinary rays
+!! are not generated along this axis is that the polarization
+!! is everywhere perpendicular to the optical axis of the
+!! crystal (along the z axis). After propagating through the
+!! crystal the ordinary and extraordinary rays propagate
+!! through a vertical linear polarizer (along the y axis)
+!! where only vertically polarized components of the ordinary
+!! and extraordinary rays interfere at the detector.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+FRESNEL BOTH
+SPLIT 1
+WAVELENGTHS 0.0001
+MEDIA
+  1.6 'ORD'
+  1.5 CRYSTAL 0 0 1 ORD 'CRYSTAL'
+
+$DO 1 2
+ {SURFACE
+    PLANE Z ? RECTANGLE 1.6 
+    OBJECT 'SIDE_?' 
+      INTERFACE COAT +BARE AIR CRYSTAL
+ }
+LENSES
+  IDEAL Z 3 2 
+    1 0 0 1   !! Define a null lens
+    0 0 0 1   !! Turn it into a vertical linear polarizer
+  OBJECT 'LINEAR_POLARIZER'
+
+SURFACES
+  PLANE Z 4 RECTANGLE 2.5 
+  OBJECT 'DETECTOR'
+
+BEAMS INCOHERENT GEOMETRIC
+POLARIZ X 1 0
+GRID RECT Z 0 -4@1 1 10
+  SOURCE POSITION 0 0 -5
+  FLUX 0 1E6 SOURCE 1
+
+TITLE 'BIREFRINGENT PLATE WITH LINEAR POLARIZER' 
+WINDOW Y Z
+PROFILES OVERLAY
+TRACE PLOT
+
+RAYS 0  !! Clear old rays
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+POLARIZ X 1 0
+WIDTHS 1.5
+GRID POLAR Z 0 0 1 0 360 5 6
+  SOURCE POSITION 0 0 -5
+
+TRACE
+CONSIDER ONLY DETECTOR
+WINDOW Y -2@2 X -2@2
+PIXELS 147
+FIELD ENERGY 4
+DISPLAY 
+  CONTOUR 1 'INTERFERENCE FRINGES FROM A UNIAXIAL CRYSTAL'
+RETURN

@@ -1,0 +1,61 @@
+!!++
+!! LENS_IDEAL04.INR
+!! Title: Binoculars using Ideal Lenses
+!! Category: Simple Problem
+!! Keywords: Lenses, LENSES, IDEAL, binoculars
+!! Description: Make a 7X35 binoculars using ideal lenses.
+!! NOTE - Ideal lenses are not real. They are mathematical
+!! tools that model ideal thin lenses. They are most
+!! helpful to model the first order properties of an optical
+!! system but they do not account for lens aberrations.
+!! From the Lenses chapter of the Primer.
+!! Edit History: (latest first)  
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 08/02/2012 - cp - corrected header
+!! 02/08/2000 - cp - modified format; added description
+!! 02/19/1999 - mc - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! IDEAL creates an idealized paraxial optical element
+!! whose input ray vectors are linearly related to the
+!! output ray vector by a 2x2 ABCD matrix.
+LENSES 
+  IDEAL Z 0 35/2
+    1 0 -1/35 1
+OBJECT 'BINOCULAR1'
+
+LENSES 
+  IDEAL Z 40 5/2
+    1 0 -1/5 1
+OBJECT 'BINOCULAR2'
+
+GRID RECT Z 0 -4@17.2 1 5
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -15
+
+ARROWS OFF 
+WINDOW Y Z
+WINDOW 1.2  !! Enlarge by 20%
+PROFILES OVERLAY
+TRACE PLOT
+
+!! OR
+LENSES 
+  IDEAL Z 0 35/2
+    1/7 0 0 7
+OBJECT 'BINOCULAR'
+
+
+GRID RECT Z 0 -4@17.2 1 5
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -15
+
+ARROWS OFF 
+WINDOW Y Z
+WINDOW 1.2
+PROFILES OVERLAY
+TRACE PLOT   
+RETURN

@@ -1,0 +1,51 @@
+!!++
+!! FMAP01.INR
+!! Title: FMAP of FITTED Random Data
+!! Category: Isolated Command
+!! Keywords: FMAP, FITTED, EXPLICIT, DISPLAY, hand, macro  
+!! Description: Performing an FMAP of FITTED
+!! random data. A macro is used to generate the random points.
+!! A surface is created from a curve fitted explicitely to
+!! those points.  A contour slice of the surface is taken 
+!! and stored in a display file. An isometric plot is shown
+!! of the data.  An alternative version of creating the fmap
+!! display file is given, using the hand-made method.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 04/18/2005 - cp - moved OBJECT command
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+INNER {  !! Macro for generating random data points for FITTED
+ $DO 1 11
+  (X=-1+((#1-0.5)*(2/11))) (Y=-1+((?-0.5)*(2/11))) (ZZ#1?=-0.1~0.1)
+}
+ 
+WINDOW Y -1 1 X -1 1
+PIXELS 11
+
+SURFACES  !! Create surface fitted to a curve defined by points
+  FITTED EXPLICIT 14  !! See the "FITTED" command in ASAP Help
+    0 0 0 REL  !! Future points are RELative to this one
+  $DO 1 11  !! Loop over macro to create data points
+    &INNER ?
+    
+  FMAP 0  !! Create contour map of surface at 0 depth
+OBJECT 'FITTED_SURFACE' 
+
+DISPLAY   !! Load and look at FMAP display file
+  ISOMETRIC 'FITTED DATA'  
+
+!! This is another technique for creating a user-defined display file:
+DISPLAY 0 'RAW_DATA'
+ZVAL 0 FVAL XVAL -1 1 11 YVAL -1 1 11 'RAW'
+$DO 1 11
+  ZZ?1. ZZ?2. ZZ?3. ZZ?4. ZZ?5. ZZ?6. ZZ?7. ZZ?8. ZZ?9. ZZ?10. ZZ?11.
+WRITE RAW
+DISPLAY RAW
+  ISOMETRIC 'DISPLAY OF RAW DATA'
+RETURN

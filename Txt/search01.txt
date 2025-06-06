@@ -1,0 +1,52 @@
+!!++
+!! SEARCH01.INR
+!! Title: SEARCH Command Options
+!! Category: Isolated Command
+!! Keywords: SEARCH, Tracing, sequential  
+!! Description: Various options for using the
+!! SEARCH command.
+!! Note: This is not a run-able script file.
+!! Edit History: (latest first)
+!! 03/11/2002 - cp - added note
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+*******************************************************
+...(other ASAP commands)...
+SEARCH ALL
+...(other ASAP commands)...
+
+!! At each intersection, considers all OBJECTS for the next
+!! possible intersection. 
+
+*******************************************************
+...(other ASAP commands)...
+SEARCH SEQUENTIAL FORWARD
+...(other ASAP commands)...
+
+!! At each intersection, considers only the OBJECT whose
+!! OBJECT number is one higher than that of current OBJECT
+!! for the next possible intersection.
+
+*******************************************************
+...(other ASAP commands)...
+SEARCH ALL FORWARD
+...(other ASAP commands)...
+
+!! At each intersection, considers only those OBJECTS
+!! whose OBJECT numbers are equal to or higher than that
+!! of the current OBJECT for the next possible intersection. 
+
+*******************************************************
+...(other ASAP commands)...
+SEARCH ALL
+23 40 45 1
+...(other ASAP commands)...
+
+!! At each intersection, considers all OBJECTS for possible
+!! next intersection EXCEPT when the ray is on object 23.
+!! A ray intersecting OBJECT 23 can ONLY intersect objects
+!! 40, 41, 42, 43, 44 and 45.
+
+*******************************************************

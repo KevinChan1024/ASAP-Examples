@@ -1,0 +1,56 @@
+!!++
+!! DEFORM_ASPHERIC.INR
+!! Title: Default Aspheric Deformation
+!! Category: Simple Problem
+!! Keywords: Geometry, DEFORM, aberration, Zernike
+!! Description: Deforming with default aspheric
+!! deformation.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 02/27/2009 - cp - corrected keyword
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  1 0  'REFL'    
+  
+W=0.6328E-4
+
+SURFACES
+  PLANE X 5 ELLIPSE 1
+  OBJECT 'PHASE_SURFACE' 
+    INTERFACE COAT -REFL
+    DEFORM 5 0 0, 0 -6*W 0 6*W
+
+SURFACES
+  OPTICAL X 100 -80 -1 ELLIPSE 1
+  OBJECT 'PARABOLA'
+    INTERFACE COAT -REFL
+SURFACES
+  PLANE X 60 RECTANGLE 0.1
+  OBJECT 'DETECTOR'
+
+$IO OUTPUT DEFORM1 2
+PRINT 1
+$IO OUTPUT CLOSE
+
+PARABASALS 4
+BEAMS COHERENT DIFFRACT 
+WAVELENGTH (W)
+WIDTHS 1.6
+GRID ELLIPTIC X 10 -4@1 2@15
+  SOURCE DIRECTION -1 0 0
+
+SEARCH SEQUENTIAL FORWARD
+TRACE
+CONSIDER ONLY DETECTOR
+  WINDOW Y -2@.005 Z -2@.005
+  PIXELS 51
+  FIELD ENERGY 60
+  DISPLAY
+    PLOT3D 'FAR FIELD OF 2 WAVES ZERNIKE 3RD ORDER SPHERICAL ABERRATION'
+RETURN

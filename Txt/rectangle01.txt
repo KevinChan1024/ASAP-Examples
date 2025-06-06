@@ -1,0 +1,21 @@
+!!++
+!! RECTANGLE01.INR
+!! Title: A Rectangle Edge
+!! Category: Isolated Command
+!! Keywords: RECTANGLE, EDGES  
+!! Description: A simple rectangle edge
+!! shown with PLOT EDGES.
+!! Edit History: (latest first)
+!! 10/04/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  RECTANGLE Z 0, 1 2
+WINDOW Y X
+WINDOW 1.5  !! Enlarge 50%
+PLOT EDGES 'EDGE:RECTANGLE' COLORS 11
+RETURN

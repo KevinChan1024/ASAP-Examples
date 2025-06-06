@@ -1,0 +1,73 @@
+!!++
+!! GRIN_RADIAL01.INR
+!! Title: GRIN Medium with Radial Variation
+!! Category: Isolated Command
+!! Keywords: GRIN, MEDIA, FUNCTION, radial
+!! Description: Example of a GRIN refractive material.
+!! Trace a collimated source of rays through the material
+!! and display the TRACE, SPOTS, and ISOMETRIC graphics.
+!! Show the results in the 3D-Viewer.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 07/25/2008 - cp - changed category
+!! 06/14/2000 - bf - Reformatted; added header
+!! 06/14/2000 - js - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+FRESNEL AVERAGE
+SPLIT 1
+
+!! Sample function
+FUNCTION
+  GENERAL
+    C 1
+    X2 -.0528125  
+    Y2 -.0528125
+  
+MEDIA
+  1.62 GRIN function 1 exponent 2 stepsize 0.1 mm 20000 max steps 'GRIN_REFERENCE' 
+
+!! Grin substrate
+
+SURFACES
+  PLANE Z 14.5 ELLIPSE 1
+  OBJECT 'BOTTOM'
+     INTERFACE COAT +BARE GRIN_REFERENCE AIR
+
+SURFACES
+  PLANE Z 10 ELLIPSE 1
+  OBJECT 'TOP'
+   INTERFACE COAT +BARE AIR GRIN_REFERENCE
+
+SURFACES 
+  TUBE Z 10 1 1 14.5 1 1
+  OBJECT 'GRIN_TUBE' 
+    INTERFACE COAT +BARE AIR GRIN_REFERENCE
+
+!! DETECTOR
+SURFACES
+  PLANE Z 9.8545 ELLIPSE 2@2
+  OBJECT 'DETECTOR'
+ 
+!! COLLIMATED SOURCE
+GRID POLAR Z 15 0 .9 0 360 44 15 !!15 6
+  SOURCE DIRECTION 0 0 -1   
+
+WINDOW Y Z
+PLOT FACETS 6 6 OVERLAY
+TRACE PLOT 100
+
+CONSIDER ONLY DETECTOR
+
+PIXELS 101
+WINDOW X Y  
+SPOTS POSITION
+DISPLAY
+  ISOMETRIC
+  $VIEW
+RETURN

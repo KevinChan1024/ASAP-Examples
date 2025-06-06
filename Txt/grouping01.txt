@@ -1,0 +1,52 @@
+!!++
+!! GROUPING01.INR
+!! Title: Grouping Objects with Sources
+!! Category: Simple Problem
+!! Keywords: Manipulating, GROUP, Sources, ROTATE, SHIFT
+!! Description: How to group selected objects and sources
+!! so that they may be rotated and shifted together.  This
+!! uses the SOURCES modifier of the GROUP command to add
+!! the desired sources to the group.
+!! Edit History: (latest first)  
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 07/12/2002 - cp - changed SOURCES keyword to Sources
+!! 09/21/2000 - cp - modified format; Added description
+!! 09/21/2000 - arg - creation
+!!--
+
+SYSTEM NEW
+RESET      
+
+SURFACES
+  PLANE Y 2 RECTANGLE 1 1
+OBJECT 'PLANE1'
+
+SURFACES
+  PLANE Z 0 ELLIPSE 1 1
+OBJECT 'PLANE2'
+
+SURFACES
+  PLANE Z 1 ELLIPSE 1 1
+OBJECT 'PLANE3'  
+
+EMITTING RECT Y 2.1 1 1 1000 45 45 RECTANGLE
+
+EMITTING DISK Z 1.1 1 1 1000 45 45
+
+WINDOW Y Z
+WINDOW 3.0  !! Enlarge window X3
+PLOT FACETS 3 3 OVERLAY
+PLOT RAYS 2 
+
+GROUP -2 SOURCES 2 !! Groups the last two objects
+                   !! defined, along with source
+                   !! number 2
+ROTATE X 45 0 0
+SHIFT X -2
+SHIFT Y -1
+RETURN
+
+PLOT FACETS 3 3 OVERLAY
+PLOT RAYS 2
+
+RETURN

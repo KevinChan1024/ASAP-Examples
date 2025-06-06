@@ -1,0 +1,46 @@
+!!++
+!! LENS_TELESCOPE_CHRETIEN.INR
+!! Title: Ritchey-Chretien Cassegrain Telescope
+!! Category: Simple Problem
+!! Keywords: Lenses, LENSES, TELESCOPE, Ritchey, Chretien, mirror
+!! Description: A telescope using two mirrors in a
+!! Ritchey-Chretien Cassegrain configuration. The TELESCOPE command
+!! is programmed to design telescopes that are always corrected
+!! for third order spherical aberration.
+!! The radii of curvature of the primary and secondary mirrors 
+!! are respectively 400 and 140 mm. The primary mirror obscuration
+!! is created automatically. Aberration control is done via the
+!! addition of conics on the two mirrors that eliminates third
+!! order spherical aberration and coma. This results in a
+!! Ritchey-Chrétien telescope design that is limited by astigmatism. 
+!! From the Lenses chapter.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 02/10/2000 - cp - modified format; added description
+!! 02/22/1999 - mc - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! The FL1/SEP/FL2 option requires more explicit input like
+!! the individual focal length of each mirror and their separation.
+!! STOP is the keyword that tells ASAP to add a corrector plate in
+!! front of the primary mirror. corrector plates are usually used
+!! to minimize spherical aberration. This corrector plate becomes
+!! a stop when the following media input is omitted or is AIR.
+LENSES 
+  TELESCOPE Z 0 100 FL1 200 SEP 150 FL2 -70
+  OBJECT 'RITCHEY_CHRETIEN'
+  PRINT  !! Useful to verify thickness assignments
+
+GRID RECT Z 0 -4@100 1 11 0.2
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -300
+
+ARROWS OFF 
+WINDOW Y Z
+WINDOW 1.5  !! Enlarge window 50%
+PROFILES OVERLAY
+TRACE PLOT 
+RETURN

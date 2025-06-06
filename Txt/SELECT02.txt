@@ -1,0 +1,58 @@
+!!++
+!! SELECT02.INR
+!! Title: Selecting Radial or Rectangular Regions
+!! Category: Isolated Command
+!! Keywords: SELECT, Radiometry 
+!! Description: Show selection of "round" and "rectangular" regions
+!! in direction cosine space using SELECT with one 
+!! direction-cosine criterion or two, respectively.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/08/2007 - cp - formatted
+!! 01/26/2007 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+PIXELS 51
+
+!! make a source to play with
+EMITTING DISK Z 0 3 3 1111111 ISO
+
+!! examine its directional distribution
+SPOTS DIRECTION EVERY 111 YX -4@1 'Original distribution'
+
+DISPLAY
+  PICTURE 'Original'
+RETURN
+
+!! select rays between two concentric cones along Z
+SELECT ONLY 0.5 C AND C 0.9
+
+!! examine the directional distribution
+SPOTS DIRECTION EVERY 31 YX -4@1 'SELECTed by C'
+
+DISPLAY
+  PICTURE 'SELECTed by C'
+RETURN
+
+!! select rays in a wedge formed by a range of angles from X
+SELECT ONLY A 0.3 AND -0.3 A
+
+!! examine the directional distribution
+SPOTS DIRECTION EVERY 31 YX -4@1 'SELECTed by A'
+
+DISPLAY
+  PICTURE 'SELECTed by A'
+RETURN
+
+!! further select rays in a wedge formed by a range of angles from Y
+SELECT REMOVE 0.5 B OR B -0.5 
+
+!! examine the directional distribution
+SPOTS DIRECTION EVERY 11 YX -4@1 'SELECTed by A and B'
+
+DISPLAY
+  PICTURE 'SELECTed by A and B'
+RETURN

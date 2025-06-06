@@ -1,0 +1,188 @@
+!!++
+!! SOURCE_BULB_FLUOR_STR.INR
+!! Title: Straight Fluorescent Tube 
+!! Category: Simple Problem
+!! Keywords: Sources, Fluorescent, bulb, EMITTING CONE, RACETRACK, SCATTER, random, SUBSET
+!! Description: This example shows a simple straight fluorescent tube
+!! using a volume emitting source at center which is the
+!! length of the tube.  An inner tube surrounds this
+!! emitter whose surface properties are set up so that
+!! only the scattered rays get through and no specular rays.
+!! This simulates a plasma. Two macros are used, one
+!! calling another, to create the ends of the tube.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 04/09/2008 - cp - changed keyword
+!! 09/10/2004 - cp - corrected keyword spelling
+!! 10/07/2002 - cp - reformatted
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS IN 'LUMENS'
+WAVELENGTH 650 NM
+BEAMS INCOHERENT GEOMETRIC
+XMEMORY MIN
+FRESNEL AVERAGE
+
+MEDIA
+  1.49 'GLASS'
+
+COATINGS PROPERTIES
+  1 0 'REFLECT'
+  0 1 'TRANSMIT'
+  0 0 'ABSORB'
+
+NRAYS=5000
+OT_RAD=1  !! Outer tube radius
+T_LEN=24  !! Length of bulb body
+END_THK=0.5
+
+!! This macro calls the second macro below to make the
+!! thick end caps of the tube.
+MAKE_BOTH_ENDS {  !! Do both ends
+  $MAKE_END #1 1   !! Make end cap on left
+
+!! Connector pins first set
+  SURFACES  !! Left pins
+    TUBE Z start at #1-(END_THK) semix .05 semiy .05 end,
+                   #1-.75-(END_THK) semix .05 semiy .05,
+                   ellipse 0 0
+    SHIFT Y 0.4
+  REPEAT
+    SHIFT Y -0.8
+  PLANE Z #1-(END_THK)-.75 ELLIPSE .05 .05 0 0 0
+    SHIFT Y 0.4
+  REPEAT
+    SHIFT Y -0.8
+ 
+  OBJECT; .1 'END.2'
+    REDEFINE COLOR 1
+  OBJECT; .2 'END.1'
+    REDEFINE COLOR 1
+  OBJECT; .3 'CONN.2'
+    REDEFINE COLOR 1
+  OBJECT; .4 'CONN.1'
+    REDEFINE COLOR 1
+  
+  $MAKE_END (T_LEN)+(END_THK) 2 !! Make end on right
+
+!! Make second set of connector pins
+  SURFACES  !! Left pins
+    TUBE Z start at #1+T_LEN+END_THK semix .05 semiy,
+                   .05 end .75+T_LEN+END_THK,
+                   semix .05 semiy .05 ellipse 0 0
+      SHIFT Y 0.4
+  REPEAT
+    SHIFT Y -0.8
+  PLANE Z #1+T_LEN+END_THK+.75 ELLIPSE .05 .05 0 0 0
+    SHIFT Y 0.4
+  REPEAT
+    SHIFT Y -0.8
+
+  OBJECT; .1 'END.4'
+    REDEFINE COLOR 1
+  OBJECT; .2 'END.3'
+    REDEFINE COLOR 1
+  OBJECT; .3 'CONN.4'
+    REDEFINE COLOR 1
+  OBJECT; .4 'CONN.3'
+    REDEFINE COLOR 1
+}
+
+MAKE_END { !! Endcaps'
+  EDGES 
+    RACETRACK X 0 (OT_RAD/2) (END_THK/2) 0.05 0.05
+      SHIFT Y -(OT_RAD/2)
+      SHIFT Z #1-(END_THK/2)
+      SWEEP AXIS 361 0 0 1
+
+  OBJECT 'END_BODY.#2'
+    REDEFINE COLOR 1
+
+  SURFACES
+    PLANE Z 0 ELLIPSE (OT_RAD-(OT_RAD/10)),
+                      (OT_RAD-(OT_RAD/10)) 0 0 0
+
+    PLANE Z -.5 ELLIPSE (OT_RAD-(OT_RAD/10)),
+                      (OT_RAD-(OT_RAD/10)) 0 0 0
+
+  OBJECT; .1 'ENDCAP1.#2'
+    REDEFINE COLOR 1
+  OBJECT; .2 'ENDCAP2.#2'
+    REDEFINE COLOR 1
+}
+
+
+!! Make tubes
+SURFACES
+  TUBE Z start at 0 semix .5 semiy .5 end (T_LEN),
+         semix .5 semiy .5 ellipse 0 0
+  TUBE Z 0 (OT_RAD) (OT_RAD) (T_LEN) (OT_RAD) (OT_RAD) 0 0 
+
+OBJECT; .2 'INNER_TUBE'
+  INTERFACE 0 1.E-12 GLASS GLASS  !! Allows just enough trans to scatter
+  LEVEL 1  !! One level scattering
+  SCATTER RANDOM 1 10 3.1415912/2
+OBJECT; .1 'OUTER_TUBE'
+  INTERFACE COAT +BARE AIR GLASS
+  REDEFINE COLOR 5
+  SPLIT 1
+  FRESNEL AVERAGE
+
+!! End Caps
+SURFACES
+  PLANE  Z  0  ELLIPSE 2@(OT_RAD)
+OBJECT  'LEFT_END_CAP'
+  INTERFACE COAT  REFLECT  GLASS  AIR
+  REDEFINE COLOR 1
+SURFACES
+  PLANE  Z  (T_LEN)  ELLIPSE 2@(OT_RAD)
+OBJECT  'RIGHT_END_CAP'
+  INTERFACE COAT  REFLECT  GLASS  AIR
+  REDEFINE COLOR 1
+
+$MAKE_BOTH_ENDS 0  !! Make end caps and pins
+
+!! Source 
+IMMERSE GLASS  !! Start rays in glass
+EMITTING CONE Z 0 .3 .3 (T_LEN) .3 .3 (NRAYS)  !! Volume emitter
+MISSED ARROW 2 
+WINDOW Y Z
+PLOT FACETS 2 9 OVERLAY 
+TRACE PLOT 75 COLOR 13
+$VIEW
+
+!! Analysis
+CONSIDER ONLY OUTER_TUBE
+SUBSET  !! Eliminate all rays except on outer tube
+GET
+FLUX 0 (F0*680)/(24*20)  !! Plots should scale in 20
+STATS                    !! lumens per sq.inch
+
+WINDOW Y +10 -10 Z -4 +34
+PIXELS 50
+RADIANT  !! For analysis in flux/cone angle
+
+DISPLAY
+  AVERAGE  !! Reduces statistical noise
+  AVERAGE
+  AVERAGE  
+  PLOT3D '3D/ISOMETRIC FAR-FIELD INTENSITY'
+DISPLAY
+  PICTURE 'FAR-FIELD INTENSITY'
+
+SPOTS DIRECTION ATTRIBUTE 0  !! For analysis in dir cos space
+                             !! Replaces dist file with new data
+DISPLAY
+  !!DIRECTIONAL 'DIRECTION PLOT' !! Directional plot
+  !!DIRECTIONAL UNWRAP  'LINEAR DIRECTION PLOT' !! Linear plot of direction
+  !!AVERAGE -1 -1  !! Use median value in smoothing over 3X3 pixels
+  RADIAL 0.5       !! Radially average about the midpoint of the distribution
+  DIRECTIONAL      !! Directional plot of flux/solid angle as projected in dir-cos space
+  CONTOUR 10 HIGH
+RETURN
+
+                             

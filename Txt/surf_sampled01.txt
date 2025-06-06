@@ -1,0 +1,46 @@
+!!++
+!! SURF_SAMPLED01.INR
+!! Title: Sampled Surface - First Form
+!! Category: Isolated Command
+!! Keywords: SAMPLED, SURFACE, $FAST
+!! Description: The first surface is the sampled surface.  It does 
+!! not become an object.  It is used to deform the plane that follows
+!! for more efficient ray tracing.  DIFFS is an option that can be tried.
+!! It may give more realistic behavior of the sampled surface since it
+!! makes the changes more smoothly.
+!! Note that $FAST is used.  This will allow lines that are longer
+!! than 344 characters, and greatly speeds the reading of the values.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/27/2007 - cp - corrected description
+!! 02/28/2002 - cp - corrected style
+!! 06/28/2000 - rh- creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+MISSED ARROWS 100
+
+SURFACES
+  SAMPLED PAPER Z 0  -2@(647.9420/2)   -2@(756.14834/2)  !!DIFFS
+  $FAST 5 5
+  16.158031  41.509129 61.157318 27.428705 51.265308
+   2.936310   7.359873  3.696461 27.815674 51.934883
+  -2.024547   2.877288 19.279108 32.159184 33.028381
+   6.112435  14.41643  12.383482 13.557045 14.121890
+  14.249417  21.419365 30.857409 19.346188 27.921913
+
+SURFACES
+  PLANE Z 0 RECTANGLE (647.9420/2)
+OBJECT 'PAPER'
+  DEFORM 0.2
+  INTERFACE 1 0  AIR AIR
+WINDOW Y Z
+PLOT FACETS 5 5 OVERLAY
+
+GRID RECT Z 100 -2@300   -2@325 10 10
+  SOURCE DIRECTION 0 0 -1
+TRACE PLOT
+$VIEW
+RETURN

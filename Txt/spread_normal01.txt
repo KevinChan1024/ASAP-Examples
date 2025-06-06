@@ -1,0 +1,44 @@
+!!++
+!! SPREAD_NORMAL01.INR
+!! Title: Diffraction Calculation
+!! Category: Isolated Command
+!! Keywords: SPREAD, Wave
+!! Description: Making a diffraction calculation
+!! with SPREAD NORMAL. A comparison to the incoherent
+!! SPOTS POSITION is shown. Note the difference in flux
+!! calculation. For SPREAD NORMAL, a wavelength must 
+!! be specified and at least 4 parabasals used. If there
+!! are multiple wavelength raysets selected, they will
+!! be incoherently summed together in intensity. This is 
+!! different from FIELD ENERGY where they are summed
+!! coherently. SPREAD NORMAL is also different in that
+!! no phase information or polarization effects are
+!! calculated.
+!! Edit History: (latest first)
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM
+
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTHS 0.78 UM 
+WIDTHS 1.61
+GRID ELLIPTIC X -1 -4@2 2@21
+  SOURCE DIRECTION 1 0 0
+
+WINDOW Z -2@2.5 Y -2@2.5
+PIXELS 71
+
+SPOTS POSITION ATTRIBUTE 0  !! Create display file only (bro009.dat)
+DISPLAY 
+  PLOT3D 'A GEOMETRIC CALCULATION WITH SPOTS POSITION'
+
+SPREAD NORMAL -41 !! Rewind and store in bro041.dat (bro009.dat is default)
+DISPLAY 41
+  PLOT3D 'A DIFFRACTION CALCULATION WITH SPREAD NORMAL'
+RETURN

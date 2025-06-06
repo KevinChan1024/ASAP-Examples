@@ -1,0 +1,45 @@
+!!++
+!! MACRO_$SYS02.INR
+!! Title: Passing Literals to $SYS Macro
+!! Category: Isolated Command
+!! Keywords: $SYS, Macros_pre, literal, string, concatenation
+!! Description: Shows how a $SYS may be performed via macro to enable 
+!! passing to it a concatenated string that controls an external process.
+!! The result of this $SYS is simply to delete the unwanted files
+!! when the script ends.
+!! Edit History: (latest first)
+!! 11/28/2006 - cp - creation, based on MACRO_$SYS01.inr
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM PI=3.1416
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTHS 0.6328 UM   
+
+MYMAC {
+  $SYS DEL "#1#2"
+}   
+
+USERAPOD POSITION (U=SQRT(PI/2)*0.75) (V=SQRT(PI/2)*0.75) U*V
+GRID ELLIPTIC Z 0 -4@1 2@51
+  SOURCE DIRECTION 0 0 1
+
+WINDOW Y X
+PIXELS 121
+SPOTS POSITION ATTRIBUTE 0
+DISPLAY
+  PICTURE
+WINDOW Y Z 
+
+
+SPOTS POSITION ATTRIBUTE 0 
+
+A1="DISPLA"
+A2="*.TMP" 
+DISPLAY
+  PICTURE
+ 
+$MYMAC A1" A2" !! Perform external 'DOS' command 
+RETURN

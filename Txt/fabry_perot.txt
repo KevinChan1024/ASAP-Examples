@@ -1,0 +1,92 @@
+!!++
+!! FABRY_PEROT.INR
+!! Title: Fabry-Perot Interferometer
+!! Category: Simple Problem
+!! Keywords: Wave, Fabry-Perot, diffraction, $ITER
+!! Description: A simple Fabry-Perot interferometer showing
+!! the variation of throughput with wavelength. Takes some
+!! time to run.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 04/02/2002 - cl - added comments throughout
+!! 01/02/2002 - cp - corrected keyword
+!! 03/15/2000 - cp - modified format; added header
+!! 03/10/2000 - js - creation
+!!--
+
+!! Set up general parameters
+SYSTEM NEW
+RESET
+UNITS MM
+MEDIA
+  1.52 'GLASS'
+SPLIT 8  !! Allow 8 generations of splitting parent rays.
+         !! The low flux condition may limit the number
+         !! of splits, depending on the transmission and
+         !! reflectivity values.
+
+!! Create geometry
+SURFACES
+  PLANE Z 0 RECTANGLE 1
+OBJECT 'SURFACE_1'
+  INTERFACE .9 .1 GLASS AIR  !! 90% reflective, 10% transmission
+SURFACES
+  PLANE Z 0.1 RECTANGLE 1
+OBJECT 'SURFACE_2'
+  INTERFACE .9 .1 GLASS AIR
+SURFACES
+  PLANE Z 2 RECTANGLE 2
+OBJECT 'DETECTOR_1'
+SURFACES
+  PLANE Z -2 RECTANGLE 2
+OBJECT 'DETECTOR_2' 
+  
+!! Verify geometry
+VUFACETS
+
+!! Set up coherent trace parameters
+PARABASAL 4
+BEAMS COHERENT DIFFRACT  !! Instructs ASAP to track phase
+WIDTHS 1.6               !! Sets packing fraction for gaussian beams
+
+!! Macro which traces individual wavelengths
+MAKE_SOURCE {
+  WAVELENGTH (WL) UM           !! Set wavelength
+  GRID RECT Z -0.01 -4@.5 1 1  !! Create a one-ray source, parallel to Z-axis
+    SOURCE DIRECTION 0 0 1
+  TRACE                     !! Trace rays
+  CONSIDER ONLY DETECTOR_1  !! Consider only the flux that transmits through the 
+                            !! etalon, landing on DETECTOR_1
+                            !! You can try DETECTOR_2 for reflectance - see below
+
+  PIXELS 101             !! Sets precision of subsequent FIELD calculation
+
+  WINDOW  X -2@1 Y -2@1  !! Sets window over which FIELD is calculated
+
+  FIELD ENERGY 2         !! Calculate FIELD at Z=2
+                         !! Can be changed to -2 for DETECTOR_2
+                         !! This also creates a new distribution file.
+
+  DISPLAY                !! Recalls distribution file and writes key
+                         !! parameters to the console output.
+    !!ISOMETRIC          !! Display the calculated field.  Comment this out 
+                         !! for faster execution of this script.
+  RETURN                 !! Exit "DISPLAY" mode and go back to main level ASAP control.
+
+  $GRAB 'Integral' FLUX  !! Find the string "Integral" in the console window.
+                         !! Set the variable FLUX equal to the value
+                         !! immediately following the string "Integral."
+
+  CONSIDER ALL           !! Consider all geometry for the next interation.
+
+  RAYS 0                 !! Clear rays              
+}
+
+!! Trace rays through etalon and calculate field by calling macro
+$ITER WL 1 1.015 -201 FLUX  !! Interate next line, varying wavelength from 1 um to 1.015 um 
+$MAKE_SOURCE 
+
+!! Display results
+DISPLAY $ITER
+  GRAPH
+RETURN 

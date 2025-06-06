@@ -1,0 +1,74 @@
+!!++
+!! AIRY_CROSS_SECTION.INR
+!! Title: Airy Rings Cross section 
+!! Category: Simple Problem
+!! Keywords: Wave, FIELD, ENERGY, Airy, diffraction
+!! Description: Airy rings produced by diffraction
+!! through a circular aperture simulated by an ideal
+!! lens and a truncated plane wave. The "depth"
+!! coordinate of the FIELD command is used to show
+!! ring separation and intensities at locations
+!! leading up to the detector. Finally, a cross-section
+!! picture is shown of the rings at the detector plane.
+!! Edit History: (latest first)
+!! 03/16/2000 - cp - Reformatted; added header
+!! 03/02/2000 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+UNITS CM
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 1 UM
+WIDTHS 1.6
+
+LENS
+  IDEAL Z 0 0.5
+    1 0 -1/5 1
+  OBJECT 'LENS'
+
+SURFACE
+  PLANE Z 5 ELLIPSE 2@0.25 
+  OBJECT 'DETECTOR'
+    INTERFACE 0 0 AIR AIR
+
+GRID RECT Z -1 -4@.5 51 51
+  SOURCE DIRECTION 0 0 1
+
+TRACE 
+
+CONSIDER ONLY DETECTOR
+WINDOW X -2@4.0E-3 Y -2@4.0E-3  
+PIXELS 101
+
+FIELD ENERGY 4.950
+DISPLAY 
+  AVERAGE 2
+  PICTURE 'Z=4.950'
+RETURN
+
+FIELD ENERGY 4.975
+DISPLAY
+  AVERAGE 2
+  PICTURE 'Z=4.975'
+RETURN
+
+FIELD ENERGY 5.000
+DISPLAY
+  AVERAGE 2
+  PICTURE 'Z=5.000'
+RETURN 
+
+!! Warning - The following may take some time
+WINDOW Y -0.005 0.005 Z 4.950 5.05
+
+FIELD ENERGY 0
+DISPLAY
+  FORM -3
+  PICTURE 'Cross Section at X=0'
+RETURN
+  
+  
+  

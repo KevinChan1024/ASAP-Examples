@@ -1,0 +1,53 @@
+!!++
+!! LENS_ARRAY01.INR
+!! Title: A Discrete Lens Array
+!! Category: Simple Problem
+!! Keywords: Macros_user, Arrays, lenslet, macro
+!! Description: A micro-lens array with discrete lens
+!! objects using nested macro/do loops. This is better
+!! performed with bounding and using the ARRAY command.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 03/11/2004 - cp - changed macro names
+!! 10/07/2003 - cp - changed keyword
+!! 11/16/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.5 'GLASS'
+  
+COATINGS PROPERTIES
+  0 1 'TRANS'
+
+MYARRAY {  !! create the entire MYARRAY from nested macros
+  $DO 1 5
+    $ROW ?
+}
+
+ROW {  !! create a row of LENSLETs
+  $DO 1 8
+    $LENSLET ? #1
+}
+
+LENSLET {  !! create a single circular LENSLET at (x,y) 
+  SURFACES
+    OPTICAL Z 0 1 ELLIPSE 0.4
+    OBJECT 'LENS_SURF_FRONT_X#1_Y#2'
+      INTERFACE COAT +TRANS AIR GLASS
+  
+  SURFACES
+    PLANE Z 0.25 1 ELLIPSE 0.4
+    OBJECT 'LENS_SURF_BACK_X#1_Y#2'
+      INTERFACE COAT +TRANS AIR GLASS
+  GROUP -2
+  SHIFT X #1
+  SHIFT Y #2
+}
+
+$MYARRAY
+PLOT FACETS 3 3
+$VIEW
+RETURN

@@ -1,0 +1,25 @@
+!!++
+!! ALTER01.INR
+!! Title: Use of the ALTER command
+!! Category: Isolated Command
+!! Keywords: ALTER 
+!! Description: Using ALTER to modify an EDGE with a function. 
+!! Edit History: (latest first) 
+!! 11/26/2007 - cp - reformatted
+!! 04/12/2007 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$FCN NEWFNC _1*2 _2^2 _3*10
+WINDOW X Y
+EDGE
+  ELLIPSE Z 0 1 2 8
+!!PLOT EDGE OVERLAY  COLOR 2
+
+EDGE 1
+  ALTER 8 8 NEWFNC !! Remap previous edge with function
+
+PLOT EDGE COLOR 3
+RETURN

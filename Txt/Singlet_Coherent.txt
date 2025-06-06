@@ -1,0 +1,100 @@
+!!++
+!! SINGLET_COHERENT.INR
+!! Title: Fast Singlet Coherent Analysis
+!! Category: Simple Problem
+!! Keywords: Wave, Analysis, singlet, Lenses, COHERENT, FIELD 
+!! Description: Gaussian beam propagation through a fast singlet
+!! lens, with coherent field analysis.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/02/2003 - cp - corrected keyword
+!! 02/24/2002 - cp - Modified header and file structure
+!! 02/21/2002 - cl - creation
+!!--
+
+************************************* 
+!! Initialization 
+SYSTEM NEW 
+RESET
+
+UNITS MM 
+WAVELENGTH 500 NM 
+
+MEDIA 
+  1.5 'GLASS' 
+
+
+************************************* 
+!! Define geometry 
+!! Planoconvex lens / best focus at z=45.07419
+SURFACES 
+  OPTICAL Z -5 25 ELLIPSE 12.5 
+OBJECT 'LENS_SURFACE_1' 
+  INTERFACE 0 1 AIR GLASS 
+
+SURFACES 
+  PLANE Z 0 ELLIPSE 12.5 
+OBJECT 'LENS_SURFACE_2' 
+  INTERFACE 0 1 AIR GLASS 
+   
+SURFACES 
+  PLANE Z 45.07419 ELLIPSE 12.5 
+OBJECT 'DUMMY_SURFACE' 
+  INTERFACE 0 0 AIR AIR 
+
+************************************* 
+!! Verify geometry
+WINDOW Y -20 20 Z -20 20 
+PLOT FACETS 5 5 
+
+************************************* 
+!! Define source 
+PARABASALS 4 
+BEAMS COHERENT DIFFRACT 
+WIDTHS 1.6 
+GRID ELLIPTIC Z -10 -4@10 2@25 !! With the grid set at 25, there are no paraxial 
+  SOURCE DIRECTION 0 0 1             !! violations that exceed 0.1 waves. With the
+                               !! grid set at a courser value, for example 24, there
+                               !! are paraxial violations which exceed 0.1 waves.
+   
+
+************************************* 
+!! Trace rays 
+WINDOW Y Z
+PROFILES OVERLAY
+TRACE 0 DUMMY_SURFACE PLOT    !! Trace them to the best focus plane
+                              !! Position of best focus was determined through 
+                              !! the use of FOCUS MOVE command.
+WINDOW Y -.01 .01 X -.01 .01  !! As a general rule, it is a good idea to 
+                              !! explicitly state what the window size is when
+                              !! performing wave optics calculations. ASAP will 
+                              !! size the window according to the size
+                              !! of the diffracted (and spread) individual 
+                              !! gaussian beamlets, rather than the peak 
+                              !! irradiance of the coherent sum of these beamlets.
+PIXELS 51                     !! Set pixels for FIELD calculation
+FIELD ENERGY 45.07419         !! Calculate field at best focus
+
+DISPLAY                       !! Display the calculated field with linear scale.
+  ISOMETRIC                   !! Isometric view of data
+  PICTURE                     !! Color plot of data
+RETURN
+
+DISPLAY                       !! Display the calculated field with log scale.
+  ISOMETRIC                   !! Isometric view of data
+  FORM -4                     !! Color plot of data
+  PICTURE
+RETURN
+
+
+************************************* 
+!! This section will calculate the field for 10 planes surrounding best focus
+!! The execution of this section takes a significant amount of time.
+PIXELS 101             !! Set pixels for FIELD calculation
+FIELD ENERGY 45.07419-2 45.07419+2 10 !! Calculate the field in ten planes.
+
+$VIEW BRO009.DAT       !! Creates a six-slice view of irradiance.  
+                       !! Use left mouse and shift to move panels.
+                       !! Best viewed when only three panels are visible;
+                       !! suggest deleting three of the six panels.
+RETURN

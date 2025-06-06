@@ -1,0 +1,104 @@
+!!++
+!! GRIN_RADIAL05.INR
+!! Title: Radial GRIN Showing Refractive Index Profile
+!! Category: Isolated Command
+!! Keywords: GRIN, MEDIA, FUNCTION, radial, fiber, SECH, hyperbolic
+!! Description: Example of a GRIN fiber using a Hyperbolic Secant function.
+!! Modified GRIN_RADIAL03.inr to show extraction of refractive index
+!! profile by tracing rays and using Snell's Law. The incident angle 
+!! must be non-zero, and the angle can be adjusted easily by the user.
+!! Edit History: (latest first)
+!! 08/24/2016 - jah - added iterative trace to verify refractive index profile
+!! 08/24/2016 - jah - changed parameters for index variation for smaller variation   
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 12/07/2009 - cp - added header
+!! 12/04/2009 - jah - replaced quadratic radial GRIN from grin_radial02.inr
+!!-- 
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTHS 0.6328 UM
+
+$FCN SECH_AR  R=SQRT[_1^2+_2^2],
+              A=_4,
+              [2/(EXP(A*R)+EXP(-A*R))] 
+
+$EVAL _1 -2@2 -51 _2 -2@2 -51 _4 0.5 0.5 -1 SECH_AR  
+DISPLAY EVAL.DIS
+  PICTURE 'sech( )'
+RETURN
+
+A=0.247  A0=-A*A/2  !! Quadratic index term
+FUNCTION
+  GENERAL 0 0 0
+    C 1
+    X2 (A0)
+    Y2 (A0) 
+  USERFUNC 0 0 0 SECH_AR 0.25 
+MEDIA 
+  !! 1.5637 GRIN surf 1 exponent 2 stepsize .1 mm 'SELFOC'
+  1.5637 GRIN surf 2 exponent 1 stepsize .1 mm 'SECH_PROFILE'
+
+COATINGS PROPERTIES
+  0 1 'TRANS'
+SURFACES
+  PLANE Z 0 ELLIPSE 2
+  OBJECT 'FIBER_FACE' 
+    INTERFACE COAT TRANS AIR SECH_PROFILE
+SURFACES
+  TUBE Z 0 2@2 25 2@2
+  OBJECT 'FIBER_BODY' 
+    INTERFACE COAT TRANS AIR SECH_PROFILE
+SURFACES
+  PLANE Z 25 ELLIPSE 2
+  OBJECT 'FIBER_END' 
+    INTERFACE COAT TRANS AIR SECH_PROFILE
+SURFACES
+  PLANE Z 31.22 RECTANGLE 4
+  OBJECT 'DETECTOR' 
+
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPSE Z 0 -4@.75 1 10
+  SOURCE POSITION 0 0 -4
+  MOVE TO Z -4
+
+WINDOW Y -5 5  Z -5 32
+PIXELS 127
+PROFILES 'YZ slice through GRIN rod with trace' OVERLAY
+TRACE PLOT 
+RETURN
+
+FOCUS !! check focus of beam
+
+!! Iterate to get radial index plot
+
+AOI=10  !! angle-of-incidence to use for index determination by refracted angle. Must be non-zero; choice may affect accuracy of result.
+
+$ITER RADIAL_COORD 0 2 -51 N_REFRACTED NOMIN
+  {
+  RAYS 0
+  RAYSET Z 0 
+  0 (RADIAL_COORD) 1
+  SOURCE DIRECTION 0 SIN[AOI] COS[AOI] 
+  MOVE BY -0.5
+  TRACE 0 +FIBER_FACE 
+  CONSIDER ONLY FIBER_FACE
+  $CLEAR
+  STATS 
+  $GRAB 'TOTAL' 0 1 R_RAYS R_FLUX
+  &REG R_RAYS R_FLUX
+    !! be sure we do not count a ray that misses
+    $IF (R_RAYS) GT 0.5 THEN 
+    GET 1
+    N_REFRACTED=SIN[AOI]/Y_DIR_B
+    $ELSE
+    N_REFRACTED=1
+    $ENDIF
+  CONSIDER ALL  
+  }
+
+DISPLAY ITER.DIS
+  GRAPH 'Radial GRIN refractive index profile by tracing rays'
+RETURN

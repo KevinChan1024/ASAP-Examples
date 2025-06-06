@@ -1,0 +1,64 @@
+!!++
+!! ENERGY_CONSERV01.INR
+!! Title: Specular/Scatter Energy Conservation
+!! Category: Simple Problem
+!! Keywords: Scatter, ROUGHNESS, SCATTER, energy
+!! Description: Conserving beam energy between
+!! specular and scattered rays using ROUGHNESS.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS IN
+COATINGS PROPERTIES 
+  1 0 'REFL' 
+  
+SURFACES 
+  OPTICAL Z 0 -160 -1 ELLIPSE 5 
+  OBJECT 'PRIMARY'
+    INTERFACE COAT REFL 
+    SCATTER BSDF 0.1 -1.5   !! ~15 angstrom rms surf roughness
+    ROUGHNESS 1.5  !! Transfer energy out of specular into scatter
+
+SURFACES
+  PLANE Z -80 ELLIPSE 0.5
+  OBJECT 'DETECTOR'
+ 
+SEARCH SEQUENTIAL FORWARD 
+
+!! Create coherent signal beam
+PARABASALS 8
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 546.1 NM
+WIDTHS 1.6 
+GRID POLAR Z -10 0 5 0 360 7 6
+  SOURCE DIRECTION 0 0 1 
+  FLUX 0.1 0 SOURCE 1  !! Each ray is 0.1 flux
+
+!! Create incoherent pseudo beam for scatter rays
+PARABASALS 8
+BEAMS INCOHERENT GEOMETRIC SHAPE RECTANGLE
+WAVELENGTH 546.1 NM
+WIDTHS 1.6 
+GRID POLAR Z -10 0 5 0 360 7 6
+  SOURCE DIRECTION 0 0 1 
+  FLUX 0.1 0 SOURCE 2  !! Each ray is 0.1 flux
+
+SELECT ONLY SOURCE 1
+STATS    !! Original source flux
+LEVEL 0  !! Trace signal beam with no scatter rays
+TRACE  
+SELECT ONLY SOURCE 2
+LEVEL 1  !! Trace pseudo beam with scatter rays
+TRACE       
+
+SELECT ONLY SOURCE 1
+STATS  !! Appropriately reduced source flux at detector
+SELECT ONLY SOURCE -2
+STATS  !! Scattered ray flux
+RETURN

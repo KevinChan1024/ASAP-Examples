@@ -1,0 +1,43 @@
+!!++
+!! SURF_AXICONIC03.INR
+!! Title: Axiconic Second Mode
+!! Category: Isolated Command
+!! Keywords: AXICONIC, SURFACE, cpc
+!! Description: AXICONIC second mode of operation 
+!! using only one focus (second focus moved to infinity).
+!! The last parameter (s) is the angle (in degrees) it
+!! makes to the axis of symmetry. This provides a 
+!! simple way to make a Compound Parabolic Concentrator.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 11/05/2003 - cp - fixed keyword 
+!! 03/11/2002 - cp - reformatted
+!! 10/17/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  1 0  'REFL'
+SURFACES
+  AXICONIC Z 0 1  first focus 2.598 -.5  angle 30
+    LOCAL -4@1.1 0 2.598 Z
+OBJECT 'CPC'
+  INTERFACE COAT -REFL
+
+SURFACES
+  PLANE Z 2.56 ELLIPSE 0.5
+OBJECT 'DETECTOR'
+
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC Z 0 -4@1 1 21
+  SOURCE DIRECTION 0 TAN[30] 1
+  MOVE TO Z -1
+TITLE 'CPC WITH 30 DEGREE OFF-AXIS BEAM'
+WINDOW Y Z
+WINDOW 1.2 !! Enlarge 20%
+PLOT FACETS 5 5 OVERLAY
+TRACE PLOT
+RETURN

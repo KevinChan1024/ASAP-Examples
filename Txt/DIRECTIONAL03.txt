@@ -1,0 +1,49 @@
+!!++
+!! DIRECTIONAL03.INR
+!! Title: Overlaying DIRECTIONAL UNWRAP Plots
+!! Category: Simple Problem
+!! Keywords: Analysis, DIRECTIONAL, DISPLAY, $GUI, OVERLAY
+!! Description: How to overlay DIRECTIONAL UNWRAP plots using
+!! original display viewer.
+!! Edit History: (latest first) 
+!! 04/01/2008 - wjd - modified for directional unwrap overlay
+!! 08/12/2005 - cp - creation
+!!--
+
+SYSTEM NEW 
+RESET
+
+!! Lambertian if ISO is commented out
+EMITTING DISK Z 0 2@1 10000 !!ISO
+FLUX TOTAL 1  
+
+!! Lambertian if ISO is commented out
+EMITTING DISK Z 0 2@3 10000 !!ISO
+FLUX TOTAL 1
+
+$GUI CHARTS_OFF
+
+SELECT ONLY SOURCE 1
+WIN Y -2@1 X -2@1
+PIXELS 39
+
+SPOTS DIRECTION ATTRIBUTE 0
+  DISPLAY
+  RADIAL !! Radially average the pixels
+  DIRECTIONAL UNWRAP 
+  WRITE S1 DIS
+RETURN
+
+SELECT ONLY SOURCE 2
+WIN Y -2@1 X -2@1
+PIXELS 39
+
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+  RADIAL !! Radially average the pixels 
+  DIRECTIONAL UNWRAP
+  DIRECTIONAL UNWRAP OVERLAY !! Note: Any title text will overlap as well 
+  DISPLAY S1    
+  DIRECTIONAL UNWRAP
+RETURN
+$GUI CHARTS_ON

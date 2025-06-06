@@ -1,0 +1,57 @@
+!!++
+!! GAUSSIAN_RAYS.INR
+!! Title: Gaussian Distribution of Rays
+!! Category: Simple Problem
+!! Keywords: Sources, Gaussian, random, rays
+!! Description: A function acts as a gaussian
+!! random number generator, used to make a set of
+!! rays with a Gaussian spatial distribution.
+!! Reference:  Handbook of Mathematical Functions
+!! (10th printing). Editors: Milton Abramowitz and 
+!! Irene A. Stegun. United States National Bureau 
+!! of Standards. December, 1972 pp. 931, 933, 952.
+!! Function is provided as is, without warranty
+!! expressed or implied. The function GR (called
+!! with a dummy argument) returns a random number
+!! with a gaussian distribution. Note that several
+!! variables are defined in the function, so users
+!! should take care that they are not using variables
+!! with the same names. The mean value (or center)
+!! of the distribution may be changed by adding a
+!! constant (the value of the mean) to each number.
+!! The width of the distribution may be scaled by
+!! multiplying by the desired width. Example:
+!! GRAN=GR(0) places a gaussian random number in the
+!! variable called GRAN.
+!! Edit History: (latest first)
+!! 11/19/2002 - cp - modified description
+!! 10/26/2000 - cp - modified format; added description
+!! 06/08/2000 - gp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$FCN GR U=(-1)~1,
+  T=SQRT(LOG(1/(0.25*(U+1))^2)),
+  C0=2.515517   C1=.802853   C2=.010328,
+  D1=1.432788   D2=.189269   D3=.001308,
+  (T-(C0+C1*T+C2*T^2)/(1+D1*T+D2*T^2+D3*T^3))*(-1+2*STEP((-1)~1))
+
+!! Test the function by defining a random set of rays 
+!! with a gaussian spatial distribution
+$ECHO NONE
+$DO 1 100000; RAYSET Z 0
+  GR(0) GR(0) 1
+  SOURCE DIRECTION 0 0 1
+$ECHO
+
+WINDOW Y -3 3 X -3 3
+PIXELS 51
+SPOTS POSITION EVERY 10
+DISPLAY
+  AVERAGE
+  RADIAL 26 26
+  NORMALIZE MAX
+  GRAPH .5 'GAUSSIAN DISTRIBUTION OF RAYS'
+RETURN

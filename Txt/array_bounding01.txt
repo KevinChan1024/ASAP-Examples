@@ -1,0 +1,36 @@
+!!++
+!! ARRAY_BOUNDING01.INR
+!! Title: Surface Bounded to Ellipsoids
+!! Category: Simple Problem
+!! Keywords: Geometry, ARRAY, BOUNDS, ELLIPSOID, backlight, diffuser
+!! Description: An array of dimples in a surface
+!! created by bounding an array of ellipsoids with
+!! a plane and vice-versa. This shows the method of 
+!! boolean OR bounding with an array using the BOUNDS
+!! option on the ARRAY command. Only two objects are
+!! needed.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 04/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  ELLIPSOID 5 5 5 0 0 0    
+  ARRAY 4 15 0 0 4 0 15 0 BOUNDS
+    SHIFT -2*15 -2*15 0
+  PLANE Z 2.5 RECTANGLE 3*15 3*15
+  OBJECT 'PLANE_FULL_OF_HOLES'
+    BOUNDS 0.2    !! Holes cut by ellipsoids
+    FACETS 25 25  !! For better looking holes 
+    
+  OBJECT; .2  'PEENS'
+    BOUNDS .1     !! Ellipsoids cut by plane
+    FACETS 3 3
+     
+WINDOW Y X
+PLOT FACETS
+$VIEW 
+RETURN

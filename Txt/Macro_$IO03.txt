@@ -1,0 +1,86 @@
+!!++
+!! MACRO_$IO03.INR
+!! Title: $IO for Program Breaks
+!! Category: Isolated Command
+!! Keywords:  $IO, macro, Macros_pre, break, pause, PATHS
+!! Description: Using $IO to provide a break or pause
+!! in a script file. Here, after geometry is created,
+!! a $IO pauses execution. Another $IO typed from the
+!! command console allows the program to continue
+!! from that point.  If not, you must hit the END button
+!! to start again.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 12/21/2001 - cp - added comments
+!! 02/28/2000 - cp - Modified syntax; added description
+!! 01/18/2000 - rh - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+UNITS CENTIMETERS
+ 
+MEDIA
+  2.44  'ZNSE'
+  
+MODEL 
+  HARVEY 0.1 -1.8
+  
+FRESNEL AVERAGE
+SPLIT 2
+LEVEL 1
+   
+EDGES
+  RECTANGLE Z 6 1.0 1 16 0.0 360.0
+   
+SURFACES
+  PLANE Z 0.0 ELLIPSE 2.5  
+  OBJECT 'LENS.FRONT'
+    INTERFACE COAT BARE AIR ZNSE
+    REDEFINE COLOR 1
+   
+SURFACES
+  OPTICAL Z 1 -5 ELLIPSE 2.5  
+  OBJECT 'LENS.BACK'
+    INTERFACE COAT BARE AIR ZNSE
+    REDEFINE COLOR 1 
+    SCATTER MODEL 1 
+      TOWARDS EDGE 1 5
+     
+SURFACES
+  TUBE Z 0.0 2.5 2.5 .3301 2.5 2.5 0.0 0.0  
+  OBJECT 'LENS.EDGE'
+    INTERFACE 0 0 AIR AIR
+    REDEFINE COLOR 1
+  
+SURFACES
+  PLANE Z -2 ELLIPSE 3.5 3.5 1.5/3.5  
+  OBJECT 'APERTURE' 
+    INTERFACE 0 0 AIR AIR
+    REDEFINE COLOR 3
+  
+SURFACES
+  PLANE Z 6 RECTANGLE 1  
+  OBJECT 'DETECTOR'
+    INTERFACE 0 0 AIR AIR
+    REDEFINE COLOR 2
+
+$IO
+
+!! Enter another $IO to continue or hit the END button
+!! to start over. 
+GRID ELLIPTIC Z 0 -2.5 2.5 -2.5 2.5 1 51 
+  SOURCE POSITION 0 0 -10 
+  MOVE TO Z -10 
+RETURN 
+
+WINDOW Y Z
+PROFILES 0 0 OVERLAY  'Paths Demonstration'
+TRACE PLOT
+
+NUMBERS NAMES
+CONSIDER ONLY DETECTOR 
+PATHS
+RETURN
+

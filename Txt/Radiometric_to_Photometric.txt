@@ -1,0 +1,42 @@
+!!++
+!! RADIOMETRIC_to_PHOTOMETRIC.INR
+!! Title: Converting Radiometric Analysis to Photometric
+!! Category: Simple Problem
+!! Keywords: Analysis, Radiometry, photometry, MODIFY
+!! Description: Demonstrates how to convert analysis performed in 
+!! a radiometric system into a photometric system.
+!! Edit History: (latest first)
+!! 09/21/2015 - cp - added header
+!! 01/21/2015 - kc - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+UNITS M 'W'
+WAVELENGTH (WL=0.435) UM   !! Wavelength needs to be specified in microns for 
+                           !! the EYE function
+NPIX=51
+
+!! Define source
+EMITTING DISK Z 0 2@1E-3 100000
+FLUX TOTAL 100
+
+PIXELS (NPIX)
+WINDOW X Y
+SPOTS POSITION ATT 0  
+  
+$COPY 9 SPOTS_POS_RAD.DIS
+
+!! WATTS to LUMENS conversion  
+W_L_CFAC=683*EYE(WL)    !! Watts to lumens conversion factor: product of the value of 
+                        !! EYE function at the wavelength of 0.435 UM with the constant 683 (explained
+                        !! in a powerpoint file)
+
+DISPLAY SPOTS_POS_RAD.DIS
+  PICTURE 'SPOTS_POS_RAD'
+  MODIFY 1 (NPIX) 1 (NPIX) 0 (W_L_CFAC)    !!KC: convert the radiometric result into photometric result
+  PICTURE 'SPOTS_POS_PHO' 
+  WRITE SPOTS_POS_PHO    !!KC: create a copy of the radiometric result
+RETURN 
+  

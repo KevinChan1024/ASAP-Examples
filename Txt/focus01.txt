@@ -1,0 +1,34 @@
+!!++
+!! FOCUS01.INR
+!! Title: FOCUS Command Options
+!! Category: Isolated Command
+!! Keywords: FOCUS, POSITION, Sources 
+!! Description: Various options for using the
+!! FOCUS command. See below for explanations.
+!! Edit History: (latest first)
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 0.6328 UM
+GRID ELLIPTIC Z 0 -4@2 20 20
+  SOURCE FOCUS 0 0 3
+ 
+STATS POSITION  !! Verify source starting position (Z=0)
+WINDOW Y -2@8 Z -8 3  !! Set up window for all 3 plots
+SPOTS POSITION ATTRIBUTE 2 OVERLAY !! Show ray positions
+
+FOCUS  !! Find best focus
+FOCUS MOVE  !! Move rays to plane at best focus
+SPOTS POSITION ATTRIBUTE 2 OVERLAY  !! Show new ray positions
+STATS POSITION   !! Verify new position
+ 
+FOCUS MOVE -10  !! Move rays to sphere of radius 10 about focus
+SPOTS POSITION ATTRIBUTE 2  !! Show new position
+!!$VIEW
+RETURN

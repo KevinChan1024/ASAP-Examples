@@ -1,0 +1,49 @@
+!!++
+!! SURF_HYPERBOLIC.INR
+!! Title: GENERAL Surface
+!! Category: Isolated Command
+!! Keywords: GENERAL, SURFACE, LOCAL, hyperbolic
+!! Description: A GENERAL surface made to be hyperbolic.
+!! Based on r^2/a^2-z^2/b^2=1. Put in the form
+!! of f(x,y,z)=0 for the GENERAL surface: given r^2=x^2+y^2,
+!! x^2/a^2+y^2/a^2-z^2/b^2=1. So, f(x,y,z)=1-x^2/a^2-y^2/a^2+z^2/b^2.
+!! Coefficients are 1, X^2=1/a^2, Y^2=-1/a^2, Z^2=1/b^2. These are
+!! listed below under the GENERAL command.
+!! There are two branches that result. The LOCAL box modifier may
+!! be used to limit boundaries to one branch or the other. The
+!! bounderies will depend on the A and B values.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 11/09/2004 - cp - creation 
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+A=2 B=2 
+
+SURFACES
+  GENERAL 0 0 0 
+    C 1
+    X2 1/A^2
+    Y2 -1/A^2
+    Z2 1/B^2
+    LOCAL -2@20 0 20 -2@30  !! For right side only, Z="0 30": For left Z="-30 0"
+    PARAMETERIZE Y
+OBJECT 'HYPERBOLA'
+
+TITLE 'A GENERAL SURFACE MODEL OF A HYPERBOLA'
+WINDOW Y Z
+PROFILES 0 0 -51 
+WINDOW Y X
+PROFILES 0 0 -51  
+RETURN
+$VIEW
+PIXELS 501
+RENDER
+WINDOW Y X 
+OBLIQUE
+RENDER
+OBLIQUE OFF   
+RETURN  

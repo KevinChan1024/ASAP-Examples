@@ -1,0 +1,42 @@
+!!++
+!! AXIS_LOCAL01.INR
+!! Title: Creating Distribution at Arbitrary Window Plane
+!! Category: Simple Problem
+!! Keywords: Analysis, AXIS, LOCAL, SPOTS
+!! Description: Shows feature for specifying a local
+!! arbitrary window plane to create a SPOTS distribution.
+!! The AXIS LOCAL command references an object that has
+!! an arbitrary orientation. The window override option on
+!! the SPOTS command (YX, YZ, etc.) enables ASAP to use
+!! this local window.
+!! Edit History: (latest first)
+!! 11/19/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+SURFACES
+  PLANE Z 30 RECTANGLE 15 15
+  OBJECT 'TARGET1' 
+    SHIFT  X 15  !! To block half of ray grid going to target2
+    ROTATE X 45  !! Rotate 45 degrees 
+SURFACES
+  PLANE Z 50 RECTANGLE 20  20
+  OBJECT 'TARGET2'  !! To catch the rest of the rays
+
+GRID ELLIPTIC Z 0 -5 5 -5 5 101 101  
+  SOURCE DIRECTION 0 0 1 
+WINDOW Y Z
+PLOT FACETS 5 5 OVERLAY
+TRACE PLOT 100 
+SPOTS POSITION  !! Initial spots of all rays in system
+
+CONSIDER ONLY TARGET1  !! If commented out - SPOTS below will be on all
+                       !! rays referenced to the local object TARGET1
+
+AXIS LOCAL TARGET1 !! Comment out and SPOTS will be in global YX window.
+SPOTS POSITION YX  !! Note: Spots are elongated, since distribution is made
+                   !! in the plane perpendicular to the Normal of TARGET1
+$VIEW  
+RETURN

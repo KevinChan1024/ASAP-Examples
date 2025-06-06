@@ -1,0 +1,30 @@
+!!++
+!! PLOT01.INR
+!! Title: Plotting Beams
+!! Category: Isolated Command
+!! Keywords: PLOT, Wave
+!! Description: Plotting Gaussian beams with
+!! an overlayed spot diagram. 
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 10/10/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTHS .488E-4
+WIDTHS 1.6
+GRID ELLIPTIC Y 5 -4@2 15 15
+  SOURCE DIRECTION 0 1 0
+  
+WINDOW X Z
+WINDOW 1.2 
+
+PLOT BEAMS OVERLAY '1/2 AMPLITUDE GAUSSIAN BEAMS w/ WIDTH=1.414'
+
+SPOTS POSITION ATTRIBUTE 1
+RETURN

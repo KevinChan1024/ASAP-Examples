@@ -1,0 +1,53 @@
+!!++
+!! TEXTFILE03.INR
+!! Title: Writing Out Display Data #3
+!! Category: Isolated Command
+!! Keywords: TEXTFILE, output, data, spreadsheet, file, formatting
+!! Description: A modified version of example TEXTFILE02.INR illustrating
+!! both the output of DISPLAY flux data with spatial coordinates 
+!! (file SPOTS2.TXT) and the same flux data arranged in a matrix 
+!! corresponding to the physical two-dimensional plane of the 
+!! measurement (file SPOTS3.TXT).
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/28/2004 - jh - modified version
+!! 02/03/2000 - cp - creation (as TEXTFILE02.INR)
+!!--
+
+SYSTEM NEW
+RESET
+
+NPIX=4
+
+EMITTING DISK Z 0 2@3 1111 
+  FLUX TOTAL 100
+SURFACES 
+  PLANE Z 10 RECTANGLE 2@8
+OBJECT 'DETECTOR'
+
+TRACE
+CONSIDER ONLY DETECTOR
+STATS
+WINDOW Y X
+PIXELS (NPIX) 1.5  !! Creates 1.5*NPIX^2 total pixels for display File
+SPOTS POSITION ATTRIBUTE 0
+
+!! Output one line per pixel, each line containing X, Y, Z, and flux 
+DISPLAY
+  PICTURE
+  TEXTFILE SPOTS2.TXT  !! Look at this file to check output
+ X Y Z FLUX  !! Header
+  DATA -4  !! For X Y Z and Flux output
+  EOF  !! Close the file
+ 
+RETURN
+
+!! Output flux only in same matrix arrangement as physical pixels
+DISPLAY
+  TEXTFILE SPOTS3.TXT  !! Look at this file to check output
+  FLUX  !! Header
+  RANGE X (YMIN) (YMAX) IN (NUMY) SAMPLES
+  RANGE Y (XMIN) (XMAX) IN (NUMX) SAMPLES
+  DATA (NPIX)  !! Flux output only, NPIX values per row 
+  EOF  !! Close the file
+RETURN

@@ -1,0 +1,141 @@
+!!++
+!! VOXELS_EMISSION02.INR
+!! Title: Re-emission of a Spherical Absorbing Volume
+!! Category: Simple Problem
+!! Keywords: Interfaces, MEDIA, VOXELS ABSORBED, $VIEW, volume, emission, fluorescence
+!! Description:  How to capture a 3-D representation
+!! of absorption within a spherical volume and use it to
+!! create an emitting source. This is a modification of the
+!! VOXELS_EMISSION01.INR for a spherical absorber.
+!! The VOXELS command specifies the range and resolution 
+!! over which this energy is captured. In this case, the
+!! volume matches the space between the Front and Back 
+!! surfaces of a complex absorbing medium. However, the 
+!! voxel volume is square and the absorber is spherical.
+!! This would cause the re-emitted source to have rays
+!! outside the original sphere due to the cubic voxels.
+!! This can be seen by unchecking the box in the $SCR dialog.
+!! Therefore, a similar bounding sphere is made slightly
+!! smaller than the absorbing sphere to be used to trim off
+!! any unwanted rays from the new source.
+!! The effect may be easier to see by making the bounding
+!! sphere much smaller, using the dialog.
+!! The bounding must be applied before turning the saved 
+!! absorption file into an emitting source using the
+!! EMITTING DATA command. This could be used to
+!! simulate fluorescence or other emission related
+!! phenomena from a spherical absorber. 
+!! Edit History: (latest first) 
+!! 12/15/2014 - mt - add $VIEW to Keywords
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/29/2012 - cp - corrected keywords
+!! 11/21/2008 - cp - added $WAIT
+!! 06/24/2008 - cp - changed header
+!! 06/20/2008 - jah - modified for spherical absorber
+!! 01/09/2001 - cp - orig file creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SHOWFIX=1 ; RESCALE=0.98
+$SCR 2 'User input'
+Show re-emission bounding fix?   \SHOWFIX:?\
+Scale factor for bounding sphere \RESCALE.2?   (should be <=1)
+
+BEAMS INCOHERENT GEOMETRIC
+UNITS MM
+WAVELENGTH 450 550 NM
+
+MEDIA
+  1.5`.4E-4 1.5 'TEST' !! Absorption at 450 nm
+  1.5  'BULK'          !! material surrounding absorber
+
+SURFACES
+  PLANE Z 1 RECTANGLE 4 4
+  OBJECT 'BULK.FRONT'
+    INTERFACE 0 1 AIR BULK
+    REDEFINE COLOR 1
+    
+SURFACES
+  PLANE Z 5 RECTANGLE 4 4
+  OBJECT 'BULK.BACK'
+    INTERFACE 0 1 AIR BULK
+    REDEFINE COLOR 1
+
+SURFACES
+  TUBE Z 1 4 4, 5 4 4 1 1
+  OBJECT 'BULK.EDGE'
+    INTERFACE 0 1 AIR BULK
+    REDEFINE COLOR 1
+
+SURFACES
+  ELLIPSOID 3@1.2 0 0 3
+OBJECT 'ABSORBER'
+    INTERFACE 0 1 BULK TEST
+    REDEFINE COLOR 2
+
+!! make a slightly smaller bounding volume to 
+!!  ensure confinement of the re-emission
+!! RESCALE=0.98  !! scale factor for bounding volume relative to absorbing sphere
+
+SURFACES   
+  REPEAT .1   
+  SCALE X (RESCALE) 0  
+  SCALE Y (RESCALE) 0 
+  SCALE Z (RESCALE) 3 
+RETURN
+
+WAVELENGTH 450    
+GRID ELLIPTIC Z 0 -4@1.5 2@101 
+  SOURCE DIRECTION 0 0 1 
+FLUX TOTAL 100.0 
+
+!! Select the exact volume for VOXEL distribution
+!! Otherwise, can use PIXELS, WINDOW and Local Box of objects
+!! Note that absorption may be over-estimated due to small number
+!! of voxels and rays used here. See Procedural Note "Using VOXELS in ASAP"
+VOXELS ABSORBED -4@1.2 1.8 4.2 20 20 20
+
+WINDOW Y -2@1.2 Z -.5 6
+PLOT FACETS  OVERLAY
+TRACE 0 FRONT PLOT 50 OVERLAY !! Show ray entry and direction
+SPOTS POSITION OVERLAY
+TRACE PLOT 50
+$GRAB 'VOXELS' FLUX_ABSORBED !! Grab total flux absorbed
+$REG FLUX_ABSORBED
+$COPY 9 VOXEL.DIS  !! Copies default bro009.dat to named file
+STATS
+
+$VIEW
+&VIEW VOXEL.DIS  !! Adds the saved volume distribution
+!! Hide (H) the voxel.dis in 3D viewer to see just the emission source
+RETURN
+$WAIT 2 !! Wait 2 seconds to allow 3D viewer to come up before clearing vector file
+$IO VECTOR REWIND
+
+RAYS 0
+IMMERSE TEST !! To emit rays from TEST material
+WAVELENGTH 550  !!  New wavelength for emission 
+
+TITLE 'Obviously producing rays outside the sphere'
+$IF (SHOWFIX) GT 0.5 THEN
+  OBJECT 0
+    BOUNDS -.1
+  RETURN
+TITLE 'Rays confined to bounding sphere'
+$ENDIF  
+
+CONSIDER ONLY ABSORBER
+WINDOW Y Z; WINDOW 1.4
+PLOT FACETS 11 11 0 OVERLAY 
+CONSIDER ALL
+
+EMITTING DATA VOXEL 50000  !! Make emission source from Voxel data
+  FLUX TOTAL (FLUX_ABSORBED) !! Could correct for conversion efficiency
+STATS
+SPOTS POSITION PIXELS 201 COLOR 4  
+
+$VIEW
+&VIEW BRO009.DAT  !! Adds the flux map of re-radiated energy in the YZ plane 
+RETURN

@@ -1,0 +1,39 @@
+!!++
+!! RAY_FAN.INR
+!! Title: Making a Ray Fan
+!! Category: Simple Problem
+!! Keywords: Manipulating, rays, MOVE, fan
+!! Description: Plotting rays from the source position
+!! point. Useful to create a ray fan for display
+!! purposes. A grid is created using SOURCE POSITION
+!! to specify the ray directions (using a virtual 
+!! origin). Normally, tracing will occur starting
+!! from the grid. In order to actually trace the
+!! rays from the "virtual origin" and see them in a
+!! PLOT, the MOVE command must be used.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/19/2004 - cp - removed keyword
+!! 05/25/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+SURFACES
+  PLANE Z 20 RECTANGLE 20 20
+    SHIFT Y 15
+    OBJECT 'DETECTOR'
+
+GRID RECT Z 0 -4@5 1 10
+  SOURCE POSITION 0 -30 -40
+  MOVE BY Z -40  !! Comment out to see the difference
+!! Note that the rays are moved to the 
+!! full extent in Z equal to the number
+!! in the SOURCE POSITION command, in order
+!! to see them emminate from a point.
+  
+WINDOW Y -40 40 Z -50 30
+PLOT FACETS 3 3 OVERLAY 
+TRACE PLOT
+RETURN

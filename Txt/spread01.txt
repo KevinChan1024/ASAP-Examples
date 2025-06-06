@@ -1,0 +1,53 @@
+!!++
+!! SPREAD01.INR
+!! Title: Slicing Irradiance with SPREAD
+!! Category: Isolated Command
+!! Keywords: SPREAD, irradiance, psf 
+!! Description: Slicing an irradiance pattern
+!! using the SPREAD command. SPREAD NORMAL gives
+!! an exact calculation of coherent energy in the
+!! direction given by the WINDOW command. Must have
+!! at least 4 parabasals and beams in the same medium.
+!! Multiple wavelengths are incoherently summed. No
+!! polarization or complex phase information is saved.
+!! The DOWN option limits the window area for
+!! calculation - see below.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 11/05/2003 - cp - fixed keyword
+!! 03/11/2002 - cp - reformatted
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS IN
+
+LENSES
+  MIRROR Z 0 2 20 -1
+OBJECT 'MIRROR'
+
+SURFACES
+  PLANE Z -20 ELLIPSE 0.1
+OBJECT 'DETECTOR'
+  
+PARABASALS 4 
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 488 NM
+WIDTHS 1.6
+GRID POLAR Z -1 0 2 0 360 5 6
+  SOURCE DIRECTION 0 0 1
+
+TRACE
+STATS POSITION
+CONSIDER ONLY DETECTOR
+WINDOW Y -2@.0006 X -2@.0006
+PIXELS 127
+SPREAD NORMAL DOWN 0.5 0.5 !! For 1D profile at center of window
+DISPLAY
+  PLOT3D 'SLICE THROUGH IDEAL POINT SPREAD FUNCTION'
+  FORM -6
+  PLOT3D 'SLICE THROUGH IDEAL POINT SPREAD FUNCTION (LOG PLOT)'
+RETURN

@@ -1,0 +1,33 @@
+!!++
+!! SURF_HORN03.INR
+!! Title: HORN Surface with FIT
+!! Category: Isolated Command
+!! Keywords: HORN, SURFACE, LSQFIT
+!! Description: Defines an OBJECT whose radial
+!! profile is determined by the following equation
+!! where z is measured from the reference point (0,0,6).
+!! The radial distances are computed from the function
+!! r(z) = 2 + COS(2 * p * z / 10). A $DO loop is used
+!! to generate the radial coordinate.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 10/17/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LSQFIT NORM  !! Controls the following least squares fit
+SURFACES
+  $DO 0 20; HORN Z 6, !! This line is generated once
+    2+COS(2*3.141593*?/20), !! This line repeats 21 times
+  FIT 6 0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5 5.5, !! This line ends the statement
+     6 6.5 7 7.5 8 8.5 9 9.5 10
+OBJECT 'HORN'
+
+WINDOW Y Z
+WINDOW 1.2
+PLOT FACETS 5 5 'HORN COMMAND WITH FITTED OPTION'
+RETURN

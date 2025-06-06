@@ -1,0 +1,74 @@
+!!++
+!! MULTIPLE_DISPLAY_GRAPH_01.INR
+!! Title: Multiple 1D Display Files in One 2D Graph
+!! Category: Simple Problem
+!! Keywords: Analysis, GRAPH, DISPLAY, RANGE, MODIFY, HEADER, REPLICATE, REDUCE, COMBINE, superposition, Gaussian, multiple  
+!! Description: Demonstrates the combining 1-dimensional graphs into a single 
+!! 2-dimensional distribution so the graphs are easily ploted together.  
+!! A Gaussian superposition of beams is illustrated as an example.
+!! Edit History: (latest first) 
+!! 03/06/2009 - cp - added header
+!! 03/03/2009 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+$IO PLOT REWIND
+$IO GRAPH CANCEL PLOT CANCEL !!MACRO FATRAYS
+$DATIM OFF OFF
+
+!! make a source to derive a distribution to play with
+
+PIXELS (NPIX=101)
+PARABASAL 8; WIDTH SQRT(2) .1
+
+WAVELENGTH .1
+GRID RECT Z -2 -2@1 -2@(1/9) 9 1; SOURCE DIR 0 0 1
+
+WINDOW X -2@(XHW=1.5) Y -2@(YHW=1.5) 
+
+!! Measure overall field and replicate to make room for individual beam graphs
+FIELD MODULUS 0
+DISPLAY
+  PICTURE 'Full field'
+  REDUCE 1 (NPIX) 1, INT(NPIX/2) INT(NPIX/2) 1  !! isolate the central slice
+  WRITE DUMMY DIS                               !! write out the central slice
+RETURN
+
+DISPLAY DUMMY DIS 
+  REPLICATE 9                       !! make 9 more copies of the central slice
+  MODIFY 1 101 2 10 0 0             !! zero out all but the first slice to make room for others
+  HEADER _, _, _, _, -(XHW), (XHW)  !! expand the scale of the slice thickness to make a nicer PICTURE later
+  WRITE F1 DIS                      !! write out the 2D distribution containing the first slice in column 1
+RETURN
+
+$DO 2 10
+  {
+SELECT ON ?-1                       !! look at a single source beam ?-1
+FIELD MODULUS 0                     !! measure this source beam
+
+DISPLAY
+  REDUCE 1 (NPIX) 1, INT(NPIX/2) INT(NPIX/2) 1   !! isolate the central slice
+  REPLICATE 9                                    !! make 9 more copies of the central slice
+  MODIFY 1 101 1 ?-1 0 0                         !! zero out all before the ?th column to make room for others
+$IF (?) NE 10
+  MODIFY 1 101 ?+1 10 0 0;                       !! zero out all after the ?th column to make room for others
+  HEADER _, _, _, _, -(XHW), (XHW)               !! expand the scale of the slice thickness to make a nicer PICTURE later
+  WRITE F1TEMP DIS                               !! write out the 2D distribution containing the ?th slice in column ?
+   
+DISPLAY F1.DIS
+  COMBINE F1TEMP.DIS 1                           !! add the ?th slice to the overall 2D distribution
+  !! PICTURE 'F1 ?'; 
+WRITE F1 DIS                                     !! write out the 2D distribution containing the first through ?th slice
+  }
+  
+!! open and plot the 2D distribution as a 2-D PICTURE and a series of 1-D graphs
+DISPLAY F1.DIS
+  PICTURE 'Field slices'                            
+  GRAPH 1:10 'A source and its constituent beams'
+  RANGE 0 2
+  MESH 0 1 
+  !!$VIEW 
+RETURN
+

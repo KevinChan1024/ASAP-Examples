@@ -1,0 +1,31 @@
+!!++
+!! IES_DATA.INR
+!! Title: Writing an IES file
+!! Category: Isolated Command
+!! Keywords: IESFILE
+!! Description: Creates a source and writes its properties to
+!! a standard IESNA photometric file (name.IES) of an angular
+!! distribution created by either a RADIANT command (A or C photometry
+!! where the polar axis becomes vertical) or a SPOTS DIR and ANGLES
+!! combination (B photometry). ASAP uses IES Standard LM-63-2002.
+!! Edit History: (latest first)
+!! 12/20/2012 - mt/gb - modified LM-63-1995 to LM-63-2002
+!! 11/21/2005 - cp - added to description
+!! 07/18/2003 - sam - creation
+!!--
+
+SYSTEM NEW
+RESET
+UNITS MM
+
+EMITTING RECT Z 0 2@1 1000 15 5
+WINDOW Y -2@1 X -2@1
+
+PIXELS 51
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+  ANGLES
+  IESFILE SRCFILE
+  CONTOUR
+RETURN
+ 

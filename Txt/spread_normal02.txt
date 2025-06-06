@@ -1,0 +1,52 @@
+!!++
+!! SPREAD_NORMAL02.INR
+!! Title: Diffraction of Rectangular Aperture
+!! Category: Isolated Command
+!! Keywords: SPREAD, SEARCH, Wave, psf
+!! Description: SPREAD NORMAL on rectangular aperture
+!! system. A truncated rectangular plane wave is
+!! used to simulate the aperture.  Plots are given of
+!! both the source wavefront and the PSF on the
+!! detector.
+!! Edit History: (latest first)
+!! 05/19/2014 - mt - added SEARCH to keywords
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 11/05/2003 - cp - fixed keyword 
+!! 03/11/2002 - cp - reformatted
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM
+
+LENSES
+  MIRROR Z 0 10 50 -1
+OBJECT 'PRIMARY_MIRROR'
+
+SURFACES
+  PLANE Z -50 ELLIPSE 0.2
+OBJECT 'DETECTOR'
+
+SEARCH SEQUENTIAL FORWARD
+PARABASALS 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTHS 1 UM
+WIDTHS 1.6
+GRID RECT Z -10 -2@5 -2@2.5 30 15
+  SOURCE DIRECTION 0 0 1
+
+WINDOW Y X
+PIXELS 51
+SPREAD NORMAL  !! Of the source
+DISPLAY
+  ISOMETRIC 'RECTANGULAR TRUNCATED PLANE WAVE INPUT'
+TRACE
+CONSIDER ONLY DETECTOR
+WINDOW Y -2@0.003 X -2@0.003
+SPREAD NORMAL
+DISPLAY 
+  ISOMETRIC 'POINT SPREAD (NORMAL) FUNCTION OF RECTANGULAR APERTURE SYSTEM'
+RETURN

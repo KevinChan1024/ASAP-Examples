@@ -1,0 +1,174 @@
+!!++
+!! EDGES_CORNER.INR
+!! Title: Making Curved Sides with Corner 
+!! Category: Simple Problem
+!! Keywords: Edges, EDGES, POINTS, OBJECT, corner, $IF, PRINT, $GRAB, TUBE
+!! Description: Using $GRAB and the second form of OBJECT 
+!! to make a seamless corner that joins two orthogonal
+!! sides made with bounded TUBEs. $GRAB is used to get
+!! point information from a base curve describing the
+!! rounded corner of the flat top.  New curves are generated
+!! that connect those grabbed points to the lower corner.
+!! The OBJECT command smoothly joins each curve to make
+!! a surface that fills in the corner. An emitter is used
+!! to check for leaks at the seams.
+!! Use the PRINT EDGES or ENTITIES to see the curves
+!! and bounding planes for the sides.
+!! Credit goes to Eric (JS) Hong of I&A Technology for submitting this example.
+!! Edit History: (latest first)
+!! 10/15/2014 - mt - correct misspellings in header
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 01/02/2013 - gb - correct misspellings in header
+!! 04/04/2008 - cp - added header
+!! 04/01/2008 - eh - creation
+!!-
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+H=1
+WH=3  
+WV=1.5
+R1=2
+R2=2
+
+SURFACES
+  PLANE Z (WV)  RECT 5 
+    ROTATE Y -ATAN[WV/(WH+R1)] (WV) (WH)
+  PLANE Z (WV)  RECT 5
+    ROTATE Y -ATAN[(WV+R2)/WH] (WV) (WH)
+  PLANE Y 0     RECT 5
+  PLANE X 0     RECT 5
+  PLANE Z 0     RECT 5
+  TUBE Z -(WH*3) (WH) (H)    (WV) (WH) (H)
+  TUBE X -(WV*3) (H) (WV)    (WH) (H) (WV)
+
+OBJECT 'TUBE1' ; .1
+  BOUNDS .3   .5   .7
+OBJECT 'TUBE2' ; .2
+    BOUNDS .4   .5   -.6 
+    FACETS 21 11
+
+EDGES
+  POINTS Y (H)   0  -(WV*3)   1
+                 0  -(R1)   -2
+                 -(R2)  -(R1)  90
+                 -(R2)  0  1
+                 -(WH*3)  0   1
+                 -(WH*3) -(WV*3) 1
+                 0  -(WV*3)  0
+OBJECT 'TOP'
+  FACETS  21 21                
+
+NPOINT=4
+
+EDGES
+  ELLIPSE Y (H) (R2) (R1) (NPOINT) 0 90
+    SHIFT -(R1) 0 -(R2)
+
+$IF (NPOINT) LE 15 THEN
+    PRINT EDGE .1
+    $DO 1 (NPOINT) 2
+    {
+      $GRAB 'total with' 5+INT((?-1)/2)  1 XR?  YR?  ZR?   
+    }
+    $DO 2 (NPOINT)+1 2
+    {
+      $GRAB 'total with' 5+INT((?-1)/2)  5 XR?  YR?  ZR?   
+    }
+$ELSEIF (NPOINT) LE 20 AND (NPOINT) GE 16 THEN
+    PRINT EDGE .1
+    $DO 1 (NPOINT) 3
+    {
+      $GRAB 'total with' 5+INT((?-1)/3)  1 XR?  YR?  ZR?   
+    }
+    $DO 2 (NPOINT)+1 3
+    {
+      $GRAB 'total with' 5+INT((?-1)/3)  5 XR?  YR?  ZR?   
+    }
+    $DO 3 (NPOINT)+2 3
+    {
+      $GRAB 'total with' 5+INT((?-1)/3)  9 XR?  YR?  ZR?   
+    }
+$ELSEIF (NPOINT) GT 20 THEN
+    PRINT EDGE .1
+    $DO 1 (NPOINT) 8
+    {
+      $GRAB 'total with' 5+INT((?-1)/8)  1 XR?  YR?  ZR?   
+    }
+    $DO 2 (NPOINT)+1 8
+    {
+      $GRAB 'total with' 5+INT((?-1)/8)  5 XR?  YR?  ZR?   
+    }
+    $DO 3 (NPOINT)+2 8
+    {
+      $GRAB 'total with' 5+INT((?-1)/8)  9 XR?  YR?  ZR?   
+    }
+    $DO 4 (NPOINT)+3 8
+    {
+      $GRAB 'total with' 5+INT((?-1)/8)  13 XR?  YR?  ZR?   
+    }
+    $DO 5 (NPOINT)+4 8
+    {
+      $GRAB 'total with' 5+INT((?-1)/8)  17 XR?  YR?  ZR?   
+    }
+    $DO 6 (NPOINT)+5 8
+    {
+      $GRAB 'total with' 5+INT((?-1)/8)  21 XR?  YR?  ZR?   
+    }
+    $DO 7 (NPOINT)+6 8
+    {
+      $GRAB 'total with' 5+INT((?-1)/8)  25 XR?  YR?  ZR?   
+    }
+    $DO 8 (NPOINT)+7 8
+    {
+      $GRAB 'total with' 5+INT((?-1)/8)  29 XR?  YR?  ZR?   
+    }
+$ENDIF
+
+$DO 1 (NPOINT)
+{  
+  $ECHO NONE
+  &REG XR? YR? ZR?
+}
+$ECHO ALL
+
+CURD=4
+TH1=ATAN[WV/(WH+R1)]
+TH2=ATAN[(WV+R2)/WH]
+
+$DO 1 (NPOINT)
+{
+  L?=((WH-(XR?-R1))^2+(WV-(ZR?-R2))^2)^0.5
+  EDGES
+    ELLIPSE Z (WV) (L?) (H) (CURD) 0 90
+    SMOOTH 2
+    SHIFT -(L?-(WH)) 0 0
+    ROTATE Y -ASIN[(-ZR?+R2+WV)/L?] (WV) (WH)
+}
+
+LL=((WV+R2)^2+WH^2)^0.5
+  EDGES
+    ELLIPSE Z (WV) (LL) (H) (CURD) 0 90
+    SMOOTH 2
+    SHIFT -(LL-(WH)) 0 0
+    ROTATE Y -ATAN[(WV+R2)/WH] (WV) (WH)
+
+OBJECT 'CORNER' ; -(NPOINT+1) 2 0.7
+
+!!PLOT EDGES to check corner edges
+!!$IO
+
+!!GRID RECT Y -1 -4@(WH*1.2) 201 201 RANDOM 1
+!!SOURCE DIRECTION SIN[1] COS[1] 0
+
+EMITTING RECT Y 0 (WV) (WH)  1000
+
+MISSED ARROWS (H*1.2+1)    
+
+PLOT FACETS 21 21 0 OVERLAY
+TRACE PLOT COLOR 13
+!!PLOT ENTITIES to show all edges and bounding planes
+$VIEW

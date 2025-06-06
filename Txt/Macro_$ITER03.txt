@@ -1,0 +1,16 @@
+!!++
+!! MACRO_$ITER03.INR
+!! Title: $ITER Root Find Output 
+!! Category: Isolated Command
+!! Keywords: $ITER, Macros_pre, output, iterate, root
+!! Description: Output produced from $ITER root finding
+!! example.  This is not a runable inr file.
+!! Edit History: (latest first)
+!! 12/21/2001 - cp - modified description
+!! 10/24/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+ --- &LOOPER 100
+   The root of the equation y=(x-3)^2 is 3     
+ --- $IO OUTPUT CLOSE

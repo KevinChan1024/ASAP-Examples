@@ -1,0 +1,100 @@
+!!++
+!! VOXELS_ABSORBED01.INR
+!! Title: Volume Absorption
+!! Category: Simple Problem
+!! Keywords: Interfaces, MEDIA, VOXELS ABSORBED, volume
+!! Description:  Demonstrates how to capture a 3-D
+!! representation of the energy absorbed within a volume.
+!! The VOXELS command specifies the range and resolution
+!! over which this energy is captured. In this case, the
+!! volume matches the space between the Front and Back
+!! surfaces of a complex absorbing medium. The 3-D
+!! viewer is used to visualize the volume file. See
+!! comments below.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/29/2012 - cp - corrected keywords 
+!! 12/19/2005 - cp - modified and added comments 
+!! 10/04/2002 - cp - changed voxel filename
+!! 02/28/2002 - cp - corrected style
+!! 08/20/2001 - cp - fixed title
+!! 05/18/2001 - cp - final editing
+!! 01/09/2001 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 550 NM
+
+MEDIA
+  1.5`.5E-4 'TEST' !! Absorption
+
+SURFACES
+  PLANE X -1 RECTANGLE 1 1.5
+  SHIFT Z 2.5
+OBJECT 'SIDE1'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 2  
+
+SURFACES
+  PLANE X 1 RECTANGLE 1 1.5
+  SHIFT Z 2.5
+OBJECT 'SIDE2'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 2    
+
+SURFACES
+  PLANE Y 1 RECTANGLE 1.5 1
+  SHIFT Z 2.5
+OBJECT 'SIDE3'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 2    
+
+SURFACES
+  PLANE Y -1 RECTANGLE 1.5 1
+  SHIFT Z 2.5
+OBJECT 'SIDE4'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 2      
+
+SURFACES
+  PLANE Z 1 RECTANGLE 1 1
+OBJECT 'FRONT'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 2
+    
+SURFACES
+  PLANE Z 4 RECTANGLE 1 1
+OBJECT 'BACK'
+  INTERFACE 0 1 AIR TEST
+  REDEFINE COLOR 2 
+    
+GRID ELLIPTIC Z 0 -4@1 2@101 
+  SOURCE FOCUS 0 0 7
+  FLUX TOTAL 100.0
+ 
+!! Select the exact volume for VOXELS distribution.
+!! Otherwise, can use PIXELS, WINDOW and Local Box of objects.
+!! Note that absorption may be over-estimated due to small number
+!! of voxels and rays used here. For a converging GRID source
+!! it may be better to use the axial modifier (Z in this caase)
+!! and calculate absorption manually, to avoid clumping in the
+!! distribution.  See Procedural Note "Using VOXELS in ASAP"
+VOXELS ABSORBED -4@1.0 1 4 39 39 100
+
+WINDOW Y -2@1.2 Z -.5 6
+PLOT FACETS  OVERLAY
+TRACE 0 FRONT PLOT 10 OVERLAY !! To show ray entry and direction
+SPOTS POSITION 
+TRACE
+$COPY 9 ABS_FLUX.DIS !! Copies default bro009.dat to named file
+STATS
+$VIEW 
+&VIEW ABS_FLUX.DIS  !! Adds the volume distribution to 3D viewer
+!! Hide (H) sides of box in viewer to see VOXELS data.
+!! Use 8 and 9 keys to move selected planes or Shift-Drag.
+RETURN 
+

@@ -1,0 +1,33 @@
+!!++
+!! OUTPUT_PLOT_DATA.INR
+!! Title: Writing Plot Data to a File
+!! Category: Simple Problem
+!! Keywords: Scripts, $IO, $PLOT, RADIAL, text, output, file, data
+!! Description: Shows how to output data to a text file that would
+!! normally be plotted.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 04/26/2004 - cp - corrected key word
+!! 05/22/2003 - cp - added a RETURN for GRAPH to work
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EMITTING RECT Z 0 1 1 20000
+SPOTS DIRECTION ATTRIBUTE 0
+$PLOT OFF !! Optional for no graph, just numbers
+
+DISPLAY 
+  ANGLES
+  $ECHO NONE   !! No command echoing
+  $IO OUTPUT ENCLOSED.TXT FILE(11)  !! Redirect output
+  RADIAL BOTH  !! This could also be a GRAPH command
+  RETURN
+  $IO OUTPUT CLOSE  !! Close output file
+  $ECHO 
+RETURN
+
+$PLOT NORM  !! Optional (with above)
+RETURN

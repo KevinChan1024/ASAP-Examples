@@ -1,0 +1,174 @@
+!!++
+!! DUAL_GRIN_COUPLING.INR
+!! Title: Coupling with Dual GRIN Fibers 
+!! Category: Simple Problem
+!! Keywords: Wave, GRIN, COUPLE, DECOMPOSE, FIELD, FIBR, RAYSET, fiber
+!! Description: A model of two GRIN fibers on either side
+!! of an optic, in this case a glass slab. Shows how to
+!! determine the coupling efficiencies from input to
+!! output of the two-fiber system.  The first fiber mode is
+!! created using the FIBR shape option on the RAYSET command.
+!! [See SHAPE command in Help which describes the RAYSET
+!! optional k and s parameters]
+!! This must be decomposed into a new set of Gaussian beams
+!! that describe this mode shape in order to trace it through
+!! the system. When it reaches the output of the second fiber,
+!! a FIELD is calculated and COUPLEd to the second fiber's
+!! mode to determine the overall coupling efficiency.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 07/26/2001 - cp - corrected header
+!! 05/18/2001 - cp - modified format; added description
+!! 05/15/2001 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS UM
+MISSED ARROWS 1000
+
+FRESNEL BOTH
+SPLIT 1
+
+PI=4*ATAN(1)
+P1=.25
+SA1=.3/1000
+Z1=(2*PI*P1/SA1)
+P2=.25
+SA2=.3/1000
+Z2=(2*PI*P2/SA2)
+
+!! Sample function
+FUNCTION
+  GENERAL
+    C 1
+    X2 -SA1*SA1/2 
+    Y2 -SA1*SA1/2
+  GENERAL
+    C 1
+    X2  -SA2*SA2/2
+    Y2  -SA2*SA2/2
+    
+MEDIA
+  1.590 GRIN function 1 exponent 2 stepsize 100 um 20000 max steps 'GRIN1' 
+  1.590 GRIN function 2 exponent 2 stepsize 100 um 20000 max steps 'GRIN2' 
+
+!! Grin substrate
+SURFACES
+  PLANE Z -(1500+100+(Z1)) ELLIPSE 1000
+  OBJECT 'GRIN1.BOTTOM'
+    INTERFACE COAT +BARE GRIN1 AIR
+    REDEFINE COLOR 7
+    
+SURFACES
+  PLANE Z -(1500+100) ELLIPSE 1000
+  OBJECT 'GRIN1.TOP'
+    INTERFACE COAT +BARE AIR GRIN1
+    REDEFINE COLOR 7
+
+SURFACES
+  TUBE Z -(1500+100+(Z1)) 1000 1000 -(1500+100) 1000 1000
+  OBJECT 'GRIN1.TUBE' 
+    INTERFACE COAT +BARE AIR GRIN1
+    REDEFINE COLOR 7
+
+SURFACE
+  PLANE Z (1500+100) ELLIPSE 1000
+  OBJECT 'GRIN2.BOTTOM'
+    INTERFACE COAT +BARE GRIN2 AIR
+    REDEFINE COLOR 7
+
+SURFACE
+  PLANE Z (1500+100+(Z2)) ELLIPSE 1000
+  OBJECT 'GRIN2.TOP'
+    INTERFACE COAT +BARE AIR GRIN2
+    REDEFINE COLOR 7
+
+SURFACE 
+  TUBE Z (1500+100) 1000 1000 (1500+100+(Z2)) 1000 1000
+  OBJECT 'GRIN2.TUBE' 
+    INTERFACE COAT +BARE AIR GRIN2
+    REDEFINE COLOR 7
+
+SURFACE 
+  PLANE Z -1500 ELLIPSE 2000
+  OBJECT 'SUBSTRATE.BOTTOM'
+    INTERFACE 0 .99 AIR BK7
+    REDEFINE COLOR 3
+
+SURFACE 
+  PLANE Z 1500 ELLIPSE 2000
+  OBJECT 'SUBSTRATE.TOP'
+    INTERFACE 0 1 AIR BK7
+    REDEFINE COLOR 3
+
+SURFACE 
+  TUBE Z -1500 2000 2000 1500 2000 2000 0 0
+  OBJECT 'SUBSTRATE.TUBE'
+    INTERFACE 0 .99 AIR BK7
+    REDEFINE COLOR 3
+
+WAVELENGTH 1.500 UM
+WIDTHS 1.6
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+
+PIXELS 201
+WINDOW X Y
+
+!! Create the fiber 1 mode...
+WAVEL=1.500
+RCORE1=9/2
+NCORE1=1.444*(1.0036)
+RCLAD1=20/2
+NCLAD1=1.444
+NA1=SQRT(NCORE1*NCORE1-NCLAD1*NCLAD1)
+VN1=2*PI*RCORE1*NA1/(WAVEL)  !! Normalized frequency 's'
+
+RAYS 0
+!! Mode created at input of fiber
+RAYSET Z -(1500+100+(Z1)+1); 0 0 1 2@(RCORE1) -FIBR (VN1)
+  SOURCE DIRECTION 0 0 1
+FIELD ENERGY -(1500+100+(Z1)+1) !! Create complex field file
+
+RAYS 0
+DECOMPOSE DIRECTION .5 25  !! New Gaussian beam set defines shape of mode
+
+WINDOW Y Z 
+PLOT FACETS 5 5 OVERLAY
+TRACE PLOT 20 COLOR 2 
+$VIEW
+
+WINDOW X -2@10 Y -2@10
+FIELD ENERGY (1500+100+(Z2))+1  !! At output of second fiber
+
+DISPLAY
+  FORM -4 
+  ISOMETRIC
+  PICTURE
+RETURN
+
+!! Create the fiber 2 mode...
+WAVEL=1.500
+RCORE2=5/2
+NCORE2=1.444*(1.0080)
+RCLAD2=20/2
+NCLAD2=1.444
+NA2=SQRT(NCORE2*NCORE2-NCLAD2*NCLAD2)
+VN2=2*PI*RCORE2*NA2/(WAVEL)+1  !! Normalized frequency 's'
+
+RAYS 0
+!! Mode created at output of fiber
+RAYSET Z (1500+100+(Z2)+1); 0 0 1 2@(RCORE2) -FIBR (VN2)
+  SOURCE DIRECTION Z 
+
+PIXELS 201
+WINDOW X -2@10 Y -2@10
+!! Perform overlap integral of traced field to 2nd fiber mode
+FIELD ENERGY (1500+100+(Z2)+1) COUPLE
+
+DISPLAY
+  !!FORM -4  !! For a log plot
+  ISOMETRIC
+RETURN

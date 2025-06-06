@@ -1,0 +1,26 @@
+!!++
+!! BOUNDS02.INR
+!! Title: Bounded Tube PRINT Output
+!! Category: Isolated Command
+!! Keywords: PRINT, BOUNDS
+!! Description: Output from the PRINT command 
+!! describing a bounded tube. 
+!! NOTE: Only for reference. Do not run file.
+!! Edit History: (latest first)
+!! 08/09/2012 - cp - corrected header
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+!! The following is from the output console after
+!! the "PRINT 1" on the bounded faceted tube:
+
+OBJECT    1: BOUNDED_FACETED_TUBE
+  Physical Surface     1 (RECTANGL) to     2 (RECTANGL)
+     1 segments of degree  1
+     1 total with     1 breaks
+  Faceting (patch subdivision)  20 by  10
+        Box X -6.140     8.140    Y -5.140     5.140    Z -5.140     5.140
+           width=  14.280        width=  10.280        width=  10.280
+  Bounding Entities:
+      3     -4

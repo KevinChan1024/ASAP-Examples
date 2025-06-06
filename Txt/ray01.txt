@@ -1,0 +1,66 @@
+!!++
+!! RAY01.INR
+!! Title: RAY Command Text Options
+!! Category: Isolated Command
+!! Keywords: RAY, Tracing
+!! Description: Two variations of RAY command
+!! output.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 11/18/2003 - cp - fixed formatting
+!! 10/11/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+ 
+ --- !! Cassegrain system to demonstrate RAY command
+ --- COATINGS PROPERTIES 
+ ---   0.9 0 'REFL'
+ ---   0   0 'ABSORB'
+ --- SURFACES
+ ---   OPTICAL Z -15 -12.5 -2.25 ELLIPSE 1.6
+ --- OBJECT 'SECONDARY_MIRROR'
+ ---   INTERFACE COAT -REFL
+ --- SURFACES
+ ---   OPTICAL Z 0 -40 -1 ELLIPSE 5 5 0.25
+ --- OBJECT 'PRIMARY_MIRROR'
+ ---   INTERFACE COAT -REFL
+ --- LENSES
+ ---   MIRROR Z 10 0.25
+ --- OBJECT 'DETECTOR'
+ ---   INTERFACE COAT ABSORB
+
+ --- RAY 0 2 -20 0 0 1
+ 
+ Ray number      1
+ Object       X             Y             Z          Size          Flux
+    0   0.0000000   2.000000       -20.00000      1.000000      1.000000
+    2   0.0000000   2.000000       -.5000000E-01  1.000000      1.000000
+    1   0.0000000   0.5002501      -15.01000      0.2501250     0.8999999
+    3   0.0000000   -.1926803E-06  10.00000       0.3023995E-06 0.8099998
+          Total OPL =  60.00000000192155
+
+  Effective Focal Length =  100.010
+ 
+ --- RAY 0 2 -20 0 0 1 DIR
+ 
+ Ray number      1
+ Object       X             Y             Z          Size          Flux
+                     U             V
+ 
+    0   0.0000000      2.000000     -20.00000      1.000000      1.000000
+    Dir 0.0000000000   0.0000000000  1.0000000000  0.0000000     1.000000
+ PRIMARY_MIRROR
+    2    0.0000000     2.000000     -.5000000E-01  1.000000      1.000000
+    Nrm  0.0000000000  0.0499376177  0.9987523388  -.2493768E-01 2.86239 Inc
+
+    Dir  0.0000000000 -0.0997506249 -0.9950124687  0.4987532E-01 0.8999999
+ SECONDARY_MIRROR
+    1    0.0000000     0.5002501    -15.01000     0.2501250      0.8999999
+    Nrm  0.0000000000 -0.0399480935 -0.9992017563 0.7971288E-01  3.43536 Inc
+    Dir  0.0000000000 -0.0199980070  0.9998000199 0.9999011E-02  0.8099998
+ DETECTOR
+    3    0.0000000     -.1926803E-06 10.00000     0.3023995E-06  0.8099998
+                1.000000     0.0000000
+          Total OPL =  60.00000000192155
+
+  Effective Focal Length =  100.010

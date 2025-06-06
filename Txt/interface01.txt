@@ -1,0 +1,32 @@
+!!++
+!! INTERFACE01.INR
+!! Title: Reflective Interface
+!! Category: Isolated Command
+!! Keywords: INTERFACE, Interfaces
+!! Description: Various ways of defining
+!! reflective interfaces. The minus (-) sign
+!! prevents the transmitted ray from being
+!! traced.
+!! Note: This is not a runable inr file.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 12/20/2001 - cp - modified description
+!! 10/11/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+COATINGS PROPERTIES
+  reflection  transmission  coating name
+     1.0           0          'REFL1'
+     0.05          0          'REFL2'
+     1'90          0          'PHASE'
+:
+:
+OBJECT 'ELEMENT_1'
+  INTERFACE COAT -REFL1
+:
+OBJECT 'ELEMENT_5'
+  INTERFACE COAT -2
+: 
+OBJECT 'ELEMENT_10'
+  INTERFACE COAT -PHASE

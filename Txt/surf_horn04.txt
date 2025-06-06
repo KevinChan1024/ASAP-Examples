@@ -1,0 +1,42 @@
+!!++
+!! SURF_HORN04.INR
+!! Title: Two HORN Surfaces
+!! Category: Isolated Command
+!! Keywords: HORN, SURFACE
+!! Description: Create two surfaces symmetric about
+!! the given axis with a radial profile determined
+!! by the following polynomial in the radial
+!! distance squared:
+!!    (r(d))^2 = r + r'd + r"d*d + ...
+!! where d represents the particular axial distance
+!! coordinate relative to the reference point (and
+!! therefore d is measured in the local coordinate system).
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style 
+!! 10/18/2000 - cp - modified format and header
+!! 04/27/2000 - bf - Reformatted; added header
+!! 04/25/2000 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  HORN Z 0  0 0 0 0 1
+    LOCAL -5 5 -5 5 -1 1
+OBJECT 'HORN_1'
+  REDEFINE COLOR 2
+  
+SURFACES
+  HORN Z 3  1 0 -1 1 1
+    LOCAL -5 5 -5 5 -1 1
+OBJECT 'HORN_2'
+  REDEFINE COLOR 9
+
+WINDOW Y Z
+PLOT FACETS 5 5
+$VIEW
+RETURN
+
+

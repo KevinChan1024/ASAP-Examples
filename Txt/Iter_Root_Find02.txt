@@ -1,0 +1,62 @@
+!!++
+!! ITER_ROOT_FIND02.INR
+!! Title: Both Forms of $ITER
+!! Category: Simple Problem
+!! Keywords: Scripts, $ITER, iterate, merit, $SCR, WRITE, macro
+!! Description: The following is used to locate a coordinate position
+!! along an axis that corresponds to a particular flux value.
+!! The $ITER will look for a minimum "MERIT" value starting at some
+!! initial "YSEARCH" value (in this case 10).
+!! For example: To use this to determine the 1/e^2 points of a Gaussian
+!! distribution on a detector: Determine the value you want ZOFY
+!! to be and set up MERIT appropriately.  Run the iteration with
+!! a starting YSEARCH for the left side point (between 0 and peak) and
+!! then the right side point (between Peak and max).
+!! Edit History: (latest first)
+!! 12/20/2001 - cp - modified SCR syntax
+!! 02/07/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! This first $ITER creates the example display file for the second $ITER to use.
+!! It iterates the next input record across the given range in 51 steps.
+!! The minus sign indicates to include the end points.  It creates a display file
+!! called ITER.DIS
+$ITER Y 0 100 -51 Z  !! Using first form of $ITER command
+  Z=Y^2
+
+DISPLAY ITER  !! Bring up display file created with $ITER
+WRITE EXAMPLE DIS  !! Write back to a display file with the name EXAMPLE
+!! GRAPH  !! To view display file
+RETURN
+
+!! The following macro searches for Z(Y)=1000
+!! Loop over ITERATE macro to find minimum of (Z-1000)^2
+!! Z-1000 is squared to handle neg and pos numbers. 
+
+ITERATE {
+  $ITER YSEARCH 1 100 0.005 MERIT  !! Uses second form of $ITER - Finding the minimum
+    {
+    VALUE (YSEARCH) 0 ZOFY !! Gets the Z value at YSEARCH position and puts in ZOFY
+    MERIT=(ZOFY-1000)^2  !! Looking for best ZOFY that brings MERIT closest to zero
+    }
+}
+
+YSEARCH=10  NSTEPS=30
+$ECHO NONE  !! Turn off console echo
+DISPLAY EXAMPLE  !! Bring up display file to iterate over with VALUE command
+
+!! The $DO loops over the ITERATE macro many times. Search Start Point is YSEARCH=10
+$DO 1 (NSTEPS)
+  &ITERATE
+$ECHO  !! Turn back on console echo
+
+$SCR 3 !! The following 2 lines get printed
+  Minimum has merit = \MERIT.\
+      Z = \ZOFY.     \ Y= \YSEARCH.     \              
+\DUMMY:?
+
+!!  \DUMMY:? causes $SCR to print in a pop up window   
+RETURN

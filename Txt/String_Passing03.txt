@@ -1,0 +1,40 @@
+!!++
+!! STRING_PASSING03.INR
+!! Title: Passing Strings to Macros
+!! Category: Simple Problem      
+!! Keywords: Scripts, literal, macro, string, $ASK, $IF
+!! Description: Two methods of passing a string to a macro
+!! for use in an $IF..THEN string compare. 
+!! Edit History: (latest first)
+!! 04/08/2004 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+TEST1 { 
+  $IF #1 EQS P THEN
+    $ASK 'It equals P'
+  $ELSE 
+    $ASK 'It does not equal P'
+  $ENDIF  
+  RET 
+}
+ 
+S1="G"
+$TEST1 S1" 
+
+!! Or...
+
+TEST2 { 
+S1="#1"
+  $IF S1" EQS P THEN
+    $ASK 'It equals P'
+  $ELSE 
+    $ASK 'It does not equal P'
+  $ENDIF  
+  RETURN 
+} 
+
+$TEST2 P
+RETURN

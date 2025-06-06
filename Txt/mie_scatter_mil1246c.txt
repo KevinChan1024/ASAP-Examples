@@ -1,0 +1,73 @@
+!!++
+!! MIE_SCATTER_MIL1246C.INR
+!! Title: MIL-STD 1246C Particle Scatter
+!! Category: Simple Problem
+!! Keywords: Scatter, PARTICLES, MIE, 1246C, $FCN  
+!! Description: Mie scatter calculation for bsdf
+!! of a surface with MIL-STD 1246C contamination
+!! distribution. Change wavelength and index of
+!! refraction for the particles matching your system.
+!! Also must set the coverage fraction and 
+!! cleanliness level.  They are not independent.
+!! If you know your cleanliness level, then the
+!! coverage fraction has a corresponding value.
+!! Particle model works well with large wavelengths
+!! or where particle size is small compared to
+!! wavelength. If particles get large compared to 
+!! wavelength, then BSDF may not be correct for
+!! angles less than 2 or 3 degrees.
+!! Edit History: (latest first)
+!! 03/25/2002 - cp - corrected syntax, added comments
+!! 05/02/2000 - gp - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 10.6 UM
+
+!! Define indices of refraction for the particles
+MEDIA
+  1.53`0.0005 'INDVIS'  !! Spyak and Wolfe particle index for 633 NM
+  1.7`0.2     'INDIR'   !! Spyak and Wolfe particle index for 10.6 Microns
+
+!! MIL-STD 1246C particle distribution function that is used
+!! by the particle model.  This distribution is the derivative
+!! of the 1246C specification.  The function first defines the
+!! actual particle diameter S from the normalized diameter
+!! (which is represented by the _ variable).  _1 and _2 are the
+!! the diameters of the smallest and largest particles.  their values
+!! are passed to the $FCN function by the particle model.  _3 is the
+!! contamination level, which must be compatible with the fractional
+!! area coverage (FRAC) in order to get the correct answer.
+
+$FCN MSTD S=(_2-_1)*_+(_2+_1),
+          N=10^(0.926*(LOG[_3]^2-LOG[S]^2)),
+          N*2*.926*LOG[S]/S
+
+SMIN=1       !! Smallest particle diameter
+SMAX=100     !! Largest particle diameter
+
+FRAC=3.0E-3  !! Fraction of the surface that is covered by particles.
+             !! FRAC=3.0E-3 for cleanliness level of 500.
+
+!! The cleanliness level becomes the _3 parameter in the MSTD macro.
+!! It simply scales the BRDF.  Then ASAP renormalizes the BRDF in order
+!! to obtain the correct fractional area coverage, which is the fourth
+!! parameter on the PARTICLES MIE command.  To obtain the correct
+!! cleanliness level, the value of the fractional area coverage must
+!! be set to a value that corresponds to this level.
+
+CLEANLEV=500 !! Cleanliness level (must be compatible with value of frac).
+
+NSAMP=50     !! Number of integration samples (usually between 50 and 100)
+
+PIXELS 101   !! Sets the number of points in the bsdf plot produced
+             !! by the particle model.
+
+!! Define a particle model and plot the BSDF at 0 degrees angle of incidence.
+!! ASAP takes into account NSAMP particle sizes between the min and max given.
+MODEL
+  PARTICLES MIE INDIR SMIN/2 SMAX/2 (FRAC) MSTD (NSAMP) SMIN/2 SMAX/2 (CLEANLEV) PLOT 0
+RETURN

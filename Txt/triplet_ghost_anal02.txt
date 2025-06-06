@@ -1,0 +1,113 @@
+!!++
+!! TRIPLET_GHOST_ANAL02.INR
+!! Title: Ghost Analysis with Triplet Lens #2
+!! Category: Simple Problem
+!! Keywords: Lenses, ghost, LENSES, triplet, SPREAD, COLENGTH, PATHS 
+!! Description: A Triplet lens system is used to demonstrate
+!! real ghost image analysis. Initially a plot of the lens system
+!! is shown with an on-axis and off-axis source. Then SPLIT
+!! is set to 2 and a single source is traced.
+!! Children and grandchildren rays are produced and generate
+!! alternate paths to the target.  Finally, a spread function of
+!! imaged and ghost rays is performed showing radial
+!! distance using THE COLENGTH modifier or by SHAPEing the
+!! ghost rays first.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS IN
+FRESNEL AVERAGE
+LENSES
+  SEQUENCE RADI
+    0 0 0, 0 0 1, 11 36.203 0 0 SK16
+    4.5 11 -3521.1268 0 0 0
+    8.7512 7 -57.9878 0 0 SCHOTTNEW_F4
+    2.5 7 36.2056 0 0 0
+    9.6205 11 161.2383 0 0 SK16
+    6 11 -45.4752 0 0 0
+OBJECT; 0.1 'TRIPLET'
+  INTERFACE COAT BARE AIR AIR
+ 
+SURFACEs
+  PLANE Z 115.0809 ELLIPSE 30
+OBJECT 'IMAGE_PLANE'
+ 
+!! Create picture of system
+TITLE 'TRIPLET SYSTEM TO DEMONSTRATE GHOST IMAGING'
+XMEMORY OFF
+SPLIT OFF
+CUTOFF 1E-6
+BEAMS INCOHERENT GEOMETRIC
+
+WAVELENGTHS 0.55 UM
+GRID ELLIPTIC Z 14.3876 -4@7.9365 1 5 
+  SOURCE DIRECTION 0 0 1, 0 TAN[10] 1
+  MOVE TO Z -5
+WINDOW Y Z
+WINDOW 1.2
+PROFILES OVERLAY
+TRACE PLOT
+ 
+!! Create picture of ghosted system
+TITLE 'GHOST IMAGING ANALYSIS OF TRIPLET LENS SYSTEM'
+RAYS 0  !! Clear old rays
+GRID ELLIPTIC Z 14.3876 -4@7.9365 1 5
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -5
+SPLIT 2
+PROFILES OVERLAY
+TRACE PLOT
+ 
+!! Perform actual ghost image analysis
+RAYS 0
+CUTOFF 1E-6
+SPLIT 2
+PARABASALS 8
+BEAMS COHERENT DIFFRACT 
+WIDTHS 1.6
+WAVELENGTHS 0.55 
+GRID ELLIPTIC Z 14.3876 -4@7.9365 15 15
+  SOURCE DIRECTION 0 0 1
+  MOVE TO Z -5
+
+TRACE GRAPH
+CONSIDER ONLY .1
+  WINDOW Y 0 5 X -2.5 2.5
+  PIXELS 361
+  SPREAD NORMAL -39 DOWN 0.5 0.5 COLENGTH 1
+DISPLAY 39
+  NORMALIZE MAX
+  FORM -5
+GRAPH 'SPREAD FUNCTION FROM IMAGED & GHOST RAYS'
+  'RADIAL DISTANCE'
+  'CALCULATED WITH SPREAD NORMAL...COLENGTH'
+
+!!$IO OUTPUT PATHS 2
+PATHS
+SELECT EXCEPT PATH 1
+!!$IO OUTPUT CLOSE
+SHAPE +2  !! Give Gaussian shape to all ghost path rays
+
+SELECT ALL
+WINDOW Y X
+WINDOW 1.5
+PIXELS 81
+TITLE 'DETECTOR DISTRIBUTION FROM IMAGED & GHOST RAYS'
+SPOTS POSITION -40 ATTRIBUTE 1
+WINDOW Y 0 5 X -2.5 2.5
+PIXELS 361
+SPREAD NORMAL -41 DOWN 0.5 0.5
+DISPLAY 41
+  NORMALIZE MAX
+  FORM -5
+  GRAPH 'SPREAD FUNCTION FROM IMAGED & GHOST RAYS'
+    'RADIAL DISTANCE'
+    'CALCULATED BY SETTING BEAMS SHAPES BASED ON PATHS'
+RETURN

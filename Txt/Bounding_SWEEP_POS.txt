@@ -1,0 +1,44 @@
+!!++
+!! BOUNDING_SWEEP_POS.INR
+!! Title: Bounding to Edge Swept in Position
+!! Category: Simple Problem
+!! Keywords: Bounds, SWEEP, EDGES, OPTICAL
+!! Description: A method to make a square tube that
+!! can be used for bounding. It is made from a swept
+!! square edge using SWEEP POS. This example shows a
+!! practical application where it is bounded to an
+!! OPTICAL surface. This is a good alternative to 
+!! using a square TUBE, where innacurate results can
+!! occur at the corners.
+!! Note: SWEEP AXIS is the only swept edge that can
+!! not be bounded to because it cannot define an
+!! unambiguous volume.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 03/21/2002 - cp - corrected spelling
+!! 02/07/2002 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  OPTICAL Z 0 8 RECTANGLE 10 5  
+
+EDGES
+  RECTANGLE Z 0 10 5 
+  SWEEP POSITION .5 0 0 20  !! Sweep 50% toward point
+    
+OBJECT
+  .1 'SIDES'
+  BOUNDS .2
+OBJECT
+  .2 'FRONT'
+  BOUNDS -.1 
+EDGES
+  RECTANGLE Z 10  5 2.5 
+OBJECT
+  .1 'BACK'
+
+VUFACETS 21 21
+RETURN

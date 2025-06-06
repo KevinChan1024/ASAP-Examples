@@ -1,0 +1,28 @@
+!!++
+!! GLASS_PLATE02.INR
+!! Title: Glass Plate Using LENSES
+!! Category: Isolated Command
+!! Keywords: LENSES, SEQUENCE, glass
+!! Description: A Glass plate made with a
+!! lens sequence.
+!! Edit History: (latest first)
+!! 10/06/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.5168  'BK7'
+
+LENSES
+  SEQUENCE CURV
+    0 0 0, 0 0 1, 2 0 0 0 1
+    0 0 0.5, 0 0 1, 2 0 0 0 0
+  OBJECT 'GLASS_PLATE'
+
+WINDOW Y X
+OBLIQUE
+PLOT FACETS 5 5
+RETURN

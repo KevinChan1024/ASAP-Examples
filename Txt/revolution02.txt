@@ -1,0 +1,57 @@
+!!++
+!! REVOLUTION02.INR
+!! Title: REVOLUTION with DECENTER
+!! Category: Isolated Command
+!! Keywords: REVOLUTION, SURFACE
+!! Description: Defines an OBJECT whose radial
+!! profile is determined by the following equation:
+!! x(y)=0.25 - 0.5 y + 0.25 y 
+!! Actually the original surface started out as the equation: 
+!! a(y - y_o) = x
+!! where a=0.25 and y_o=1. After expanding the equation, we get:
+!! f(x,y)= a y_o + (-2 a y_o) y - x + a y = 0
+!! Arranged properly, these become the coefficients of the
+!! REVOLUTION command. Note that y is measured from the
+!! reference point (0,5,0) and that the SURFACE is
+!! DECENTERED by 1.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/17/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  1 0  'REFL'
+  
+SURFACES
+  REVOLUTION Y 4 0.25 -1 -.5 0 0 0.25 DECENTER 1
+    LOCAL -3 3 1 6 -3 3 Y
+  OBJECT 'REVOLVED_OBJECT'
+    INTERFACE COAT -REFL
+    
+!! View object     
+WINDOW Y X  
+  PROFILES 0 0 -25 'SURF:REVOLUTION Y-X PROFILES' COLORS 11    
+WINDOW Z X  
+  PROFILES 0 0 -26 'SURF:REVOLUTION Z-X PROFILES' COLORS 11
+$VIEW
+RETURN 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

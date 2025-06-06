@@ -1,0 +1,40 @@
+!!++
+!! OPTICAL04.INR
+!! Title: Cassegrain Telescope #1
+!! Category: Simple Problem
+!! Keywords: Geometry, OPTICAL, Cassegrain, telescope
+!! Description: Simple Cassegrain telescope
+!! using the OPTICAL command to make the
+!! mirrors. 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  1 0 'REFL' 
+  
+SURFACES 
+  OPTICAL Z -15 -12.5 -2.25 ELLIPSE 1.6
+  OBJECT 'SECONDARY_MIRROR'
+    INTERFACE COAT -REFL
+
+SURFACES 
+  OPTICAL Z 0 -40 -1 ELLIPSE 5 5 0.25
+  OBJECT 'PRIMARY_MIRROR' 
+    INTERFACE COAT -REFL
+
+SURFACES 
+  PLANE Z 10 ELLIPSE 0.25
+  OBJECT 'DETECTOR' 
+
+GRID ELLIPTIC Z -20 -4@5 10 10  !! To show ray path
+  SOURCE DIRECTION 0 0 1
+  
+PLOT FACETS 5 5 OVERLAY
+TRACE PLOT
+RETURN

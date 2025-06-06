@@ -1,0 +1,55 @@
+!!++
+!! FIBER_PIPE.INR
+!! Title: Fiber Light Pipe
+!! Category: Simple Problem
+!! Keywords: Geometry, TORUS, LIMITS, fiber, pipe  
+!! Description: A fiber light pipe made with
+!! TORUS and PLANE surfaces. The LIMITS command
+!! specifies which half of each torus to keep.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/05/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+ 
+MEDIA
+  1.45277 'SILICA'
+  
+SURFACES
+  PLANE X 0 ELLIPSE -2@.5
+  SHIFT Y 7
+  OBJECT 'INPUT_FACE'
+    INTERFACE COAT +BARE AIR SILICA  
+
+SURFACES
+  TORUS Z 0 3.5 .5 .5
+    SHIFT Y 3.5
+  OBJECT 'UPPER_TORUS'
+    LIMITS 0 10 -4@15
+    INTERFACE COAT +BARE AIR SILICA
+    
+SURFACES
+  TORUS Z 0 3.5 .5 .5
+    SHIFT Y -3.5
+  OBJECT 'LOWER_TORUS'
+    LIMITS -10 0 -4@15
+    INTERFACE COAT +BARE AIR SILICA
+SURFACES
+  TORUS Z 0 3.5 .5 .5
+    SHIFT Y -10.5
+  OBJECT 'OTHER_TORUS'
+    LIMITS 0 10 -4@15
+    INTERFACE COAT +BARE AIR SILICA 
+      
+SURFACES
+  PLANE X 0 ELLIPSE -2@.5 
+  SHIFT Y -14
+  OBJECT 'OUTPUT_FACE'
+    INTERFACE COAT +BARE AIR SILICA
+
+WINDOW Y X
+PLOT FACETS 5 5
+RETURN

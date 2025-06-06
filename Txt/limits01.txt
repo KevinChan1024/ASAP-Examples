@@ -1,0 +1,32 @@
+!!++
+!! LIMITS01.INR
+!! Title: Object Bounding Box
+!! Category: Isolated Command
+!! Keywords: LIMITS, OBJECT
+!! Description: Defines an optical surface
+!! with a radius of curvature equal to -30
+!! and a conic constant equal to -1. The
+!! object is bounded by a cylinder whose
+!! semi-diameter is equal to 4 and whose
+!! z limits [in global coordinates] extend
+!! from -1 to 1. The object has a hole with
+!! a semi-diameter of .8 at its origin.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 12/21/2001 - cp - modified file structure; added comment
+!! 10/09/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  OPTICAL Z 0 -30 -1 
+  OBJECT 'PRIMARY_MIRROR'
+    LIMITS -4 4 -4 4 -1 1 Z .2
+!! Note: A warning will occur regarding facetting
+
+RETURN
+
+

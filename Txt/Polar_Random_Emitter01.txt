@@ -1,0 +1,76 @@
+!!++
+!! POLAR_RANDOM_EMITTER01.INR
+!! Title: Controlling Polarization of Emitters
+!! Category: Simple Problem
+!! Keywords: Polarization, POLARIZ RANDOM, POLARIZ K, POLARIZ TREF
+!! Description: Control polarization of emitters using
+!! POLARIZ RANDOM, and show the polarization in the 3D Viewer. 
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 06/12/2008 - cp - added header
+!! 06/04/2008 - jh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 555 NM
+
+POLARIZ OFF
+
+!! make an unpolarized DUMP file
+EMITTING RECT Z 5 0.3 0.3 51 30 30 
+DUMP UNPOL.DIS
+
+!! remove the rays of the unpolarized source
+RAYS 0
+
+!! make little planes to show source positions
+SURFACES
+  PLANE Z 10 RECT 2@0.15 
+  PLANE Z 10 RECT 2@0.15 
+    SHIFT Y 2
+  PLANE Z 10 RECT 2@0.15 
+    SHIFT Y -2
+  PLANE Z 5 RECT 2@0.30
+OBJECT 
+  .4 'BASE_PLANE_1'
+  .3 'BASE_PLANE_2'
+  .2 'BASE_PLANE_3'
+  .1 'BASE_PLANE_D'
+
+!! define polarization state basis by reference ray
+POLARIZ K Z         !! set direction of reference ray 
+POLARIZ TREF X      !! set polarization reference direction
+
+!! make three emitting sources with different randomization schemes
+
+!! set polarization to uniform, full randomization default 
+POLARIZ RANDOM      !! ellipticity [0,1]; orientation [-180,180]; initial phase [0,360]
+EMITTING RECT Z 10+1E-3 2@0.15 51 2@30 
+  SHIFT Y 2
+
+!! set polarization to limited Gaussian variation of all polarization parameters
+POLARIZ RANDOM  GAUSSIAN 0 0.05 44 46 0 45   !! Gaussian distribution in ellipticity, orientation, and initial phase of components 
+EMITTING RECT Z 10+1E-3 2@0.15 51 2@30
+  SHIFT Y -2
+  
+!! set polarization to uniform variation of polarization orientation only, with ellipticity 0 (linear states)
+POLARIZ RANDOM  UNIFORM 0 0 -180 180 0 0   !! uniform distribution in orientation only, other values fixed, linear states
+EMITTING RECT Z 10+1E-3 2@0.15 51 2@30
+
+!! randomize the polarization of the unpolarized DUMPed source
+POLARIZ RANDOM  UNIFORM 0 0 44 46 0 0   !! uniform distribution in orientation only, other values fixed, linear states
+EMITTING DATA UNPOL.DIS
+
+
+!! plot the rays and polarization 
+WINDOW Y 0 0 Z 4 13
+PLOT FACETS 3 3 0 OVERLAY
+PLOT RAYS 2.0 COLOR 2 OVERLAY
+MOVE BY 1.9
+PLOT POLARIZATION COLOR 3 
+
+$VIEW
+ 

@@ -1,0 +1,55 @@
+!!++
+!! REDEFINE01.INR
+!! Title: Output From REDEFINE SURFACE
+!! Category: Isolated Command
+!! Keywords: REDEFINE, SURFACE
+!! Description: Output from REDEFINE SURFACE
+!! command. A hexagonal edge was redefined to an
+!! alternate optical surface to make a hexagonal
+!! mirror. This is not a runable script file.
+!! CURVEDG is the output entity identifier and data 
+!! base location for edge objects.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 09/20/2005 - cp - added comment
+!! 10/10/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+CURVEDG  1: Pnts= 1 (POINTS  )  X  0.000000   Y  1.90520   Z -.907447E-01
+  This entity used by objects   1
+  Points and Connection Factors:
+     x         y         z        q        x        y        z         q
+ 0.0000000 0.0000000 0.0000000   1.00000
+  Sweep distance & direction   0.000   0.000000     0.000000     0.000000
+ 
+ CURVEDG    2: Pnts=   6  (POINTS  ) X 0.500000    Y  2.77120   Z -.198239
+  This entity used by objects   1
+  Points and Connection Factors:
+
+     x         y        z         q       x          y         z      q
+  0.000000  0.000000  0.000000 1.00000 -1.000000  0.000000  0.000000 1.00000
+ -1.500000 -0.866000  0.082494 1.00000 -1.000000 -1.732000  0.164990 1.00000
+  0.000000 -1.732000  0.164990 1.00000  0.500000 -0.866000  0.082494 1.00000
+  Sweep distance & direction   0.000   0.000000     0.948307E-01  0.995493
+ 
+ SURFFUNC  3: Degr= 1x2(OPTICAL ) X 0.000000     Y 0.000000     Z 0.000000
+  Branch Test sign and direction  1.  0.000000    0.000000        1.00000
+
+  Local Ave Radius -20.000    Normal  0.0000000    0.0000000    1.0000000
+  This entity used by objects   1
+  Polynomial Coefficients:
+  x2    0.250000E-01  y2    0.250000E-01  z      1.00000
+ 
+ OBJECT   1: HEX_MIRROR_1
+  Physical Surface    2 (POINTS  ) to    1 (POINTS  )
+    Alternate Surface or Normal     3 (OPTICAL )
+        Box X -1.020   1.020  Y  1.019     2.791    Z -.2182    -.1325E-1
+             width= 2.040          width= 1.772          width=0.2050
+
+  Coating  1 at 0.0000     wavelength
+  Interface Reflectivity 1.000000
+ 
+                        0.0000
+ COATINGS Name           R  1  T
+  1 REFL              1.000 0.000

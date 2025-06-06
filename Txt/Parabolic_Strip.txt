@@ -1,0 +1,32 @@
+!!++
+!! PARABOLIC_STRIP.INR
+!! Title: Parabolic Strip by Swept Edge
+!! Category: Simple Problem
+!! Keywords: Geometry, parabolic, strip, SWEEP, EDGES, POINTS, ribbon
+!! Description: This shows how to make a parabolic surface section
+!! using POINTS with the 2 option to specify a parabolic curve with
+!! control point. SWEEP DIRECTION makes the strip surface.
+!! Edit History: (latest first)
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES 
+  POINTS 0 0 0 ABS
+    .1 1 -1 2, .1 -1 0 1, .1 1 1 0
+!! Control Point is at -sag (-Z)
+!! Z=1/4F with F=.25, so Z=1
+
+    SWEEP DIRECTION -.2 1 0 0 
+  OBJECT
+ 
+WINDOW Y Z
+OBLIQUE
+PLOT FACETS 11 7
+OBLIQUE OFF
+WINDOW Y X
+PLOT FACETS 11 7 
+$VIEW
+RETURN

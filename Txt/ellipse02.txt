@@ -1,0 +1,22 @@
+!!++
+!! ELLIPSE02.INR
+!! Title: A Partial Ellipse
+!! Category: Isolated Command
+!! Keywords: ELLIPSE, EDGES  
+!! Description: A partial ellipse shown
+!! with PLOT EDGES command. A similar 
+!! result could be had using ARC.
+!! Edit History: (latest first)
+!! 10/04/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  ELLIPSE Z 0, 1 2, 16 45 325
+WINDOW Y X
+WINDOW 1.5  !! Enlarge 50%
+PLOT EDGES 'EDGE:ELLIPSE' COLORS 11
+RETURN

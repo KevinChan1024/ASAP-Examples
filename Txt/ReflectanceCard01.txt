@@ -1,0 +1,65 @@
+!!++
+!! REFLECTANCE_CARD01.INR
+!! Title: Measuring Kodak(tm) Reflectance Cards
+!! Category: Simple Problem
+!! Keywords: Analysis, reflectance, card, Kodak, Lambertian, Scatter, MODELS
+!! Description: Measuring an 18% or 90% Kodak reflectance card.
+!! A light source is aimed at the Lambertian reflector card.
+!! Reflected scattered rays are collected by an outer hemisphere.
+!! Total flux on the hemisphere is equal to the reflectance card setting.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 04/09/2007 - cp - added header
+!! 04/04/2007 - wjd - creation
+!!--
+
+SYSTEM NEW
+RESET
+   
+UNITS MM
+WAVELENGTH 550 NM
+PI=22/7
+
+!! REFLECTANCE LEVEL (SET THE DESIRED LEVEL)
+REFLECT_LEVEL=0.18
+!! REFLECT_LEVEL=0.90
+
+MODELS
+  LAMBERTIAN (REFLECT_LEVEL)
+  RETURN
+  
+******************************************
+!! GEOMETRY
+
+ENTITIES OBJECT; RECTANGLE Z 0 4.5 5.5 'REFLECTANCE_CARD'
+  INTERFACE 1E-12 0 AIR AIR
+  SCATTER MODEL 1
+    TOWARDS REFL 100 0
+RETURN
+
+SURFACES
+  ELLIPSOID 10 10 10 0 0 1 -Z
+  OBJECT 'HEMISPHERE'
+
+******************************************
+!! SOURCE
+
+GRID ELLIPTIC Z -8 -4@2 2@11
+SOURCE DIRECTION 0 0 1
+FLUX TOTAL 1
+
+****************************************** 
+!! ANALYSIS
+
+WINDOW Y X
+PLOT FACETS 3 3 0 OVERLAY
+TRACE PLOT
+$VIEW  
+
+CONSIDER ONLY HEMISPHERE
+
+SPOTS POSITION YX ATTRIBUTE 1
+STATS
+RETURN
+  
+

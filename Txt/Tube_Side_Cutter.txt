@@ -1,0 +1,40 @@
+!!++
+!! TUBE_SIDE_CUTTER.INR
+!! Title: Trapezoidal Hole in a Tube
+!! Category: Simple Problem
+!! Keywords: Edges, BOUNDS, TUBE, hole, cutting, ASCALE, SWEEP
+!! Description: The following example cuts a trapezoid hole
+!! in one side of a tube surface by bounding an edge and a PLANE
+!! at the same time. The PLANE removes the back end of the tube
+!! while punching out a hole in the front end with EDGE; RECTANGLE.
+!! The EDGE; RECTANGLE has been previously scaled down at one end
+!! to make it trapezoidal.  Finally, the back half of the tube
+!! is brought back by bounding again with the PLANE surface.
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES 
+  TUBE Z -10 2@10 10 2@10  !! The surface to be bounded
+
+EDGES
+  RECTANGLE Y 0 3 5
+    ASCALE 1 1.5  !! Changes scale of sides to make a trapezoid
+    SWEEP DIRECTION -20 0 1 0  !! sweep out through tube wall
+SURFACES
+  PLANE Y 0  !! The tube slicer
+OBJECT; .3 'TUBE_TRIMMED_FRONT'  !! Make the tube into an object                                          
+  BOUNDS -.1 .2   !! Cuts off back side of tube and punches hole in front
+OBJECT; .3 'LED_BACK'  !! Make tube into another object
+  BOUNDS .1  !! Leaves only the back end
+
+OBLIQUE
+WINDOW Z X
+
+PLOT FACETS 11 11  !! odd numbers plot a little better
+RETURN

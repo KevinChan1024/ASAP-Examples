@@ -1,0 +1,343 @@
+!!++
+!! SCATTER_BSDF.INR
+!! Title: Using Scatter Models
+!! Category: Simple Problem
+!! Keywords: Scatter, SCATTER, BSDFDATA, ANGLES, MODELS, TOWARDS, SPEC, Lambertian, $FCN, USERBSDF
+!! Description:  For testing various scatter models using different
+!! incident angles, number of scatter rays, and direction. Note that 
+!! BSDFDATA ANGLES normally takes thousands of data points for ASAP to
+!! do any reasonable attempt at interpolation over an entire hemisphere.
+!! The following is only a crude example to show how the data is set up.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/08/2006 - cp - updated command syntax and description
+!! 12/09/2004 - cp - removed TOWARDS parameter no longer used 
+!! 04/16/2003 - cp - modified comments in BSDFDATA ANGLES model
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.5 'GLASS'
+
+SPLIT 1 
+PIXELS 71
+
+INP_ANG=0       !! Incident angle
+SCAT_NUM=1000   !! Number of scattered rays
+DIR=0           !! Scatter direction
+MODEL_NUM=1     !! MODEL chosen
+
+$ASK INP_ANG 'Enter incident angle of input rays:'
+$ASK SCAT_NUM 'Number of scattered rays:'
+$ASK DIR 'Scatter direction (bet. 0=Norm / 1=Spec):'
+$ASK MODEL_NUM 'Model Number --> 1=BSDF, 2=USER, 3=Lamb:'
+
+A=SIN[60]^2  !! Scale factor
+$FCN GDIS GAUS(SQRT(_1/A))  !! Can put your own model here
+
+MODELS  !! Below is an example of in-line data
+  BSDFDATA ANGLES  !! PLOT  !! This is Model 1
+    0  0       !! First 2 numbers (a0 b0) indicate Polar/Az specular angle.
+    10 0 .03   !! The data following are the resulting scatter flux at specified  
+    20 0 .085  !! angles (a b f). All angles (including the first two) are
+    30 0 .09   !! given with respect to the surface Normal (polar).
+    40 0 .1    !! Azimuth will be symmetrical if 0 is specified.
+    50 0 .07   !! ASAP linearly interpolates in log amplitude space for 
+    60 0 .050  !! coefficients between angles given.
+    70 0 .040
+    80 0 .012
+    90 0 1E-8
+    
+    30 0       !! Note that these numbers are still measurements in degrees       
+    10 0 .1    !! from the surface Normal. This group represents scatter energy   
+    20 0 .285  !! created by an incident ray with a specular direction            
+    30 0 .324  !! of 30° Polar and 0° azimuth, with respect to the surface Normal.                                    
+    40 0 .265  
+    50 0 .210
+    60 0 .170
+    70 0 .150
+    80 0 .130
+    90 0 1E-8
+    
+    60 0 
+    10 0 .001
+    20 0 .085
+    30 0 .11
+    40 0 .172
+    50 0 .255
+    60 0 .250
+    70 0 .240
+    80 0 .132
+    90 0 1E-8
+    
+    89 0
+    10 0 .023
+    20 0 .045
+    30 0 .09
+    40 0 .36
+    50 0 .25
+    60 0 .16
+    70 0 .12
+    80 0 .02
+    90 0 1E-8
+    
+    30 180 
+    10 0 .01
+    20 0 .085
+    30 0 .23
+    40 0 .36
+    50 0 .355
+    60 0 .250
+    70 0 .240
+    80 0 .12
+    90 0 1E-8
+    
+    60 180 
+    10 0 .04
+    20 0 .085
+    30 0 .13
+    40 0 .165
+    50 0 .155
+    60 0 .150
+    70 0 .140
+    80 0 .002
+    90 0 1E-8
+    
+    89 180
+    10 0 .003
+    20 0 .055
+    30 0 .06
+    40 0 .156
+    50 0 .155
+    60 0 .150
+    70 0 .140
+    80 0 .02
+    90 0 1E-8
+    
+    0 0
+    10 10  .3
+    10 20  .35
+    10 30  .155
+    10 40  .12
+    10 50  .18
+    10 60  .250
+    10 70  .240
+    10 80  .2
+    10 90  1E-8
+    
+    30 0
+    20 10  .13
+    20 20  .135
+    20 30  .355
+    20 40  .389
+    20 50  .28
+    20 60  .150
+    20 70  .140
+    20 80  .06
+    20 90  1E-8
+    
+    60 0
+    40 10  .005
+    40 20  .235
+    40 30  .255
+    40 40  .289
+    40 50  .3
+    40 60  .25
+    40 70  .21
+    40 80  .2
+    40 90  1E-8
+    
+    89 0
+    60 10  .1
+    60 20  .12
+    60 30  .15
+    60 40  .189
+    60 50  .28
+    60 60  .250
+    60 70  .240
+    60 80  .1
+    60 90  1E-8
+    
+    30 0
+    10 10  .1
+    10 20  .2
+    10 30  .255
+    10 40  .189
+    10 50  .18
+    10 60  .150
+    10 70  .110
+    10 80  .05
+    10 90  1E-8
+    
+    60 0
+    10 10  .2
+    10 20  .235
+    10 30  .194
+    10 40  .189
+    10 50  .18
+    10 60  .150
+    10 70  .08
+    10 80  .01
+    10 90  1E-8
+    
+    89 0
+    10 10  .3
+    10 20  .35
+    10 30  .296
+    10 40  .283
+    10 50  .18
+    10 60  .150
+    10 70  .140
+    10 80  .04
+    10 90  1E-8
+    
+    30 180
+    20 10  .12
+    20 20  .35
+    20 30  .280
+    20 40  .230
+    20 50  .20
+    20 60  .150
+    20 70  .140
+    20 80  .12
+    20 90  1E-8
+    
+    60 180
+    40 10  .13
+    40 20  .135
+    40 30  .255
+    40 40  .289
+    40 50  .28
+    40 60  .250
+    40 70  .140
+    40 80  .12
+    40 90  1E-8
+    
+    89 180
+    60 10  .13
+    60 20  .135
+    60 30  .255
+    60 40  .289
+    60 50  .18
+    60 60  .150
+    60 70  .140
+    60 80  .05
+    60 90  1E-8
+    
+    30 90
+    20 10  .04
+    20 20  .135
+    20 30  .155
+    20 40  .289
+    20 50  .28
+    20 60  .250
+    20 70  .140
+    20 80  .01
+    20 90  1E-8
+    
+    60 90
+    40 10  .13
+    40 20  .135
+    40 30  .255
+    40 40  .289
+    40 50  .228
+    40 60  .210
+    40 70  .140
+    40 80  .07
+    40 90  1E-8
+    
+    89 90
+    60 10  .2
+    60 20  .21
+    60 30  .255
+    60 40  .35
+    60 50  .28
+    60 60  .150
+    60 70  .140
+    60 80  .1
+    60 90  1E-8
+    
+    30 45
+    20 10  .13
+    20 20  .135
+    20 30  .120
+    20 40  .11
+    20 50  .1
+    20 60  .1
+    20 70  .1
+    20 80  .04
+    20 90  1E-8
+    
+    60 45
+    40 10  .002
+    40 20  .035
+    40 30  .06
+    40 40  .3
+    40 50  .8
+    40 60  .25
+    40 70  .04
+    40 80  .01
+    40 90  1E-8
+    
+    89 45
+    60 10  .024
+    60 20  .035
+    60 30  .085
+    60 40  .21
+    60 50  .08
+    60 60  .050
+    60 70  .040
+    60 80  .003
+    60 90  1E-8
+
+  USERBSDF GDIS  !! Model 2
+  LAMBERTIAN .3  !! Model 3  
+ 
+SURFACES
+  PLANE Z 0 ELLIPSE 1
+OBJECT 'SCAT_SURFACE'
+  INTERFACE 1E-12 0  !! Allow only scattered rays to survive
+!! To continue the specular component use 'INTERFACE 1 0' but note
+!! that the specular will be added to the scatter flux (such as ~1.3 for a .3
+!! Lambertian setting) and will have to be manually adjusted afterward, if
+!! flux is to be conserved.
+
+  SCATTER MODEL (MODEL_NUM)
+    TOWARDS SPEC (SCAT_NUM) 1.57 (DIR) 
+
+SURFACES
+  OPTICAL Z -1.0 1.0 ELLIPSE 1.0  
+OBJECT 'REFLECT'
+
+GRID RECT Z -.001 -4@.01 2@1 RANDOM 1  !! 1 ray for display only
+  SOURCE DIRECTION Z (INP_ANG)
+
+WINDOW X Y
+PLOT MESH 3 OVERLAY
+CONSIDER EXCEPT REFLECT 
+TRACE
+PLOT RAYS 1  !! Flux weighting shown in ray lengths (Norm. to 1)
+$VIEW
+RAYS 0  !! Clear old rays
+
+GRID RECT Z -.001 -4@.01 2@4 RANDOM 1  !! 16 rays for analysis
+  SOURCE DIRECTION Z (INP_ANG)
+CONSIDER ALL
+FLUX TOTAL 1
+TRACE
+STATS
+
+CONSIDER ONLY REFLECT
+STATS
+WINDOW X Y
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY 
+  AVERAGE
+  AVERAGE
+  DIRECTION UNWRAP 'REFLECTED FLUX'
+STATS
+RETURN
+

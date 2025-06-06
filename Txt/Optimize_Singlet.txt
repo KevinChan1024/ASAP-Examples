@@ -1,0 +1,67 @@
+!!++
+!! OPTIMIZE_SINGLET.INR
+!! Title: Optimizing a singlet lens
+!! Category: Simple Problem
+!! Keywords: Lenses, Optimization, ABERRATIONS, VARIABLES, MINIMIZE, STORE
+!! Description:  Optimization of singlet lens bending factor.
+!! Finds the minimum rms spot size on axis.  The results are 
+!! stored and the optimized system is traced.  The resulting
+!! bending factor and curvatures are printed at the end.
+!! See also "ITER_SINGLET01.INR" and "ITER_SINGLET02.INR"
+!! for a comparison using $ITER (both forms).
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/08/2001 - cp - modified file names
+!! 03/39/2001 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH .6328 UM  !! HeNe laser
+
+!! Establish the starting point for a singlet lens.
+!! The starting focal length is 100 mm, and this will
+!! be maintained by varying the curvature of the back
+!! surface.  Start with a symmetric lens (bending=0).
+
+LENSES
+  SINGLET Z 0  1 5 SCHOTT_BK7 FL 100 0
+
+!! ABERRATIONS lists and plots aberations, and establishes
+!! the first order properties of the optical system
+   
+ABERRATIONS LIST PLOT,
+  FB 0,           !! Fractional field points
+  UB0 TAN[10]     ! Half field of view
+
+!! VARIABLES establishes the free parameters
+
+VARIABLES BN 1 2 !! Vary bending only
+
+!! MINIMIZE starts minimization.  Other constraints can go 
+!! here.  Local minimization is the default. 
+
+MINIMIZE
+
+!! Save the result to a macro, and run it to see results
+
+STORE SINGLET.MAC
+$SINGLET
+
+!! Print results to output window
+
+
+$GRAB ' -2-    OPTIC Z  0.000000'  0 1 RC1
+$GRAB ' -2-    OPTIC Z  1.000000'  0 1 RC2
+
+BN=(1/RC1+1/RC2)/(1/RC1-1/RC2)
+
+$ECHO NONE
+$SCR 3
+Front radius of curvature: \RC1.4   \
+Back radius of curvature:  \RC2.4   \
+Bending factor: \BN.4  \ 
+
+$ECHO ALL

@@ -1,0 +1,80 @@
+!!++
+!! APODIZE_BY_HAND_DIR.INR
+!! Title: Apodizing a 2D source in Direction with User Data 
+!! Category: Simple Problem
+!! Keywords: Radiometry, apodizing, APODIZE, hand, COMBINE, DISPLAY, distribution, SPOTS, WRITE
+!! Description: How to create a directional display file with user
+!! supplied data. Then multiply this by a 2D source file to apply
+!! apodization in direction. The format shown below must be followed
+!! exactly.  The "DISPLAY -9" tells ASAP to rewind the BRO009.DAT
+!! file and begin writing with the following format and data.
+!! In the example, since X is given first, the display data
+!! will be in the Window of Y-Z. The value of X is then irrelevant.
+!! The data that follows may be replaced with a $READ command
+!! followed by the file name containing the data.
+!! Edit History: (latest first)
+!! 11/11/2013 - gb - Added APODIZE to keywords
+!! 07/29/2009 - cp - corrected display header syntax
+!! 08/19/2005 - cp - converted from Apodize_by_Hand.inr
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+YMIN=-1 !! Directional window
+YMAX=1
+ZMIN=-1
+ZMAX=1
+
+EMITTING RECT X -5 -2@2 100000  ISO
+  FLUX TOTAL 1
+
+WINDOW Y (YMIN) (YMAX) Z (ZMIN) (ZMAX)
+PIXELS 6  !! To match distribution file size below
+SPOTS DIRECTION ATTRIBUTE 0  !! Create display file to be used later
+DISPLAY  !! Brings up BRO009.DAT by default
+  CONTOUR 10 TICS   'Original Source File'
+  ISOMETRIC 'Original Source File'
+  WRITE RESULT DIS  !! Write original distribution to file
+RADIANT X 0 90 18 -180 180 36 !! To show MESH plot
+DISPLAY
+AVERAGE
+MESH 
+$VIEW
+TRANSPOSE
+GRAPH
+RETURN 
+
+!! Hand-made apodization
+DISPLAY -9  !! Create your own distribution file - gets saved in BRO009.DAT
+A 0 SPOTS B (YMIN) (YMAX) 6 C (ZMIN) (ZMAX) 6  !! X position (0) not important
+0.7 0.8 0.6 0.5 0.4 0.3  !! SPOTS POS is assumed due to XYZ letters used
+0.9 1.0 0.9 0.8 0.5 0.2  !! as opposed to ABC for SPOTS DIR.
+0.6 0.6 0.5 0.4 0.2 0.5  !! Data can be brought in with $READ.
+0.5 0.4 0.3 0.5 0.7 0.8  !! Use $FAST in first line of external file
+0.3 0.2 0.1 0.3 0.5 0.6  !! to exceed 344 char limit, if necessary.
+0.5 0.6 0.8 0.6 0.4 0.3
+
+DISPLAY  !! Brings up new BRO009.DAT
+  CONTOUR 10 TICS    'Hand Made Display file'
+  ISOMETRIC  'Hand Made Display file' 
+  $FCN MULT (_1*_2)
+  COMBINE RESULT MULT !! Multiply RESULT by hand-made apodization 
+  WRITE RESULT DIS    !! and save in RESULT.
+RETURN
+$IO VECTOR REWIND
+DISPLAY RESULT
+  CONTOUR  10 TICS   'Apodized by Hand'
+  ISOMETRIC 'Apodized by Hand'
+EMITTING DATA RESULT 1000
+RADIANT X 0 90 18 -180 180 36 
+DISPLAY
+AVERAGE
+MESH 
+$VIEW 
+TRANSPOSE
+GRAPH
+RETURN  
+
+ 

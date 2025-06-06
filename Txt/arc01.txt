@@ -1,0 +1,21 @@
+!!++
+!! ARC01.INR
+!! Title: A Simple Arc Edge
+!! Category: Isolated Command
+!! Keywords: ARC, EDGES  
+!! Description: A simple 270° ARC edge displayed
+!! with PLOT EDGES.
+!! Edit History: (latest first)
+!! 10/04/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  ARC Z 0, 1 0,  0 0,  270
+WINDOW Y X
+WINDOW 1.5  !! Enlarge 50%
+PLOT EDGES 'EDGE:ARC' COLORS 11 
+RETURN

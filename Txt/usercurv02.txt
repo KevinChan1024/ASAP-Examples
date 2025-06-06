@@ -1,0 +1,46 @@
+!!++
+!! USERCURV02.INR
+!! Title: Two USERCURVE Surfaces
+!! Category: Isolated Command
+!! Keywords: USERCURVE, $FCN
+!! Description: Using USERCURVE to make two very different
+!! type of surfaces. The first USERCURVE passes a user
+!! parameter (_) range to the function using 100 segments
+!! and SMOOTH applied to make a bumpy circle. The second
+!! passes polar and azimuth coordinate ranges (_1 & _2) 
+!! with only 6 segments each to make a rough sphere.
+!! Edit History: (latest first) 
+!! 8/13//2017 - kg - corrected examples to original values and intents
+!! 11/18/2014 - mt - corrected format of $FCN 
+!! 07/25/2008 - cp - corrected command name
+!! 02/28/2002 - cp - corrected style
+!! 10/18/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! A wiggly circle definition:
+PI=ACOS(-1)
+$FCN SQUIGGLE A=2*PI*_,
+              R=1+0.1*SIN(10*A),
+              R*COS(A), R*SIN(A) 0  !!x,y,z
+EDGES
+  USERCURVE SQUIGGLE 0 1 100
+OBJECT
+  
+!! Bilinear approximation to a sphere surface:
+$FCN SPHERE R=1 P=_1*PI/180,
+            A=_2*PI/180,
+            R*COS(A)*SIN(P), R*SIN(A)*SIN(P), R*COS(P) !!x,y,z
+EDGES
+  USERCURVE SPHERE 0 180 6 0 360 6
+OBJECT
+  SHIFT Z 2
+    
+WINDOW Y Z
+OBLIQUE
+PLOT FACETS
+$VIEW
+RETURN

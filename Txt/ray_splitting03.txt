@@ -1,0 +1,58 @@
+!!++
+!! RAY_SPLITTING03.INR
+!! Title: Cube Beamsplitter
+!! Category: Simple Problem
+!! Keywords: Tracing, rays, splitting
+!! Description: ASAP model of beamsplitter
+!! to demo ray splitting.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/11/2002 - cp - reformatted
+!! 10/11/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  1.5168   'BK7'
+COATINGS PROPERTIES
+  0.5 0.5  'BSCOAT'
+  0    1   'TRANS'
+
+SPLIT 1
+
+SURFACES
+  PLANE Y 2 RECTANGLE 2
+OBJECT 'TOP_FACE'
+  INTERFACE COAT +TRANS AIR BK7
+SURFACES
+  PLANE Y -2 RECTANGLE 2
+OBJECT 'BOTTOM_FACE'
+  INTERFACE COAT +TRANS AIR BK7
+SURFACES
+  PLANE Z 2 RECTANGLE 2
+OBJECT 'BACK_FACE'
+  INTERFACE COAT +TRANS AIR BK7
+SURFACES
+  PLANE Z -2 RECTANGLE 2
+OBJECT 'FRONT_FACE'
+  INTERFACE REPEAT
+SURFACES
+  PLANE Z 0
+    ROTATE X 45 0 0
+OBJECT 'BEAMSPLITTER'
+  LIMITS -4@2
+  INTERFACE COAT BSCOAT BK7 BK7
+ 
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPTIC Z -4 -4@1.5 1 5
+  SOURCE FOCUS 0 0 6
+
+TITLE '50/50 CUBE BEAMSPLITTER'
+WINDOW Y Z
+WINDOW 2  !! Double window size
+PROFILES OVERLAY
+TRACE PLOT
+RETURN

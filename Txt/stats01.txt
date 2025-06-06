@@ -1,0 +1,35 @@
+!!++
+!! STATS01.INR
+!! Title: STATS Command Options
+!! Category: Isolated Command
+!! Keywords: STATS, POS, DIRECTION, Sources 
+!! Description: Various options of the
+!! STATS command. See below for explanations.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 0.5 UM
+GRID RECT Z 0 -4@10 1 10
+  SOURCE DIRECTION 0 0 1
+
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTH 0.7 UM
+GRID RECT Z 0 -4@10 1 10
+  SOURCE DIRECTION 0 SIN[30] COS[30]
+
+CONSIDER ONLY 0  !! To only view stats on sources, should
+                 !! there be other objects with rays in system
+SELECT ONLY SOURCE 1  !! Select only source 1 for stats data
+
+STATS  !! Show total rays and flux
+STATS POSITION  !! Add centroid positional data
+STATS DIRECTION  !! Add centroid directional data
+RETURN

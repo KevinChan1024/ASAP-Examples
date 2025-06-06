@@ -1,0 +1,25 @@
+!!++
+!! SURF_ZERNIKE01.INR
+!! Title: ZERNIKE Surface
+!! Category: Isolated Command
+!! Keywords: ZERNIKE, SURFACE
+!! Description: A simple zernike surface using
+!! four coefficients.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  ZERNIKE Z 0  0 0 0 .5
+OBJECT
+  
+WINDOW Y Z  !! To view object
+WINDOW 1.5
+PLOT FACETS 5 5 'SURF:ZERNIKE' COLORS 11
+RETURN

@@ -1,0 +1,113 @@
+!!++
+!! VOLUME_SCATTER_INHOMOGENEOUS_01.INR
+!! Title: Inhomogeneous Volume Scattering 
+!! Category: Simple Problem
+!! Keywords: Scatter, $FCN, USERFUNC, MEDIA, inhomogeneous, absorption, VOLUME, VOXELS ABSORBED
+!! Description: Using user-defined functions ($FCN and USERFUNC) to modify
+!! scattering and absorption properties of a volume in order to simulate
+!! spatially varying scattering and absorption behavior.  The homogeneous
+!! scattering and absorption properties are modified point-by-point using
+!! the weighting factors defined by the user-defined functions (via the MEDIA;
+!! SCATTER option.  
+!! Edit History: (latest first) 
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/29/2012 - cp - corrected keywords 
+!! 02/25/2009 - cp - added header
+!! 12/16/2008 - kc - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM 'mW'
+WAVELENGTHS 550 NM
+
+SPLIT 10 MONTECARLO
+LEVEL 100 ALL
+
+WATER=1.33
+MU_A=2 
+
+NRAYS=101
+
+MODEL (VOL_SCA=1)
+  VOLUME 0 2 1  !! Homogeneous scattering model
+  
+
+$FCN SCATTER_DENS 1+EXP(-(_1*_1+_2*_2+_3*_3)*100) !! Scatter modification.  A spatially confined abnormality described  
+                                                  !! by the Gaussian function is embedded in the homogeneous background.   
+SURFACES (SCATTERMOD=1)                               
+  USERFUNC 0 0 0 SCATTER_DENS                        
+                                                     
+$FCN ABSORB_DENS 1+EXP(-(_1*_1+_2*_2+_3*_3)*100)  !! Absorption modification. A spatially confined abnormality described  
+                                                  !! by the Gaussian function is embedded in the homogeneous background.
+SURFACES (ABSORBMOD=2)
+  USERFUNC 0 0 0 ABSORB_DENS
+
+MEDIA
+ (WATER) ABSORB (MU_A) (ABSORBMOD) SCATTER (VOL_SCA) (SCATTERMOD) 0 0.01 'SAMPLE'  !! Inhomogeneous media
+    
+!!GEOMETRY
+SURFACES
+  PLANE Z -1 RECT 2@10
+OBJECT 'FRONT'  
+  INTERFACE COATING BARE AIR SAMPLE
+  
+SURFACES
+  PLANE Z 1 RECT 2@10
+!!  ELLIPSOID 3@1 3@0 
+OBJECT 'BACK'  
+  INTERFACE COAT BARE AIR SAMPLE 
+
+SURFACES
+  PLANE X -10 RECT 10 1
+OBJECT 'X.NEG'
+  INTERFACE COAT BARE AIR SAMPLE
+  
+SURFACES
+  PLANE X 10 RECT 10 1
+OBJECT 'X.POS'
+  INTERFACE COAT BARE AIR SAMPLE
+  
+SURFACES
+  PLANE Y -10 RECT 1 10
+OBJECT 'Y.NEG'
+  INTERFACE COAT BARE AIR SAMPLE
+
+SURFACES
+  PLANE Y 10 RECT 1 10
+OBJECT 'Y.POS'
+  INTERFACE COAT BARE AIR SAMPLE
+
+SURFACES
+  PLANE Z 10 RECT 2@30
+OBJECT 'DETECTOR'
+  INTERFACE 0 0 AIR AIR
+
+!!SOURCE
+GRID ELLIPTIC Z -2 -4@0.2 2@(NRAYS) 
+SOURCE DIRECTION 0 0 1
+FLUX TOTAL 1
+
+MISSED ARROW 3
+
+VOXELS ABSORBED -4@3 -2@1 2@71 10
+
+WINDOW Y -5 5 Z -1 1
+PLOT FACETS 5 5 0 OVERLAY 'background'
+TRACE PLOT 71
+
+$COPY 9 ABSORBED.DIS
+
+$VIEW  
+&VIEW ABSORBED.DIS
+
+$IO
+
+STATS
+
+$DO 1 10
+{DISPLAY ABSORBED ?
+ PICTURE
+ RETURN
+}  

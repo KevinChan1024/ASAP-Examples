@@ -1,0 +1,52 @@
+!!++
+!! CUTOFF.INR
+!! Title: Use of the CUTOFF command
+!! Category: Isolated Command
+!! Keywords: CUTOFF
+!! Description: Adjust level of CUTOFF command to see where rays terminate. 
+!! Edit History: (latest first) 
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 07/25/2008 - cp - changed category
+!! 08/22/2007 - cp - reformatted
+!! 04/06/2007 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+CUTOFF 1E-8  20  !!Try 1E-4, 1E-6, 1E-8 to see where rays terminate
+
+SURFACES
+PLANE Z 0 ELLIPSE 3 3
+OBJECT 'PLANE1'
+INTERFACE 0 1E-3 AIR AIR
+
+SURFACES
+PLANE Z 1 ELLIPSE 3 3
+OBJECT 'PLANE2'
+INTERFACE 0 1E-3 AIR AIR
+
+SURFACES
+PLANE Z 2 ELLIPSE 3 3
+OBJECT 'PLANE3'
+INTERFACE 0 1E-4 AIR AIR
+
+SURFACES
+PLANE Z 3 ELLIPSE 3 3
+OBJECT 'PLANE4'
+INTERFACE 0 1E-4 AIR AIR
+
+SURFACES
+PLANE Z 5 ELLIPSE 3 3
+OBJECT 'DETECTOR'
+
+WINDOW Y Z
+PLOT FACETS 5 5 0  OVERLAY
+GRID ELLIPSE Z -1 -4@2.5 101 101
+SOURCE DIRECTION 0 0 1
+FLUX TOTAL 100
+
+TRACE  PLOT 111  
+STATS
+RETURN
+

@@ -1,0 +1,30 @@
+!!++
+!! SURF_BICONIC01.INR
+!! Title: Biconic Surface
+!! Category: Isolated Command
+!! Keywords: BICONIC, SURFACE, PROFILES
+!! Description: BICONIC surface with profile
+!! plots. Profiles based on default 39 pixels.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/11/2002 - cp - reformatted, changed syntax
+!! 10/16/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+SURFACES
+  BICONIC Z 0 2 4 -1 -1 ELLIPSE 1
+OBJECT
+  
+TITLE 'SURF:BICONIC'  !! For all plots 
+WINDOW Y Z
+  PROFILES COLORS 11  !! Default single slice, in blue
+WINDOW X Z
+  PROFILES  !! Default single slice in default color
+WINDOW Y X
+  PROFILES 0 0 -9  !!  9 slices about center of object
+$VIEW
+RETURN

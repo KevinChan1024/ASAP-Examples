@@ -1,0 +1,46 @@
+!!++
+!! ROUGHNESS_MODEL01.INR
+!! Title: Gaussian Roughness
+!! Category: Isolated Command
+!! Keywords: ROUGHNESS, Scatter, USERBSDF, MODELS, $FCN, Gaussian
+!! Description: A ROUGHNESS model with a USERBSDF Gaussian
+!! function for roughness.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 06/27/2000 - cp - modified format
+!! 01/15/1998 - gp - creation
+!!--
+
+SYSTEM NEW 
+RESET
+
+ANGLE=20
+A=SIN[ANGLE]^2  !! Scale factor
+
+$FCN GDIS GAUS(SQRT(_1/A))
+
+MODELS     !! Define Gaussian model
+  USERBSDF GDIS
+  
+SURFACES   !! Rough Object
+  PLANE Z 0 RECTANGLE 1
+  OBJECT 'ROUGH OBJECT'
+  ROUGHNESS MODEL 1
+  INTERFACE 1 0
+  
+!! Define and trace rays  
+GRID ELLIPTIC Z 0 -4@1 201 201
+  SOURCE DIRECTION 0 0 -1
+MOVE TO Z 1
+FLUX TOTAL 1
+TRACE
+
+!! Calculate and look at angular distribution
+WINDOW Y X
+SPOTS DIRECTION ATTRIBUTE 0  
+STATS
+DISPLAY
+  AVERAGE
+  NORMALIZE MAX
+  ISOMETRIC 'GAUSSIAN SCATTER DISTRIBUTION'
+RETURN

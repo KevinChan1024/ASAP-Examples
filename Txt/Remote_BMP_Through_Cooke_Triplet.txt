@@ -1,0 +1,318 @@
+!!++
+!! REMOTE_BMP_THROUGH_COOKE_TRIPLET.INR
+!! Title: Using Remote for a Three Color Trace
+!! Category: Simple Problem
+!! Keywords: Tracing, Remote, $GUI, $SCR, BMP2DIS, color, Cooke, triplet
+!! Description: This INR file takes a bmp file as an input to an
+!! optical system, splits the different colored components into
+!! their own channels, images each channel through a cooke triplet
+!! onto the detector plane, recombines all the channels, and makes
+!! a bmp of the output image.
+!! It is written such that each color channel is traced on a remote
+!! computer. The file is based on the BMPSourceTrace Project inr.
+!! For best results, 5 to 10 million rays should be traced.
+!! NOTE - BEFORE RUNNING THIS FILE:
+!!   Copy the file HAPPY_COWBOY.BMP (found in Examples folder in HAPPY_COWBOY.ZIP)
+!!   to your Working Directory.
+!!   ASAP Pro (ASAP+) must be installed on the three network computers chosen  
+!!   to run this file, along with proper setup for remote access permissions.
+!!   A dialog will ask for various parameters including the names of these
+!!   three computers. 
+!!   The final composite BMP may be viewed by any 3rd party image viewer.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/23/2012 - cp - fixed remote directory to work with both XP and Win 7
+!! 12/05/2010 - cp - revised for 2010 compatibility  
+!! 01/15/2009 - cp - changed machine names to lower case
+!! 01/14/2009 - cp - added automatic capture of ASAP folder
+!! 12/21/2007 - cp - modified script, description and format
+!! 08/12/2005 - gg - creation
+!!--
+
+!! Reset the system
+
+SYSTEM NEW
+RESET
+
+!! Initialize variables
+C1="tut6"  C2="tut7"  C3="tut8" P1="HAPPY_COWBOY" N1="500000"  P2="101"
+
+SCR_CANCEL=1 !! Allows cancelling of window & terminating demo
+
+$SCR 18 !! The following 18 lines will appear in a dialog box
+This file demonstrates how to use the Remote feature of ASAP.
+It will use a BMP image as the input source of an optical system.
+This must reside in your Working Directory before proceeding.
+The three component colors will be traced separately on individual 
+computers and finally recombined into a composite BMP.
+
+To use the Remote feature you must be using the ASAP Pro (ASAP+) version.
+There must also be three other computers on the network available with
+the same version installed, having the correct permissions setup. 
+
+After filling in the following parameters carefully, choose YES
+to proceed, otherwise hit CANCEL. (No backslashes necessary)
+NAME OF COMPUTER 1: \C1"                        ? 
+NAME OF COMPUTER 2: \C2"                        ? 
+NAME OF COMPUTER 3: \C3"                        ? 
+NAME OF IMAGE FILE: \P1"                        ?
+NUMBER OF RAYS:   \N1"      ? 
+NUMBER OF PIXELS: \P2"   ?
+ 
+$IF (SCR_CANCEL) EQ 1; $GO usercancel !! Tests for Cancel button hit
+SCR_CANCEL=1
+
+!! Before remote session starts
+!! Define a macro that will only contain the geometry of the system
+CREATE_GEOM {
+  UNIT MM
+  WAVELENGTHS 0.4861327 0.5875618 0.6562725 MICRON
+  SPECTRUM 1 1 1
+  $DATIM OFF OFF
+  
+  !! Will contain the cooke triplet, entrance pupil information, 
+  !! image plane location, source information, and diffuser.     
+  !! Important edge definition - Entrace pupil of cooke triplet:
+  EDGES (EP=1000)
+    ELLIPSE Z 11.512 2@10
+    
+  !! Create a diffuser that will scatter light towards the cooke triplet's 
+  !! entrance pupil
+   
+  MODEL 
+    LAMBERTIAN 1
+  RETURN
+   
+  SURFACES
+    PLANE Z -5000 RECTANGLE 100 75 
+  OBJECT 'DIFF'
+    INTERFACE 0 1E-12
+     SCATTER MODEL 1
+     TOWARDS EDGE (EP) 1
+  RETURN 
+    
+  !! Insert the cooke triplet that will be doing the imaging of the original bmp file 
+  LENSES 
+    SEQUENCE RADI 'FIRST CROWN'
+      0 0 0,     0 0 1,   10 22.01   0 0 SK16
+      0 0 3.26,  0 0 1,   10 -435.76 0 0 AIR
+   
+    SEQUENCE RADI 'FLINT'
+      0 0 9.26,  0 0 1,   8 -22.21   0 0 SCHOTTNEW_F2
+      0 0 10.26, 0 0 1,   8 20.29    0 0 AIR
+   
+    REPEAT  0.2   !! Second crown
+                  !! Similar shape to first element
+      SHIFT 0 0 19
+      SCALE 0.9
+   
+  COMPOSITE -3    !! Connect last 3 together
+  OBJECT 'TRIPLET'
+   
+  !! Create a detector plane
+  SURFACES
+    PLANE Z 85.87 RECTANGLE 12 9 !! 2@35
+  OBJECT
+    0.1 'DET'
+}
+
+VER
+&GRAB 'Kernel Version' 0 1 D1 !! Grab ASAP directory name into D1
+
+DIR_GRAB {
+     $SYS ""C:\Program Files\ASAP#3\bin\bmp2dis" #1 #2"
+} 
+
+DIR_GRAB2 {
+  $SYS ""C:\Program Files\ASAP#2\bin\dis2bmp" #1_IMR #1_IMG #1_IMB #1_IMAGE"
+} 
+
+!! Create distribution files for R, G, B, of the original BMP file:
+CREATE_ORIG_PICTURE { 2
+
+  !! Take the original bmp and split it into its R, G, B parts using
+  !! the executable BMP2DIS.
+  !! Save each file with appropriate name and display the picture.
+  DIR_GRAB #1 #2 D1"
+  RETURN  
+  
+  DISPLAY #1#2
+       PICTURE
+  RETURN  
+}
+> NAME OF BMP FILE (NO EXTENSION NECESSARY)
+> R for red, G for green, or B for blue 
+
+
+!! Create a macro that will do the raytrace and make the 
+!! distribution files:
+CREATE_TRACE_DIS { 4
+  !! Take all geometry and integrate the bmp files using emitting data.
+  !! Trace, analyze and save output image.
+  DIF_AREA=100*75
+  SOLAR_C=1368/1000000  !! W/MM2 - Solar constant
+  POWER=0.1*DIF_AREA*SOLAR_C  !! Assuming 10% reflected rays from Sun
+
+  !! Single color raytrace 
+  SEED 1 QUASI
+  $IF #2 EQS R THEN  !! If wavelength dependent media were used
+    WAVELENGTH 0.6562725
+  $ELSEIF #2 EQS G THEN
+    WAVELENGTH 0.5875618
+  $ELSEIF #2 EQS B THEN
+    WAVELENGTH 0.4861327
+  $ENDIF
+  EMITTING DATA #1#2 #3
+    ROTATE Z 90 0 0
+    SCALE  .15625 .15625 1  !! Match image to diffuser surface
+    SHIFT 0 0 -5000.001
+      
+  TRACE 
+  CONSIDER ONLY DET 
+  WINDOW -Y -.73 .73 X -.54 .54 
+  PIXELS #4 !! Use 640 to match input image when enough rays are traced
+  SPOTS POSITION ATTRIBUTE 0
+       
+  DISPLAY 
+    TRANSPOSE
+    !!PICTURE
+    WRITE #1_IM#2
+  RETURN
+   
+  CONSIDER ALL
+  !!STATS
+}
+> NAME OF BMP FILE
+> R, G, OR B 
+> NUMBER OF RAYS TO TRACE 
+> NUMBER OF PIXELS
+
+COLORS_REMOTE { 6
+
+  !! Start remote sessions on all 3 computers
+  $GUI REMOTESTART #1 "C:\USERS\PUBLIC\REMOTE_SESSION\" 
+  $GUI REMOTESTART #2 "C:\USERS\PUBLIC\REMOTE_SESSION\" 
+  $GUI REMOTESTART #3 "C:\USERS\PUBLIC\REMOTE_SESSION\" 
+  
+
+  !! Send all necessary files to remote computers 
+  
+  !! Send the macro create_geom.mac
+  $GUI REMOTESENDFILE #1 "CREATE_GEOM.MAC"
+  $GUI REMOTESENDFILE #2 "CREATE_GEOM.MAC"
+  $GUI REMOTESENDFILE #3 "CREATE_GEOM.MAC"
+  
+  !! Send the macro create_orig_picture.mac
+  $GUI REMOTESENDFILE #1 "#4R.DIS"
+  $GUI REMOTESENDFILE #2 "#4G.DIS"
+  $GUI REMOTESENDFILE #3 "#4B.DIS"
+  
+  !! Send the macro create_trace_dis.mac
+  $GUI REMOTESENDFILE #1 "CREATE_TRACE_DIS.MAC"
+  $GUI REMOTESENDFILE #2 "CREATE_TRACE_DIS.MAC"
+  $GUI REMOTESENDFILE #3 "CREATE_TRACE_DIS.MAC"
+                        
+  !! Run the file that creates geometry
+  $GUI REMOTECOMMAND #1 $CREATE_GEOM
+  $GUI REMOTECOMMAND #2 $CREATE_GEOM
+  $GUI REMOTECOMMAND #3 $CREATE_GEOM
+                                       
+  !! Run the file that traces
+  $GUI REMOTECOMMAND #1 $CREATE_TRACE_DIS #4 R #5 #6
+  $GUI REMOTECOMMAND #2 $CREATE_TRACE_DIS #4 G #5 #6
+  $GUI REMOTECOMMAND #3 $CREATE_TRACE_DIS #4 B #5 #6
+                                       
+  
+  !! Wait for all computers to be complete before exporting
+  !! newly created display files
+
+  STATUS1=0      !! Status of computer 1
+  STATUS2=0      !! Status of computer 2
+  STATUS3=0      !! Status of computer 3  
+  
+  !! Use a $DO loop to repeatedly wait until the last computer
+  !! is finished processing
+  
+  $ECHO NONE 
+  $DO 1 1000
+  {
+    !! Check the status of the last computer that is being issued commands
+    $GUI REMOTEBUSY #1 STATUS1 
+    $GUI REMOTEBUSY #2 STATUS2
+    $GUI REMOTEBUSY #3 STATUS3
+        
+    !! Status of 1 means computer is still busy
+    !! Status 0f 0 means computer is finished computing
+    
+    !! If any of the computers are still busy, wait 5 seconds and check again
+    $IF (STATUS3) EQ 1 OR (STATUS2) EQ 1 OR (STATUS1) EQ 1  
+    	$WAIT 5 
+    !! If all computer are finished processing, leave the $DO loop and continue
+    $IF (STATUS1) EQ 0 AND (STATUS2) EQ 0 AND (STATUS3) EQ 0
+    	$LEAVE !! EXIT $DO LOOP AND CONTINUE WITH MACRO
+  }         
+  $ECHO ALL
+
+  
+  !! Send the desired dis files back to the local computer
+  $GUI REMOTEGETFILE #1 "#4_IMR.DIS"         
+  $GUI REMOTEGETFILE #2 "#4_IMG.DIS"            
+  $GUI REMOTEGETFILE #3 "#4_IMB.DIS"            
+  
+  !! End the remote session
+ $GUI REMOTEEND #1
+ $GUI REMOTEEND #2
+ $GUI REMOTEEND #3
+
+  ***** END OF REMOTE SESSION ***********
+  
+  !! Now bring all display files back together, 
+  !! display them and turn them into a bitmap
+       
+  !! 1st file
+  DISPLAY "#1\#4_IMR"
+       PICTURE
+       WRITE #4_IMR DIS
+  RETURN
+  
+  !! 2nd file
+  DISPLAY "#2\#4_IMG"
+       PICTURE
+       WRITE #4_IMG DIS
+  RETURN
+  
+  !! 3rd file
+  DISPLAY "#3\#4_IMB"
+       PICTURE
+       WRITE #4_IMB DIS
+  RETURN
+  
+  !! Create a bitmap of the entire image with all colors
+  DIR_GRAB2 #4 D1" 
+  RETURN
+}
+> NAME OF COMPUTER 1 (NO BACKSLASHES NECESSARY)
+> NAME OF COMPUTER 2
+> NAME OF COMPUTER 3
+> NAME OF ORIGINAL PICTURE (Type: HAPPY_COWBOY)
+> NUMBER OF RAYS (suggest 200000 min)
+> NUMBER OF PIXELS (101 to 640)
+
+!! Run the file that creates that uses BMP2DIS before transferring files
+$CREATE_ORIG_PICTURE P1" R
+$CREATE_ORIG_PICTURE P1" G
+$CREATE_ORIG_PICTURE P1" B
+
+$COLORS_REMOTE C1" C2" C3" P1" N1" P2" !! All arguments must be transferred as literals
+
+!! Example of alternate method of listing arguments when $SCR not used:
+!!$COLORS_REMOTE TUT6 TUT7 TUT8 HAPPY_COWBOY 1000000
+
+!! Remove old display files to clean up folder
+$SYS "DEL DISPLA*.TMP" 
+
+!! Open HAPPY_COWBOY_IMAGE.BMP with any external image viewer to see result.
+!! Double-click name in ASAP's Local file list, click 'OK' and then 'NO' to let Windows open file.
+
+usercancel !! Label used for a user Cancel from first $SCR
+RETURN

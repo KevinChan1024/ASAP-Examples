@@ -1,0 +1,26 @@
+!!++
+!! POINTS_ARC.INR
+!! Title: POINTS Curve using Arc Parameter
+!! Category: Isolated Command
+!! Keywords: Edges, EDGES, POINTS
+!! Description: This creates a simple curve using the
+!! "-2" connection parameter. The Radius and Angle may
+!! be changed to see how the "parent ellipse" point with
+!! angular subtense works.
+!! Edit History: (latest first)
+!! 03/13/2003 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+ANGLE=45 RADIUS=30
+
+EDGES
+  POINTS  (RADIUS) 0 0 -2,
+    0 0 0 (ANGLE), !! Center of parent ellipse with angular subtense
+    RADIUS*COS[ANGLE] 0 RADIUS*SIN[ANGLE] 0
+  
+WINDOW X -2@(RADIUS) Z -2@(RADIUS)  
+PLOT EDGES
+RETURN

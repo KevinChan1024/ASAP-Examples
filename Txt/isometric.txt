@@ -1,0 +1,33 @@
+!!++
+!! ISOMETRIC.INR
+!! Title: ISOMETRIC Display Command
+!! Category: Isolated Command
+!! Keywords: ISOMETRIC, DISPLAY, USERAPOD
+!! Description: Create a 3-Dimensional plot of 
+!! a SPOTS POSITION distribution file. Performed
+!! after a DISPLAY command. Does not modify
+!! display data. A Gaussian apodized grid is
+!! plotted.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 11/27/2002 - cp - added keyword
+!! 10/04/2000 - cp - modified format;
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM PI=3.1416
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTHS 0.6328 UM 
+USERAPOD POSITION (U=SQRT(PI/2)*0.75) (V=SQRT(PI/2)*0.75) U*V
+GRID ELLIPTIC Z 0 -4@1 2@51
+  SOURCE DIRECTION 0 0 1
+
+WINDOW Y X
+PIXELS 121
+SPOTS POSITION ATTRIBUTE 0
+DISPLAY
+  ISOMETRIC 'SPOTS POSITION DISTRIBUTION FROM A GAUSSIAN APODIZED SOURCE'
+RETURN

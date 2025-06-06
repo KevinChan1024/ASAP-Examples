@@ -1,0 +1,312 @@
+!!++
+!! CPC_BY_BEZIER_EDGES.INR
+!! Title: Non-AXICONIC CPC
+!! Category: Simple Problem
+!! Keywords: Macros_user, cpc, cec, chc, bezier, Edges 
+!! Description: CPC or other type concentrator made with
+!! bezier connected edge points.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 08/10/2006 - cp - added Cancel button to SCR
+!! 03/15/2006 - cp - modified format; added description
+!! 01/05/1998 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Get any changes in params from user:   
+
+ANGL=30      !! Init source angle
+NA_BIG=.40   !! Input NA
+NA_SMALL=.90 !! Output NA 
+N_CPC=1.49   !! CPC index 
+TYPE=1  !! 1=Parabolic (CPC), >1=Hyperbolic (CHC), <1=Elliptical (CEC)
+SCR_CANCEL=1
+
+$SCR 5
+Input NA:     \NA_BIG.2  ?
+Output NA:    \NA_SMALL.2 ? 
+Source Angle: \ANGL ?
+Index: \N_CPC.2 ?
+Type(CPC=1, CHC=2, CEC=0): \TYPE ?  
+
+$IF (SCR_CANCEL) EQ 1; $GO usercancel 
+MEDIA 
+  (N_CPC)   'PLASTIC_CPC'
+
+COATINGS PROPERTIES
+  0 1 'TRANSMIT'
+  0 0 'ABSORB'
+
+IN_ANG=ASIN[NA_BIG]
+OUT_ANG=ASIN[NA_SMALL]
+
+CONE_START=0 
+
+!! Define macro:
+
+TH1TH2 { 5
+
+ !!
+ !! TH1TH2.MAC -creates classical nonimaging Theta1-Theta2 concentrator.
+ !!   Theta1 is the acceptance angle, Theta2 is the maximum output angle.
+ !!   Truncation is supported using either the fraction relative to ideal height or
+ !!   the absolute height (entered using negative of value).
+ !!   Scale is determined by exit width
+ !!
+ WFACT=#5 !! 1=Parabolic (CPC), >1=Hyperbolic (CHC), <1=Elliptical (CEC)
+ EXITWIDTH=#1
+ ACCEPTANG=#2
+ OUTPUTANG=#3
+ ENTRANCEWIDTH=#1*SIN[OUTPUTANG]/SIN[ACCEPTANG]
+ HEIGHT=0.5*(EXITWIDTH+ENTRANCEWIDTH)/TAN[ACCEPTANG]
+
+ !!
+ !! Calculate relative truncation
+ !!
+
+TRUNCTFRACT=#4  !! For external access
+
+ $IF #4 EQ 0 OR #4 GE 1; TRUNCATION=HEIGHT
+ $IF #4 GT 0 AND #4 LE 1; TRUNCATION=HEIGHT*#4
+ $IF #4 LT 0 AND (-#4) GT HEIGHT.; TRUNCATION=HEIGHT
+ $IF #4 LT 0 AND (-#4) LE HEIGHT.; TRUNCATION=-#4
+
+ !!
+ !! Create base shape using Bezier curves. Truncated Bezier calculated if TRUNCATION not
+ !! equal to height.
+ !!
+
+ $IF OUTPUTANG. EQ 90 THEN !! standard cpc 
+  ALPHA=45+ACCEPTANG/2
+  CONTROLZ=0.5*(ENTRANCEWIDTH-EXITWIDTH)*TAN[ALPHA]
+  $IF TRUNCATION. EQ HEIGHT. THEN
+   EDGES; POINTS 0 0 0 ABS
+    ENTRANCEWIDTH/2. 0 HEIGHT. 2
+    ENTRANCEWIDTH/2. 0 CONTROLZ. (WFACT)
+    EXITWIDTH/2. 0 0 0
+   SWEEP AXIS 360 0 0 1
+  $ELSE
+   A=HEIGHT-2*CONTROLZ
+   B=2*CONTROLZ
+   C=-TRUNCATION
+   $IF A. NEQ 0 ; UJ=(-B+SQRT(B^2-4*A*C))/(2*A)
+   $IF A. EQ 0 ; UJ=-C/B
+   P1X=(1-UJ)*EXITWIDTH/2+UJ*ENTRANCEWIDTH/2.
+   P1Z=UJ*CONTROLZ
+   P2X=((1-UJ)^2)*EXITWIDTH/2+(UJ^2)*ENTRANCEWIDTH/2+2*UJ*(1-UJ)*ENTRANCEWIDTH/2
+   P2Z=2*UJ*(1-UJ)*CONTROLZ+(UJ^2)*HEIGHT
+   EDGES; POINTS 0 0 0 ABS
+    EXITWIDTH/2. 0 0 2
+    P1X. 0 P1Z. (WFACT)
+    P2X. 0 P2Z. 0
+    SWEEP AXIS 360 0 0 1
+   HEIGHT=TRUNCATION ENTRANCEWIDTH=2*P2X
+  $ENDIF
+ $ELSE !! th1-th2 concentrator
+  ALPHA=90-(ACCEPTANG+OUTPUTANG)/2
+  ZLINEAR=EXITWIDTH/(TAN[OUTPUTANG]-TAN[90-ALPHA-ACCEPTANG])
+  XLINEAR=EXITWIDTH/2.+ZLINEAR*TAN[90-ALPHA-ACCEPTANG]
+  CONTROLZ=ZLINEAR+(ENTRANCEWIDTH*0.5-XLINEAR)/TAN[90-ALPHA-ACCEPTANG]
+  $IF TRUNCATION. EQ HEIGHT. THEN
+   EDGE; POINTS 0 0 0 ABS
+    ENTRANCEWIDTH/2. 0 HEIGHT. 2
+    ENTRANCEWIDTH/2. 0 CONTROLZ. (WFACT)
+    XLINEAR. 0 ZLINEAR. 1
+    EXITWIDTH/2. 0 0 0
+   SWEEP AXIS 360 0 0 1
+  $ELSEIF TRUNCATION. LE ZLINEAR. THEN
+   XLINEAR=EXITWIDTH/2+(TRUNCATION/ZLINEAR)*(XLINEAR-EXITWIDTH/2)
+   ZLINEAR=TRUNCATION
+   EDGES; POINTS 0 0 0 ABS
+    EXITWIDTH/2. 0 0 1
+    XLINEAR. 0 ZLINEAR. 0
+   SWEEP AXIS 360 0 0 1
+   HEIGHT=ZLINEAR ENTRANCEWIDTH=2*XLINEAR
+  $ELSE
+   A=HEIGHT-2*CONTROLZ+ZLINEAR
+   B=2*(CONTROLZ-ZLINEAR)
+   C=-(TRUNCATION-ZLINEAR)
+   $IF A. NEQ 0 ; UJ=(-B+SQRT(B^2-4*A*C))/(2*A)
+   $IF A. EQ 0 ; UJ=-C/B
+   P1X=(1-UJ)*XLINEAR+UJ*ENTRANCEWIDTH/2.
+   P1Z=(1-UJ)*(ZLINEAR)+UJ*CONTROLZ
+   P2X=((1-UJ)^2)*XLINEAR+(UJ^2)*ENTRANCEWIDTH/2+2*UJ*(1-UJ)*ENTRANCEWIDTH/2
+   P2Z=((1-UJ)^2)*ZLINEAR+2*UJ*(1-UJ)*(CONTROLZ)+(UJ^2)*HEIGHT
+   EDGES; POINTS 0 0 0 ABS
+    EXITWIDTH/2. 0 0 1
+    XLINEAR. 0 ZLINEAR. 2
+    P1X. 0 P1Z. (WFACT)
+    P2X. 0 P2Z. 0
+    SWEEP AXIS 360 0 0 1
+   HEIGHT=TRUNCATION 
+   ENTRANCEWIDTH=2*P2X
+  $ENDIF
+ $ENDIF
+}
+       Enter Exit Width>
+ Enter Input Half Angle>
+Enter Output Half Angle>
+Relative Truncation Fraction (-Value is Absolute)>
+WFACT (1=CPC, >1=CHC, <1=CEC)>
+
+!! Run CPC Macro:
+
+$TH1TH2 output dia 2 input angle (IN_ANG) out angle (OUT_ANG),
+ truncation 1.0 (TYPE)
+
+OBJECT 'CPC'  !! Create CPC object in correct position
+  INTERFACE COAT -BARE "PLASTIC_CPC" AIR
+  FACETS 15 15
+  ROTATE Y 180  !! To point CPC in right direction
+  SHIFT Z (HEIGHT)
+  REDEFINE COLOR 16
+
+CONE_END=(HEIGHT) !! Get cone ending position
+
+!!_____________________________________________________________
+!! Create end caps for CPC:
+
+!! Left end cap of CPC:
+
+SURFACES
+  PLANE  Z  (CONE_START) ELLIP 2@(ENTRANCEWIDTH)/2
+OBJECT  'LEFT_END_CAP_CPC'
+  INTERFACE COAT  "TRANSMIT"  "PLASTIC_CPC"  "AIR"
+  REDEFINE COLOR 16
+
+!! Right end cap of CPC:
+
+SURFACES
+  PLANE  Z  (CONE_END) ELLIP 2@(EXITWIDTH)/2
+OBJECT  'RIGHT_END_CAP_CONE'
+  INTERFACE COAT  "TRANSMIT"  "PLASTIC_CPC" "AIR" 
+  REDEFINE COLOR 16
+PLOT FACETS 15 15 0 OVER  
+
+!!________________________________________________________________
+!! Generate Source and Analysis of CPC macro:
+
+HALT 100000 
+
+!!PROFILES 0 0.0001 1 OVER
+GRID RECT Z (CONE_START-.01) -2@1 -2@(ENTRANCEWIDTH/2) 1 10 !! 10 rays by 1
+SOURCE DIRECTION 0 SIN[ANGL] 1
+MISSED ARROW 10
+TRACE PLOT OVER COLOR 11
+
+GRID RECT Z (CONE_START-.01) -2@1 -2@(ENTRANCEWIDTH/2) 1 10 !! 10 rays by 1
+SOURCE DIRECTION 0 0 1
+TRACE PLOT COLOR 2
+RETURN
+
+TH1TH2 { 5
+
+ !!
+ !! TH1TH2.MAC -creates classical nonimaging Theta1-Theta2 concentrator.
+ !!   Theta1 is the acceptance angle, Theta2 is the maximum output angle.
+ !!   Truncation is supported using either the fraction relative to ideal height or
+ !!   the absolute height (entered using negative of value).
+ !!   Scale is determined by exit width
+ !!
+ WFACT=#5 !! 1=Parabolic (CPC), >1=Hyperbolic (CHC), <1=Elliptical (CEC)
+ EXITWIDTH=#1
+ ACCEPTANG=#2
+ OUTPUTANG=#3
+ ENTRANCEWIDTH=#1*SIN[OUTPUTANG]/SIN[ACCEPTANG]
+ HEIGHT=0.5*(EXITWIDTH+ENTRANCEWIDTH)/TAN[ACCEPTANG]
+
+ !!
+ !! Calculate relative truncation
+ !!
+
+TRUNCTFRACT=#4  !! For external access
+
+ $IF #4 EQ 0 OR #4 GE 1; TRUNCATION=HEIGHT
+ $IF #4 GT 0 AND #4 LE 1; TRUNCATION=HEIGHT*#4
+ $IF #4 LT 0 AND (-#4) GT HEIGHT.; TRUNCATION=HEIGHT
+ $IF #4 LT 0 AND (-#4) LE HEIGHT.; TRUNCATION=-#4
+
+ !!
+ !! Create base shape using Bezier curves. Truncated Bezier calculated if TRUNCATION not
+ !! equal to height.
+ !!
+
+ $IF OUTPUTANG. EQ 90 THEN !! standard cpc 
+  ALPHA=45+ACCEPTANG/2
+  CONTROLZ=0.5*(ENTRANCEWIDTH-EXITWIDTH)*TAN[ALPHA]
+  $IF TRUNCATION. EQ HEIGHT. THEN
+   EDGES; POINTS 0 0 0 ABS
+    ENTRANCEWIDTH/2. 0 HEIGHT. 2
+    ENTRANCEWIDTH/2. 0 CONTROLZ. (WFACT)
+    EXITWIDTH/2. 0 0 0
+   SWEEP AXIS 360 0 0 1
+  $ELSE
+   A=HEIGHT-2*CONTROLZ
+   B=2*CONTROLZ
+   C=-TRUNCATION
+   $IF A. NEQ 0 ; UJ=(-B+SQRT(B^2-4*A*C))/(2*A)
+   $IF A. EQ 0 ; UJ=-C/B
+   P1X=(1-UJ)*EXITWIDTH/2+UJ*ENTRANCEWIDTH/2.
+   P1Z=UJ*CONTROLZ
+   P2X=((1-UJ)^2)*EXITWIDTH/2+(UJ^2)*ENTRANCEWIDTH/2+2*UJ*(1-UJ)*ENTRANCEWIDTH/2
+   P2Z=2*UJ*(1-UJ)*CONTROLZ+(UJ^2)*HEIGHT
+   EDGES; POINTS 0 0 0 ABS
+    EXITWIDTH/2. 0 0 2
+    P1X. 0 P1Z. (WFACT)
+    P2X. 0 P2Z. 0
+    SWEEP AXIS 360 0 0 1
+   HEIGHT=TRUNCATION ENTRANCEWIDTH=2*P2X
+  $ENDIF
+ $ELSE !! th1-th2 concentrator
+  ALPHA=90-(ACCEPTANG+OUTPUTANG)/2
+  ZLINEAR=EXITWIDTH/(TAN[OUTPUTANG]-TAN[90-ALPHA-ACCEPTANG])
+  XLINEAR=EXITWIDTH/2.+ZLINEAR*TAN[90-ALPHA-ACCEPTANG]
+  CONTROLZ=ZLINEAR+(ENTRANCEWIDTH*0.5-XLINEAR)/TAN[90-ALPHA-ACCEPTANG]
+  $IF TRUNCATION. EQ HEIGHT. THEN
+   EDGES; POINTS 0 0 0 ABS
+    ENTRANCEWIDTH/2. 0 HEIGHT. 2
+    ENTRANCEWIDTH/2. 0 CONTROLZ. (WFACT)
+    XLINEAR. 0 ZLINEAR. 1
+    EXITWIDTH/2. 0 0 0
+   SWEEP AXIS 360 0 0 1
+  $ELSEIF TRUNCATION. LE ZLINEAR. THEN
+   XLINEAR=EXITWIDTH/2+(TRUNCATION/ZLINEAR)*(XLINEAR-EXITWIDTH/2)
+   ZLINEAR=TRUNCATION
+   EDGES; POINTS 0 0 0 ABS
+    EXITWIDTH/2. 0 0 1
+    XLINEAR. 0 ZLINEAR. 0
+   SWEEP AXIS 360 0 0 1
+   HEIGHT=ZLINEAR ENTRANCEWIDTH=2*XLINEAR
+  $ELSE
+   A=HEIGHT-2*CONTROLZ+ZLINEAR
+   B=2*(CONTROLZ-ZLINEAR)
+   C=-(TRUNCATION-ZLINEAR)
+   $IF A. NEQ 0 ; UJ=(-B+SQRT(B^2-4*A*C))/(2*A)
+   $IF A. EQ 0 ; UJ=-C/B
+   P1X=(1-UJ)*XLINEAR+UJ*ENTRANCEWIDTH/2.
+   P1Z=(1-UJ)*(ZLINEAR)+UJ*CONTROLZ
+   P2X=((1-UJ)^2)*XLINEAR+(UJ^2)*ENTRANCEWIDTH/2+2*UJ*(1-UJ)*ENTRANCEWIDTH/2
+   P2Z=((1-UJ)^2)*ZLINEAR+2*UJ*(1-UJ)*(CONTROLZ)+(UJ^2)*HEIGHT
+   EDGES; POINTS 0 0 0 ABS
+    EXITWIDTH/2. 0 0 1
+    XLINEAR. 0 ZLINEAR. 2
+    P1X. 0 P1Z. (WFACT)
+    P2X. 0 P2Z. 0
+    SWEEP AXIS 360 0 0 1
+   HEIGHT=TRUNCATION 
+   ENTRANCEWIDTH=2*P2X
+  $ENDIF
+ $ENDIF
+}
+       Enter Exit Width>
+ Enter Input Half Angle>
+Enter Output Half Angle>
+Relative Truncation Fraction (-Value is Absolute)>
+WFACT (1=CPC, >1=CHC, <1=CEC)>
+
+usercancel
+RETURN
+                                                  
+                                                  

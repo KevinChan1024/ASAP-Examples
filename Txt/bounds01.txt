@@ -1,0 +1,36 @@
+!!++
+!! BOUNDS01.INR
+!! Title: Bounding a Tube
+!! Category: Isolated Command
+!! Keywords: BOUNDS
+!! Description: A bounded tube. A tube made
+!! by extruding two edges is bounded to an
+!! ellipse on one side and a tilted plane on
+!! the other.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 08/09/2012 - cp - corrected syntax
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EDGES
+  RECTANGLE X -6 4 4
+  RECTANGLE X 8 5 5
+SURFACES
+  ELLIPSOID 3@2 0 4.5 0
+  PLANE X 8
+    ROTATE Y 30 5 8
+OBJECT
+  1 2 'BOUNDED_FACETED_TUBE'
+  FACETS 20 10
+  BOUNDS 3 -4
+ 
+TITLE 'FACETED OBJECT BOUNDED BY SURFACES'
+WINDOW Y -Z
+OBLIQUE
+PLOT FACETS
+RETURN

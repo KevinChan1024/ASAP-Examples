@@ -1,0 +1,38 @@
+!!++
+!! TEXTFILE02.INR
+!! Title: Writing Out Display Data
+!! Category: Isolated Command
+!! Keywords: TEXTFILE, output, data, spreadsheet, file, formatting
+!! Description: This file demonstrates the use of TEXTFILE to output
+!! formatted display data to a file. TEXTFILE has options for filtering
+!! and formatting the data and adding headers/footers to file.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/28/2002 - cp - corrected style
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+GRID RECT Z 0 -4@4 2@10
+  SOURCE DIRECTION 0 0 1 
+  FLUX TOTAL 100
+SURFACES 
+  PLANE Z 10 RECTANGLE -2@5
+OBJECT 'DETECTOR'
+
+TRACE
+CONSIDER ONLY DETECTOR
+STATS
+WINDOW Y X
+PIXELS 4  !! Creates 16 total pixels for display File
+SPOTS POSITION ATTRIBUTE 0
+ 
+DISPLAY
+  TEXTFILE SPOTS2.TXT  !! Look at this file to check output
+ X Y Z FLUX  !! Header
+  DATA -4  !! For X Y Z and Flux output
+  EOF  !! Close the file
+ 
+RETURN

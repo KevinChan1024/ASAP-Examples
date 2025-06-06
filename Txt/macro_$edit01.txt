@@ -1,0 +1,25 @@
+!!++
+!! MACRO_$EDIT01.INR
+!! Title: Example Output of $EDIT  
+!! Category: Isolated Command
+!! Keywords: $EDIT, macro, Macros_pre
+!! Description: Example output of $EDIT showing the
+!! default response when no options are given.
+!! Otherwise, the filename, macro or string may be
+!! specified on the command line.
+!! Note: This is not a runable inr file.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 12/21/2001 - cp - modified description
+!! 10/23/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+--- SURFACES          
+---   PLANE Z 0 RECTANGLE 1  
+---   OBJECT 'SURF1'  
+--- MAKESURF {           
+--- $EDIT                
+ Input file name: EDIT.INR  
+Replace - Yes,No? N         
+Execute file - Yes,No? Y    

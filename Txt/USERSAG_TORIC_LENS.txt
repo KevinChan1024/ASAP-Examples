@@ -1,0 +1,42 @@
+!!++
+!! USERSAG_TORIC_LENS.INR
+!! Title: Make a toric lens by USERSAG and compare to reference conics
+!! Category: Simple Problem
+!! Keywords: Geometry, conic, lens, TORIC, USERSAG, OPTICAL 
+!! Description: Creates a toric lens with a vertex radius 
+!! and conic constant which vary azimuthally.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 07/28/2004 - jh - converted USERSAG to toric lens
+!! 02/03/2000 - cp - creation (as CYLINDRICAL_LENS.INR)
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+
+!! Variables
+RCX=-10
+RCY=-20
+KX=-4
+KY=-1
+
+!! Make two axisymmetric reference surfaces to compare to toric
+!! along X and Y axes 
+SURFACES 
+  OPTICAL Z 0 (RCX) (KX) ELLIPSE 9.99 9.99
+  OPTICAL Z 0 (RCY) (KY) ELLIPSE 9.99 9.99
+OBJECT 
+  .2 'REFERENCE_X' !! To compare to toric along X axis  
+    SHIFT Z 0.0001 !! Shift a bit to enhance object interference in 3DViewer
+  .1 'REFERENCE_Y' !! to compare to toric along Y axis
+
+SURFACES
+  USERSAG Z 0 (1/RCX) (KX) TORIC (RCY) (KY) ELLIPSE 9.99 9.99
+OBJECT 'USERSAG_TORIC'
+
+
+PLOT FACETS 11 11 0
+$VIEW
+RETURN

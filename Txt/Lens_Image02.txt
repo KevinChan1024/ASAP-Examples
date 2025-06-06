@@ -1,0 +1,57 @@
+!!++
+!! LENS_IMAGE02.INR
+!! Title: A Lens Grid
+!! Category: Simple Problem
+!! Keywords: Lenses, grid, LENSES, SEQUENCE, RADI, IMAGE, conjugate, EXPLODE
+!! Description: An efficient meridional raytrace through
+!! a finite conjugate system.  The stop of the lens is
+!! located close to the middle of the lens. From the
+!! Lenses chapter.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 02/10/2000 - cp - modified format; added description
+!! 02/22/1999 - mc - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+LENSES 
+  SEQUENCE RADI
+    0 0 0,     0 0 1,   2.5 7.963684    0 0 SK2
+     1.230677,          2.5 23.60559    0 0 AIR
+     0.070351,          2.2 4.68347     0 0 SK16
+     1.969836,          2.0 0           0 0 SCHOTTNEW_F5
+     0.531429,          2.0 2.940542    0 0 AIR
+     2.005442,          (1.38/2) 0      0 0 AIR !! STOP
+     1.74867,           1.2 -3.189433   0 0 SCHOTTNEW_F5
+     0.531429,          1.4 0           0 0 SK16
+     1.524361,          1.8 -4.509673   0 0 AIR
+     0.070351,          2.0 34.46047    0 0 SK16
+     0.964963,          2.0 -9.37217    0 0 AIR
+  RETURN
+  EXPLODE +1 'DOUBLE_GAUSS'  !! Create separate objects, add tube walls
+RETURN
+SPLIT 0
+
+!! The following uses the IMAGE modifier for the grid source.
+!! This is a common usage to map a GRID of rays that is
+!! located at an internal stop position into the lens object
+!! space. The imaged GRID then matches the entrance pupil and
+!! it is possible to create an efficient raytrace using the
+!! GRID SOURCE command.
+
+GRID RECT Z 0 -4@(1.38/2)*4/3.01 1 3  !! Pupil
+  SHIFT Z (1.23+0.07+1.97+0.53+2)
+  IMAGE 1 6 1                         !! Goes from space 6 TO 1
+GRID RECT Z 0 -4@16 1 5               !! Object plane
+  SHIFT Z -102.15
+  SOURCE POSITION GRID  
+  MOVE TO Z -102.2
+
+ARROWS OFF
+PIXELS 101 
+WINDOW Y -10 10 Z -105 22
+PROFILES OVERLAY
+TRACE PLOT
+RETURN

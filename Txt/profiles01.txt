@@ -1,0 +1,54 @@
+!!++
+!! PROFILES01.INR
+!! Title: Plotting Profiles
+!! Category: Isolated Command
+!! Keywords: PROFILES, WINDOW, OBLIQUE
+!! Description: Several examples of plotting
+!! with PROFILES is shown. PROFILES is dependent
+!! on previous WINDOW and PIXELS settings. The last
+!! example uses OBLIQUE setting.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/18/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Model of Cassegrain telescope to demonstrate plotting
+COATINGS PROPERTIES
+  1 0 'REFL'
+SURFACES
+  OPTICAL Z -15 -12.5 -2.25 ELLIPSE 1.6
+SURFACES
+  OPTICAL Z 0 -40 -1 ELLIPSE 5 5 0.25
+SURFACES
+  PLANE Z 10 ELLIPSE 0.25
+OBJECT
+  2 'PRIMARY_MIRROR'
+    INTERFACE COAT REFL
+OBJECT
+  1 'SECONDARY_MIRROR'
+    INTERFACE COAT REFL
+OBJECT
+  3 'DETECTOR'
+
+WINDOW Y Z  !! Set window
+PIXELS 127  !! Set window resolution
+PROFILES 'CASSEGRAIN TELESCOPE (Y-Z VIEW)'
+
+WINDOW Y -Z
+PROFILES 'CASSEGRAIN TELESCOPE (FLIPPED Y-Z VIEW)'
+
+WINDOW Z X
+PROFILES 'CASSEGRAIN TELESCOPE (Z-X VIEW)'
+
+WINDOW Y Z
+OBLIQUE !! Set view oblique to the Y-Z window 
+
+!! Plot 10 slices parallel to window, about object center  
+PROFILES 0 0 -10 'OBLIQUE VIEW OF CASSEGRAIN TELESCOPE'
+
+OBLIQUE OFF  !! Turn off oblique view for future plotting
+RETURN

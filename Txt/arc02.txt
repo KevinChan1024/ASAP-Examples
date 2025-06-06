@@ -1,0 +1,27 @@
+!!++
+!! ARC02.INR
+!! Title: Arc Edges Extruded 
+!! Category: Isolated Command
+!! Keywords: ARC, EDGES, extrude
+!! Description: Extruding two arc edges
+!! into a surface.
+!! Edit History: (latest first)
+!! 10/05/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Two 180° arcs at different Z positions
+EDGES
+  ARC Z 0 2 0 1 1 180 
+  ARC Z 10 2 0 1 1 180 
+  OBJECT
+    0.1 0.2 'ARC' !! Extrude them into a surface
+
+TITLE 'AN EXTRUDED ARC EDGE'
+WINDOW Y -X
+OBLIQUE 
+PLOT FACETS 10 10 
+RETURN

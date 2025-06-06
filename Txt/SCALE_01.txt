@@ -1,0 +1,34 @@
+!!++
+!! SCALE_01.INR
+!! Title: Using SCALE to Mirror a Rayset
+!! Category: Isolated Command
+!! Keywords: SCALE, RAYSET, rays, mirroring
+!! Description: A simple example to show mirroring of
+!! a rayset using SCALE.  Source and scaled rays were 
+!! shifted to confirm operation in 3D viewer.
+!! Edit History: (latest first)
+!! 01/14/2009 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+WINDOW Y X
+WINDOW 3.0
+!! EMITTING DISK Z 0 1 2 17
+
+GRID RECT Z 0 -2@3 -2@2  15 11 !! Easier to see using GRID
+  SOURCE POS -2 0 -5
+  ROTATE Z 5
+
+PLOT RAYS 1.0 1 OVERLAY 
+STATS
+     
+RAYSET
+  SCALE X -1 -3
+  SHIFT X 0.2
+
+PLOT RAYS 1.0 1 COLOR 2
+STATS 
+
+$VIEW

@@ -1,0 +1,46 @@
+!!++
+!! ARRAY_SEARCH.INR
+!! Title: Making Tiled ARRAY's Trace Faster
+!! Category: Isolated Command
+!! Keywords: ARRAY, Tracing, SEARCH
+!! Description: An array of pyramids, which are traced
+!! using the SEARCH option.  This option limits object
+!! search of adjacent elements of the array.  An
+!! optional "k" (default=0) may come after SEARCH to
+!! specify how many adjacent "rings" of objects ASAP
+!! must search, going outward from the ray's intersection
+!! with the plane of the array.  The higher this number, 
+!! the slower the trace becomes.  Without SEARCH, ASAP
+!! looks at ALL elements of the ARRAY to see which object
+!! it could hit next after intersecting with the plane of
+!! the array.  This is slowest.  In the case of pyramids
+!! or corner cubes, a ray would have a slim chance of
+!! seeing any other objects than the one it is currently
+!! intersecting with.  This option allows much faster
+!! (orders of magnitude) raytracing for these conditions.
+!! Test this by removing SEARCH below and watching the
+!! TIC counter output.
+!! Edit History: (latest first)
+!! 06/04/2015 - mt - modified comment designator 
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 02/21/2003 - cp - modified file, added comments  
+!! 12/04/2002 - al - creation
+!!--  
+
+SYSTEM NEW
+RESET
+
+&TIC SEC !! Fixes TIC counter to seconds output
+SURFACES
+  TUBE Z 0 2@1 1 2@0 1 1 
+!! Try the following w/o SEARCH, or add a k value > 0
+    ARRAY X 100 2 Y 100 2 SEARCH k !! k=0 by default - fastest trace
+OBJECT 'PYRAMID_ARRAY'
+  INTERFACE 1 0  !! Reflect only
+
+XMEMORY 101^2  !! Do raytrace without disk I/O - uses RAM only
+!!GRID RECT Z -1, -1 201, -1 201, 2@101 RAN 1; SOURCE DIR Z
+EMITTING RECT Z 0 2@101 101^2		!!0; SHIFT 100 100
+TRACE
+$TIC  !! Note the time with and without SEARCH
+RETURN

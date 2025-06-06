@@ -1,0 +1,98 @@
+!!++
+!! SURF_SAMPLED_BY_BITMAP.INR
+!! Title: Sampled Surface from Bitmap
+!! Category: Isolated Command
+!! Keywords: SAMPLED, Geometry, SURFACE, SCALE, bitmap, bmp, digs, scratches
+!! Description: An example of reading in a bitmap (BMP) 
+!! file of bumps on a planar base to make an ASAP object.
+!! DISPLAY is used  to create a corresponding DIS
+!! file, then SAMPLED is used to turn this into an
+!! ASAP surface entity. This entity is scaled to the 
+!! proper user-specified size using a SCALE command, 
+!! then bounded by a limiting plane to create different
+!! interface and scattering properties on the top 
+!! portion of the bump compared to the base plane.
+!! The system is then RENDERed to show its appearance.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 09/04/2012 - cp - corrected keyword
+!! 11/17/2011 - cp - corrected category
+!! 04/15/2008 - cp - added header
+!! 03/16/2005 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM 
+WAVELENGTH 500 NM
+BEAMS INCOHERENT GEOMETRIC
+
+MODELS
+  LAMBERTIAN 0.85
+  HARVEY 0.1 -1.8 0.2 !! PLOT
+
+BMPWIDTH=5  !! example -- set size as appropriate
+
+!! READ BITMAP
+DISPLAY 12_GREY.BMP 
+  PICTURE 'dots'
+  AVERAGE 2 2      !! smooth rough edges a bit
+  WRITE 12AVG DIS
+  PICTURE 'dots smoothed'
+RETURN
+
+$GRAB 'Bitmap ' 2 1 XL XH
+$GRAB 'Bitmap ' 3 1 YL YH 
+
+!! calculate scaling parameters from bitmap parameters
+!!  and user specified bitmap width
+BMPHEIGHT=BMPWIDTH*ABS((YH-YL)/(XH-XL))
+XSCALE=BMPWIDTH/ABS(XH-XL)
+YSCALE=BMPHEIGHT/ABS(YH-YL)
+ZSCALE=0.3  !! must set to correct value
+
+&REG BMPWIDTH BMPHEIGHT XSCALE YSCALE
+
+SURFACES
+  TUBE Z 0 BMPWIDTH/2.01 BMPHEIGHT/2.01 (ZSCALE*1.01) BMPWIDTH/2.01 BMPHEIGHT/2.01 1 1
+  SAMPLED 12AVG.DIS
+     SCALE (XSCALE) (YSCALE) (ZSCALE)
+  PLANE Z ZSCALE*0.1 RECT BMPWIDTH/2 BMPHEIGHT/2 
+OBJECT
+  .2 'DOTS'
+      BOUNDS +.1 -.3  
+      FACETS 3 3
+      INTERFACE 0 0 AIR AIR
+      SCATTER MODEL 1
+        TOWARDS SPEC 1 0.1
+  .1 'BASE' 
+      BOUNDS MULTIPLE -.2 !! -.3
+      FACETS 31 31
+      INTERFACE 0.5 0 AIR AIR
+      SCATTER MODEL 1
+        TOWARDS SPEC 1 0.1
+  
+RETURN 
+
+GROUP
+  ROTATE X 180 0 0
+RETURN
+
+!! OBLIQUE 0.000 30.0 45.0
+!! PLOT FACETS 1 1 0
+!! $VIEW 
+
+WINDOW Z X
+PIXELS 211 1 OFF
+OBLIQUE  0.000 30.0 60.0
+LIGHT 1 -1 -1 -1, 3 -1 1 -1  
+RENDER MODEL
+
+PIXELS 511
+!! PROFILES 0 0 -111
+PLOT FACETS 5 5 0
+$VIEW
+
+OBLIQUE OFF  
+RETURN

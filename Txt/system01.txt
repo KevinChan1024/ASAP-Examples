@@ -1,0 +1,40 @@
+!!++
+!! SYSTEM01.INR
+!! Title: The SYSTEM Command
+!! Category: Isolated Command
+!! Keywords: SYSTEM, Geometry
+!! Description: Examples of how to store and
+!! retrieve system information.
+!! Note: This is not a run-able script file.
+!! Edit History: (latest first)
+!! 02/28/2002 - cp - added note
+!! 10/17/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+...(other ASAP commands)...
+SYSTEM NEW
+
+Reinitializes storage arrays
+
+*********************************************************
+
+...(other ASAP commands)...
+SYSTEM TO NEWLENS
+
+Saves system data in an unformatted binary file named NEWLENS.SYS
+
+********************************************************* 
+
+SYSTEM FROM OLDOPTIC
+...(other ASAP commands)...
+
+Restores previously stored file named OLDOPTIC.SYS
+
+*********************************************************
+
+SYSTEM FROM
+...(other ASAP commands)...
+
+Restores automatically stored file from previous session
+

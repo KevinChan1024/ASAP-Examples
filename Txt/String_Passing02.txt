@@ -1,0 +1,46 @@
+!!++
+!! STRING_PASSING02.INR
+!! Title: String Passing to Macros
+!! Category: Simple Problem
+!! Keywords: Scripts, literal, macro, string, register, expression
+!! Description: An example of passing strings to a macro
+!! for use in a command statement or plot title. 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/11/2002 - cp - reformatted
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+FRESNEL AVERAGE
+SPLIT 1
+
+!! Assign the string to a any string variable (A to Z or
+!! A0 to Z9) and then call the macro using the variable
+!! with double quotes.  In the macro substitute #1 for
+!! the string:
+
+A="SCHOTT_BK7"
+MACRO  {
+  INTERFACE COAT BARE AIR #1
+}
+SURFACES
+  PLANE Z 0 RECTANGLE 10
+OBJECT
+$MACRO  A"  !! Passes the string contained in A
+
+!! The following will also work:
+MYLIB {  
+  A1=#1"  !! Assigns the string to a string type variable
+
+  SURFACES
+    PLANE Z 0 ELLIPSE 10
+  OBJECT 'TESTPLANE'
+    INTERFACE COAT BARE AIR A1"
+}
+$MYLIB SCHOTT_BK7 !! Passes the string directly 
+
+PRINT OBJECTS
+RETURN

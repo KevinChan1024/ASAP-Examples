@@ -1,0 +1,52 @@
+!!++
+!! BOUNDS03.INR
+!! Title: Bounded Complex Aperture
+!! Category: Simple Problem
+!! Keywords: Edges, BOUNDS, POINTS, macro, TITLE, CONSIDER
+!! Description: Bounding with a complex aperture.
+!! Both negative and positive bounding is
+!! demonstrated.  A macro is used for graphics
+!! generation. 
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 10/03/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+W=1/SQRT(2) weighting factor 
+
+EDGES
+  POINTS 2 1 0 2, 1 1 0 (W), 1 2 0 1, -1 2 0 1,
+    -1 1 0 1, -2 1 0 1, -2 -1 0 2, -2 -2 0 (W),
+    -1 -2 0 1, 1 -2 0 1, 1 -1 0 1, 2 -1 0 1, 2 1 0 0,
+    -1 -1 0 1, 0 -1 0 1, -.5 .5 0 1, -1 -1 0 0
+SURFACES
+  PLANE Z 2
+  OBJECT 'APERTURE'
+    BOUNDS -0.2 
+ 
+PICTURE { 1  !! Macro for graphic generation
+  TITLE 'SURFACE BOUNDED BY EDGES (#1)'
+  SEGMENTS 10
+  RAYS 0
+  BEAMS INCOHERENT GEOMETRIC
+  GRID RECTANGLE Z -1 -4@2.2 2@21
+   SOURCE DIRECTION 0 0 1
+  WINDOW Y X
+  PLOT EDGES OVERLAY
+  TRACE
+  CONSIDER ONLY APERTURE  !! Only consider rays on aperture for SPOTS
+  SPOTS POSITION ATTRIBUTE 2
+  CONSIDER ALL  !! Return to considering ALL objects
+}
+ENTER BOUNDs TYPE>
+
+&PICTURE -BOUNDS
+OBJECT 1
+  BOUNDS +1  !! Change the bounding sign on object 1
+&PICTURE +BOUNDS
+RETURN
+

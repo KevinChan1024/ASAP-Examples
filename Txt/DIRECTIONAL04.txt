@@ -1,0 +1,34 @@
+!!++
+!! DIRECTIONAL04.INR
+!! Title: DIRECTIONAL Display Command
+!! Category: Isolated Command
+!! Keywords: DIRECTIONAL, Analysis, DISPLAY, RADIANCE, $GUI
+!! Description: A DIRECTIONAL plot of an isotropic radially averaged
+!! emitting source comparing with or without using the RADIANCE
+!! option. 
+!! $GUI is used to show chart with original display viewer
+!! which shows 0 180° hemisphere only. 
+!! Edit History: (latest first)  
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 06/02/2008 - cp - edited header
+!! 05/28/2008 - jah - modified DIRECTIONAL02 for RADIANCE
+!! 08/12/2005 - cp - creation
+!!--
+
+SYSTEM NEW 
+RESET
+
+$GUI CHARTS_OFF
+
+!! Lambertian if ISO is commented out
+EMITTING DISK Z 0 2@1 100000 ISO
+FLUX TOTAL 1
+WINDOW Y -2@1 X -2@1
+PIXELS 39
+$GUI CHARTS_OFF
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+RADIAL !! Radially average the pixels
+DIRECTIONAL 'without RADIANCE'
+DIRECTIONAL RADIANCE 'with RADIANCE'
+RETURN

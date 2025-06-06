@@ -1,0 +1,70 @@
+!!++
+!! DOME_01.INR
+!! Title: Making Bumps using DOME
+!! Category: Isolated Command
+!! Keywords: DOME, diffuser, lcd, backlight, dots, bumps
+!! Description: The following example shows construction of bumps
+!! made with the DOME entity on a glass plate, shifted
+!! individually to specific locations.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 11/03/2008 - cp - added header
+!! 10/29/2008 - wjd - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Define system units and wavelengths
+
+UNITS MILLIMETERS 'Watts'
+WAVELENGTH 550 NM
+
+!! Define coatings
+
+COATINGS PROPERTIES
+  0 1 'TRANSMIT'
+  1 0 'REFLECT'
+  0 0 'ABSORB'
+
+!! Define Media
+
+MEDIA
+  1.6 'POLYCARBONATE'  !! Sphere index of refraction.
+  1.5 'GLASS'           !! Plate index of refraction.
+
+!! GEOMETRY DEFINITIONS BEGIN HERE
+  
+ENTITIES  !! Create plate and semi-sphere entities.
+  RECTANGLE Z 0 2@5; REPEAT
+  DOME Z 0 .1 POLYCARBONATE -1E8 -.1
+  $DO 1 6
+  REPEAT
+
+OBJECT  !! Create semi-sphere objects and shift to appropriate locations.
+ .1;    SHIFT 3 1.5 0.0001
+ .2;    SHIFT 2.5 1 0.0001
+ .3;    SHIFT 2 0.5 0.0001
+ .4;    SHIFT 2 0   0.0001
+ .5;    SHIFT 1 1   0.0001
+ .6;    SHIFT 1 0   0.0001
+ .7;    SHIFT 0 0   0.0001
+ .8 'TOP';     INTERFACE 0 1 AIR GLASS 
+ .9 'BOTTOM';  INTERFACE REPEAT; SHIFT Z -1
+ .8 .9 'EDGE'; INTERFACE REPEAT
+
+!! SOURCE DEFINITIONS BEGIN HERE
+GRID RECT Z -5 -2@2.0 -2@1.5 2@31 
+  SOURCE DIRECTION 0 SIN[10] COS[5]
+  SHIFT X 1.5
+ 
+!! TRACE RAYS WITH OPTIONAL PLOT
+!!OBLIQUE
+MISSED 5
+WINDOW Y Z
+PLOT FACETS 2@5 0 OVERLAY
+TRACE PLOT
+$VIEW
+RETURN
+
+

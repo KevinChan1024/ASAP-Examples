@@ -1,0 +1,73 @@
+!!++
+!! ROUGHNESS_MODEL03.INR
+!! Title: Ground Glass Scatter
+!! Category: Simple Problem
+!! Keywords: Scatter, ground, glass, ROUGHNESS, MODELS, title
+!! Description: This shows how to simulate ground glass scatter
+!! using ROUGHNESS with a Lambertian model. It demonstrates
+!! 2-way scatter through bare Fresnel interfaces.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+ 
+MEDIA
+  1.5 'GLASS'
+
+MODELS
+  LAMBERTIAN .3  !! Ground glass
+ 
+FRESNEL AVE
+SPLIT 1 
+
+GRID RECT Z -15 -4@5 2@10  !! Increase rays for better results
+  SOURCE POSITION 0 0 -60  !! To fan rays somewhat
+  FLUX TOTAL 1
+
+SURFACES
+  PLANE Z -4 RECT 20 20
+  OBJECT 'FRONT_SURF'
+    INTERFACE COAT BARE AIR GLASS
+
+SURFACES
+  PLANE Z 4 RECT 20 20
+  OBJECT 'BACK_SURF'
+    INTERFACE COAT BARE GLASS AIR
+    ROUGHNESS MODEL 1  !! The ground glass side
+
+SURFACES
+  OPTICAL Z 50.0001 -50.0001 ELLIPSE 50.0
+  OPTICAL Z -50.0001 50.0001 ELLIPSE 50.0
+  OBJECT 'BACK'        !! To catch all reflected flux
+  OBJECT; .2 'FORWARD' !! To catch all transmitted flux
+
+WINDOW Y Z
+PLOT FACETS 5 5 OVERLAY
+CONSIDER ALL
+TRACE PLOT  !! Note: If 'n' is given, ray plot will not be uniform.
+
+CONSIDER ONLY BACK
+STATS
+WINDOW Y X
+PIXELS 71
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+  AVERAGE
+  AVERAGE
+  DIRECTIONAL 'REFLECTED FLUX'
+
+CONSIDER ONLY FORWARD
+STATS
+WINDOW Y X
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+  AVERAGE
+  AVERAGE
+  DIRECTIONAL 'FORWARD FLUX'
+RETURN 
+
+
+

@@ -1,0 +1,77 @@
+!!++
+!! TRACE01.INR
+!! Title: TRACE Command Output
+!! Category: Isolated Command
+!! Keywords: TRACE, Tracing, warnings
+!! Description: Output generated from using TRACE
+!! with several modifiers. A trace is performed
+!! from the source to object 2, but without interaction
+!! with that object's interface (- sign). The "DIR 6"
+!! option lists every 6th ray (1 and 7 in this case),
+!! giving the objects intersected and directions at each
+!! interface.  The "PLOT 2" option plots every 2nd ray.
+!! Note: Not a run-able script file.
+!! Edit History: (latest first)
+!! 02/28/2002 - cp - corrected style
+!! 10/18/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+ --- RAYS 0
+       0 rays defined
+ 
+ --- GRID ELLIPTIC Z -20 -4@5 1 11
+ ---   SOURCE DIRECTION 0 0 1
+     11 rays created in a ELLIPTICAL grid for a total of     11
+ 
+ Source Z  angle for rays
+    0.000       1     -11
+ --- WINDOW Y Z
+ --- WINDOW 1.2
+ --- TITLE 'PROFILE WITH TRACE PLOT'
+ --- PROFILES OVERLAY
+ --- TRACE 0 -2 DIR 6 PLOT 2
+  Across or Vertical: Y = -6.00000     to  6.00000      ( 12.0000    )
+  Down or Horizontal: Z = -17.6143     to  12.5159      ( 30.1302    )
+
+ 
+ 
+   -1 Cuts for X=0.000000     to 0.000000
+  Across or Vertical: Y = -6.00000     to  6.00000      ( 12.0000    )
+  Down or Horizontal: Z = -17.6143     to  12.5159      ( 30.1302    )
+ 
+ 
+ Ray number      1
+ Object       X             Y             Z          Size          Flux
+                     U             V
+ 
+    0   0.0000000     -4.545455     -20.00000     0.9730433      3.787253
+    Dir  0.0000000000  0.0000000000  1.0000000000 0.0000000      3.787253
+
+ PRIMARY_MIRROR
+    2   0.0000000     -4.545455     -.2582645     0.9730433      3.787253
+          Total OPL =  19.74173553826765
+ ***Ray      5 missed after object   1 - SECONDARY_MIRROR
+ ***Ray      6 missed after object   1 - SECONDARY_MIRROR
+ 
+ Ray number      7
+ Object       X             Y             Z          Size          Flux
+                     U             V
+ 
+    0   0.0000000     0.9090911     -20.00000      1.494940      8.939384
+
+    Dir  0.0000000000  0.0000000000  1.0000000000 0.0000000      8.939384
+ SECONDARY_MIRROR
+    1   0.0000000     0.9090911     -15.03300      1.494940      8.939384
+    Nrm  0.0000000000  0.0722983547  0.9973830497 -.7906051E-01  4.14600 Inc
+    Dir  0.0000000000 -0.1442183070 -0.9895458958 0.2363806      8.045444
+ ***Ray      7 missed after object   1 - SECONDARY_MIRROR
+ 160.16 millisec to trace 11
+ 
+ Total of      3 warnings
+             Missed Mult    Wrong  Low   Total  Wrong
+
+ Obj  Total  After  Bounce  Side   Flux  Refl   Direc
+   1      3      3                                    SECONDARY_MIRROR
+         11 ray-objects encountered  at    68 per second
+         56 order-intersections done at   349 per second

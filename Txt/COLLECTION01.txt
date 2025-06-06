@@ -1,0 +1,40 @@
+!!++
+!! COLLECTION01.INR
+!! Title: Calculating Percent Efficiency of a Rayset
+!! Category: Isolated Command
+!! Keywords: COLLECTION, TRANSPOSE, Analysis 
+!! Description: Using COLLECTION to analyze percent efficiency
+!! of a source within a certain angular range and window.
+!! The emitting disk is 10 by 10 units. The collection area
+!! is controlled by the window setting, which is 12 by 12.
+!! This will be sure to collect all of the source spatially.
+!! There are 25 spatial samples and 30 direction samples up
+!! to an angle of 60 degrees.  The results of collection are
+!! written to the BRO009.dat file. These can be processed by
+!! any of the display commands.  The initial results plotted are
+!! spatial.  Use the TRANSPOSE command to show the directional
+!! results.
+!! NOTE: The percentage flux is always collected radially outward
+!! from the center of the WINDOW in either spatial or angular units.
+!! If HEIGHT is used instead of AREA, the geometric-mean height is
+!! calculated between the two WINDOW axis extents.  The spatial
+!! output is calculated over 'n' sample steps for an area starting
+!! at the center of the WINDOW out to this HEIGHT maximum.
+!! Edit History: (latest first) 
+!! 03/13/2003 - cp - reformatted, added header and comments
+!! 02/28/2003 - bf - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EMITTING DISK Z 0 5 5 10000 !!30 30
+  FLUX TOTAL 1
+
+WINDOW X -6 6  Y -6 6 !! To collect all of source
+COLLECTION  PERCENT RECTANGLE AREA 25 ANGLE 30 60   
+DISPLAY
+  GRAPH 'Spatial Results'
+  TRANSPOSE
+  GRAPH 'Angular Results'
+RETURN

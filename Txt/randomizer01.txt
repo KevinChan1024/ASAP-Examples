@@ -1,0 +1,109 @@
+!!++
+!! Randomizer01.INR
+!! Title: Random Number Generator
+!! Category: Isolated Command
+!! Keywords: Macros_user, macro, random
+!! Description: Creates a set of variables with random 
+!! numbers assigned. Note that INT is used when generating
+!! a random number with the tilde operator, since it is 
+!! normally floating-point.
+!! Edit History: (latest first)
+!! 10/23/2000 - cp - modified format; added description
+!! 10/23/2000 - arg - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! The following 3 macros choose N integer values, randomly,
+!! out of M possible values, without duplicates.
+
+CHECK4DUPE1 { 1
+  $DO 1 (#1-1)
+    {$IF (A#1) EQ (A?) 2
+     DUPE=DUPE+1
+     A#1=0
+    }
+}
+Variable number:
+
+CHECK4DUPE2 { 1
+  $DO 1 (N)
+    {$IF (#1) EQ (?)
+     $GO skip
+     $IF (A#1) EQ (A?) 2
+       DUPE=DUPE+1
+       A#1=0
+skip
+    }
+}
+Variable number:
+
+REASSIGN {
+  DUPE=0
+  $DO 1 (N)
+    {$IF (A?) EQ 0 2
+       A?=INT(1~(M+1))  
+       &CHECK4DUPE2 ?  
+    }
+}
+
+!! Main macro, RANDOMIZER, accepts two arguments, which
+!! are the values for N and M.  The result is the
+!! creation of N variables, named A1 through A(N),
+!! each of which is assigned a different integer
+!! value between 1 and M, inclusive.
+
+RANDOMIZER { 2
+  N=#1
+  M=#2
+  DUPE=0
+
+  A1=INT(1~(M+1))
+
+  $DO 2 (N)
+    {A?=INT(1~(M+1))
+    &CHECK4DUPE1 ?
+    }
+
+  &REG DUPE
+
+  $DO 1 99
+    {$IF (DUPE) EQ 0 2
+       &REG 
+       $GO end
+    &REASSIGN
+    &REG DUPE
+    }
+
+  $IF (DUPE) NE 0
+    $LEAVE  !! Variable assignment incomplete!!
+
+end
+ RETURN
+}
+Number of numbers you want:
+Out of how many numbers: 
+
+!! Main program (to test the macro)
+
+SYSTEM NEW
+RESET
+
+&RANDOMIZER 5 30
+
+&ASK 'OK to Continue'
+
+&RANDOMIZER 17 53
+ 
+$ASK 'OK to Continue'
+
+&RANDOMIZER 20 100
+
+$ASK 'OK to Continue'
+
+&RANDOMIZER 49 123
+
+RETURN
+
+

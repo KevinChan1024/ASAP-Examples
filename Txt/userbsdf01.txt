@@ -1,0 +1,32 @@
+!!++
+!! USERBSDF01.INR
+!! Title: USERBSDF: A Phong-like Model
+!! Category: Isolated Command
+!! Keywords: USERBSDF, $FCN, Phong  
+!! Description: Using a USERBSDF model to call
+!! a Phong function.
+!! Edit History: (latest first)
+!! 10/12/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+PIXELS 127
+!! Phong function = 0.1+0.3*(COS(angle from specular))^10
+$FCN FONG C=_2+SQRT((1-_1)*(1-_3)),  !! Cosine of angle from specular
+            _4*((C>0)^_5)+_6
+
+MODELS
+  USERBSDF FONG 0.3 10 0.1 PLOT
+  
+!! Note: The following DISPLAY format is for ASAP 7.0 or later.
+!! BSDF data for all angles are in one display file, accessed
+!! by 1(0°), 2(15°), 3(30°) etc.
+!! For earlier versions or for when user-specified angles are given,
+!! use "DISPLAY FONG_n.DIS" where n=0 for 0°, n=15 for 15°, etc.
+
+DISPLAY FONG.DIS 1 !! Loads the 0° display file created by PLOT above
+  ISOMETRIC 2 '3D PLOT OF USER-DEFINED PHONG MODEL' !! Plot every 2nd line
+RETURN

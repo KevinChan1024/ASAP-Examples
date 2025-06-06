@@ -1,0 +1,60 @@
+!!++
+!! OPDMAP01.INR
+!! Title: Wavefront Map of Singlet
+!! Category: Isolated Command
+!! Keywords: OPDMAP, wavefront
+!! Description: Making an on-axis and off-axis
+!! wavefront map of a singlet lens using OPDMAP.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 10/10/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM
+WAVELENGTHS 0.6328 UM
+
+LENSES 
+  SINGLET X 0 0.75 2 SCHOTTNEW_SF1 RD 7.3494 300.07671
+  OBJECT 'SINGLET_LENS'
+
+SURFACES 
+  PLANE X 10.5 ELLIPSE 3 
+  OBJECT 'DETECTOR'
+
+BEAMS INCOHERENT GEOMETRIC
+WAVELENGTHS 0.6328
+GRID ELLIPTIC X 0 -4@2 2@15 
+SOURCE DIRECTION 1 0 0, 1 TAN[7] 0
+  MOVE TO X -1 
+
+WINDOW Y X
+WINDOW 1.1
+PROFILES OVERLAY 'SINGLET (on-axis and 7 degrees off-axis beam)'
+TRACE PLOT
+
+CONSIDER ONLY DETECTOR
+
+SELECT ONLY SOURCE 1
+  FOCUS MOVE -10
+WINDOW Y Z
+PIXELS 51
+
+OPDMAP
+
+DISPLAY 
+  PLOT3D 0.5 'ON-AXIS WAVEFRONT MAP FOR SINGLET'
+RETURN
+
+SELECT ONLY SOURCE 2
+  FOCUS MOVE -10
+WINDOW Y Z 
+
+OPDMAP
+
+DISPLAY 
+  PLOT3D 0.5 'OFF-AXIS WAVEFRONT MAP FOR SINGLET' 
+RETURN

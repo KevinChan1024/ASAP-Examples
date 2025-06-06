@@ -1,0 +1,72 @@
+!!++
+!! ABEL_INVERSE.INR
+!! Title: Using ABEL with INVERSE for a 3D Source from 2D Bitmap
+!! Category: Isolated Command
+!! Keywords: ABEL, arc source, BMP2DIS, EMITTING DATA, $SYS
+!! Description: Similar file to Simple Arc demo project. 
+!! Shows how to apply ABEL INVERSE to make a 3D source from 
+!! a bitmap (BMP) image if the source is axially symmetric.
+!! Before running this script, you must copy the ARCPICT.BMP
+!! file from the Projects\Samples\SimpleArc folder and the BMP2DIS.exe 
+!! file from the ASAP\Bin folder to the Working Directory. 
+!! Edit History (latest first)
+!! 08/06/2010 - cp - modified keyword
+!! 04/02/2009 - cp - modified header
+!! 07/28/2008 - cp - modified from Simple_Arc project file
+!! 06/01/2001 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 500 NM
+
+!! The BMP2DIS.exe utility is located in the bin folder of
+!! ASAP and is used to create the initial 2D display file. 
+!! Be sure to copy this file and ARCPICT.bmp to the working directory
+!! as explained above.
+
+$SYS "BMP2DIS ARCPICT" !! Convert to 2D display file
+DISPLAY ARCPICT
+  AVERAGE
+  PICTURE '2D Bitmap Distribution'
+
+!! It will now be TRANSPOSEd to align it with the horizontal axis.
+!! This is necessary since the ABEL command always rotates the 
+!! distribution about the horizontal.
+
+TRANSPOSE !! Set up for transform about horizontal
+
+!! Convert the simple 2D black&white bitmap (BMP) image into a
+!! 3D emiting source symmetric about the horizontal. 
+
+ABEL INVERSE !! Perform inverse ABEL transform to 
+             !! convert to 3D display file, rotationally
+
+WRITE ABEL_DATA DIS
+RETURN
+
+!! The picture should contain the entire source and be rotationally
+!! symmetric about an axis.
+  
+DISPLAY ABEL_DATA 
+  AVERAGE
+  PICTURE 'Transformed 3D Dist.' !! Note the horizontal symmetry
+
+!! The saved display file is now turned into a source with
+!! the EMITTING DATA command. We used 100000 rays, but any
+!! number of rays may be assigned. A 3D view, PICTURE, and
+!! CONTOUR map of the new emitting source is shown. 
+
+EMITTING DATA ABEL_DATA 100000
+WINDOW Y Z 
+PIXELS 75
+SPOTS POSITION EVERY 10
+$VIEW 
+DISPLAY
+  PICTURE '3D Emitting Source'
+  CONTOUR 10 GRID 10 '3D Emitting Source' 
+RETURN
+$SYS "DEL DISPLA*.TMP" !! Clean up temporary display files
+RETURN    

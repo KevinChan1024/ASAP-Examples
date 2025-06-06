@@ -1,0 +1,112 @@
+!!++
+!! POLAR_QTR_WAVE.INR
+!! Title: Quarter Wave Plate using CRYSTAL
+!! Category: Simple Problem
+!! Keywords: Polarization, CRYSTAL, quarter, waveplate, POLARIZ, FIELD, REAL, DELTA
+!! Description: An example of birefringence through a crystal 
+!! media. Shows how polarized light changes after propagating
+!! through a quarter wave plate made of Crystal media.   
+!! PLOT POLARIZATION plots the two orthogonal linear polarization
+!! components. The FIELD commands allows study of the combined
+!! effects of the two rays.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/08/2000 - cp - Modified syntax; added description
+!! 03/02/2000 - js - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+UNITS MILLIMETERS
+
+!! Input number of beams in x and y
+NX=2
+NY=2
+
+SPLIT 3
+
+MEDIA
+  1.50100   'ORD'
+  1.50102   CRYSTAL COS[45] COS[45] 0 ORD 'QWP1' 
+
+COATINGS PROPERTIES 
+  1 0 'REFL'
+
+!! Quarter Waveplate
+SURFACES
+  PLANE Z 15 ELLIPSE 75 
+  OBJECT 'QWP_S1'                                    
+    INTERFACE COAT +BARE AIR QWP1
+
+SURFACES
+  PLANE Z 2.5 ELLIPSE 75 
+  OBJECT 'QWP_S2'                             
+    INTERFACE COAT +BARE AIR QWP1
+
+SURFACES
+  TUBE Z 2.5 75 75 15 75 75
+  OBJECT 'QWP_EDGE'                                     
+
+SURFACES
+  PLANE Z 0 RECTANGLE 100  
+  OBJECT 'DUMMY_PLANE_1'
+    INTERFACE COAT +BARE AIR AIR 
+ 
+
+SURFACES
+  PLANE Z -5 RECTANGLE 100  
+  OBJECT 'DUMMY_PLANE_2'
+    INTERFACE COAT BARE AIR AIR 
+
+
+SURFACES
+  PLANE Z -10 RECTANGLE 100  
+  OBJECT 'FLAT_MIRROR'
+    INTERFACE COAT -REFL 
+
+SURFACES
+  PLANE Z 50 RECTANGLE 100  
+  OBJECT 'FINAL_PLANE'
+
+!!Source
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WAVELENGTH 1 UM 
+WIDTHS 1.6
+FRESNEL BOTH
+POLARIZ Y 1 0
+GRID RECT Z 20 -4@1 (NX) (NY)
+  SOURCE DIRECTION 0 0 -1
+
+ARROWS 3
+SEGMENTS 2
+WINDOW Y X
+PLOT POLARIZATION 'INPUT POLARIZATION'
+PIXELS 101
+FIELD ENERGY 20
+DISPLAY
+  ISOMETRIC 'INPUT FIELD'
+FIELD REAL 20 DELTA
+
+!! After wave plate - before mirror
+TRACE 0 DUMMY_PLANE_2
+CONSIDER ONLY DUMMY_PLANE_2
+WINDOW Y X
+FIELD REAL -5 DELTA
+CONSIDER ALL
+
+!! After mirror - before second pass through wave plate
+TRACE DUMMY_PLANE_2 DUMMY_PLANE_1
+CONSIDER ONLY DUMMY_PLANE_1
+WINDOW Y X
+FIELD REAL 0 DELTA
+CONSIDER ALL
+
+!! After second pass through wave plate
+TRACE
+CONSIDER ONLY FINAL_PLANE
+WINDOW Y X
+FIELD REAL 50 DELTA
+
+RETURN

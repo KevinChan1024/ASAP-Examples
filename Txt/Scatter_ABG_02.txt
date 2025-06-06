@@ -1,0 +1,53 @@
+!!++
+!! SCATTER_ABG_02.INR
+!! Title: Creating an Isotropic Abg Scatter Surface
+!! Category: Isolated Command
+!! Keywords: ABG, Scatter, isotropic, MODELS  
+!! Description: This uses the built-in Abg Scatter model
+!! as opposed to using a $FCN to create an isotropic scatter
+!! interface.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 03/08/2012 - cp - corrected syntax
+!! 09/22/2011 - cp - modified header
+!! 05/11/2011 - jj - modified from USERBSDF06.INR
+!!--
+
+SYSTEM NEW
+RESET
+PI=ACOS(-1) 
+
+!! Lambertian model has a constant bsdf,
+!! an isotropic model does not. (see Intro tutorial)
+!! An isotropic model has a BSDF=1/cos(scatter angle)
+
+PIXELS 501 !! For PLOT below if used
+MODELS
+  ABG   0.2 1 2  !! PLOT
+   
+RETURN
+
+SURFACES
+  ELLIPSOID 3@3 3@0
+OBJECT 'DET'
+
+SURFACES
+  PLANE Z 0 RECTANGLE 1
+OBJECT 'DIFFUSER'
+  SCATTER MODEL 1
+  TOWARDS SPEC 1000 PI/2 0 
+
+RAYS 0
+GRID RECT Z 1 -4@1 2@11
+  SOURCE DIRECTION 0 0 -1
+TRACE
+STATS
+CONSIDER ONLY DET
+!!LIST RAYS  
+WINDOW Y X
+SPOTS POSITION ATTRIBUTE 0 
+DISPLAY 
+  AVE
+  PICTURE 
+RETURN
+

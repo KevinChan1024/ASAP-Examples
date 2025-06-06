@@ -1,0 +1,125 @@
+!!++
+!! ITER_MULTIPLE_VAR_2D_PICTURES_01.INR
+!! Title: Displaying Multiple Iter Results as Separate Pictures
+!! Category: Simple Problem
+!! Keywords: Analysis, $ITER, MODIFY, distribution 
+!! Description: How to show multiple variable iter results as 
+!! individual 2D user distributions in two independent variables
+!! for each dependent variable. 
+!! Based on ITER_MULTIPLE_VAR_GRAPHING01.INR, generalized
+!! to multiple 2-dimensional distribution files each corresponding
+!! to one dependent variable as a function of two independent input
+!! variables to the $ITER. 
+!! Each 2-dimensional distribution is initialized over the domain
+!! of the two-input-variable $ITER. In the $ITER analysis the 
+!! values are placed in their respective distributions by 
+!! the DISPLAY; MODIFY command pixel-by-pixel. One of the user
+!! dependent variables is also tracked by the usual $ITER result 
+!! variable as a cross-check on the user variable distribution.
+!! This variable could also be used for an additional result once 
+!! convinced that the storage technique works.
+!! The results are displayed as PICTUREs. 
+!! Edit History: (latest first) 
+!! 08/09/2012 - cp - added header
+!! 08/07/2012 - jah - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+XMEMORY MIN
+
+!! Must specify number of rows and columns
+ROWS=-5          !! Number of Y values, signed according to ASAP distribution file convention
+COLUMNS=-3       !! Number of X values, signed according to ASAP distribution file convention 
+
+!! Define X and Y limits as variables for coordination convenience
+Y0=2
+Y1=6
+X0=3
+X1=5
+
+!! Initialize 2-dimensional array of numbers for each variable to 
+!! be monitored within the analysis $ITER.
+!!
+!! The number of rows and columns must agree with the evaluation 
+!! in the analysis $ITER 
+!!
+!! Create an ITER.DIS full of zeros with the desired number of rows and columns
+$ITER YY (Y0) (Y1) (ROWS) XX (X0) (X1) (COLUMNS) SET NOMIN 
+  {
+  SET=0
+  } 
+!! Copy the empty ITER.DIS to the user variable distributions 
+!! to receive the dependent variable values in the $ITER context.
+$COPY ITER.DIS RESULT_ER.DIS
+$COPY ITER.DIS RESULT_TY.DIS
+$COPY ITER.DIS RESULT_UI.DIS
+$WAIT 1 !! give file writes time to complete before starting analysis $ITER
+
+
+!! Initialize counters for pixel position in distributions
+COUNT=0
+XCOUNT=0
+YCOUNT=0
+
+!! Now simulate a $ITER analysis of the dependent variables over the
+!! domain of the two independent variables XX and YY.
+$ITER YY (Y0) (Y1) (ROWS) XX (X0) (X1) (COLUMNS) CHK NOMIN !! setup must conform to initialized distributions
+  {
+
+!! Track where we are in the array by counting iterations 
+!!
+!! The integer indices are needed to address each location in  
+!! the user dependent variable distribution files.
+!!   
+COUNT=COUNT+1
+YCOUNT=1+(COUNT-1)\ABS[ROWS]
+XCOUNT=1+INT((COUNT-1)/ABS[ROWS])
+
+!! Generate some dependent variable values as a function of 
+!! the independent variables XX and YY of the $ITER.
+!! [simulated analysis results]
+ER=XX+YY+1
+TY=2*XX+2*YY+2
+UI=3*XX+3*YY+3
+
+CHK=(UI)   !! Cross-check: Assign one of the calculated variables to the 
+           !! $ITER result variable as a cross-check for the user-built 
+           !! distributions below. This could also be used to monitor an
+           !! additional result variable once convinced that the
+           !! results are captured correctly in the user distributions.
+           
+&REG ER TY UI COUNT YY YCOUNT XX XCOUNT ROWS COLUMNS 'Parameters and variables in $ITER'
+
+!! User built distributions -- must be initialized before
+!! this $ITER so values can be pushed into them here.
+!! Access and change each variable entry pixel by pixel
+!! -- one pixel in each distribution in each pass of $ITER.
+DISPLAY RESULT_ER.DIS  
+  MODIFY 2@(YCOUNT), 2@(XCOUNT), (ER) 0
+  WRITE RESULT_ER DIS
+DISPLAY RESULT_TY.DIS  
+  MODIFY 2@(YCOUNT), 2@(XCOUNT), (TY) 0
+  WRITE RESULT_TY DIS
+DISPLAY RESULT_UI.DIS  
+  MODIFY 2@(YCOUNT), 2@(XCOUNT), (UI) 0
+  WRITE RESULT_UI DIS
+RETURN
+  }
+
+!! Read and view display file contents
+DISPLAY RESULT_ER.DIS 
+  PICTURE 'ER(XX,YY)' 
+DISPLAY RESULT_TY.DIS 
+  PICTURE 'TY(XX,YY)' 
+DISPLAY RESULT_UI.DIS 
+  PICTURE 'UI(XX,YY)' 
+RETURN
+
+!! Verify that the $ITER result is identical to the user-built result
+DISPLAY ITER.DIS
+  PICTURE 'UI cross-check'
+RETURN
+
+      

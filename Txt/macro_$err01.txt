@@ -1,0 +1,30 @@
+!!++
+!! MACRO_$ERR01.INR
+!! Title: Branching on Input Error 
+!! Category: Isolated Command
+!! Keywords: $ERR, macro, Macros_pre
+!! Description: Example of $ERR usage. Error flag
+!! is set with $ERR command. At any time after
+!! this command is issued, ASAP will branch down
+!! to the bottom label if it encounters an input
+!! error and will resume executing with the RAYS 0
+!! command.
+!! Note: This is not a runable inr file.
+!! Edit History: (latest first)
+!! 12/21/2001 - cp - modified description
+!! 10/24/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+$ERR  bottom
+GRID ELLIPTIC X 3 -4@6 2@15
+  SOURCE DIRECTION -1 0 0 
+TRACE
+CONSIDER ONLY 32
+...
+...
+bottom
+RAYS 0
+GRID ELLIPTIC X 3 -4@6 2@15
+  SOURCE DIRECTION -1 0 0
+

@@ -1,0 +1,193 @@
+!!++
+!! LCD_DIFFUSER_DOTS.INR
+!! Title: LCD Edge-lit Diffuser
+!! Category: Simple Problem
+!! Keywords: Geometry, ARRAY, diffuser, lcd, backlight, dots, bumps
+!! Description: The following example is an LCD backlight diffuser
+!! panel using arrays of dots, having a white paint scattering property.
+!! The dots are just above the bottom surface inside the diffuser
+!! panel.  The majority of flux should be reflected or scattered out
+!! of the top of the panel.
+!! This is an early example to show how to use the ARRAY command to
+!! generate separate squares of dots.  Variable dot spacing may also be
+!! accomplished through the EXP option, as well as RANdom dot sizes.
+!! See Help for details.
+!! There may be a mathematical formula to create a large number
+!! of squares with varying dot size within a $DO loop if required.
+!! In this example, specific squares were generated with a fixed dot
+!! size.
+!! The light source was put along the top edge of the panel and the 
+!! window for analysis was looking straight down on top of the panel.
+!! This could be modified for any configuration.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 11/03/2008 - cp - added keyword
+!! 11/10/2003 - cp - updated description
+!! 11/05/2003 - cp - fixed keyword
+!! 12/21/2001 - cp - modified pop-up dialog
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS MM
+WAVELENGTH 655 NM
+BEAMS INCOHERENT GEOMETRIC
+XMEMORY MIN
+
+MEDIA
+  1.5 'PLASTIC'
+
+MODEL 
+  LAMBERTIAN .3    !! For the scattering surface of the dots
+
+FRESNEL AVERAGE    !! Calculate Fresnel reflections 
+                   !! averaging the flux of the two
+                   !! polarization states.
+
+!! Geometry for the diffuser panel itself 
+HORDIM=250/2       !! Half length of panel
+VERTDIM=190/2      !! Half width of panel)
+HTHICK=0.5/2       !! Half thickness of panel
+GAP=0.001          !! Gap between source and top edge
+                   !! to avoid putting the newborn
+                   !! rays at a media interface.
+
+!! Geometry for Dots
+DOT_DIA=1                     !! Smallest dot dia
+SQNUM_H=3                     !! Number of squares in Hor dim
+SQNUM_V=3                     !! Number of squares in Vert dim
+SQDIM_H=(HORDIM*2)/(SQNUM_H)  !! Square dimension in Hor
+SQDIM_V=(VERTDIM*2)/(SQNUM_V) !! Square dimension in Vert
+DOTS_H=7                      !! Number of dots - horizontal
+DOTS_V=7                      !! Number of dots - vertical
+SPACE_V=SQDIM_V/(DOTS_V+1)    !! Dot center to center spacing
+SPACE_H=SQDIM_H/(DOTS_H+1)    !! Dot center to center spacing
+
+!! Create the panel
+SURFACES
+  PLANE X (HTHICK) RECTANGLE (VERTDIM) (HORDIM)
+OBJECT 'BOTTOM'
+  INTERFACE COAT BARE AIR PLASTIC
+  REDEFINE COLOR 20
+SURFACES
+  PLANE X (-HTHICK) RECTANGLE (VERTDIM) (HORDIM)
+OBJECT 'TOP'
+  INTERFACE COAT BARE AIR PLASTIC
+  REDEFINE COLOR 20
+SURFACES
+  PLANE Z (-HORDIM) RECTANGLE (HTHICK) (VERTDIM)
+OBJECT 'LEFT_EDGE'
+  INTERFACE COAT +BARE AIR PLASTIC
+  REDEFINE COLOR 20
+SURFACES
+  PLANE Z (HORDIM) RECTANGLE (HTHICK) (VERTDIM)
+OBJECT 'RIGHT_EDGE'
+  INTERFACE COAT +BARE AIR PLASTIC
+  REDEFINE COLOR 20
+SURFACES
+  PLANE Y (-VERTDIM) RECTANGLE (HORDIM) (HTHICK)
+OBJECT 'BACK_EDGE'
+  INTERFACE COAT BARE AIR PLASTIC
+  REDEFINE COLOR 20
+SURFACES
+  PLANE Y (VERTDIM) RECTANGLE (HORDIM) (HTHICK)
+OBJECT 'FRONT_EDGE'
+  INTERFACE COAT BARE AIR PLASTIC
+  REDEFINE COLOR 20
+
+GROUP
+  SHIFT Y (VERTDIM)
+  SHIFT Z (HORDIM) !! Move panel to start at origin
+
+!! Create the dots 
+DOT_SQUARE { 3  'Macro for creating a square of dots'
+  SURFACES
+    PLANE X (HTHICK-(HTHICK/8)) ELLIPSE (DOT_DIA+#1) (DOT_DIA+#1) !! Dots are slightly in from bottom surface
+      SHIFT Y ((#3*SQDIM_V)+SPACE_V)   !! Start of 1st dot in Y
+      SHIFT Z ((#2*SQDIM_H)+SPACE_H)   !! Start of 1st dot in Z
+    ARRAY (DOTS_H-1) 0 0 (SPACE_H), (DOTS_V-1) 0 (SPACE_V) 0 !! Make rest of dots in both axis
+  OBJECT 'DOT_SQUARE#3'             !! Iterates array object name
+    INTERFACE 0.9 0 PLASTIC PLASTIC  !! The dot properties similar to white paint
+    ROUGHNESS MODEL 1
+    REDEFINE COLOR 1
+}
+Enter Dot dia>
+Enter starting Hor Position>
+Enter starting Vert Position>
+
+RETURN
+
+!! The folowing macro could be made more automatic to increment dot diameters
+!! by a certain amount for each call to the DOT_ROW macro.  It could then be put
+!! in a $DO loop with maybe a mathematical expression to calculate change
+!! in dot diameter.
+
+MAKE_SQUARES {  'Make all dots in square'
+ 
+  &DOT_SQUARE 0.5 0 0
+  &DOT_SQUARE 0.7 1 0
+  &DOT_SQUARE 0.5 2 0
+  &DOT_SQUARE 0.3 0 1
+  &DOT_SQUARE 0.2 1 1
+  &DOT_SQUARE 0.3 2 1
+  &DOT_SQUARE 0.2 0 2
+  &DOT_SQUARE 0.0 1 2
+  &DOT_SQUARE 0.1 2 2
+}
+
+&MAKE_SQUARES
+
+WINDOW Y Z
+PLOT FACETS 1 1 OVERLAY 'LCD BACKLIGHT DIFFUSER'  !! Plot the panel and dots
+$ASK 'Trace 20K rays - Hit STOP to abort.'
+
+!! A lambertian test source at the top edge of the panel. 
+!! The source is an ideal emitting rectangle
+!! located at the top edge of the light
+!! panel.  It emits in a random direction downward with a
+!! Lambertian directional distribution.  
+
+BEAMS INCOHERENT GEOMETRIC
+MISSED ARROW 10 !! This causes arrows of length 10 
+                !! system units (mm at this time)
+                !! to be drawn when a ray has hit
+                !! its last object.  Although the
+                !! ray remains on that last surface,
+                !! the arrow shows its direction, and
+                !! hence where it would go.  Without
+                !! this, the rays do not show up in
+                !! the 3-D view and will extend to the
+                !! end of the plot window.
+
+SEED 6          !! Change number for different ray patterns
+EMITTING RECT -Y ((VERTDIM*2)+GAP) (HORDIM) (HTHICK) 20000
+  SHIFT Z (HORDIM)
+SPOTS POSITION EVERY 10 OVERLAY  !! To indicate location of source
+TRACE PLOT 100  !! Only plot every 100th ray
+
+!! Analysis 
+CONSIDER ONLY TOP  !! The top should have the most flux
+  STATS POSITION
+
+!! Following window could be made instead to view edge on with Y axis hor and Z axis vert
+!! using WINDOW Y X.
+WINDOW Y Z
+PIXELS 50  !! Resolution for window
+SPOTS DIRECTION ATTRIBUTE 0  !! To save time
+
+DISPLAY
+  AVERAGE; AVERAGE; AVERAGE  !! Reduces statistical noise
+  PLOT3D '3D/ISOMETRIC FAR-FIELD INTENSITY (DIRECTION COSINE SPACE)'
+  PICTURE 'FAR-FIELD INTENSITY (DIRECTION COSINE SPACE)'
+  DIRECTIONAL          !! Directional plot
+  DIRECTIONAL UNWRAP   !! Linear plot of direction
+  AVERAGE -1 -1        !! Use median value in smoothing 3X3
+  CONTOUR 10 HIGH
+  RADIAL 'RADIAL'
+RETURN
+
+
+
+

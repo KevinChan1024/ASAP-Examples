@@ -1,0 +1,113 @@
+!!++
+!! GRIN_RADIAL04.INR
+!! Title: Radial GRIN Fiber by Function
+!! Category: Simple Problem
+!! Keywords: Geometry, GRIN, MEDIA, FUNCTION, radial, fiber, $FCN
+!! Description: Example of a GRIN refractive material based on a
+!! $FCN function describing the radial distance from center. 
+!! Replaces quadratic radial GRIN from the original.
+!! Trace a collimated source of rays through the material and do
+!! various plots of fiber and rays. Not representative of a real 
+!! material, only to demonstrate use of $FCN to define a radial GRIN.
+!! Edit History: (latest first)
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 01/08/2010 - cp - modified header
+!! 12/16/2009 - jah - modified original GRIN_RADIAL02.INR
+!! 01/01/1996 - bro - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+UNITS UM
+WAVELENGTHS 0.6328 UM
+
+$FCN SECH_AR  R=SQRT[_1^2+_2^2],
+              A=_4,
+              [2/(EXP(A*R)+EXP(-A*R))] 
+
+!! $EVAL _1 -10 10 -51 _2 -10 10 -51 _4 0.5 0.5 -1 SECH_AR  
+!! DISPLAY EVAL.DIS
+!!   PICTURE 'sech( )'
+!! RETURN
+
+
+RD=80
+$FCN GRIN_R  RAD=SQRT[_1^2+_2^2],             
+              EPS_0=4,
+              MU_0=1,
+              NSQ_0=EPS_0*MU_0,
+              N_0=SQRT[NSQ_0],
+              RPRIME=(SQRT[(8*RD*RAD)+RD^2]-RD)/2,
+              EPS=4/(1+(2*RPRIME/RD)),
+              MU=(1+(2*RPRIME/RD))/(1+(RPRIME/RD))^2,
+              NSQ=EPS*MU,
+              SQRT[NSQ]/N_0
+
+ 
+
+!! $EVAL _1 -10 10 -51 _2 -10 10 -51 _4 0.5 0.5 -1 GRIN_R  
+$EVAL _1 0 10 -101 _2 -0 0 -1 GRIN_R  
+DISPLAY EVAL.DIS
+  !! PICTURE 'function for GRIN MEDIA'
+  HEADER   _ , _, "index",_ ,_ ,_ , "radial coord."
+  GRAPH  'normalized radial function for GRIN MEDIA'
+RETURN
+
+!! $IO !! examine normalized index profile
+
+A=0.247  A0=-A*A/2  !! Quadratic index term
+FUNCTION
+  GENERAL 0 0 0
+    C 1
+    X2 (A0)
+    Y2 (A0) 
+  USERFUNC 0 0 0 SECH_AR 0.5 
+  USERFUNC 0 0 0 GRIN_R  
+MEDIA 
+  !! 1.5637 GRIN surf 1 exponent 2 stepsize .1 mm 'SELFOC'
+  !! 1.5637 GRIN surf 2 exponent 1 stepsize .1 mm 'SELFOC'
+  1.6 GRIN surf 3 exponent 2 stepsize 1.0 um 'GRINR'
+
+COATINGS PROPERTIES
+  0 1 'TRANS'
+SURFACES
+  PLANE Z 0 ELLIPSE 10
+  OBJECT 'FIBER_FACE 
+    INTERFACE COAT TRANS AIR GRINR
+SURFACES
+  TUBE Z 0 2@10 100 2@10
+  OBJECT 'FIBER_BODY' 
+    INTERFACE COAT TRANS AIR GRINR
+SURFACES
+  PLANE Z 100 ELLIPSE 10
+  OBJECT 'FIBER_END' 
+    INTERFACE COAT TRANS AIR GRINR
+SURFACES
+  PLANE Z 150 RECTANGLE 30
+  OBJECT 'DETECTOR' 
+
+BEAMS INCOHERENT GEOMETRIC
+GRID ELLIPSE Z 0 -4@2 1 10
+  !! SOURCE DIRECTION 0 0 1
+  SOURCE POSITION 0 0 (ZS=-12.5)
+  MOVE TO Z (ZS)
+
+MISSED ARROW 5
+WINDOW Y -25 25  Z (ZS-5) 200
+PIXELS 127
+PROFILES 'YZ SLICE THROUGH FIBER'
+WINDOW X Z
+PROFILES 'XZ SLICE THROUGH FIBER'
+CONSIDER ONLY 2 4
+WINDOW X Z
+OBLIQUE
+PLOT LIMITS 'PLOT LIMIT BOX BOUNDARIES' OVERLAY
+CONSIDER ALL
+WINDOW Y Z
+OBLIQUE OFF
+TRACE PLOT 'plot ray paths through rod'
+RETURN
+
+        $VIEW  
+        

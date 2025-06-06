@@ -1,0 +1,67 @@
+!!++
+!! CONSIDER_ONLY_RANGE.INR
+!! Title: Considering a Contiguous Range of Objects
+!! Category: Isolated Command
+!! Keywords: CONSIDER, range, Scripts, GROUP, SUBSET
+!! Description: Create a small array of discrete planes 
+!! and use them to demonstrate CONSIDER of a contiguous
+!! range of object numbers using the i:j range syntax.
+!! Edit History: (latest first)
+!! 03/14/2016 - cp - added header
+!! 03/14/2016 - jah - creation
+!!-- 
+
+SYSTEM NEW
+RESET
+
+!! Little plane array rows and columns  
+ROWS=5
+COLS=6
+
+MYARRAY {  !! Create the entire MYARRAY from nested macros
+  $DO 1 (ROWS)
+    $ROW ?
+}
+
+ROW {  !! Create a row of LENSLETs
+  $DO 1 (COLS)
+    $PLANELET ? #1
+}
+
+PLANELET {  !! Create a single square PLANE at (x,y) 
+  SURFACES
+    PLANE Z 0 RECT 0.4
+    OBJECT 'PLANE_SURF_X#1_Y#2'
+      INTERFACE 0 0 AIR AIR
+  
+    SHIFT X #1
+    SHIFT Y #2
+}
+
+$MYARRAY
+
+GROUP PLANE_SURF_?
+  SHIFT X (-COLS/2)-(1/2)
+  SHIFT Y (-ROWS/2)-(1/2)
+RETURN
+
+EMITTING RECT Z -1 (COLS/2) (ROWS/2) 11111 2@15
+
+PLOT FACETS 3 3 0
+TRACE PLOT 111 COLOR 7 
+
+CONSIDER EXCEPT 0; SUBSET !! Eliminate missed rays
+
+CONSIDER ALL              !! Consider all that remain
+
+CONSIDER ONLY 10:21       !! Consider just rays on objects 10 through 21
+
+CONSIDER
+
+WINDOW Y X
+SPOTS POSITION COLOR 1    !! Will only see spots on considered objects
+
+STATS ALL                 !! Will only see stats on considered objects
+
+$VIEW
+RETURN

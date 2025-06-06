@@ -1,0 +1,83 @@
+!!++
+!! GAUSSIAN_WAIST_FIND.INR
+!! Title: Finding the Gaussian Waist
+!! Category: Simple Problem
+!! Keywords: Wave, GAUSSIAN, WAIST, FIELD, beam waist, LIT
+!! Description: A Method for finding the Gaussian waist of a beam.
+!! Edit History: (latest first) 
+!! 02/29/2012 - cp - corrected keyword
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+XMEMORY FULL
+UNITS MM
+
+F=500     !! Focal length in mm.  allows change of lens focal length
+W=3       !! Waist semi_diameter fed to GAUSSIAN command
+Z=1000    !! Nominal Z value for plane of transverse FIELD calculations
+
+!! Calculate calculation end points
+Z1=(2*F)-20/W  !! Can change range of on-axis field calculation
+Z2=(2*F)+20/W  !! Z1 is start value & Z2 is end 
+
+!! Focusing lens
+LENS
+  SINGLET Z 499.25 1.5 25 BK7 FL (F) -1
+  OBJECT 'THIN_LENS'                                    
+
+!! Detector
+SURFACE 
+  PLANE Z (Z) RECTANGLE 40
+  OBJECT 'PLA'
+
+!! Section to set up dynamic labelling for output
+MAKEGRAPH {  
+  GRAPH 'FIELD ENERGY ALONG OPTICAL AXIS FOR INITIAL WAIST = #1 mm'
+  'POSITION IN MM'
+  'GRAPH MAXIMUM WILL BE NEW BEAM WAIST'
+  'ON-AXIS IRRADIANCE IS MAXIMUM AT WAIST'
+}
+
+MAKEPLOTS {
+  ISOMETRIC 'FIELD ENERGY FOR INITIAL BEAM WAIST = #1 mm'
+  RADIAL INTEGRAL 'ENCIRCLED ENERGY OF RADIALLY AVERAGED FUNCTION - INITIAL WAIST = #1'
+  RADIAL BOTH 'RADIALLY AVERAGED CROSS-SECTION & ENCIRCLED ENERGY - INITIAL WAIST = #1'
+  DISPLAY 29 PHASE   !! Calls display file for phase
+    GRAPH .5 'PHASE OF FIELD FOR INITIAL BEAM WAIST = #1 mm'
+    'POSITION IN MM'
+    'SHOULD BE FLAT AT WAIST'
+    'IGNORE PHASE VALUES IN REGIONS OF VERY LOW ENERGY'
+}
+
+!! Section for beam sampling of lens
+PARABASAL 4
+BEAMS COHERENT DIFFRACT
+WIDTHS 1.6
+WAVELENGTH 633 NM
+GAUSSIAN Z 480 0 0 71 71 0 0 (W) (W)  !! Note waist still at origin but beams set up near lens
+                                      !! To ensure proper sampling of lens
+FLUX TOTAL 1  !! Normalize total flux
+
+TRACE 
+
+SELECT ONLY OBJECT THIN_LENS   !! Selects only beams whose previous (prior to current) object was the lens
+
+PIXELS 131
+WINDOW Z (Z1) (Z2) Y -2@.0000001   !! Small y value forces single pixel about Y=0 (on axis)
+FIELD ENERGY 0    !! Calculates field on axis (at X=0, Y=0) versus Z position (along axis)  
+DISPLAY
+  $GRAB 'Maximum' 0 4 MAX
+  $MAKEGRAPH LIT(W)  !! Calls graph macro
+ 
+$ASK 'Continue for FIELD ENERGY plots'
+PIXELS 101
+WINDOW X -2@.15/W Y -2@.15/W
+FIELD ENERGY (MAX)
+DISPLAY
+  $MAKEPLOTS LIT(W)  !! Calls plot macro
+RETURN
+
+

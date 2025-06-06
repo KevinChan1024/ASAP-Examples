@@ -1,0 +1,33 @@
+!!++
+!! PRINT02.INR
+!! Title: Extracting Index-Wavelength Pairs from Glass Catalog 
+!! Category: Simple Problem
+!! Keywords: Interfaces, MEDIA, glass, index, PRINT MEDIA, $ITER
+!! Description: Takes any glass from the catalog and produces
+!! a list of index values over a given wavelength range.
+!! Edit History: (latest first)
+!! 09/18/2015 - cp - creation
+!!--  
+
+SYSTEM NEW
+RESET
+$ECHO NONE 
+ $ITER WAVE 400 2200 -100 INDEX
+ { 
+ UNITS MM 
+ WAVELENGTH (WAVE) NM
+ SURFACE
+  PLANE Z 0 RECT 1 1
+  OBJECT
+  INTERFACE 0 1 AIR SCHOTT_BK7
+ PRINT MEDIA 
+ $GRAB 'MEDIA' 2 2 INDEX
+ SYSTEM NEW
+ }
+DISPLAY ITER
+GRAPH
+TEXTFILE LIST
+DATA -2
+EOF
+RET
+$ECHO 

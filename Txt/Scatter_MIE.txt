@@ -1,0 +1,74 @@
+!!++
+!! SCATTER_MIE.INR
+!! Title: MIE Scattering 
+!! Category: Simple Problem
+!! Keywords: Scatter, MIE, particles, MODELS
+!! Description: Scattering using the PARTICLES MIE model.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+UNITS CM
+WAVELENGTH .5 UM
+
+MEDIA !! Needed for MIE model to reference
+  1.49
+
+PIXELS 71
+
+MODEL
+  PARTICLES MIE 1 .1 .1 .1 
+
+SURFACES
+  PLANE Z 0 ELLIPSE 1
+  OBJECT 'INTERFACE'
+    SCATTER MODELS 1 1
+      TOWARDS SPEC 1000 1.57  !! Leave default t and a"
+!! Scattering is about specular direction and flux is weighted 
+!! according to number of scattered rays. Total Integrated Scatter
+!! will be accurate if enough rays are generated.
+
+SURFACES
+  OPTICAL Z 1.0001 -1.0001 ELLIPSE 1.0
+  OPTICAL Z -1.0001 1.0001 ELLIPSE 1.0
+  OBJECT; .1 'BACK'
+  OBJECT; .2 'FORWARD'
+
+XMEMORY MIN
+GRID RECT Z -.1 -4@.01 1 1 RANDOM 1  !! For display only
+  SOURCE DIRECTION Z 50
+PLOT MESH 3 OVERLAY
+CONSIDER EXCEPT FORWARD BACK
+TRACE
+PLOT RAYS 1  !! Intensity represented by length of rays (rel. to 1)
+$VIEW
+RAYS 0  !! Clear old rays to start new source
+
+GRID RECT Z -.001 -4@.01 4 4 RANDOM 1  !! For analysis
+  SOURCE DIRECTION Z 50
+CONSIDER ALL
+FLUX TOTAL 1
+TRACE
+STATS
+
+CONSIDER ONLY FORWARD
+WINDOW X Y  
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+  AVERAGE
+  AVERAGE
+  DIRECTIONAL 'FORWARD SCATTER'
+RETURN
+
+CONSIDER ONLY BACK
+WINDOW X Y  
+SPOTS DIRECTION ATTRIBUTE 0
+DISPLAY
+  AVERAGE
+  AVERAGE
+  DIRECTIONAL 'BACK SCATTER'
+RETURN

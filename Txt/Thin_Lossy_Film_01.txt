@@ -1,0 +1,233 @@
+!!++
+!! THIN_LOSSY_FILM_01.INR
+!! Title: Thin Lossy Film in Isolation
+!! Category: Simple Problem
+!! Keywords: Interfaces, MEDIA, FUNCTION, GENERAL
+!! Description:  Examine a thin lossy film in isolation (no substrate)
+!! Demonstrate energy balance via SPLIT n MONTECARLO, using an
+!! incoherent source and relying on the internal interference
+!! of COATING LAYERS for the film. 
+!! Iterate film thickness at fixed wavelength and angle-of-
+!! incidence, and examine by graphs the 
+!! - total flux, 
+!! - Reflected flux, 
+!! - Transmitted flux, and 
+!! - Absorbed flux 
+!! Note: If the thickness increment requested for iteration
+!!       would result in a distribution file too large to be 
+!!       properly processed, the request is intercepted and 
+!!       the user is prompted to alter the value until it 
+!!       conforms (maximum NTRIES tries).
+!!   
+!! Edit History: (latest first)
+!! 11/13/2013 - cp - formatted and added header
+!! 09/19/2013 - jah - creation
+!!--
+
+**************************************
+!! Parameters  
+**************************************
+
+PI=4*ATAN(1)    !! Pi, for utility
+NTRIES=9        !! number of user input tries to obtain a proper number of iterations
+
+!! user inputs
+WL_UM=1.0       !! wavelength of source [um]
+NG=1.45         !! real index of film
+ABSG=0.08       !! absorption coefficient of film [um^-1]
+
+THICK0=0.1      !! initial thickness of film [um]
+THICK1=10.0     !! final thickness of film [um] 
+DTHICK=0.050    !! thickness step size [um]
+AOI=40          !! angle of incidence [degrees]
+
+!! calculated from user input
+KG=ABSG*WL_UM/(4*PI)                  !! imaginary index of film
+NSTEPS=1+INT[(THICK1-THICK0)/DTHICK]  !! number of $ITER steps
+
+!! storage parameters for distribution file size 
+!! (change only with caution & understanding of their function)
+NVARS=5                               !! number of variables stored in $ITER
+!! NSTEPS is also a storage parameter
+
+!! Input validation for number of iteration steps 
+!!
+!! Maximum number of steps for which we can do the
+!! required distribution transpose later is 2896. 
+!! We will interfere with attempts to make it larger,
+!! and allow user cancellation if desired.
+&DO 1 (NTRIES)
+  {
+UCANCEL=0
+SCR_CANCEL=0
+$IF (NSTEPS) GT 2896 THEN
+SCR_CANCEL=1
+  $SCR 5 'User input -- pass #|'
+  Maximum number of iteration steps is 2896
+  For the requested thickness increment of \DTHICK.3\,
+    \NSTEPS.0\ steps would result.
+  Please reset the thickness increment \DTHICK.3?\ to a higher value
+    OR cancel the analysis using the Cancel button below. 
+$ENDIF
+
+NSTEPS=1+INT[(THICK1-THICK0)/DTHICK]  !! number of $ITER steps
+
+$IF (SCR_CANCEL) GT 0.5 THEN 
+  UCANCEL=1
+  $LEAVE
+$ELSEIF (NSTEPS) LE 2896 THEN
+  $LEAVE
+$ELSEIF (|) EQ (NTRIES)
+  UCANCEL=1
+  $SCR 4 'Warning! Exiting script'
+  **********************************************************
+  * Attempts to obtain a workable user thickness iteration *
+  * increment have been exhausted. Terminating....        *
+  **********************************************************
+$ENDIF
+  }
+  
+$IF (UCANCEL) GT 0.5
+  $GO usercancel
+  
+!! end the thickness increment / step input validation
+
+&REG PI ABSG NG KG THICK0 THICK1 DTHICK NSTEPS NVARS 'parameters '
+
+!! do a file rewind before writing data to it
+$ECHO NONE
+$IO OUTPUT "AbsFilm_Thickness_Scan.txt" -FILE(10) !! first write rewinds user text file
+$SCR 1
+!! thickness, total flux, reflected, transmitted, absorbed
+$IO OUTPUT CLOSE
+
+$ITER THICKNES (THICK0) (THICK1) -(NSTEPS) RESULT NOMIN
+  {
+
+$ECHO NONE
+
+SYSTEM NEW
+RESET
+
+!! since we are in thin ~wavelength regime, use um system units & wavelength units
+UNITS UM
+WAVELENGTH (WL_UM) UM  
+
+!! observe energy balance using Monte Carlo sampling of phenomena  
+SPLIT 4 MONTECARLO 
+!! allow variation of interface behavior with angle of incidence  
+FRESNEL AVE
+
+!! define media
+MEDIA
+  (NG)`(KG) 'LOSSY'
+  1+1E-7    'AIR_HIGH'  !! a dummy air with slightly higher index for test purposes
+RETURN  
+
+!! define thin lossy layer by thickness & medium
+COATING LAYERS
+  (THICKNES) LOSSY 'LOSSY_LAYER'
+
+!! construct geometry
+!! interface in air with the lossy layer attached
+SURFACE
+  PLANE Z 0 RECT 10 100
+OBJECT
+  .1  'FILM'
+      INTERFACE COATING LOSSY_LAYER AIR AIR !! AIR_HIGH   
+RETURN
+
+!! detectors
+SURFACE
+!!  PLANE Z -2 RECT 1 1000
+!!  PLANE Z +2 RECT 1 1000
+  TUBE X -5 2@100, +5 2@100, 2@0  
+OBJECT
+  .1  'DET.R'
+      INTERFACE 0 0 AIR AIR
+      BOUNDS -.2   
+  .1  'DET.T'
+      INTERFACE 0 0 AIR AIR !! AIR_HIGH AIR_HIGH   
+      BOUNDS +.2   
+RETURN
+
+!! simplify evaluation by assuming low coherence
+BEAMS INCOHERENT GEOMETRIC                      
+!! Note: internal interference of COATING LAYERS is still in play
+
+!! iterate angle of incidence and test
+$ECHO NONE
+  RAYS 0
+  GRID RECT Z 0 -4@1 2@71
+  SOURCE DIRECTION Z (AOI) 90 
+  FLUX TOTAL 100
+  !! STATS DIR
+  MOVE BY -20  
+  !! WINDOW Y Z
+  !! PLOT FACETS 3 3 0 OVERLAY
+  TRACE !! PLOT   
+  $CLEAR
+  STATS 
+  $GRAB 'TOTAL' 0 2 FLUX_TOT 
+  CONSIDER ONLY FILM
+  $CLEAR
+  STATS 
+  $GRAB 'TOTAL' 0 2 FLUX_A
+  CONSIDER ONLY DET.R 
+  SELECT ALL
+  $CLEAR
+  STATS 
+  $GRAB 'TOTAL' 0 2 FLUX_R
+  CONSIDER ONLY DET.T
+  SELECT ALL
+  $CLEAR
+  STATS 
+  $GRAB 'TOTAL' 0 2 FLUX_T  
+  !! &REG FLUX_TOT FLUX_A FLUX_R FLUX_T 'R/T/A data '  
+  !! CONSIDER ALL
+
+  RESULT=FLUX_A
+  
+!! output the accumulated data
+
+!!Writes to text file on each pass
+$ECHO NONE
+  $IO OUTPUT "AbsFilm_Thickness_Scan.txt" +FILE(10)   !! All successive iterations
+$SCR 1
+\THICKNES.1\  \FLUX_TOT.3\ \FLUX_R.3  \  \FLUX_T.3  \ \FLUX_A.3  \      
+$IO OUTPUT CLOSE
+
+RETURN  
+
+  }
+  
+!! Writes text data to display file
+DISPLAY -56    !! open empty display file
+X 0 FLUX TFILM (THICK0) (THICK1) (NSTEPS) VAR 1 2@(NVARS)
+$READ "AbsFilm_Thickness_Scan.txt"
+
+$ECHO ALL
+
+!!Reads and views DISPLAY file contents
+$CLEAR
+DISPLAY 56
+  REDUCE 2 (NVARS) 1, 1 (NSTEPS) 1    !! remove the thickness variable from the distribution for plotting purposes
+  $GRAB 'Minimum' 0 1 FMIN  
+  $GRAB 'Maximum' 0 1 FMAX
+  &REG FMIN FMAX 'flux range values ' 
+  TRANSPOSE                           !! to organize by variable, not iteration
+  PICTURE 'recorded flux variables'   !! overview of data
+  !! plot variables individually
+  GRAPH 1 'total flux' 
+  GRAPH 2 'reflected flux'  
+  GRAPH 3 'transmitted flux'  
+  GRAPH 4 'absorbed flux' 
+  !! plot data for all variables on the same plot
+  !! (limited to 10 plots per chart) 
+  GRAPH 1 2 3 4 'Data series: total flux, Reflected, Transmitted, Absorbed' 
+  '.     Note:   Total flux plot is expected to be at the'   
+  '.                top of the graph and may be obscured' 
+  '.'
+RETURN
+
+usercancel

@@ -1,0 +1,35 @@
+!!++
+!! MACRO_USER01.INR
+!! Title: A Simple Macro
+!! Category: Simple Problem
+!! Keywords: Macros_user, macro
+!! Description: The basic user-defined macro. Makes a
+!! spherical mirror. 
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 02/11/2000 - cp - modified format; added description
+!! 11/01/1999 - rh - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+!! Note - if number is supplied after opening bracket
+!! that many lines must follow macro, even if blank.
+
+SPH_MIRROR { 4  !! Number of arguments & prompts
+  SURFACES
+    OPTICAL Z #1 2*#2 0 ELLIPSE 2@(#3/2)
+    OBJECT '#4'
+      INTERFACE 1 0 AIR AIR
+} !! Closing bracket must be in 1st column
+Z position of mirror:  !! Prompts to occur (if no args given)
+Focal length:
+Diameter:
+Mirror name: 
+
+$SPH_MIRROR 5 -5 1 MIRROR_1  !! Calls macro
+                             !! No prompts occur since args are supplied
+WINDOW Y X
+PLOT FACETS 5 5
+RETURN

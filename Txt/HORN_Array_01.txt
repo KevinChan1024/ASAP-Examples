@@ -1,0 +1,53 @@
+!!++
+!! HORN_ARRAY_01.INR
+!! Title: Array of HORNs Bounded by Planes
+!! Category: Simple Problem
+!! Keywords: Arrays, HORN, BOUNDS, ARRAY
+!! Description: An Array of HORN Surfaces bounded by two planes.
+!! The HORN  has a radial profile determined by the following equation:
+!! r^2(z)=2.968+.8949z-4.503z^2+4.8345z^3-1.1287z^4+.01044z^5-3.478E-4z^6
+!! where z is measured from the reference point (0,0,0).
+!! Edit History: (latest first) 
+!! 10/16/2013 - gb - replaced command abbreviations with proper form
+!! 08/04/2009 - cp - modified format; added header
+!! 07/24/2009 - jah - Modified from SURF_HORN02.INR
+!!--
+
+SYSTEM NEW
+RESET
+
+COATINGS PROPERTIES
+  1 0  'REFL'
+  
+MEDIA
+  1.49 'PLASTIC'  
+  
+SURFACES
+  PLANE Z 0 RECT 8/2 10/2
+    ARRAY 3 8 0 0, 2 0 10 0  
+      SHIFT -2*8 -1.5*10 0
+  PLANE Z 2 RECT 8/2 10/2
+    ARRAY 3 8 0 0, 2 0 10 0  
+      SHIFT -2*8 -1.5*10 0  
+SURFACES
+  HORN Z 0 2.968 .8949 -4.503 4.8345 -1.1287 .01044 -3.478E-4
+    LOCAL -4@3 0 2 Z 
+    ARRAY 3 8 0 0, 2 0 10 0  
+      SHIFT -2*8 -1.5*10 0
+OBJECT 
+  .1  'HORN_OBJECT'                         
+        BOUNDS -.2 +.3
+        INTERFACE COAT BARE AIR PLASTIC
+  .3  'SLAB.BOTTOM'
+        BOUNDS MULTIPLE +.1
+        INTERFACE COAT BARE AIR PLASTIC
+        FACETS 23 23
+  .2  'SLAB.TOP'
+        BOUNDS MULTIPLE +.1
+        INTERFACE COAT BARE AIR PLASTIC
+        FACETS 23 23
+        
+WINDOW Y X    
+PLOT FACETS 3 3 0
+RETURN 
+$VIEW

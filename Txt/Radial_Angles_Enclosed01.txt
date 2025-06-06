@@ -1,0 +1,37 @@
+!!++
+!! RADIAL_ANGLES_ENCLOSED01.INR
+!! Title: Enclosed Energy vs. Angle #1
+!! Category: Simple Problem
+!! Keywords: Radiometry, enclosed, energy, $ITER, ANGLES, radial
+!! Description: This shows a simple example of how to graph enclosed
+!! energy vs. angle out to 90 degrees using the $ITER command.  
+!! It does not have the problem of spilling over 90 degrees when
+!! radially averaging over a rectangular map of angles - as when
+!! performing a RADIAL BOTH after converting dir-cosine data to
+!! angles.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/02/2001 - cp - corrected $IF
+!! 02/03/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+EMITTING RECT Z 0 1 1 20000
+
+WINDOW Y -2@1 X -2@1
+PIXELS 51
+
+$ITER ANGLE 0 90 -19 ENCLOSED  !! First form - iter over range, including end points
+  {
+  SELECT ONLY COS[ANGLE] C
+  ENCLOSED=0
+  $IF (ANGLE) NEQ 0 2
+    GET
+    ENCLOSED=F0
+  } 
+
+DISPLAY ITER  !! The display file creating by $ITER
+GRAPH 'Enclosed Energy vs. Angle'
+RETURN

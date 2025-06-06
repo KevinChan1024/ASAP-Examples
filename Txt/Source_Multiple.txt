@@ -1,0 +1,82 @@
+!!++
+!! SOURCE_MULTIPLE.INR
+!! Title: Three-Color Ray Trace
+!! Category: Simple Problem
+!! Keywords: Tracing, COLORS, WAVELENGTHS, rays, TRACE, SELECT
+!! Description: The following example shows how to trace three
+!! sources at three different wavelengths and apply colors to
+!! them for visual representation.  Here, a typical source with
+!! red, green and blue components is traced through a singlet
+!! lens.  Note that with recent versions of ASAP, the COLORS
+!! keyword may not be necessary, as ASAP will color individual
+!! sources according to wavelength as best possible.
+!! Edit History: (latest first)
+!! 10/10/2013 - gb - replaced command abbreviations with proper form
+!! 08/31/2005 - cp - fixed wavelength units and description 
+!! 03/11/2002 - cp - reformatted
+!! 02/04/2000 - cp - creation
+!!--
+
+SYSTEM NEW
+RESET 
+
+!! System Settings
+UNITS MM
+WAVELENGTHS 450 550 633 NM
+
+!! Define Geometry
+
+!! Front of Lens
+SURFACES
+  OPTICAL Z -.692 4.5 -1 ELLIPSE 2.5
+OBJECT 'FRONT'
+  INTERFACE 0 1 AIR SCHOTT_BK7
+
+!! Back of Lens
+SURFACES
+  OPTICAL Z 0 -4.5 -1 ELLIPSE 2.5
+OBJECT 'BACK'
+  INTERFACE 0 1 AIR SCHOTT_BK7
+  SHIFT Z 1
+
+!! Edge of Lens
+SURFACES
+  TUBE Z 0 2.5 2.5 0.3 2.5 2.5
+OBJECT 'EDGE'
+
+!! Define Sources
+
+!! SOURCE 1 - RED
+WAVELENGTH 633 
+GRID ELLIPTIC Z -2 -2.4 2.4 -2.4 2.4 1 25
+  SOURCE DIRECTION 0 0 1
+RETURN
+
+!! SOURCE 2 - GREEN
+WAVELENGTH 550 
+GRID ELLIPTIC Z -2 -2.4 2.4 -2.4 2.4 1 25
+  SOURCE DIRECTION 0 0 1
+RETURN
+
+!! SOURCE 2 - BLUE
+WAVELENGTH 450 
+GRID ELLIPTIC Z -2 -2.4 2.4 -2.4 2.4 1 25
+  SOURCE DIRECTION 0 0 1
+RETURN
+
+!! Trace and plot
+MISSED ARROWS 10
+WINDOW Y -3 3 Z -1 11
+PLOT FACETS 8 8 OVERLAY 'SINGLET 3-COLOR RAY TRACE'
+
+SELECT ONLY SOURCE 1  !! RED
+  TRACE PLOT COLORS 2 OVERLAY
+
+SELECT ONLY SOURCE 2  !! GREEN
+  TRACE PLOT COLORS 13 OVERLAY
+
+SELECT ONLY SOURCE 3  !! BLUE
+  TRACE PLOT COLORS 3
+
+$VIEW
+RETURN

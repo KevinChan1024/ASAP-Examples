@@ -1,0 +1,99 @@
+!!++
+!! DEFORM_SAMPLED02.INR
+!! Title: Deforming by Sampled Surface using $FCN
+!! Category: Simple Problem
+!! Keywords: Geometry, DEFORM, SAMPLED, deforming, $FCN, USERFUNC, FMAP
+!! Description: An INR file that generates a deformed hexagonal surface.
+!! This application is useful for modelling mirror support
+!! print-through on the mirror reflecting surface.
+!! The print-through is introduced as a surface deformation
+!! using DEFORM.  The deformation is calculated from a user
+!! defined $FCN that is used to generate a DIS file containing
+!! the function data.  The deformation is introduced onto the  
+!! reflecting surface by defining a sampled surface and using
+!! DEFORM.
+!! Credit goes to Robert Upton at NOAO for submitting this example.
+!! Edit History: (latest first)
+!! 10/15/2013 - gb - replaced command abbreviations with proper form
+!! 03/24/2003 - cp - modified format and header
+!! 03/19/2003 - ru - creation
+!!--
+ 
+SYSTEM NEW
+RESET
+
+** PARAMETERS **
+
+UNITS MM
+LAMBDA=1E-03
+
+PI=ACOS(-1)
+
+!! Geometry parameters
+SW=1.31E03  
+FAC=0.00
+DS=SW*(SQRT(1+FAC)-1)
+THETHEX=60 
+
+RCP=5000
+ZLOCP=0  
+KCP=-1
+YCP=2/SQRT(3)*1.31E03/2
+YOP=430
+
+** GEOMETRY **
+
+!! Bounding edge
+EDGES
+  POINTS Z (ZLOCP) (SW)/2/SQRT(3) (SW/2)  1
+              (SW)/SQRT(3)   0       1
+              (SW)/2/SQRT(3) -(SW/2) 1
+             -(SW)/2/SQRT(3) -(SW/2) 1
+             -(SW)/SQRT(3)   0       1
+             -(SW)/2/SQRT(3) (SW/2)  1
+RETURN
+     
+!! Primary
+SURFACES 
+  !! OPTICAL Z (ZLOCP) (RCP) (KCP) ELLIPSE 2@(YCP) 
+  PLANE Z (ZLOCP) ELLIPSE 2@(YCP)
+  OBJECT 'HEXA.1'
+  BOUNDS -.2
+  INTERFACE 1 0 AIR AIR
+  REDEFINE COLOR 27
+RETURN
+
+!! Define the perturbation by analytic function
+A=5
+PT=2*YCP/10
+ 
+!! Define the perturbing function 
+$FCN TEST_FCN A*COS(_1*PI/PT)
+
+!! Define a USERFUNC surface using the explicit function.
+!! Introduce the surface deformation and generate dis file
+!! with deformation using FMAP.              
+WINDOW Y -2@(YCP) X -2@(YCP)
+PIXELS 101
+SURFACES
+  USERFUNC 0 0 0 TEST_FCN
+  FMAP 0 (A) 10
+DISPLAY
+  WRITE TEST_FCN.DIS
+RETURN 
+
+!! Define the perturbing surface using the function data
+!! in TEST_FCN.DIS and then use it to DEFORM the Primary surface. 
+SURFACES 
+  SAMPLED TEST_FCN
+OBJECT HEXA.1 
+  DEFORM 0.1  
+
+WINDOW Y -2@(YCP) X -2@(YCP)
+PIXELS 151
+MAP DEPTH -2@(RCP*0.01)
+DISPLAY  !! Show results
+  PICTURE
+RETURN 
+
+

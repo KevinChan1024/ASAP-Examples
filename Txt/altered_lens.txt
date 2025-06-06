@@ -1,0 +1,44 @@
+!!++
+!! ALTERED_LENS.INR
+!! Title: Altering Lens Conicoids
+!! Category: Simple Problem
+!! Keywords: Geometry, ALTER, SINGLET, LENSES, SEQUENCE, RADI
+!! Description: Altering conicoids of lenses. The ALTER
+!! command is used as a lens modifier.
+!! Edit History: (latest first)
+!! 12/19/2001 - cp - corrected object name and comment
+!! 10/02/2000 - cp - modified format; added description
+!! 01/01/1996 - bro - creation
+!!--
+
+SYSTEM NEW
+RESET
+
+MEDIA
+  4.03 'HIGH'
+
+LENSES
+  SINGLET Z -5 0.3 0.5 HIGH RD 0 -1
+    ALTER 2 K -16.241  !! Alter second conicoid of the lens
+  OBJECT 'ALTERED_LENS'
+
+LENSES
+  SEQUENCE RADI
+    0 0 -4, 0 0 1, 0.5 -1
+    0 0 -3.7, 0 0 1, 0.5 1
+    0 0 -3, 0 0 1, 0.5 -10
+    0 0 -2.7, 0 0 1, 0.5 -10
+  OBJECT 'ALTERED_LENS2'
+
+WINDOW Y Z
+WINDOW 1.2  !! Enlarge by 20%
+OBLIQUE 
+PLOT LENSES 'FIRST LENS ALTERED, SECOND NOT'
+
+LENSES 2            !! For lens two conicoids three and four
+  ALTER 3 R 0 -1 1  !! Pickup first conicoid radius neg 
+  ALTER 4 R 0 1 2   !! Pickup second conicoid radius  
+ 
+PLOT LENSES 'BOTH LENSES ALTERED'
+RETURN
+
